@@ -1,6 +1,9 @@
 # VIM FILES
 *.*.swp
 
+# Bin folder
+bin
+
 # Prerequisites
 *.d
 

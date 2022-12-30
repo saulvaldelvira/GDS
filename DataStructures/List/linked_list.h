@@ -1,6 +1,7 @@
 #pragma once
 #ifndef LINKED_LINKED_LIST_H
-    
+#define LINKED_LINKED_LIST_H
+
     #include <stddef.h>
     #include <stdbool.h>
 
