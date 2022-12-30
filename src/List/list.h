@@ -1,7 +1,8 @@
 #pragma once
 #ifndef LIST_H
 #define LIST_H
-    
+    #include <stddef.h>
+
     #define LIST_DEFAULT_SIZE 10
 
     typedef struct List {
@@ -16,8 +17,10 @@
     extern void list_set(List *list, size_t index, void *element);
     extern void* list_get(List list, size_t index);
     extern void list_remove(List *list, size_t index);
+    
     #define FREE_ELEMENTS 1
     #define FREE_ARRAY_ONLY 0
-    extern void list_free(List list);
+
+    extern void list_free(List list, int free_elements);
 
 #endif

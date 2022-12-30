@@ -43,7 +43,7 @@ void list_set(List *list, size_t index, void *element){
 
 void list_remove(List *list, size_t index){
     if(index <= 0 || index >= list->n_elements){
-        fprintf("Index %d out of bounds\n", index);
+        fprintf(stderr, "Index %lu out of bounds\n", index);
         return;
     }
     for(int i=index; i<list->n_elements-1; i++){
