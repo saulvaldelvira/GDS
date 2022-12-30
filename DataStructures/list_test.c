@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "List/list.h"
 #include "List/linked_list.h"
+#include <assert.h>
 
 void list_test(){
         List l = list_empty();
@@ -14,27 +15,48 @@ void list_test(){
         list_free(l, FREE_ELEMENTS);
 }
 
-/**
- * Returns 1 if e_1 is greater than e_2, 
- *        -1 if e_2 is greater than e_1,
- *         0 if they are equal
-*/
-bool compare_int(void *e_1, void *e_2){
-        int n_1 = * (int *) e_1;
-        int n_2 = * (int *) e_2;
-        if (n_1 > n_2){
-                return 1;
-        }else if (n_2 > n_1){
-                return -1;
-        }else{
-                return 0;
+void int_float(){
+        /// INTEGER
+
+        LinkedList l = linked_list_init(Comparators.integer);
+        // Because we use the values of numbers (wich are NOT allocated thus do not need to be freed) we have
+        // to configure the list to NOT free elements in node remove neither in list remove
+        linked_list_configure(&l, DONT_FREE_ON_NODE_REMOVE, DONT_FREE_ELEMENTS_ON_LIST_REMOVE);
+        int numbers[300];
+        assert(l.n_elements == 0);
+        for(int i=0; i < 300; i++){
+                numbers[i] = i;
+                assert(linked_list_append(&l, &numbers[i]));
+                assert(l.n_elements == i+1);
         }
+        for(int i=0; i < 300; i++){
+                assert(linked_list_exists(l, &numbers[i]));
+        }
+        for(int i=0; i < 300; i++){
+                assert(linked_list_remove(&l, &numbers[i]));
+                assert(l.n_elements == 299 - i);
+        }
+        for(int i=0; i < 300; i++){
+                assert(!linked_list_exists(l, &numbers[i]));
+        }
+
+        linked_list_free(l);
+
+
 }
 
 int main(){
-        LinkedList l = linked_list_init(*compare_int);
-       
-        int n = 12;
-        linked_list_append(&l, &n);
-        printf("TEST 1 -> %d\n", linked_list_exists(l, &n));
+         // FLOAT
+        LinkedList lfloat = linked_list_init(Comparators.floating);
+        float floating[100];
+        int  n = 0;
+        for(float f=0; f<10.0; f+=0.1){
+                floating[n] = f;
+                printf("Adding: %2.1f at %d\n", floating[n], n);
+                assert(linked_list_append(&lfloat, &floating[n]));
+                n++;
+        }
+        float f = 1.2;
+        printf("(%2.1f) EXPECTED 1: %d\n",floating[12], linked_list_exists(lfloat, &floating[12]));
+        return 1;
 }

@@ -1,7 +1,7 @@
 .PHONY: clean list_test
 SRC = DataStructures/
-LISTDIR = $(SRC)/List
-LIST_OBJS = $(LISTDIR)/list.o $(LISTDIR)/linked_list.o
+# LISTDIR = $(SRC)/List
+# LIST_OBJS = $(LISTDIR)/list.o $(LISTDIR)/linked_list.o
 BIN_DIR = bin/
 
 list_test: $(BIN_DIR)
@@ -17,3 +17,6 @@ clean:
 	rm -f src/*.o
 	rm -f src/*.out 
 	rm -f src/*.exe
+	rm -f bin/*.o
+	rm -f bin/*.out
+	rm -f bin/*.exe
