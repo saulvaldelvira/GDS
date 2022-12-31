@@ -4,24 +4,69 @@
 #include "List/linked_list.h"
 #include <assert.h>
 #include "comparator.h"
+#include "allocate.h"
 
-void list_test(){
-        ArrayList l = arrlist_empty();
-        for(int i=0; i < 1000000000; i++){
+void dynamic_test(){
+        int n = 10000;
+        printf("[Starting Dynamic test]\nArrayList...");
+        ArrayList arr = arrlist_empty(Comparators.integer);
+        arrlist_configure(&arr, FREE_ON_DELETE);
+        for(int i=0; i < n; i++){
+                assert(arrlist_append(&arr, alloc_integer(i)));
+                assert(arr.n_elements == i+1);
+        }
+        for(int i=n-1; i >= 0; i--){
+                assert(arrlist_exists(arr, &i));
+                assert(arrlist_indexof(arr, &i) == i);
+                assert(i == * (int*) arrlist_get_at(arr, i));
+                assert(i == * (int*) arrlist_get(arr, &i));
+                assert(arrlist_remove(&arr, &i));
+        }
+        assert(arr.n_elements == 0);
+
+        
+        int *one = alloc_integer(1);
+        int *two = alloc_integer(2);
+        int *three = alloc_integer(3);
+
+        assert(arrlist_append(&arr, one));
+        assert(arrlist_set_at(&arr, 0, two));
+        
+        assert(*two == * (int*) arrlist_get_at(arr, 0));
+        
+        assert(arrlist_set(&arr, two, three) != INDEX_NOT_FOUND);
+        assert(*three == * (int*) arrlist_get_at(arr, 0));
+
+        arrlist_free(arr);
+
+        printf("Done\nLinked List...");
+
+        LinkedList lnked = lnkd_list_init(Comparators.integer);
+        lnkd_list_configure(&lnked, FREE_ON_DELETE);
+        for(int i=0; i < n; i++){
                 int* tmp = calloc(1, sizeof(int));
                 *tmp = i;
-                arrlist_append(&l, tmp);
+                assert(lnkd_list_append(&lnked, tmp));
+                assert(lnked.n_elements == i+1);
         }
-        
-        arrlist_free(l, FREE_ELEMENTS);
+        for(int i=0; i < n; i++){
+                assert(lnkd_list_exists(lnked, &i));
+        }
+        for(int i=0; i < n; i++){
+                assert(lnkd_list_remove(&lnked, &i));
+        }
+        assert(lnked.n_elements == 0);
+        lnkd_list_free(lnked);
+        printf("Done\n");
+        printf("[Dynamic test complete]\n");
 }
 
-void int_float(){
+void int_test(){
         /// INTEGER
         LinkedList l = lnkd_list_init(Comparators.integer);
         // Because we use the values of numbers (wich are NOT allocated thus do not need to be freed) we have
         // to configure the list to NOT free elements in node remove neither in list remove
-        lnkd_list_configure(&l, DONT_FREE_ON_NODE_REMOVE, DONT_FREE_ELEMENTS_ON_LIST_REMOVE);
+        lnkd_list_configure(&l, DONT_FREE_ON_DELETE);
         int numbers[300];
         assert(l.n_elements == 0);
         for(int i=0; i < 300; i++){
@@ -39,27 +84,9 @@ void int_float(){
         for(int i=0; i < 300; i++){
                 assert(!lnkd_list_exists(l, &numbers[i]));
         }
-
         lnkd_list_free(l);
-
-
 }
 
 int main(){
-        
-        set_float_precision(0);
-         // FLOAT
-        LinkedList lfloat = lnkd_list_init(Comparators.floating);
-        /*double floating[100];
-        int  n = 0;
-        for(double f=0; f<10.0f; f+=0.1f){
-                floating[n] = f;
-                assert(lnkd_list_append(&lfloat, &floating[n]));
-                n++;
-        }*/
-        float f = 1.2f;
-        float f2 = 1.1f;
-        lnkd_list_append(&lfloat, &f);
-        printf("EXPECTED 1: %d\n", lnkd_list_exists(lfloat, &f2));
-        return 1;
+        dynamic_test();
 }
