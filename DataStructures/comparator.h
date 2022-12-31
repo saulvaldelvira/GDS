@@ -16,16 +16,20 @@
         bool (*integer)             (void*, void*);
         bool (*character)           (void*, void*);
         bool (*floating)            (void*, void*);
-        long long float_precision;
         bool (*double_floating)    (void*, void*);
-        long long double_precision;
     } Comparators = {
-        *compare_int,
-        *compare_char,
-        *compare_float,
-        DEFAULT_FLOAT_PRECISION,
-        *compare_double,
-        DEFAULT_FLOAT_PRECISION
+        .integer = *compare_int,
+        .character = *compare_char,
+        .floating = *compare_float,
+        .double_floating = *compare_double,
+    };
+
+    static struct {
+        long long float_precision;
+        long long double_precision;
+    } Precision = {
+        .float_precision = DEFAULT_FLOAT_PRECISION,
+        .double_precision = DEFAULT_DOUBLE_PRECISION
     };
 
     void set_float_precision(int num_decimals);
