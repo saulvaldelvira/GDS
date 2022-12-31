@@ -19,10 +19,8 @@
         void *info; // Element stored in this node
     } LLNode;
 
-    #define FREE_ON_NODE_REMOVE 1
-    #define DONT_FREE_ON_NODE_REMOVE 0
-    #define FREE_ELEMENTS_ON_LIST_REMOVE 1
-    #define DONT_FREE_ELEMENTS_ON_LIST_REMOVE 0
+    #define FREE_ON_DELETE 1
+    #define DONT_FREE_ON_DELETE 0
 
     /**
      * @brief Linked List structure.
@@ -32,8 +30,7 @@
      * When you delete a node, it is freed from memory. You can choose to also free the 
      * memory alocated for the element that node stores. The behaviour is defined by this two parameters.
      * 
-     * @param free_on_node_delete If true, when deleting a node, the element it stores will also be freed.
-     * @param free_on_list_delete If true, when deleting the list (by calling lnkd_list_free), all the elements it stores will also be freed.
+     * @param free_on_delete If true, when deleting a node, the element it stores will also be freed.
      * 
      * \note
      * Sometimes you'll need the memory to be deleted, and sometimes that memory isn't allocated so you 
@@ -43,10 +40,12 @@
      * \note
      *  The default value is 0 (don't free), so also keep in mind that unless you configure the list, that memory is not being 
      *  freed on deletion.
-     * 
+     * \note ALSO: Careful with appending various element to the list that have been allocated together, because when deleting this elements,
+     * if it frees it, it can cause trouble. You can use the functions in the "allocate.h" header file (example: alloc_integer(int n)) to avoid these problems.
     */
     typedef struct LinkedList {
-        LLNode *root;
+        LLNode *head;
+        LLNode *tail;
         size_t n_elements;
         /**
          * Comparator function for 2 elements
@@ -61,8 +60,7 @@
         */
         bool (*comp) (void*, void*);
         // Flags: Determine the behaviour when deleting a node
-        bool free_elements_on_node_remove; // Free the element in the node when deleting it
-        bool free_elements_on_list_remove; // Free the element in the node when freeing the List
+        bool free_on_delete; // Free the element in the node when deleting it
     } LinkedList;
     
     /**
@@ -77,10 +75,9 @@
      * Configures the behavior of the list when deleting a node. 
      * \note
      *  See the LinkedList structure documentation for more info
-     * @param free_on_node_delete If true, the information of the nodes will be also freed on node deletion
-     * @param free_on_list_delete If true, the elements in the list will also be freed along its nodes.
+     * @param free_on_delete If true, the information of the nodes will be also freed on node deletion
     */
-    extern void lnkd_list_configure(LinkedList *list, bool free_on_node_delete, bool free_on_list_delete);
+    extern void lnkd_list_configure(LinkedList *list, bool free_on_delete);
 
     /**
      * \brief
@@ -90,6 +87,7 @@
      * the list, you know you can safely cast the pointers to the correct data types.
      * \attention But there's no restriction regarding 
      * issue, so technically you can store whatever you want here. This is the C programming language :p
+     * \return 1 if the operation is succesful
     */
     extern int lnkd_list_append(LinkedList *list, void *element);
 

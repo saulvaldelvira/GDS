@@ -6,10 +6,10 @@
 LinkedList lnkd_list_init(bool (*comp) (void*, void*)){
     return (LinkedList) {
         .n_elements = 0,
-        .root = NULL,
+        .head = NULL,
+        .tail = NULL,
         .comp = comp,
-        .free_elements_on_list_remove = DONT_FREE_ELEMENTS_ON_LIST_REMOVE,
-        .free_elements_on_node_remove = DONT_FREE_ON_NODE_REMOVE
+        .free_on_delete = DONT_FREE_ON_DELETE
     };
 }
 
@@ -21,9 +21,8 @@ static LLNode* lnkd_list_innit_node(void *info){
     return node;
 }
 
-void lnkd_list_configure(LinkedList *list, bool free_on_node_remove, bool free_on_list_remove){
-    list->free_elements_on_list_remove = free_on_list_remove;
-    list->free_elements_on_node_remove = free_on_node_remove;
+void lnkd_list_configure(LinkedList *list, bool free_on_delete){
+    list->free_on_delete = free_on_delete;
 }
 
 int lnkd_list_append(LinkedList *list, void *element){
@@ -32,19 +31,19 @@ int lnkd_list_append(LinkedList *list, void *element){
         return -1;
     }
     if(list->n_elements == 0){
-        list->root = lnkd_list_innit_node(element);
-        list->root->previous = list->root;
+        list->head = lnkd_list_innit_node(element);
+        list->tail = list->head;
     }else{
-        LLNode *aux = list->root->previous; //Last node
-        aux->next = lnkd_list_innit_node(element);
-        list->root->previous = aux->next;
+        list->tail->next = lnkd_list_innit_node(element);
+        list->tail->next->previous = list->tail;
+        list->tail = list->tail->next;
     }
     list->n_elements++;
     return 1;
 }
 
 int lnkd_list_set(LinkedList *list, void *element, void *replacement){
-    LLNode *aux = list->root;
+    LLNode *aux = list->head;
     while ( (*list->comp) (aux->info, element) != 0) {
         aux = aux->next;
         if(aux == NULL){
@@ -56,7 +55,7 @@ int lnkd_list_set(LinkedList *list, void *element, void *replacement){
 }
 
 void* lnkd_list_get(LinkedList list, void *element){
-    LLNode *aux = list.root;
+    LLNode *aux = list.head;
     while (aux != NULL && (*list.comp) (aux->info, element) != 0) {
         aux = aux->next;
     }
@@ -72,23 +71,21 @@ int lnkd_list_remove(LinkedList *list, void *element){
         fprintf(stderr, "Error: The given parameters can't be NULL\n");
         return -1;
     }
-    LLNode *aux = list->root;
+    LLNode *aux = list->head;
     while(aux != NULL && (*list->comp) (aux->info, element) != 0){
         aux = aux->next;
     }
     if(aux != NULL){
-        if (aux == list->root){ // If the element to delete is the root
-            list->root = list->root->next;
-            if(list->root != NULL){ // If the root is not null after deleting (the root was not the only element)
-                list->root->previous = aux->previous;
-            }
+        if (aux == list->head){ // If the element to delete is the head
+            list->head = list->head->next;
         }else{
-            if (aux->next != NULL){// We're in the last node, have to change the root "previous" pointer
-                list->root->previous = aux->previous;
+            if (aux->next != NULL){// We're in the last node, have to change the tail pointer
+                list->tail = aux->previous;
             }
             aux->previous->next = aux->next;
+            aux->next->previous = aux;
         }
-        if (list->free_elements_on_node_remove == FREE_ON_NODE_REMOVE){
+        if (list->free_on_delete == FREE_ON_DELETE){
             free(aux->info);
         }
         free(aux);
@@ -101,13 +98,14 @@ int lnkd_list_remove(LinkedList *list, void *element){
 static void lnkd_list_free_node(LLNode *node, int free_elements){
     if(node == NULL) return;
     lnkd_list_free_node(node->next, free_elements);
-    if(free_elements == FREE_ELEMENTS_ON_LIST_REMOVE){
+    if(free_elements == FREE_ON_DELETE){
+        printf("Freeing %d\n", * (int*) node->info);
         free(node->info);
     }
     free(node);
 }
 
 void lnkd_list_free(LinkedList list){
-    lnkd_list_free_node(list.root, list.free_elements_on_list_remove);
+    lnkd_list_free_node(list.head, list.free_on_delete);
 }
 
