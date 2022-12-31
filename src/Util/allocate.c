@@ -1,7 +1,7 @@
 #include "allocate.h"
 #include <stdlib.h>
 
-void* alloc_integer(int n){
+void* alloc_int(int n){
         int * ptr = malloc(sizeof(int));
         *ptr = n;
         return ptr;

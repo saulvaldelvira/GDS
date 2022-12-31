@@ -6,12 +6,25 @@
 
     #define ARRAY_LIST_DEFAULT_SIZE 10
 
+    // ERRORS
     #define INDEX_NOT_FOUND -1
-    #define ALLOCATION_ERROR -2
-    #define NULL_PARAMETER -3
 
-    #define FREE_ON_DELETE 1
-    #define DONT_FREE_ON_DELETE 0
+    #ifndef ALLOCATION_ERROR
+        #define ALLOCATION_ERROR -2
+    #endif
+
+    #ifndef NULL_PARAMETER
+        #define NULL_PARAMETER -3
+    #endif
+
+    // free_on_delete posible values
+    #ifndef FREE_ON_DELETE
+        #define FREE_ON_DELETE 1
+    #endif
+
+    #ifndef DONT_FREE_ON_DELETE
+        #define DONT_FREE_ON_DELETE 0
+    #endif
 
     /**
      * @brief Array List structure.
@@ -21,19 +34,37 @@
      * When you delete an element, you can choose to also free the 
      * memory alocated for that element "free(void* element)". The behaviour is defined by this parameter.
      * 
-     * @param free_on_remove If true, when deleting an element, it's memory is freed.
+     * @param free_on_delete If true, when deleting an element, it's memory is freed.
      * 
-     * \note
+     *   \note
      * Sometimes you'll need the memory to be deleted, and sometimes that memory isn't allocated so you 
      * don't need to free those void pointers.
      * BE REALLY CAREFUL, because if you set those parameters to true and add elements to the list that don't need 
-     * to be freed, you'll cause a segmentation fault.
-     * \note
-     *  The default value is 0 (don't free), so also keep in mind that unless you configure the list, that memory is not being 
+     * to be freed, you'll cause a segmentation fault. Also, it could cause trouble to add elements wich memory has been allocated at
+     * the same time. 
+     * \note .
+     * \note ***********CODE EXAMPLE****************
+     * \note int *ptr = malloc (3 * sizeof(int));
+     * \note ptr[0] = 0;
+     * \note ptr[1] = 1;
+     * \note ptr[2] = 2;
+     * 
+     * \note arrlist_append(&list, &ptr[0]);
+     * \note arrlist_append(&list, &ptr[1]);
+     * 
+     * \note arrlist_remove(&list, &ptr[0]);
+     * 
+     * \note ****************************************
+     * 
+     * \note In this last instruction, if free_on_delete is 1, the list will free &ptr[0]. But ptr holds memory for 3 elements so 
+     * &ptr[1] and &ptr[2] will also be freed. This will cause trouble if the list tries to access those already fred directions in the future.
+     * 
+     * \note To avoid this, you ca use the functions defined in "allocate.h", that allocate memory for the most common data types (alloc_int, alloc_char, alloc_float, etc)
+     * 
+     * \note 
+     *  NOTE 2: The default value is 0 (don't free), so also keep in mind that unless you configure the list, that memory is not being 
      *  freed on deletion.
-     * \note ALSO: Careful with appending various element to the list that have been allocated together, because when deleting this elements,
-     * if it frees it, it can cause trouble. You can use the functions in the "allocate.h" header file (example: alloc_integer(int n)) to avoid these problems.
-    */
+     * */
     typedef struct ArrayList {
         void **elements;
         size_t n_elements;
