@@ -48,7 +48,17 @@
     typedef struct LinkedList {
         LLNode *root;
         size_t n_elements;
-        // Comparator function for 2 elements
+        /**
+         * Comparator function for 2 elements
+        *   \attention 
+        * This function is really important, because it's going to be used to compare two elements in this List. It 
+        * should receive two void pointers p1 and p2 and return 1 if p1 > p2, -1 if p1 < p2 or 0 if p1 == p2 
+        *   \attention 
+        * There are a few functions already implemented for the most common data types (int, char, char *, float, double). 
+        * You can find them in the Comparators structure, defined in the "comparator.h" header file.
+        *   \note 
+        * Example of use: Comparators.integer (function to compare two void pointers representing int pointers).
+        */
         bool (*comp) (void*, void*);
         // Flags: Determine the behaviour when deleting a node
         bool free_elements_on_node_remove; // Free the element in the node when deleting it
@@ -56,10 +66,7 @@
     } LinkedList;
     
     /**
-     * \attention The function pointer passed as a parameter is realy important, because it is what will 
-     * be used to compare elements in the list. 
-     * \attention There are a few functions already implemented for the most common data types (int, char, char *, float). You can find them in the Comparators structure.
-     *  \attention Example : Comparators.integer (ints), Comparators.double_precision (double).
+     * Initializes the linked list 
      * @param comp pointer to a function that receives two void pointers and returns 1 if the first one is greater than the 
      *              second, 0 if they are equal and -1 if the first one is smaller than the second one
     */

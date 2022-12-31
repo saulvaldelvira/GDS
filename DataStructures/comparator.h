@@ -2,7 +2,6 @@
 #ifndef COMPARATOR_H
 #define COMPARATOR_H
     #include <stdbool.h>
-    #include <math.h>
 
     // COMMON COMPARATOR FUNCTIONS
     bool compare_int(void *e_1, void *e_2);

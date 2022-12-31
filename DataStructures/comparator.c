@@ -1,4 +1,5 @@
 #include "comparator.h"
+#include <math.h>
 
 // COMPARATORS
 bool compare_int(void *e_1, void *e_2){
