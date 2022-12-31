@@ -5,7 +5,7 @@ SRC = DataStructures/
 BIN_DIR = bin/
 
 list_test: $(BIN_DIR)
-	gcc $(SRC)/list_test.c $(SRC)/comparator.c $(SRC)/List/*.c -o bin/list_test.out
+	gcc $(SRC)/list_test.c $(SRC)/comparator.c $(SRC)/allocate.c $(SRC)/List/*.c -o bin/list_test.out
 
 $(BIN_DIR):
 	mkdir $(BIN_DIR)
