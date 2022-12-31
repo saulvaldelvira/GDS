@@ -151,6 +151,7 @@ int arrlist_remove(ArrayList *list, void *element){
 void arrlist_free(ArrayList list){
     if(list.free_on_delete == FREE_ON_DELETE){
         for(int i = 0; i < list.n_elements; i++){
+            printf("Freeing %d\n", * (int*) list.elements[i]);
             free(list.elements[i]);
         }
     }

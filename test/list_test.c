@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "List/array_list.h"
-#include "List/linked_list.h"
+#include "../src/ArrayList/array_list.h"
+#include "../src/LinkedList/linked_list.h"
 #include <assert.h>
-#include "comparator.h"
-#include "allocate.h"
+#include "../src/Util/allocate.h"
+#include "../src/Util/comparator.h"
 
 void dynamic_test(){
         int n = 10000;
