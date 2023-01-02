@@ -30,7 +30,7 @@
      * @brief Array List structure.
      * 
      * \attention
-     * To make this list "generic", it uses void pointers to the elements it stores.
+     * To make this structure "generic", it uses void pointers to the elements it stores.
      * When you delete an element, you can choose to also free the 
      * memory alocated for that element "free(void* element)". The behaviour is defined by this parameter.
      * 
