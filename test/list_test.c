@@ -1,18 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "../src/ArrayList/array_list.h"
 #include "../src/LinkedList/linked_list.h"
-#include <assert.h>
-#include "../src/Util/allocate.h"
-#include "../src/Util/comparator.h"
-
-#include <time.h>
-
-double get_time(){
-    struct timespec now;
-    clock_gettime(CLOCK_REALTIME, &now);
-    return now.tv_sec + now.tv_nsec*1e-9;
-}
+#include "test.h"
 
 
 /**
@@ -23,11 +11,10 @@ void dynamic_test(){
         double tmp, arr_time, lnkd_time;
 
         printf("[Starting Dynamic test]\n\tArrayList... ");
-
+        tmp = get_time();
+        
         ArrayList arr = arrlist_empty(Comparators.integer);
         arrlist_configure(&arr, FREE_ON_DELETE);
-        
-        tmp = get_time();
         for(int i=0; i < n; i++){
                 assert(arrlist_append(&arr, alloc_int(i)));
                 assert(arr.n_elements == i+1);
