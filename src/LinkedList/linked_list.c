@@ -13,6 +13,9 @@ LinkedList lnkd_list_init(bool (*comp) (void*, void*)){
     };
 }
 
+/**
+ * Initializes a new LLNode with the given info
+*/
 static LLNode* lnkd_list_innit_node(void *info){
     LLNode *node = calloc(1, sizeof(LLNode));
     node->info = info;

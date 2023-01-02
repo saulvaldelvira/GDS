@@ -11,8 +11,6 @@
     #include <stdbool.h>
 
     // ERRORS
-    #define INDEX_NOT_FOUND -1
-
     #ifndef ALLOCATION_ERROR
         #define ALLOCATION_ERROR -2
     #endif
@@ -43,7 +41,7 @@
      * @brief Linked List structure.
      * 
      * \attention
-     * To make this list "generic", nodes use void pointers to the elements they store.
+     * To make this structure "generic", nodes use void pointers to the elements they store.
      * When you delete a node, it is freed from memory. You can choose to also free the 
      * memory alocated for the element the node stores. The behaviour is defined by this parameter.
      * 
