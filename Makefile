@@ -1,4 +1,4 @@
-.PHONY: clean list_test stack_test
+.PHONY: clean list_test stack_test test_all
 SRC = src/
 UTIL_DIR = $(SRC)/Util
 BIN = bin/
@@ -25,6 +25,10 @@ $(BIN)/stack_test.out:  $(STACK_OBJS)
 
 $(BIN):
 	mkdir $(BIN)
+
+test_all: list_test stack_test
+	@ $(BIN)/list_test.out
+	@ $(BIN)/stack_test.out
 
 clean:
 	find . -type f -name '*.o' -delete
