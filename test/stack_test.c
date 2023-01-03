@@ -3,7 +3,7 @@
 
 int main(){
         int n = 10000000;
-        printf("[Starting Stack Test with a load of %d]\n...\n", n);
+        printf("[Starting Stack Test]\n Workload: %d\n", n);
         double tmp = get_time(), total;
         Stack stack = stack_init(Comparators.integer);
         stack_configure(&stack, FREE_ON_DELETE);
