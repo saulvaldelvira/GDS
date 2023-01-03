@@ -24,5 +24,5 @@ int main(){
 
     TIMESTAMP_STOP
 
-    printf("[Queue test finished in %.3f seconds]\n\n", timestamp);
+    END_MSG(Queue)
 }

@@ -18,3 +18,7 @@ double get_time(){
     clock_gettime(CLOCK_REALTIME, &now);
     return now.tv_sec + now.tv_nsec*1e-9;
 }
+
+#define END_MSG(name) printf("[" #name " test finished in "); \
+                        if(timestamp>=1.0) printf("%.3f seconds]\n\n", timestamp); \
+                        else printf("%.2f miliseconds]\n\n", timestamp * 1000);
