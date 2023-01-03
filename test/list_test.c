@@ -6,11 +6,11 @@
  * test the lists with dynamic memory, wich means the free_on_delete option is set to 1.
 */
 void dynamic_test(){
-        int n = 1000;
-        double tmp, arr_time, lnkd_time;
+        int n = 10000;
+        double arr_time, lnkd_time;
 
         printf("->Starting Dynamic test\n->ArrayList...\n");
-        tmp = get_time();
+        TIMESTAMP_START
         
         ArrayList arr = arrlist_empty(Comparators.integer);
         arrlist_configure(&arr, FREE_ON_DELETE);
@@ -53,11 +53,13 @@ void dynamic_test(){
 
         arrlist_free(arr);
 
-        arr_time = get_time() - tmp;
+        TIMESTAMP_STOP
+        arr_time = timestamp_diff;
 
         printf("\tDone in %.3f seconds\n->Linked List...\n", arr_time);
 
-        tmp = get_time();
+        TIMESTAMP_START
+
         LinkedList lnked = lnkd_list_init(Comparators.integer);
         lnkd_list_configure(&lnked, FREE_ON_DELETE);
         assert(lnkd_list_isempty(lnked));
@@ -75,7 +77,8 @@ void dynamic_test(){
         assert(lnked.n_elements == 0);
         lnkd_list_free(lnked);
 
-        lnkd_time = get_time() - tmp;
+        TIMESTAMP_STOP
+        lnkd_time = timestamp_diff;
 
         printf("\tDone in %.3f seconds\n", lnkd_time);
         printf("->Dynamic test complete: Linked list is %.2f%% faster\n", 100.0 * (arr_time / lnkd_time));

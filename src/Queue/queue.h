@@ -43,6 +43,8 @@ extern void* queue_peek(Queue queue);
 
 extern bool queue_search(Queue queue, void *element);
 
+extern bool queue_isempty(Queue queue);
+
 extern void queue_free(Queue queue);
 
 extern void queue_reset(Queue *queue);

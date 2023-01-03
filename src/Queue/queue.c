@@ -67,6 +67,10 @@ bool queue_search(Queue queue, void *element){
     return false;
 }
 
+bool queue_isempty(Queue queue){
+    return queue.head == NULL;
+}
+
 static void queue_free_node(QueueNode *node, bool free_element){
     if (node == NULL){
         return;
