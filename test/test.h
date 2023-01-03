@@ -8,11 +8,10 @@
 #include <time.h>
 
 static double timestamp;
-static double timestamp_diff;
 
 #define TIMESTAMP_START timestamp = get_time();
 
-#define TIMESTAMP_STOP timestamp_diff = get_time() - timestamp;
+#define TIMESTAMP_STOP timestamp = get_time() - timestamp;
 
 double get_time(){
     struct timespec now;

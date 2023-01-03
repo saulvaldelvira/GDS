@@ -54,7 +54,7 @@ void dynamic_test(){
         arrlist_free(arr);
 
         TIMESTAMP_STOP
-        arr_time = timestamp_diff;
+        arr_time = timestamp;
 
         printf("\tDone in %.3f seconds\n->Linked List...\n", arr_time);
 
@@ -78,7 +78,7 @@ void dynamic_test(){
         lnkd_list_free(lnked);
 
         TIMESTAMP_STOP
-        lnkd_time = timestamp_diff;
+        lnkd_time = timestamp;
 
         printf("\tDone in %.3f seconds\n", lnkd_time);
         printf("->Dynamic test complete: Linked list is %.2f%% faster\n", 100.0 * (arr_time / lnkd_time));

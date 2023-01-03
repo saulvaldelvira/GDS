@@ -28,5 +28,5 @@ int main(){
 
         TIMESTAMP_STOP
 
-        printf("[Stack Test Finished in %.3f seconds]\n\n", timestamp_diff);
+        printf("[Stack Test Finished in %.3f seconds]\n\n", timestamp);
 }
