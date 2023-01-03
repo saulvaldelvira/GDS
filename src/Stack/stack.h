@@ -77,7 +77,7 @@ typedef struct StackNode {
 typedef struct Stack {
         StackNode *head;
         // Comparator function
-        bool (*comp) (void*, void*);
+        bool (*compare) (void*, void*);
         bool free_on_delete;
 } Stack;
 
@@ -85,7 +85,7 @@ typedef struct Stack {
  * Initializes an empty Stack
  * @param comp the comparator funtion for two elements
 */
-extern Stack stack_init(bool (*comp) (void*, void*));
+extern Stack stack_init(bool (*cmp) (void*, void*));
 
 /**
  * Sets the value of stack->free_on_delete to the parameter free_on_delete

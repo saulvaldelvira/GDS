@@ -3,12 +3,12 @@
 #include <stdio.h>
 #include <math.h>
 
-LinkedList lnkd_list_init(bool (*comp) (void*, void*)){
+LinkedList lnkd_list_init(bool (*cmp) (void*, void*)){
     return (LinkedList) {
         .n_elements = 0,
         .head = NULL,
         .tail = NULL,
-        .comp = comp,
+        .compare = cmp,
         .free_on_delete = DONT_FREE_ON_DELETE
     };
 }
@@ -47,7 +47,7 @@ int lnkd_list_append(LinkedList *list, void *element){
 
 int lnkd_list_set(LinkedList *list, void *element, void *replacement){
     LLNode *aux = list->head;
-    while ( (*list->comp) (aux->info, element) != 0) {
+    while ( (*list->compare) (aux->info, element) != 0) {
         aux = aux->next;
         if(aux == NULL){
             return 0;
@@ -59,7 +59,7 @@ int lnkd_list_set(LinkedList *list, void *element, void *replacement){
 
 void* lnkd_list_get(LinkedList list, void *element){
     LLNode *aux = list.head;
-    while (aux != NULL && (*list.comp) (aux->info, element) != 0) {
+    while (aux != NULL && (*list.compare) (aux->info, element) != 0) {
         aux = aux->next;
     }
     return aux != NULL ? aux->info : NULL;
@@ -75,7 +75,7 @@ int lnkd_list_remove(LinkedList *list, void *element){
         return -1;
     }
     LLNode *aux = list->head;
-    while(aux != NULL && (*list->comp) (aux->info, element) != 0){
+    while(aux != NULL && (*list->compare) (aux->info, element) != 0){
         aux = aux->next;
     }
     if(aux != NULL){

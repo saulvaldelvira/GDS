@@ -2,10 +2,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-Stack stack_init(bool (*comp) (void*, void*)){
+Stack stack_init(bool (*cmp) (void*, void*)){
         return (Stack){
                 .head = NULL,
-                .comp = comp,
+                .compare = cmp,
                 .free_on_delete = DONT_FREE_ON_DELETE
         };
 }
@@ -75,7 +75,7 @@ void* stack_peek(Stack stack){
 bool stack_search(Stack stack, void *element){
         StackNode *aux = stack.head;
         while (aux != NULL){
-                if((*stack.comp) (element, aux) == 0){
+                if((*stack.compare) (element, aux) == 0){
                         return true;
                 }
                 aux = aux->next;

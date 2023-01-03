@@ -91,17 +91,17 @@
         *   \note 
         * Example of use: Comparators.integer (function to compare two void pointers representing int pointers).
         */
-        bool (*comp) (void*, void*);
+        bool (*compare) (void*, void*);
         // Flags: Determine the behaviour when deleting a node
         bool free_on_delete; // Free the element in the node when deleting it
     } LinkedList;
     
     /**
      * Initializes the linked list 
-     * @param comp pointer to a function that receives two void pointers and returns 1 if the first one is greater than the 
+     * @param cmp pointer to a function that receives two void pointers and returns 1 if the first one is greater than the 
      *              second, 0 if they are equal and -1 if the first one is smaller than the second one
     */
-    extern LinkedList lnkd_list_init(bool (*comp) (void*, void*));
+    extern LinkedList lnkd_list_init(bool (*cmp) (void*, void*));
 
     /**
      * \brief 

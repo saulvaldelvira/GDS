@@ -80,7 +80,7 @@
         *   \note 
         * Example of use: Comparators.integer (function to compare two void pointers representing int pointers).
         */
-        bool (*comp) (void*, void*);
+        bool (*compare) (void*, void*);
         bool free_on_delete; // Free the element when deleting it
     } ArrayList;
     
@@ -89,12 +89,12 @@
      * @param comp pointer to a function that receives two void pointers and returns 1 if the first one is greater than the 
      *              second, 0 if they are equal and -1 if the first one is smaller than the second one
     */
-    extern ArrayList arrlist_empty(bool (*comp) (void*, void*));
+    extern ArrayList arrlist_empty(bool (*cmp) (void*, void*));
 
     /**
      * Innitializes an arraylist of the given size and with the given comparator function.
     */
-    extern ArrayList arrlist_init(size_t size, bool (*comp) (void*, void*));
+    extern ArrayList arrlist_init(size_t size, bool (*cmp) (void*, void*));
 
     /**
      * \brief 

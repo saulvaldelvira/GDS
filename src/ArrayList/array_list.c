@@ -2,10 +2,10 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-ArrayList arrlist_empty(bool (*comp) (void*, void*)){
-    return arrlist_init(ARRAY_LIST_DEFAULT_SIZE, *comp);
+ArrayList arrlist_empty(bool (*cmp) (void*, void*)){
+    return arrlist_init(ARRAY_LIST_DEFAULT_SIZE, cmp);
 }
-ArrayList arrlist_init(size_t size, bool (*comp) (void*, void*)){
+ArrayList arrlist_init(size_t size, bool (*cmp) (void*, void*)){
     void **elements = calloc(size, sizeof(void*));
     if(!elements){
         fprintf(stderr, "ERROR: unable to allocate memory.\n");
@@ -15,7 +15,7 @@ ArrayList arrlist_init(size_t size, bool (*comp) (void*, void*)){
         .elements = elements,
         .n_elements = 0,
         .max_elements = size,
-        .comp = comp,
+        .compare = cmp,
         .free_on_delete = DONT_FREE_ON_DELETE
     };
 }
@@ -50,7 +50,7 @@ int arrlist_append(ArrayList *list, void *element){
 
 int arrlist_indexof(ArrayList list, void *element){
     for (int i=0; i<list.n_elements; i++){
-        if ((*list.comp) (list.elements[i], element) == 0){
+        if ((*list.compare) (list.elements[i], element) == 0){
             return i;
         }
     }
@@ -84,7 +84,7 @@ int arrlist_set(ArrayList *list, void *element, void *replacement){
         return NULL_PARAMETER;
     }
     for (int i=0; i < list->n_elements; i++){
-        if ((*list->comp) (list->elements[i], element) == 0){
+        if ((*list->compare) (list->elements[i], element) == 0){
             if(list->free_on_delete == FREE_ON_DELETE){
                 free(list->elements[i]);
             }
@@ -109,7 +109,7 @@ void* arrlist_get(ArrayList list, void *element){
         return NULL;
     }
     for (int i = 0; i < list.n_elements; i++){
-        if((*list.comp) (list.elements[i], element) == 0){
+        if((*list.compare) (list.elements[i], element) == 0){
             return list.elements[i];
         }
     }
