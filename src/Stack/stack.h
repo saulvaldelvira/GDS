@@ -125,4 +125,6 @@ extern bool stack_isempty(Stack stack);
 */
 extern void stack_free(Stack stack);
 
+extern void stack_reset(Stack *stack);
+
 #endif

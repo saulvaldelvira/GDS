@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include "../Util/checks.h"
 
 LinkedList lnkd_list_init(bool (*cmp) (void*, void*)){
     return (LinkedList) {
@@ -18,6 +19,7 @@ LinkedList lnkd_list_init(bool (*cmp) (void*, void*)){
 */
 static LLNode* lnkd_list_innit_node(void *info){
     LLNode *node = calloc(1, sizeof(LLNode));
+    CHECK_MEMORY(node, lnkd_list_append , NULL)
     node->info = info;
     node->next = NULL;
     node->previous = NULL;
@@ -29,15 +31,14 @@ void lnkd_list_configure(LinkedList *list, bool free_on_delete){
 }
 
 int lnkd_list_append(LinkedList *list, void *element){
-    if(element == NULL){
-        fprintf(stderr, "Can't append a NULL element\n");
-        return -1;
-    }
+    CHECK_NULL(element == NULL, lnkd_list_append)
     if(list->n_elements == 0){
         list->head = lnkd_list_innit_node(element);
+        CHECK_NULL(list->head == NULL, lnkd_list_append)
         list->tail = list->head;
     }else{
         list->tail->next = lnkd_list_innit_node(element);
+        CHECK_NULL(list->tail->next == NULL, lnkd_list_append)
         list->tail->next->previous = list->tail;
         list->tail = list->tail->next;
     }
@@ -69,11 +70,12 @@ bool lnkd_list_exists(LinkedList list, void *element){
     return lnkd_list_get(list, element) != NULL;
 }
 
+bool lnkd_list_isempty(LinkedList list){
+    return list.n_elements == 0;
+}
+
 int lnkd_list_remove(LinkedList *list, void *element){
-    if(list == NULL || element == NULL){
-        fprintf(stderr, "Error: The given parameters can't be NULL\n");
-        return -1;
-    }
+    CHECK_NULL(list == NULL || element == NULL, lnkd_list_remove)
     LLNode *aux = list->head;
     while(aux != NULL && (*list->compare) (aux->info, element) != 0){
         aux = aux->next;
@@ -102,7 +104,6 @@ static void lnkd_list_free_node(LLNode *node, int free_elements){
     if(node == NULL) return;
     lnkd_list_free_node(node->next, free_elements);
     if(free_elements == FREE_ON_DELETE){
-        printf("Freeing %d\n", * (int*) node->info);
         free(node->info);
     }
     free(node);
@@ -112,3 +113,9 @@ void lnkd_list_free(LinkedList list){
     lnkd_list_free_node(list.head, list.free_on_delete);
 }
 
+void lnkd_list_reset(LinkedList *list){
+    lnkd_list_free_node(list->head, list->free_on_delete);
+    list->head = NULL;
+    list->tail = NULL;
+    list->n_elements = 0;
+}

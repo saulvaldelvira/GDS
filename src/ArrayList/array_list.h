@@ -1,21 +1,12 @@
 #pragma once
-#ifndef LIST_H
-#define LIST_H
+#ifndef ARRAYLIST_H
+#define ARRAYLIST_H
     #include <stddef.h>
     #include <stdbool.h>
-
+    
     #define ARRAY_LIST_DEFAULT_SIZE 10
 
     // ERRORS
-    #define INDEX_NOT_FOUND -1
-
-    #ifndef ALLOCATION_ERROR
-        #define ALLOCATION_ERROR -2
-    #endif
-
-    #ifndef NULL_PARAMETER
-        #define NULL_PARAMETER -3
-    #endif
 
     // free_on_delete posible values
     #ifndef FREE_ON_DELETE
@@ -25,6 +16,7 @@
     #ifndef DONT_FREE_ON_DELETE
         #define DONT_FREE_ON_DELETE 0
     #endif
+
 
     /**
      * @brief Array List structure.
@@ -129,6 +121,11 @@
    extern bool arrlist_exists(ArrayList list, void *element);
 
     /**
+     * @return true if the list is empty
+    */
+    extern bool arrlist_isempty(ArrayList list);
+
+    /**
      * Replaces the element at the given index with the element passed as a parameter
     */
     extern int arrlist_set_at(ArrayList *list, size_t index, void *element);
@@ -165,5 +162,7 @@
      * 
     */
     extern void arrlist_free(ArrayList list);
+
+    extern void arrlist_reset(ArrayList *list);
 
 #endif

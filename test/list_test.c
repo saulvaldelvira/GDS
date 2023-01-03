@@ -2,7 +2,6 @@
 #include "../src/LinkedList/linked_list.h"
 #include "test.h"
 
-
 /**
  * test the lists with dynamic memory, wich means the free_on_delete option is set to 1.
 */
@@ -15,10 +14,12 @@ void dynamic_test(){
         
         ArrayList arr = arrlist_empty(Comparators.integer);
         arrlist_configure(&arr, FREE_ON_DELETE);
+        assert(arrlist_isempty(arr));
         for(int i=0; i < n; i++){
                 assert(arrlist_append(&arr, alloc_int(i)));
                 assert(arr.n_elements == i+1);
         }
+        assert(!arrlist_isempty(arr));
         // Set test 1
         int temp = 50;
         int r = arrlist_set(&arr, &temp, alloc_int(-78));
@@ -56,14 +57,16 @@ void dynamic_test(){
 
         printf("Done in %.3f seconds\n\tLinked List... ", arr_time);
 
+        tmp = get_time();
         LinkedList lnked = lnkd_list_init(Comparators.integer);
         lnkd_list_configure(&lnked, FREE_ON_DELETE);
-
-        tmp = get_time();
+        assert(lnkd_list_isempty(lnked));
+        
         for(int i=0; i < n; i++){
                 assert(lnkd_list_append(&lnked, alloc_int(i)));
                 assert(lnked.n_elements == i+1);
         }
+        assert(!lnkd_list_isempty(lnked));
         for(int i=0; i < n; i++){
                 assert(lnkd_list_exists(lnked, &i));
                 assert(i == * (int *) lnkd_list_get(lnked, &i));

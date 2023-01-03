@@ -3,6 +3,7 @@
 #include <assert.h>
 #include "../src/Util/allocate.h"
 #include "../src/Util/comparator.h"
+#include "../src/Util/checks.h"
 
 #include <time.h>
 

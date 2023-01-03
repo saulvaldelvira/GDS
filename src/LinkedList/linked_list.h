@@ -10,15 +10,6 @@
     #include <stddef.h>
     #include <stdbool.h>
 
-    // ERRORS
-    #ifndef ALLOCATION_ERROR
-        #define ALLOCATION_ERROR -2
-    #endif
-
-    #ifndef NULL_PARAMETER
-        #define NULL_PARAMETER -3
-    #endif
-
     // free_on_delete posible values
     #ifndef FREE_ON_DELETE
         #define FREE_ON_DELETE 1
@@ -142,6 +133,11 @@
     extern bool lnkd_list_exists(LinkedList list, void *element);
     
     /**
+     * @return true if the list is empty
+    */
+    extern bool lnkd_list_isempty(LinkedList list);
+    
+    /**
      * Removes the element from the list
      * @return 1 if it deletes the element, -1 if the element of the list are NULL and 0 if 
      *          the element doesn't exist in the list
@@ -149,13 +145,12 @@
     extern int lnkd_list_remove(LinkedList *list, void *element);
 
     /**
-     * Frees the memory allocated to the list.
+     * Frees the memory allocated on the list.
      * \note See the documentation of the LinkedList structure to learn about how 
      *       the deletion is handled regarding the elements stored in the nodes.
     */
     extern void lnkd_list_free(LinkedList list);
     
-
-    
+    extern void lnkd_list_reset(LinkedList *list);    
 
 #endif
