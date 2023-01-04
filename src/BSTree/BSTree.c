@@ -26,35 +26,43 @@ void bst_configure(BSTree *tree, int free_on_delete){
     tree->free_on_delete = free_on_delete;
 }
 
-static BSNode* add_rec(BSNode *node, void *element, int (*cmp) (void*,void*), int *return_status){
-    if (node == NULL){
-        BSNode *aux = init_node(element);
-        if (!aux){
-            *return_status = ALLOCATION_ERROR;
-        } else {
-            *return_status = 1;
-        }
-        return aux;
-    }
-
+static int add_rec(BSNode *node, void *element, int (*cmp) (void*,void*)){
     int c = (*cmp) (element, node->info);
     if (c > 0){ // The element is higher than the node's info
-        node->right = add_rec(node->right, element, cmp, return_status);
-        node->right->father = node;
+        if (node->right == NULL){
+            node->right = init_node(element);
+            if(!node->right){
+                return ALLOCATION_ERROR;
+            }
+            node->right->father = node;
+        } else {
+            return add_rec(node->right, element, cmp);
+        }
     }else if (c < 0){
-        node->left = add_rec(node->left, element, cmp, return_status);
-        node->left->father = node;
+        if (node->left == NULL){
+            node->left = init_node(element);
+            if(!node->left){
+                return ALLOCATION_ERROR;
+            }
+            node->left->father = node;
+        } else {
+            return add_rec(node->left, element, cmp);
+        }
     }else {
-        *return_status = REPEATED_ELEMENT;
+        return REPEATED_ELEMENT;
     }
-    return node;
+    return 1;
 }
 
 int bst_add(BSTree *tree, void *element){
     CHECK_NULL(tree == NULL || element == NULL, bst_add)
     int return_status;
-    tree->root = add_rec(tree->root, element, tree->compare, &return_status);
-    return return_status;
+    if (tree->root == NULL){
+        tree->root = init_node(element);
+        CHECK_MEMORY(tree->root, bst_add, ALLOCATION_ERROR)
+        return 1;
+    }
+    return add_rec(tree->root, element, tree->compare);
 }
 
 static BSNode* get_max(BSNode *node){
