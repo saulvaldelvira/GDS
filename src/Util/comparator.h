@@ -4,19 +4,19 @@
     #include <stdbool.h>
 
     // COMMON COMPARATOR FUNCTIONS
-    bool compare_int(void *e_1, void *e_2);
-    bool compare_char(void *e_1, void *e_2);
-    bool compare_float(void *e_1, void *e_2);
-    bool compare_double(void *e_1, void *e_2);
+    int compare_int(void *e_1, void *e_2);
+    int compare_char(void *e_1, void *e_2);
+    int compare_float(void *e_1, void *e_2);
+    int compare_double(void *e_1, void *e_2);
 
     #define DEFAULT_FLOAT_PRECISION 100000000
     #define DEFAULT_DOUBLE_PRECISION 100000000000000000
 
     static struct {
-        bool (*integer)             (void*, void*);
-        bool (*character)           (void*, void*);
-        bool (*floating)            (void*, void*);
-        bool (*double_floating)    (void*, void*);
+        int (*integer)             (void*, void*);
+        int (*character)           (void*, void*);
+        int (*floating)            (void*, void*);
+        int (*double_floating)    (void*, void*);
     } Comparators = {
         .integer = *compare_int,
         .character = *compare_char,
