@@ -6,6 +6,16 @@
 
 #define REPEATED_ELEMENT -1
 #define NON_EXISTING_ELEMENT -1
+#define EMPTY_TREE -1
+
+// free_on_delete posible values
+    #ifndef FREE_ON_DELETE
+        #define FREE_ON_DELETE 1
+    #endif
+
+    #ifndef DONT_FREE_ON_DELETE
+        #define DONT_FREE_ON_DELETE 0
+    #endif
 
 typedef struct BSNode {
     void *info;

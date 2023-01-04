@@ -26,43 +26,54 @@ void bst_configure(BSTree *tree, int free_on_delete){
     tree->free_on_delete = free_on_delete;
 }
 
-static int add_rec(BSNode *node, void *element, int (*cmp) (void*,void*)){
+static struct add_rec_ret
+{
+    BSNode* node;
+    int status;
+    bool last_op_was_add;
+} add_rec(BSNode *node, void *element, int (*cmp) (void*,void*)){
+    if (node == NULL){
+        BSNode *aux = init_node(element);
+        if (!aux){
+            return (struct add_rec_ret) {aux, ALLOCATION_ERROR, false};
+        } else {
+            return (struct add_rec_ret) {aux, 1, true};
+        }
+    }
+    struct add_rec_ret ret;
     int c = (*cmp) (element, node->info);
     if (c > 0){ // The element is higher than the node's info
-        if (node->right == NULL){
-            node->right = init_node(element);
-            if(!node->right){
-                return ALLOCATION_ERROR;
-            }
-            node->right->father = node;
-        } else {
-            return add_rec(node->right, element, cmp);
+        ret = add_rec(node->right, element, cmp);
+        node->right = ret.node;
+
+        if(ret.last_op_was_add){
+            printf("ADD %d in node %d's right\n", * (int*) element,* (int*) node->info);
         }
+
     }else if (c < 0){
-        if (node->left == NULL){
-            node->left = init_node(element);
-            if(!node->left){
-                return ALLOCATION_ERROR;
-            }
-            node->left->father = node;
-        } else {
-            return add_rec(node->left, element, cmp);
+        ret = add_rec(node->left, element, cmp);
+        node->left = ret.node;
+        if(ret.last_op_was_add){
+            printf("ADD %d in node %d's left\n", * (int*) element,* (int*) node->info);
         }
     }else {
-        return REPEATED_ELEMENT;
+        return (struct add_rec_ret) {node, REPEATED_ELEMENT, false};
     }
-    return 1;
+
+    if(ret.last_op_was_add){
+        ret.node->father = node;
+        ret.last_op_was_add = false;
+    }
+    ret.node = node;
+    return ret;
 }
 
 int bst_add(BSTree *tree, void *element){
     CHECK_NULL(tree == NULL || element == NULL, bst_add)
     int return_status;
-    if (tree->root == NULL){
-        tree->root = init_node(element);
-        CHECK_MEMORY(tree->root, bst_add, ALLOCATION_ERROR)
-        return 1;
-    }
-    return add_rec(tree->root, element, tree->compare);
+    struct add_rec_ret ret = add_rec(tree->root, element, tree->compare);
+    tree->root = ret.node;
+    return ret.status;
 }
 
 static BSNode* get_max(BSNode *node){
@@ -85,48 +96,58 @@ static BSNode* get_min(BSNode *node){
     return node;
 }
 
-static inline void free_node(BSNode *node, bool free_element){
-    if (free_element){
-        free(node->info);
-    }
-    free(node);
-}
-
-static BSNode* remove_rec(BSNode *node, void *element, int (*cmp) (void*,void*), bool free_element, int *return_status){
+static struct remove_rec_ret {
+    BSNode* node;
+    int status;
+} remove_rec(BSNode *node, void *element, int (*cmp) (void*,void*), bool free_element){
     if (node == NULL){
-        *return_status = NON_EXISTING_ELEMENT;
-        return NULL;
+        return (struct remove_rec_ret){NULL, NON_EXISTING_ELEMENT};
     }
 
     int c = (*cmp) (element, node->info);
+    struct remove_rec_ret ret;
     if (c > 0){ // The element is higher than the node's info
-        node->right = remove_rec(node->right, element, cmp, free_element, return_status);
+        ret = remove_rec(node->right, element, cmp, free_element);
+        node->right = ret.node;
     }else if (c < 0){
-        node->left = remove_rec(node->left, element, cmp, free_element, return_status);
+        ret = remove_rec(node->left, element, cmp, free_element);
+        node->left = ret.node;
     }else {
+        
+        printf("Deleting %d: ", * (int*) element);
+        if(free_element){
+            free(node->info);
+        }
+
         BSNode *aux = get_max(node->left);
         if(aux != NULL){
-            free_node(aux->father->right, free_element);
+            printf("A");
             aux->father->right = NULL;
             node->info = aux->info;
+            free(aux);
         }else if ((aux = get_min(node->right)) != NULL){
-            free_node(aux->father->left, free_element);
+            printf("B");
             aux->father->left = NULL;
             node->info = aux->info;
+            free(aux);
         }else {
-            free_node(node, free_element);
+            printf("C");
+            free(node);
             node = NULL;
         }
-        *return_status = 1;
+        free(aux);
+        printf("\n");
+        ret.status = 1;
     }
-    return node;
+    ret.node = node;
+    return ret;
 }
 
 int bst_remove(BSTree *tree, void *element){
-    int return_status;
     CHECK_NULL(tree == NULL || element == NULL, bst_remove)
-    tree->root = remove_rec(tree->root, element, tree->compare, tree->free_on_delete, &return_status);
-    return return_status; 
+    struct remove_rec_ret ret = remove_rec(tree->root, element, tree->compare, tree->free_on_delete);
+    tree->root = ret.node;
+    return ret.status; 
 }
 
 static bool exists_rec(BSNode *node, void *element, int (*cmp) (void*,void*)){
