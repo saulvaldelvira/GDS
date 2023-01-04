@@ -27,11 +27,11 @@ typedef struct Queue {
     QueueNode *head;
     QueueNode *tail;
     // Comparator function
-    bool (*compare) (void*, void*);
+    int (*compare) (void*, void*);
     bool free_on_delete;
 } Queue;
 
-extern Queue queue_init(bool (*cmp) (void*, void*));
+extern Queue queue_init(int (*cmp) (void*, void*));
 
 extern void queue_configure(Queue *queue, int free_on_delete);
 

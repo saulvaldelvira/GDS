@@ -4,7 +4,7 @@
 #include <math.h>
 #include "../Util/checks.h"
 
-LinkedList lnkd_list_init(bool (*cmp) (void*, void*)){
+LinkedList lnkd_list_init(int (*cmp) (void*, void*)){
     return (LinkedList) {
         .n_elements = 0,
         .head = NULL,

@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include "../Util/checks.h"
 
-Stack stack_init(bool (*cmp) (void*, void*)){
+Stack stack_init(int (*cmp) (void*, void*)){
         return (Stack){
                 .head = NULL,
                 .compare = cmp,

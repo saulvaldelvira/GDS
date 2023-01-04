@@ -4,7 +4,7 @@
 #include "../Util/checks.h"
 
 
-Queue queue_init(bool (*cmp) (void*, void*)){
+Queue queue_init(int (*cmp) (void*, void*)){
     return (Queue) {
         .head = NULL,
         .tail = NULL,
