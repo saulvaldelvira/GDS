@@ -3,6 +3,8 @@
 #define COMPARATOR_H
     #include <stdbool.h>
 
+    #define COMPARATOR_FUNCTION(name) int (*name) (void*,void*)
+
     // COMMON COMPARATOR FUNCTIONS
     int compare_int(void *e_1, void *e_2);
     int compare_char(void *e_1, void *e_2);

@@ -27,6 +27,13 @@ static inline double get_time(){
     return now.tv_sec + now.tv_nsec*1e-9;
 }
 
+/**
+ * @return a random number between min and max
+*/
+static inline int rand_range(int min, int max){
+        return rand()%((max+1)-min) + min;
+}
+
 #define END_MSG(name) printf("[" #name " test finished in "); \
                         if(timestamp>=1.0) printf("%.3f seconds]\n\n", timestamp); \
                         else printf("%.2f miliseconds]\n\n", timestamp * 1000);
