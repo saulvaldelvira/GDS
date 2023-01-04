@@ -86,7 +86,7 @@
     /**
      * Innitializes an arraylist of the given size and with the given comparator function.
     */
-    extern ArrayList arrlist_init(size_t size, bool (*cmp) (void*, void*));
+    extern ArrayList arrlist_init(size_t size, int (*cmp) (void*, void*));
 
     /**
      * \brief 
