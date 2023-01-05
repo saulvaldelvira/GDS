@@ -46,7 +46,7 @@ extern Queue queue_init(int (*cmp) (void*, void*));
  * \note This can also be achieved by modifying the free_on_delete value itself, without any function call.
  * That's why i made it inline. The function is just so it's easy to understand what this instructiong does
 */
-__attribute((always_inline)) inline void queue_configure(Queue *queue, int free_on_delete){
+static inline void queue_configure(Queue *queue, int free_on_delete){
     queue->free_on_delete = free_on_delete;
 }
 

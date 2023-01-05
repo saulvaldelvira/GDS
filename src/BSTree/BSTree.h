@@ -34,7 +34,7 @@ typedef struct BSTree {
 
 extern BSTree bst_init(int (*cmp) (void*,void*));
 
-__attribute((always_inline)) inline void bst_configure(BSTree *tree, int free_on_delete){
+static inline void bst_configure(BSTree *tree, int free_on_delete){
     tree->free_on_delete = free_on_delete;
 }
 

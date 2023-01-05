@@ -55,7 +55,7 @@ extern Stack stack_init(int (*cmp) (void*, void*));
  * Sets the value of stack->free_on_delete to the parameter free_on_delete
  * See the defined macros FREE_ON_DELETE (1) and DONT_FREE_ON_DELETE (0)
 */
-__attribute((always_inline)) inline void stack_configure(Stack *stack, int free_on_delete){
+static inline void stack_configure(Stack *stack, int free_on_delete){
     stack->free_on_delete = free_on_delete;
 }
 
