@@ -1,10 +1,10 @@
 # Generic-Data-Structures
 A set of generic Data Structures implemented in C. <br>
 It includes:
-* Lists: [ArrayList.h](/src/ArrayList), [LinkedList.h](/src/LinkedList)
+* Lists: [ArrayList](/src/ArrayList), [LinkedList](/src/LinkedList)
 * [Stack](src/Stack)
 * [Queue](src/Queue)
-* Trees: [BSTree.h](src/BSTree)
+* Trees: [BSTree](src/BSTree)
 
 ## How it works
 To make this structures "generic", they store void pointers to elements, not the elements themselves. This allows them to 
