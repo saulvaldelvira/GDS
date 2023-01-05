@@ -3,6 +3,7 @@
 #define BSTREE_H
 
 #include <stdbool.h>
+#include <stddef.h>
 
 #define REPEATED_ELEMENT -1
 #define NON_EXISTING_ELEMENT -1
@@ -27,6 +28,7 @@ typedef struct BSNode {
 typedef struct BSTree {
     BSNode *root;
     int (*compare) (void*,void*);
+    size_t n_elements;
     bool free_on_delete; // Free the element when deleting it
 } BSTree;
 
@@ -35,6 +37,9 @@ extern void bst_configure(BSTree *tree, int free_on_delete);
 extern int bst_add(BSTree *tree, void *element);
 extern int bst_remove(BSTree *tree, void *element);
 extern bool bst_exists(BSTree tree, void *element);
+extern void bst_free(BSTree tree);
+extern void bst_reset(BSTree *tree);
 
+extern void** bst_inorder(BSTree *tree);
 
 #endif
