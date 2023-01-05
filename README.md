@@ -174,7 +174,7 @@ There's a catch. If you mix dynamically allocated memory with static memory you'
 
 <b>NOTE:</b> that when removing the elements, we can pass the adress of i. Since we are only using it to compare it with the elements in the list, it does not matter.
 
-The header file [allocate.h](src/Util/allocate.h.h) defines methods to allocate memory for the most common data types. So the previous example could be written like this<br>
+<b>NOTE 2:</b>The header file [allocate.h](src/Util/allocate.h) defines methods to allocate memory for the most common data types. So the previous example could be written like this<br>
 
 ```c
 #include "allocate.h"
