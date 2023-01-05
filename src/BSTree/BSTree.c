@@ -194,7 +194,7 @@ void bst_reset(BSTree *tree){
     tree->n_elements = 0;
 }
 
-#define INORDER_ERROR (struct orders_ret) {.data = NULL, .data_size = 0, .status = -1}
+#define ORDERS_ERROR (struct orders_ret) {.data = NULL, .data_size = 0, .status = -1}
 
 struct orders_ret {
     void** data;
@@ -219,13 +219,13 @@ static struct orders_ret order_rec(BSNode *node, enum Traversal order){
     struct orders_ret right = order_rec(node->right, order);
     
     if(left.status != 1 || right.status != 1){
-        return INORDER_ERROR;
+        return ORDERS_ERROR;
     }
 
     struct orders_ret result;
     result.data_size = left.data_size + right.data_size + 1;
     result.data = calloc(result.data_size, sizeof(void*));
-    CHECK_MEMORY(result.data, bst_inorder, INORDER_ERROR)
+    CHECK_MEMORY(result.data, bst_inorder, ORDERS_ERROR)
     result.status = 1;
 
     size_t index = 0;
