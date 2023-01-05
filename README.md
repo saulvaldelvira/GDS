@@ -1,5 +1,6 @@
 # Generic-Data-Structures
-A set of generic Data Structures implemented in C. It includes
+A set of generic Data Structures implemented in C. <br>
+It includes
 * Lists: [ArrayList.h](/src/ArrayList), [LinkedList.h](/src/LinkedList)
 * [Stack](src/Stack)
 * [Queue](src/Queue)
