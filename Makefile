@@ -12,36 +12,36 @@ CC = gcc
 CCFLAGS = -lm
 
 list_test: $(BIN) $(BIN)/list_test.out
+	@ $(BIN)/list_test.out 
 
 stack_test: $(BIN) $(BIN)/stack_test.out
+	@ $(BIN)/stack_test.out 
 
 queue_test: $(BIN) $(BIN)/queue_test.out
+	@ $(BIN)/queue_test.out 
 
 bst_test: $(BIN) $(BIN)/bst_test.out
+	@ $(BIN)/bst_test.out
 
 $(BIN)/list_test.out: $(LIST_OBJS)
-	$(CC) -o $(BIN)/list_test.out $(LIST_OBJS) $(CCFLAGS)
+	@ $(CC) -o $(BIN)/list_test.out $(LIST_OBJS) $(CCFLAGS)
 
 $(BIN)/stack_test.out:  $(STACK_OBJS)
-	$(CC) -o $@ $(STACK_OBJS) $(CCFLAGS)
+	@ $(CC) -o $@ $(STACK_OBJS) $(CCFLAGS)
 
 $(BIN)/queue_test.out:  $(QUEUE_OBJS)
-	$(CC) -o $@ $(QUEUE_OBJS) $(CCFLAGS)
+	@ $(CC) -o $@ $(QUEUE_OBJS) $(CCFLAGS)
 
 $(BIN)/bst_test.out: $(BST_OBJS)
-	$(CC) -o $@ $(BST_OBJS) $(CCFLAGS)
+	@ $(CC) -o $@ $(BST_OBJS) $(CCFLAGS)
 
 .c.o:
-	$(CC) $(CCFLAGS) -c -o $@ $<
+	@ $(CC) $(CCFLAGS) -c -o $@ $<
 
 $(BIN):
-	mkdir $(BIN)
+	@ mkdir $(BIN)
 
 test_all: list_test stack_test queue_test bst_test
-	@ $(BIN)/list_test.out
-	@ $(BIN)/stack_test.out
-	@ $(BIN)/queue_test.out
-	@ $(BIN)/bst_test.out
 
 clean:
 	find . -type f -name '*.o' -delete
