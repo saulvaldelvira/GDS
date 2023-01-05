@@ -13,4 +13,4 @@ For example, let's say i want to store ints. I would have to add int pointers (w
 When i take those elements off the structure, I would have to cast back those void pointers to int pointers again.<br>
 <b>NOTE:</b> This is risky, because we have to trust that all the void pointers in the structure correspond to a memory poisition of an int. The good 
 thing is that if you are careful to only add ONE data type to the structure you can "safely" cast those returned pointers to that data type. <br>
-So, carefully used this structures are a good way of storing generic information, allowing the user to use <b>ONE data structure for MULTIPLE data types</b>
+So, carefully used this structures are a good way of storing generic information, allowing the user to use <b>ONE data structure for MULTIPLE data types.</b>
