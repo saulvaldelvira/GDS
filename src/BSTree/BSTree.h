@@ -40,6 +40,9 @@ extern bool bst_exists(BSTree tree, void *element);
 extern void bst_free(BSTree tree);
 extern void bst_reset(BSTree *tree);
 
-extern void** bst_inorder(BSTree *tree);
+extern void** bst_inorder(BSTree tree);
+extern void** bst_preorder(BSTree tree);
+extern void** bst_postorder(BSTree tree);
+
 
 #endif

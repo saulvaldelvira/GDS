@@ -120,16 +120,20 @@ static struct remove_rec_ret {
         }else {
             BSNode *aux = get_max(node->left);
             if(aux != NULL){
-                aux->father->right = NULL;
+                if(aux != node->left){
+                    aux->father->right = NULL;
+                }else{
+                    node->left = aux->left;
+                }
                 node->info = aux->info;
-                free(aux);
-            }else if ((aux = get_min(node->right)) != NULL){
-                aux->father->left = NULL;
-                node->info = aux->info;
-                free(aux);
             }else {
-                free(node);
-                node = NULL;
+                aux = get_min(node->right);
+                if(aux != node->right){
+                    aux->father->left = NULL;
+                }else{
+                    node->right = aux->right;
+                }
+                node->info = aux->info;
             }
             free(aux);
             ret.status = 1;
@@ -190,29 +194,35 @@ void bst_reset(BSTree *tree){
     tree->n_elements = 0;
 }
 
-#define INORDER_ERROR (struct in_order_ret) {.data = NULL, .data_size = 0, .status = -1}
+#define INORDER_ERROR (struct orders_ret) {.data = NULL, .data_size = 0, .status = -1}
 
-static struct in_order_ret {
+struct orders_ret {
     void** data;
     size_t data_size;
     int status;
-} inorder_rec(BSNode *node){
+};
+
+enum Traversal {
+    IN_ORDER, PRE_ORDER, POST_ORDER
+};
+
+static struct orders_ret order_rec(BSNode *node, enum Traversal order){
     if(node == NULL){
-        return (struct in_order_ret) {
+        return (struct orders_ret) {
             .data = NULL,
             .data_size = 0,
             .status = 1
         };
     }
 
-    struct in_order_ret left = inorder_rec(node->left);
-    struct in_order_ret right = inorder_rec(node->right);
+    struct orders_ret left = order_rec(node->left, order);
+    struct orders_ret right = order_rec(node->right, order);
     
     if(left.status != 1 || right.status != 1){
         return INORDER_ERROR;
     }
 
-    struct in_order_ret result;
+    struct orders_ret result;
     result.data_size = left.data_size + right.data_size + 1;
     result.data = calloc(result.data_size, sizeof(void*));
     CHECK_MEMORY(result.data, bst_inorder, INORDER_ERROR)
@@ -220,14 +230,24 @@ static struct in_order_ret {
 
     size_t index = 0;
 
+    if(order == PRE_ORDER){
+        result.data[index++] = node->info;
+    }
+
     for (int i = 0; i < left.data_size; i++, index++){
         result.data[index] = left.data[i];
     }
 
-    result.data[index++] = node->info;
+    if(order == IN_ORDER){
+        result.data[index++] = node->info;
+    }
 
     for (int i = 0; i < right.data_size; i++, index++){
         result.data[index] = right.data[i];
+    }
+
+    if(order == POST_ORDER){
+        result.data[index++] = node->info;
     }
 
     free(left.data);
@@ -236,12 +256,26 @@ static struct in_order_ret {
     return result;
 }
 
-
-void** bst_inorder(BSTree *tree){
-    struct in_order_ret result = inorder_rec(tree->root);
+void** bst_inorder(BSTree tree){
+    struct orders_ret result = order_rec(tree.root, IN_ORDER);
     if (result.status != 1){
         return NULL;
     }
     return result.data;
+}
 
+void** bst_preorder(BSTree tree){
+    struct orders_ret result = order_rec(tree.root, PRE_ORDER);
+    if (result.status != 1){
+        return NULL;
+    }
+    return result.data;
+}
+
+void** bst_postorder(BSTree tree){
+    struct orders_ret result = order_rec(tree.root, POST_ORDER);
+    if (result.status != 1){
+        return NULL;
+    }
+    return result.data;
 }
