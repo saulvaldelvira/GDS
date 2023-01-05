@@ -10,14 +10,16 @@ int main(){
     int n = 10000, min = 0, max = 10;
     int nbuf[n];
     int ncount;
-    printf("[List Test]\n");
+    printf("[BSTree Test]\n");
     BSTree t = bst_init(Comparators.integer);
     // Random numbers test
     bst_configure(&t, DONT_FREE_ON_DELETE);
+    assert(!bst_exists(t, &n));
     printf("Add...\n");
     for(ncount=0; ncount<n; ncount++){
         nbuf[ncount] = rand_range(min, max);
         assert(bst_add(&t, &nbuf[ncount]));
+        assert(bst_exists(t, &nbuf[ncount]));
     }
     printf("Remove...\n");
     for(ncount=0; ncount<n; ncount++){
@@ -88,6 +90,6 @@ int main(){
     assert(12 == * (int*) remove_inord[1]);
     assert(30 == * (int*) remove_inord[2]);
 
-    printf("[List Test Finished]\n");
-    return 1;
+    printf("[BSTree Test Finished]\n");
+    return 0;
 }

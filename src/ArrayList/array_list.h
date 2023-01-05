@@ -95,7 +95,9 @@
      *  See the LinkedList structure documentation for more info
      * @param free_on_delete If true, the elements will be also freed on deletion
     */
-    extern void arrlist_configure(ArrayList *list, bool free_on_delete);
+    static inline void arrlist_configure(ArrayList *list, bool free_on_delete){
+        list->free_on_delete = free_on_delete;
+    }
 
     /**
      * \brief

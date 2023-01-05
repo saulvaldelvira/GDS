@@ -12,10 +12,6 @@ Queue queue_init(int (*cmp) (void*, void*)){
     };
 }
 
-void queue_configure(Queue *queue, int free_on_delete){
-    queue->free_on_delete = free_on_delete;
-}
-
 static QueueNode* queue_init_node(void *element){
     QueueNode *node = malloc(sizeof(QueueNode));
     node->info = element;

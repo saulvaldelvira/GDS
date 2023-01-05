@@ -23,10 +23,6 @@ static BSNode* init_node(void *info){
     return node;
 }
 
-void bst_configure(BSTree *tree, int free_on_delete){
-    tree->free_on_delete = free_on_delete;
-}
-
 static struct add_rec_ret
 {
     BSNode* node;
@@ -153,23 +149,27 @@ int bst_remove(BSTree *tree, void *element){
     return ret.status; 
 }
 
-static bool exists_rec(BSNode *node, void *element, int (*cmp) (void*,void*)){
-    if (node == NULL){
-        return false;
+static void* get_rec(BSNode *node, void *element, int (*cmp) (void*,void*)){
+    if(node == NULL){
+        return NULL;
     }
     int c = (*cmp) (element, node->info);
-    if (c > 0){
-        return exists_rec(node->right, element, cmp);
-    }else if(c < 0){
-        return exists_rec(node->left, element, cmp);
+    if(c < 0){
+        return get_rec(node->left, element, cmp);
+    }else if(c > 0){
+        return get_rec(node->right, element, cmp);
     }else{
-        return true;
+        return node->info;
     }
 }
 
+void* bst_get(BSTree tree, void* element){
+    CHECK_NULL(element == NULL, bst_get)
+    return get_rec(tree.root, element, tree.compare);
+}
+
 bool bst_exists(BSTree tree, void *element){
-    CHECK_NULL(element == NULL, bst_exists)
-    return exists_rec(tree.root, element, tree.compare);
+    return get_rec(tree.root, element, tree.compare) != NULL;
 }
 
 static void free_rec(BSNode *node, bool free_element){

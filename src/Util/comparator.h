@@ -2,6 +2,7 @@
 #ifndef COMPARATOR_H
 #define COMPARATOR_H
     #include <stdbool.h>
+    #include <math.h>
 
     #define COMPARATOR_FUNCTION(name) int (*name) (void*,void*)
 
@@ -34,6 +35,11 @@
         .double_precision = DEFAULT_DOUBLE_PRECISION
     };
 
-    void set_float_precision(int num_decimals);
-    void set_double_precision(int num_decimals);
+    static inline void set_float_precision(int num_decimals){
+        Precision.float_precision = pow(10, num_decimals);
+    }
+    
+    static inline void set_double_precision(int num_decimals){
+        Precision.double_precision = pow(10, num_decimals);
+    }
 #endif

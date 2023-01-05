@@ -1,5 +1,5 @@
 #include "comparator.h"
-#include <math.h>
+
 
 // COMPARATORS
 int compare_int(void *e_1, void *e_2){
@@ -57,10 +57,10 @@ int compare_double(void *e_1, void *e_2){
     }
 }
 
-void set_float_precision(int num_decimals){
-        Precision.float_precision = pow(10, num_decimals);
+/*void set_float_precision(int num_decimals){
+        
 }
 
 void set_double_precision(int num_decimals){
-        Precision.double_precision = pow(10, num_decimals);
-}
+        
+}*/

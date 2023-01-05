@@ -11,10 +11,6 @@ Stack stack_init(int (*cmp) (void*, void*)){
         };
 }
 
-void stack_configure(Stack *stack, int free_on_delete){
-        stack->free_on_delete = free_on_delete;
-}
-
 /**
  * Initializes a new StackNode with the given info
 */

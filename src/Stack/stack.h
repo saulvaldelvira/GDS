@@ -37,42 +37,6 @@ typedef struct StackNode {
  * The Stack works in a similar way to a LinkedList. But in this case, the elements are allways added in the head.
  * This is because a Stack is a Data Structure that follows a LIFO (Last In First Out) dynamic. The last element added 
  * is the first one that goes out.
- * 
- *  \attention
-     * To make this structure "generic", it uses void pointers to the elements it stores.
-     * When you delete an element, you can choose to also free the 
-     * memory alocated for that element "free(void* element)". The behaviour is defined by this parameter.
-     * 
-     * @param free_on_delete If true, when deleting an element (stack_pop), it's memory is freed.
-     * 
-     *   \note
-     * Sometimes you'll need the memory to be deleted, and sometimes that memory isn't allocated so you 
-     * don't need to free those void pointers.
-     * BE REALLY CAREFUL, because if you set those parameters to true and add elements to the list that don't need 
-     * to be freed, you'll cause a segmentation fault. Also, it could cause trouble to add elements wich memory has been allocated at
-     * the same time. 
-     * \note .
-     * \note ***********CODE EXAMPLE****************
-     * \note int *ptr = malloc (3 * sizeof(int));
-     * \note ptr[0] = 0;
-     * \note ptr[1] = 1;
-     * \note ptr[2] = 2;
-     * 
-     * \note stack_push(&stack, &ptr[0]);
-     * \note stack_push(&list, &ptr[1]);
-     * 
-     * \note stack_pop(&list);
-     * 
-     * \note ****************************************
-     * 
-     * \note In this last instruction, if free_on_delete is 1, the stack will free &ptr[0]. But ptr holds memory for 3 elements so 
-     * &ptr[1] and &ptr[2] will also be freed. This will cause trouble if the stack tries to access those already fred directions in the future.
-     * 
-     * \note To avoid this, you ca use the functions defined in "allocate.h", that allocate memory for the most common data types (alloc_int, alloc_char, alloc_float, etc)
-     * 
-     * \note 
-     *  NOTE 2: The default value is 0 (don't free), so also keep in mind that unless you configure the list, that memory is not being 
-     *  freed on pop.
 */
 typedef struct Stack {
         StackNode *head;
@@ -91,7 +55,9 @@ extern Stack stack_init(int (*cmp) (void*, void*));
  * Sets the value of stack->free_on_delete to the parameter free_on_delete
  * See the defined macros FREE_ON_DELETE (1) and DONT_FREE_ON_DELETE (0)
 */
-extern void stack_configure(Stack *stack, int free_on_delete);
+static inline void stack_configure(Stack *stack, int free_on_delete){
+    stack->free_on_delete = free_on_delete;
+}
 
 /**
  * Pushes the given element to the top of the stack

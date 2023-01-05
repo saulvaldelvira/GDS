@@ -26,10 +26,6 @@ static LLNode* lnkd_list_innit_node(void *info){
     return node;
 }
 
-void lnkd_list_configure(LinkedList *list, bool free_on_delete){
-    list->free_on_delete = free_on_delete;
-}
-
 int lnkd_list_append(LinkedList *list, void *element){
     CHECK_NULL(element == NULL, lnkd_list_append)
     if(list->n_elements == 0){

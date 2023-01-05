@@ -84,4 +84,5 @@ int main(){
         timestamp = lnkd_time + arr_time;
 
         END_MSG(List)
+        return 0;
 }

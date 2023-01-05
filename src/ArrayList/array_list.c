@@ -19,10 +19,6 @@ ArrayList arrlist_init(size_t size, int (*cmp) (void*, void*)){
     };
 }
 
-void arrlist_configure(ArrayList *list, bool free_on_delete){
-    list->free_on_delete = free_on_delete;
-}
-
 static void** re_calloc(void **arr, size_t size, size_t new_size){
     void **tmp = calloc(new_size, sizeof(void*));
     CHECK_MEMORY(tmp, arrlist_append, NULL)
