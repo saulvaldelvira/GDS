@@ -12,6 +12,9 @@ Queue queue_init(int (*cmp) (void*, void*)){
     };
 }
 
+/**
+ * Initializes a new QueueNode with the element
+*/
 static QueueNode* queue_init_node(void *element){
     QueueNode *node = malloc(sizeof(QueueNode));
     node->info = element;
@@ -20,27 +23,29 @@ static QueueNode* queue_init_node(void *element){
 }
 
 int queue_enqueue(Queue *queue, void *element){
-    CHECK_NULL(queue == NULL || element == NULL, queue_enqueue)
+    CHECK_NULL(queue == NULL || element == NULL, queue_enqueue, NULL_PARAMETER)
     if (queue->head == NULL) {
         queue->head = queue_init_node(element);
+        CHECK_MEMORY(queue->head, queue_enqueue, ALLOCATION_ERROR)
         queue->tail = queue->head;
     }else {
         queue->tail->next = queue_init_node(element);
+        CHECK_MEMORY(queue->tail->next, queue_enqueue, ALLOCATION_ERROR)
         queue->tail = queue->tail->next;
     }
     return 1;
 }
 
 void* queue_dequeue(Queue *queue){
-    CHECK_NULL(queue == NULL, queue_dequeue)
+    CHECK_NULL(queue == NULL, queue_dequeue, NULL)
     if (queue->head == NULL){
         return NULL;
     }
-    QueueNode *aux = queue->head;
-    queue->head = queue->head->next;
-    void *element = aux->info;
-    free(aux);
-    return element;
+    QueueNode *aux = queue->head;    // Save the head
+    queue->head = queue->head->next; // Change it to the next element
+    void *element = aux->info;       // Save the element
+    free(aux);                       // Free the old head
+    return element;                  // Return the element
 }
 
 void* queue_peek(Queue queue){

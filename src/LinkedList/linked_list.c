@@ -26,17 +26,40 @@ static LLNode* lnkd_list_innit_node(void *info){
     return node;
 }
 
-int lnkd_list_append(LinkedList *list, void *element){
-    CHECK_NULL(element == NULL, lnkd_list_append)
-    if(list->n_elements == 0){
+int lnkd_list_push_back(LinkedList *list, void *element){
+    CHECK_NULL(element == NULL, lnkd_list_append, NULL_PARAMETER)
+    if(list->n_elements == 0){ // We add to the head
         list->head = lnkd_list_innit_node(element);
-        CHECK_NULL(list->head == NULL, lnkd_list_append)
+        if(!list->head){
+            return ALLOCATION_ERROR;
+        }
         list->tail = list->head;
-    }else{
+    }else{ // We add to the tail
         list->tail->next = lnkd_list_innit_node(element);
-        CHECK_NULL(list->tail->next == NULL, lnkd_list_append)
-        list->tail->next->previous = list->tail;
-        list->tail = list->tail->next;
+        if(!list->tail){
+            return ALLOCATION_ERROR;
+        }
+        list->tail->next->previous = list->tail; // Create the "previous" reference in this new element
+        list->tail = list->tail->next; // Update the tail to this new element
+    }
+    list->n_elements++;
+    return 1;
+}
+
+int lnkd_list_push_front(LinkedList *list, void *element){
+    CHECK_NULL(element == NULL, lnkd_list_append, NULL_PARAMETER)
+    if(list->n_elements == 0){ // We add to the head
+        list->head = lnkd_list_innit_node(element);
+        if(!list->head){
+            return ALLOCATION_ERROR;
+        }
+        list->tail = list->head;
+    }else{ // We add to the head
+        LLNode* aux = lnkd_list_innit_node(element);
+        CHECK_MEMORY(aux, lnkd_list_push_front, ALLOCATION_ERROR)
+        aux->next = list->head;
+        list->head->previous = aux;
+        list->head = aux;
     }
     list->n_elements++;
     return 1;
@@ -71,7 +94,7 @@ bool lnkd_list_isempty(LinkedList list){
 }
 
 int lnkd_list_remove(LinkedList *list, void *element){
-    CHECK_NULL(list == NULL || element == NULL, lnkd_list_remove)
+    CHECK_NULL(list == NULL || element == NULL, lnkd_list_remove, NULL_PARAMETER)
     LLNode *aux = list->head;
     while(aux != NULL && (*list->compare) (aux->info, element) != 0){
         aux = aux->next;
@@ -80,11 +103,12 @@ int lnkd_list_remove(LinkedList *list, void *element){
         if (aux == list->head){ // If the element to delete is the head
             list->head = list->head->next;
         }else{
-            if (aux->next != NULL){// We're in the last node, have to change the tail pointer
+            if (aux->next == NULL){// We're in the last node, have to change the tail pointer
                 list->tail = aux->previous;
+            } else { // If there's a node after next, change it's "previous" pointer
+                aux->next->previous = aux->previous;
             }
             aux->previous->next = aux->next;
-            aux->next->previous = aux;
         }
         if (list->free_on_delete == FREE_ON_DELETE){
             free(aux->info);

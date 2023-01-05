@@ -21,14 +21,15 @@ static StackNode* init_node(void *element){
         }
         node->info = element;
         node->next = NULL;
+        return node;
 }
 
 int stack_push(Stack *stack, void *element){
-        CHECK_NULL(stack == NULL || element == NULL, stack_push)
+        CHECK_NULL(stack == NULL || element == NULL, stack_push, NULL_PARAMETER)
         if(stack->head == NULL){
                 stack->head = init_node(element);
                 CHECK_MEMORY(stack->head, stack_push, ALLOCATION_ERROR)
-        }else{
+        }else{ // Push an element to the head
                 StackNode *aux = init_node(element);
                 CHECK_MEMORY(aux, stack_push, ALLOCATION_ERROR)
                 aux->info = element;
@@ -39,13 +40,15 @@ int stack_push(Stack *stack, void *element){
 }
 
 void* stack_pop(Stack *stack){
-        CHECK_NULL(stack == NULL, stack_pop)
+        CHECK_NULL(stack == NULL, stack_pop, NULL)
         if(stack->head == NULL){
                 return NULL;
         }else{
-                void *result = stack->head->info;
-                stack->head = stack->head->next;
-                return result;
+                StackNode* aux = stack->head;    // Save the head
+                stack->head = stack->head->next; // Change it to the next element
+                void *element = aux->info;       // Save the element
+                free(aux);                       // Free the old head
+                return element;                  // Return the element
         }
 }
 

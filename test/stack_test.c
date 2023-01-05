@@ -1,12 +1,17 @@
-#include "test.h"
 #include "../src/Stack/stack.h"
+
+#define COMPARATOR_ENABLE
+#define TIMESTAMP_ENABLE
+#include "test.h"
+#undef COMPARATOR_ENABLE
+#undef TIMESTAMP_ENABLE
 
 int main(){
         int n = 10000000;
         printf("[Starting Stack Test]\n Workload: %d\n", n);
         TIMESTAMP_START
 
-        Stack stack = stack_init(Comparators.integer);
+        Stack stack = stack_init(Comparator.integer);
         stack_configure(&stack, FREE_ON_DELETE);
         assert(stack_isempty(stack));
         stack_push(&stack, alloc_int(12));

@@ -115,7 +115,19 @@
      * issue, so technically you can store whatever you want here. This is the C programming language :p
      * \return 1 if the operation is succesful
     */
-    extern int lnkd_list_append(LinkedList *list, void *element);
+    extern int lnkd_list_push_back(LinkedList *list, void *element);
+
+    /**
+     * \brief
+     * Adds the given element to the start of the list. The element must be a pointer to whatever 
+     * data type you wish.
+     * \attention  It is recommended to only store ONE data type per list, so when you retrait the elements from
+     * the list, you know you can safely cast the pointers to the correct data types.
+     * \attention But there's no restriction regarding 
+     * issue, so technically you can store whatever you want here. This is the C programming language :p
+     * \return 1 if the operation is succesful
+    */
+    extern int lnkd_list_push_front(LinkedList *list, void *element);
 
     /**
      * Changes the given element in the list with the replacement, if it exists.

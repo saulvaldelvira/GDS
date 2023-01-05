@@ -17,6 +17,20 @@
         #define DONT_FREE_ON_DELETE 0
     #endif
 
+    /**
+     * Represents a position on the list. Used in methods to return a value alongside a status identifier of the operation result.
+    */
+    typedef struct index{
+        union {
+            size_t index;
+            void *element;
+        } value;
+        int status;
+    } index_t;
+
+    #define index_t_i(i)    (index_t) {.value.index = i, .status = 1}
+    #define index_t_e(e)    (index_t) {.value.element = e, .status = 1}
+    #define INDEX_NOT_FOUND (index_t) {.value.element = NULL, -1} // An index_t struct with status set to -1, to represent a failure in the procedure
 
     /**
      * @brief Array List structure.
@@ -114,8 +128,10 @@
 
     /**
      * Returns the index of the given element in the array of the list
+     * @return index_t index, wich contains the index, and a status variable that determines if the 
+     *  index and element are valid or not.
     */
-    extern int arrlist_indexof(ArrayList list, void *element);
+    extern index_t arrlist_indexof(ArrayList list, void *element);
 
     /**
      * @return true if the element exists
@@ -130,13 +146,14 @@
     /**
      * Replaces the element at the given index with the element passed as a parameter
     */
-    extern int arrlist_set_at(ArrayList *list, size_t index, void *element);
+    extern index_t arrlist_set_at(ArrayList *list, size_t index, void *element);
 
     /**
      * Replaces element with replacement in the list.
-     * \return 1 if the operation is sucessful
+     * \return an index_t type variable, in wich status will be 1 if the operation has been sucessful. Also, this
+     * variable contains the index in wich the operation has been performed. 
     */
-    extern int arrlist_set(ArrayList *list, void *element, void *replacement);
+    extern index_t arrlist_set(ArrayList *list, void *element, void *replacement);
 
     /**
      * \return The element at the given index or NULL if it the index is out of bounds
@@ -150,21 +167,26 @@
 
     /**
      * Removes the element at the given index
-     * \return 1 if the operation is sucessful
+     * \return an index_t type variable, in wich status will be 1 if the operation has been sucessful. Also, this
+     * variable contains the element in that index (if it hasn't been freed from memory) 
     */
-    extern int arrlist_remove_at(ArrayList *list, size_t index);
+    extern index_t arrlist_remove_at(ArrayList *list, size_t index);
 
     /**
      * Removes the specified element
-     * \return 1 if the operation is sucessful
+     * \return an index_t type variable, in wich status will be 1 if the operation has been sucessful. Also, this
+     * variable contains the index of that element (if it could find it in the list) 
     */
-    extern int arrlist_remove(ArrayList *list, void *element);
+    extern index_t arrlist_remove(ArrayList *list, void *element);
 
     /**
-     * 
+     * Frees the list from memory
     */
     extern void arrlist_free(ArrayList list);
 
+    /**
+     * Frees the list from memory and resets it to it's original state
+    */
     extern void arrlist_reset(ArrayList *list);
 
 #endif

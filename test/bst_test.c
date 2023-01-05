@@ -1,5 +1,8 @@
-#include "test.h"
 #include "../src/BSTree/BSTree.h"
+
+#define COMPARATOR_ENABLE
+#include "test.h"
+#undef COMPARATOR_ENABLE
 
 struct test{
     int *i;
@@ -11,7 +14,7 @@ int main(){
     int nbuf[n];
     int ncount;
     printf("[BSTree Test]\n");
-    BSTree t = bst_init(Comparators.integer);
+    BSTree t = bst_init(Comparator.integer);
     // Random numbers test
     bst_configure(&t, DONT_FREE_ON_DELETE);
     assert(!bst_exists(t, &n));
@@ -27,6 +30,7 @@ int main(){
     }
 
     // Orders test
+    printf("Traversals... \n");
     bst_reset(&t);
     bst_configure(&t, FREE_ON_DELETE);
     assert(bst_add(&t, alloc_int(12)));
@@ -43,32 +47,32 @@ int main(){
     assert(bst_add(&t, alloc_int(33)));
 
     void* *inord = bst_inorder(t);
-    printf("Inorder: \t");
-    for(int i=0; i < t.n_elements; i++){
+    printf("\tInorder: \t");
+    for(size_t i=0; i < t.n_elements; i++){
         printf("%d-", * (int*) inord[i]);
     }
     printf("\n");
-    printf("Expected result: 0-7-8-9-10-11-12-25-30-31-32-33-\n");
+    printf("\tExpected result: 0-7-8-9-10-11-12-25-30-31-32-33-\n");
 
     free(inord);
 
     void* *preord = bst_preorder(t);
-    printf("Preorder:  \t");
-    for(int i=0; i < t.n_elements; i++){
+    printf("\n\tPreorder:  \t");
+    for(size_t i=0; i < t.n_elements; i++){
         printf("%d-", * (int*) preord[i]);
     }
     printf("\n");
-    printf("Expected result: 12-9-7-0-8-10-11-30-25-32-31-33-\n");
+    printf("\tExpected result: 12-9-7-0-8-10-11-30-25-32-31-33-\n");
 
     free(preord);
 
     void* *postord = bst_postorder(t);
-    printf("Postorder: \t");
-    for(int i=0; i < t.n_elements; i++){
+    printf("\n\tPostorder: \t");
+    for(size_t i=0; i < t.n_elements; i++){
         printf("%d-", * (int*) postord[i]);
     }
     printf("\n");
-    printf("Expected result: 0-8-7-11-10-9-25-31-33-32-30-12-\n");
+    printf("\tExpected result: 0-8-7-11-10-9-25-31-33-32-30-12-\n");
     
     free(postord);
 

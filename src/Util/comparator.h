@@ -15,17 +15,19 @@
     #define DEFAULT_FLOAT_PRECISION 100000000
     #define DEFAULT_DOUBLE_PRECISION 100000000000000000
 
+#ifndef DISABLE_COMPARATOR
     static struct {
         int (*integer)             (void*, void*);
         int (*character)           (void*, void*);
         int (*floating)            (void*, void*);
-        int (*double_floating)    (void*, void*);
-    } Comparators = {
-        .integer = *compare_int,
-        .character = *compare_char,
-        .floating = *compare_float,
-        .double_floating = *compare_double,
-    };
+        int (*double_floating)     (void*, void*);
+    } Comparator= { 
+                    .integer = *compare_int,
+                    .character = *compare_char,
+                    .floating = *compare_float,
+                    .double_floating = *compare_double,
+                };
+#endif
 
     static struct {
         long long float_precision;

@@ -1,5 +1,10 @@
-#include "test.h"
 #include "../src/Queue/queue.h"
+
+#define COMPARATOR_ENABLE
+#define TIMESTAMP_ENABLE
+#include "test.h"
+#undef COMPARATOR_ENABLE
+#undef TIMESTAMP_ENABLE
 
 int main(){
     int n = 10000000;
@@ -7,7 +12,7 @@ int main(){
     printf("[Starting Queue test]\n Workload: %d\n", n);
     TIMESTAMP_START
 
-    Queue q = queue_init(Comparators.integer);
+    Queue q = queue_init(Comparator.integer);
     queue_configure(&q, FREE_ON_DELETE);
     assert(queue_isempty(q));
 

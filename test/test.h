@@ -5,7 +5,11 @@
 #include <stdlib.h>
 #include <assert.h>
 #include "../src/Util/allocate.h"
-#include "../src/Util/comparator.h"
+
+#ifdef COMPARATOR_ENABLE
+    #include "../src/Util/comparator.h"
+#endif
+
 #include "../src/Util/checks.h"
 
 #include <time.h>
@@ -15,11 +19,13 @@
     #define _POSIX_C_SOURCE 1999309L
 #endif
 
-static double timestamp;
+#ifdef TIMESTAMP_ENABLE 
+    static double timestamp;
 
-#define TIMESTAMP_START timestamp = get_time();
+    #define TIMESTAMP_START timestamp = get_time();
 
-#define TIMESTAMP_STOP timestamp = get_time() - timestamp;
+    #define TIMESTAMP_STOP timestamp = get_time() - timestamp;
+#endif
 
 static inline double get_time(){
     struct timespec now;

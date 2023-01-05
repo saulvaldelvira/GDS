@@ -1,5 +1,6 @@
+#define DISABLE_COMPARATOR
 #include "comparator.h"
-
+#undef DISABLE_COMPARATOR
 
 // COMPARATORS
 int compare_int(void *e_1, void *e_2){
@@ -56,11 +57,3 @@ int compare_double(void *e_1, void *e_2){
         return 0;
     }
 }
-
-/*void set_float_precision(int num_decimals){
-        
-}
-
-void set_double_precision(int num_decimals){
-        
-}*/
