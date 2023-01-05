@@ -172,6 +172,10 @@ bool bst_exists(BSTree tree, void *element){
     return get_rec(tree.root, element, tree.compare) != NULL;
 }
 
+bool bst_isempty(BSTree tree){
+    return tree.root == NULL;
+}
+
 static void free_rec(BSNode *node, bool free_element){
     if(node == NULL){
         return;

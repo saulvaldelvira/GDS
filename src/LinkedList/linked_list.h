@@ -101,7 +101,7 @@
      *  See the LinkedList structure documentation for more info
      * @param free_on_delete If true, the information of the nodes will be also freed on node deletion
     */
-    static inline void lnkd_list_configure(LinkedList *list, bool free_on_delete){
+    __attribute((always_inline)) inline void lnkd_list_configure(LinkedList *list, bool free_on_delete){
         list->free_on_delete = free_on_delete;
     }
 

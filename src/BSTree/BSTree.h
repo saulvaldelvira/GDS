@@ -33,13 +33,17 @@ typedef struct BSTree {
 } BSTree;
 
 extern BSTree bst_init(int (*cmp) (void*,void*));
-static inline void bst_configure(BSTree *tree, int free_on_delete){
+
+__attribute((always_inline)) inline void bst_configure(BSTree *tree, int free_on_delete){
     tree->free_on_delete = free_on_delete;
 }
+
 extern int bst_add(BSTree *tree, void *element);
 extern int bst_remove(BSTree *tree, void *element);
 extern void* bst_get(BSTree tree, void* element);
 extern bool bst_exists(BSTree tree, void *element);
+extern bool bst_isempty(BSTree tree);
+
 extern void bst_free(BSTree tree);
 extern void bst_reset(BSTree *tree);
 

@@ -55,7 +55,7 @@ extern Stack stack_init(int (*cmp) (void*, void*));
  * Sets the value of stack->free_on_delete to the parameter free_on_delete
  * See the defined macros FREE_ON_DELETE (1) and DONT_FREE_ON_DELETE (0)
 */
-static inline void stack_configure(Stack *stack, int free_on_delete){
+__attribute((always_inline)) inline void stack_configure(Stack *stack, int free_on_delete){
     stack->free_on_delete = free_on_delete;
 }
 
@@ -91,6 +91,11 @@ extern bool stack_isempty(Stack stack);
 */
 extern void stack_free(Stack stack);
 
+/**
+ * Frees the memory allocated for the stack AND resets it to the initial state of a stack
+ * @note The behviour of this routine towards the memory for the elements of the Stack (the void pointers) is defined by 
+ * stack.free_on_delete. See the Stack struct documentation for more info.
+*/
 extern void stack_reset(Stack *stack);
 
 #endif
