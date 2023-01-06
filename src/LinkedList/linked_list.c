@@ -10,7 +10,7 @@ LinkedList lnkd_list_init(int (*cmp) (void*, void*)){
         .head = NULL,
         .tail = NULL,
         .compare = cmp,
-        .free_on_delete = DONT_FREE_ON_DELETE
+        .free_on_delete = DontFreeOnDelete
     };
 }
 
@@ -65,16 +65,16 @@ int lnkd_list_push_front(LinkedList *list, void *element){
     return 1;
 }
 
-int lnkd_list_set(LinkedList *list, void *element, void *replacement){
+bool lnkd_list_set(LinkedList *list, void *element, void *replacement){
     LLNode *aux = list->head;
     while ( (*list->compare) (aux->info, element) != 0) {
         aux = aux->next;
         if(aux == NULL){
-            return 0;
+            return false;
         }
     }
     aux->info = replacement;
-    return 1;
+    return true;
 }
 
 void* lnkd_list_get(LinkedList list, void *element){
@@ -93,8 +93,8 @@ bool lnkd_list_isempty(LinkedList list){
     return list.n_elements == 0;
 }
 
-int lnkd_list_remove(LinkedList *list, void *element){
-    CHECK_NULL(list == NULL || element == NULL, lnkd_list_remove, NULL_PARAMETER)
+bool lnkd_list_remove(LinkedList *list, void *element){
+    CHECK_NULL(list == NULL || element == NULL, lnkd_list_remove, false)
     LLNode *aux = list->head;
     while(aux != NULL && (*list->compare) (aux->info, element) != 0){
         aux = aux->next;
@@ -110,20 +110,20 @@ int lnkd_list_remove(LinkedList *list, void *element){
             }
             aux->previous->next = aux->next;
         }
-        if (list->free_on_delete == FREE_ON_DELETE){
+        if (list->free_on_delete == FreeOnDelete){
             free(aux->info);
         }
         free(aux);
         list->n_elements--;
-        return 1;
+        return true;
     }
-    return 0;
+    return false;
 }
 
-static void lnkd_list_free_node(LLNode *node, int free_elements){
+static void lnkd_list_free_node(LLNode *node, free_on_delete_t free_elements){
     if(node == NULL) return;
     lnkd_list_free_node(node->next, free_elements);
-    if(free_elements == FREE_ON_DELETE){
+    if(free_elements == FreeOnDelete){
         free(node->info);
     }
     free(node);

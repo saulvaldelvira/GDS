@@ -10,13 +10,10 @@
 #define EMPTY_TREE -1
 
 // free_on_delete posible values
-    #ifndef FREE_ON_DELETE
-        #define FREE_ON_DELETE 1
-    #endif
-
-    #ifndef DONT_FREE_ON_DELETE
-        #define DONT_FREE_ON_DELETE 0
-    #endif
+#ifndef free_on_delete_defined
+    typedef enum free_on_delete { FreeOnDelete=1, DontFreeOnDelete=0} free_on_delete_t;
+    #define free_on_delete_defined
+#endif
 
 typedef struct BSNode {
     void *info;
@@ -68,7 +65,7 @@ typedef struct BSTree {
     BSNode *root;
     int (*compare) (void*,void*);
     size_t n_elements;
-    bool free_on_delete; // Free the element when deleting it
+    free_on_delete_t free_on_delete; // Free the element when deleting it
 } BSTree;
 
 /**

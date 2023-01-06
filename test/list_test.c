@@ -17,7 +17,7 @@ int main(){
         TIMESTAMP_START
         
         ArrayList arr = arrlist_empty(Comparator.integer);
-        arrlist_configure(&arr, FREE_ON_DELETE);
+        arrlist_configure(&arr, FreeOnDelete);
         assert(arrlist_isempty(arr));
         for(int i=0; i < n; i++){
                 assert(arrlist_append(&arr, alloc_int(i)));
@@ -72,7 +72,7 @@ int main(){
         TIMESTAMP_START
 
         LinkedList lnked = lnkd_list_init(Comparator.integer);
-        lnkd_list_configure(&lnked, FREE_ON_DELETE);
+        lnkd_list_configure(&lnked, FreeOnDelete);
         assert(lnkd_list_isempty(lnked));
         
         for(int i=0; i < n; i++){

@@ -12,7 +12,7 @@ int main(){
         TIMESTAMP_START
 
         Stack stack = stack_init(Comparator.integer);
-        stack_configure(&stack, FREE_ON_DELETE);
+        stack_configure(&stack, FreeOnDelete);
         assert(stack_isempty(stack));
         stack_push(&stack, alloc_int(12));
         assert(!stack_isempty(stack));

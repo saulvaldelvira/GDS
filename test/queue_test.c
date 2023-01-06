@@ -13,7 +13,7 @@ int main(){
     TIMESTAMP_START
 
     Queue q = queue_init(Comparator.integer);
-    queue_configure(&q, FREE_ON_DELETE);
+    queue_configure(&q, FreeOnDelete);
     assert(queue_isempty(q));
 
     for(int i=0; i < n; i++){

@@ -10,12 +10,9 @@
 #include <stdbool.h>
 
 // free_on_delete posible values
-#ifndef FREE_ON_DELETE
-    #define FREE_ON_DELETE 1
-#endif
-
-#ifndef DONT_FREE_ON_DELETE
-    #define DONT_FREE_ON_DELETE 0
+#ifndef free_on_delete_defined
+    typedef enum free_on_delete { FreeOnDelete=1, DontFreeOnDelete=0} free_on_delete_t;
+    #define free_on_delete_defined
 #endif
 
 typedef struct QueueNode {
@@ -33,7 +30,7 @@ typedef struct Queue {
     QueueNode *tail;
     // Comparator function
     int (*compare) (void*, void*);
-    bool free_on_delete;
+    free_on_delete_t free_on_delete;
 } Queue;
 
 /**
@@ -46,7 +43,7 @@ extern Queue queue_init(int (*cmp) (void*, void*));
  * \note This can also be achieved by modifying the free_on_delete value itself, without any function call.
  * That's why i made it inline. The function is just so it's easy to understand what this instructiong does
 */
-static inline void queue_configure(Queue *queue, int free_on_delete){
+static inline void queue_configure(Queue *queue, free_on_delete_t free_on_delete){
     queue->free_on_delete = free_on_delete;
 }
 

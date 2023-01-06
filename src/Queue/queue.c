@@ -72,11 +72,11 @@ bool queue_isempty(Queue queue){
     return queue.head == NULL;
 }
 
-static void queue_free_node(QueueNode *node, bool free_element){
+static void queue_free_node(QueueNode *node, free_on_delete_t free_element){
     if (node == NULL){
         return;
     }
-    if (free_element){
+    if (free_element == FreeOnDelete){
         free(node->info);
     }
     queue_free_node(node->next, free_element);

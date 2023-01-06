@@ -6,17 +6,10 @@
     
     #define ARRAY_LIST_DEFAULT_SIZE 10
 
-    // ERRORS
-
-    // free_on_delete posible values
-    #ifndef FREE_ON_DELETE
-        #define FREE_ON_DELETE 1
-    #endif
-
-    #ifndef DONT_FREE_ON_DELETE
-        #define DONT_FREE_ON_DELETE 0
-    #endif
-
+#ifndef free_on_delete_defined
+    typedef enum free_on_delete { FreeOnDelete=1, DontFreeOnDelete=0} free_on_delete_t;
+    #define free_on_delete_defined
+#endif
     /**
      * Represents a position on the list. Used in methods to return a value alongside a status identifier of the operation result.
     */
@@ -87,7 +80,7 @@
         * Example of use: Comparators.integer (function to compare two void pointers representing int pointers).
         */
         int (*compare) (void*, void*);
-        bool free_on_delete; // Free the element when deleting it
+        free_on_delete_t free_on_delete; // Free the element when deleting it
     } ArrayList;
     
     /**
@@ -109,7 +102,7 @@
      *  See the LinkedList structure documentation for more info
      * @param free_on_delete If true, the elements will be also freed on deletion
     */
-    static inline void arrlist_configure(ArrayList *list, bool free_on_delete){
+    static inline void arrlist_configure(ArrayList *list, free_on_delete_t free_on_delete){
         list->free_on_delete = free_on_delete;
     }
 

@@ -20,12 +20,9 @@
 #endif
 
 // free_on_delete posible values
-#ifndef FREE_ON_DELETE
-    #define FREE_ON_DELETE 1
-#endif
-
-#ifndef DONT_FREE_ON_DELETE
-    #define DONT_FREE_ON_DELETE 0
+#ifndef free_on_delete_defined
+    typedef enum free_on_delete { FreeOnDelete=1, DontFreeOnDelete=0} free_on_delete_t;
+    #define free_on_delete_defined
 #endif
 
 typedef struct StackNode {
@@ -42,7 +39,7 @@ typedef struct Stack {
         StackNode *head;
         // Comparator function
         int (*compare) (void*, void*);
-        bool free_on_delete;
+        free_on_delete_t free_on_delete;
 } Stack;
 
 /**
@@ -55,7 +52,7 @@ extern Stack stack_init(int (*cmp) (void*, void*));
  * Sets the value of stack->free_on_delete to the parameter free_on_delete
  * See the defined macros FREE_ON_DELETE (1) and DONT_FREE_ON_DELETE (0)
 */
-static inline void stack_configure(Stack *stack, int free_on_delete){
+static inline void stack_configure(Stack *stack, free_on_delete_t free_on_delete){
     stack->free_on_delete = free_on_delete;
 }
 

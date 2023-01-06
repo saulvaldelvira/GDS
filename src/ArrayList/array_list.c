@@ -15,7 +15,7 @@ ArrayList arrlist_init(size_t size, int (*cmp) (void*, void*)){
         .n_elements = 0,
         .max_elements = size,
         .compare = cmp,
-        .free_on_delete = DONT_FREE_ON_DELETE
+        .free_on_delete = DontFreeOnDelete
     };
 }
 
@@ -65,7 +65,7 @@ index_t arrlist_set_at(ArrayList *list, size_t index, void *element){
     CHECK_NULL(list == NULL || element == NULL, arrlist_set_at, INDEX_NOT_FOUND)
     CHECK_BOUNDS(index, list->n_elements, arrlist_set_at, INDEX_NOT_FOUND);
     void *ret; // Element in the given index
-    if (list->free_on_delete == FREE_ON_DELETE){ // If we have to free the element
+    if (list->free_on_delete == FreeOnDelete){ // If we have to free the element
         free(list->elements[index]);
         ret = NULL; // The return index_t's element will be NULL since that memory will alrready be free
     }else{
@@ -79,7 +79,7 @@ index_t arrlist_set(ArrayList *list, void *element, void *replacement){
     CHECK_NULL(list == NULL || element == NULL || replacement == NULL, arrlist_set, INDEX_NOT_FOUND)
     for (size_t i=0; i < list->n_elements; i++){
         if ((*list->compare) (list->elements[i], element) == 0){
-            if(list->free_on_delete == FREE_ON_DELETE){
+            if(list->free_on_delete == FreeOnDelete){
                 free(list->elements[i]);
             }
             list->elements[i] = replacement;
@@ -108,7 +108,7 @@ index_t arrlist_remove_at(ArrayList *list, size_t index){
     CHECK_NULL(list == NULL, arrlist_remove_at, INDEX_NOT_FOUND)
     CHECK_BOUNDS(index, list->n_elements, arrlist_remove_at, INDEX_NOT_FOUND)
     void *e;
-    if(list->free_on_delete == FREE_ON_DELETE){
+    if(list->free_on_delete == FreeOnDelete){
         free(list->elements[index]);
         e = NULL;
     }else {
@@ -132,7 +132,7 @@ index_t arrlist_remove(ArrayList *list, void *element){
  }
 
 void arrlist_free(ArrayList list){
-    if(list.free_on_delete == FREE_ON_DELETE){
+    if(list.free_on_delete == FreeOnDelete){
         for(size_t i = 0; i < list.n_elements; i++){
             free(list.elements[i]);
         }

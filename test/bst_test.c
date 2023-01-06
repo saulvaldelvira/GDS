@@ -16,7 +16,7 @@ int main(){
     printf("[BSTree Test]\n");
     BSTree t = bst_init(Comparator.integer);
     // Random numbers test
-    bst_configure(&t, DONT_FREE_ON_DELETE);
+    bst_configure(&t, DontFreeOnDelete);
     assert(!bst_exists(t, &n));
     printf("Add...\n");
     for(ncount=0; ncount<n; ncount++){
@@ -32,7 +32,7 @@ int main(){
     // Orders test
     printf("Traversals... \n");
     bst_reset(&t);
-    bst_configure(&t, FREE_ON_DELETE);
+    bst_configure(&t, FreeOnDelete);
     assert(bst_add(&t, alloc_int(12)));
     assert(bst_add(&t, alloc_int(9)));
     assert(bst_add(&t, alloc_int(7)));
@@ -79,7 +79,7 @@ int main(){
 
     // Remove test
     bst_reset(&t);
-    t.free_on_delete = FREE_ON_DELETE;
+    t.free_on_delete = FreeOnDelete;
     assert(bst_add(&t, alloc_int(12)));
     assert(bst_add(&t, alloc_int(5)));
     assert(bst_add(&t, alloc_int(3)));

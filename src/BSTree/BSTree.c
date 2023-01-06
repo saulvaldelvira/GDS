@@ -126,7 +126,7 @@ static struct remove_rec_ret {
  * 3) If there are left and right son, we set the current node's info to the BIGGEST element starting from the left son. 
  *      After that, there are two nodes with the same info, so we delete the node that previosly stored this info, since it will now be stored in this node
 */
-remove_rec(BSNode *node, void *element, int (*cmp) (void*,void*), bool free_element){
+remove_rec(BSNode *node, void *element, int (*cmp) (void*,void*), free_on_delete_t free_element){
     if (node == NULL){
         return (struct remove_rec_ret){NULL, NON_EXISTING_ELEMENT};
     }
@@ -140,7 +140,7 @@ remove_rec(BSNode *node, void *element, int (*cmp) (void*,void*), bool free_elem
         ret = remove_rec(node->left, element, cmp, free_element);
         node->left = ret.node;
     }else {
-        if(free_element){
+        if(free_element == FreeOnDelete){
             free(node->info);
         }
 
@@ -201,7 +201,7 @@ bool bst_isempty(BSTree tree){
     return tree.root == NULL;
 }
 
-static void free_rec(BSNode *node, bool free_element){
+static void free_rec(BSNode *node, free_on_delete_t free_element){
     if(node == NULL){
         return;
     }

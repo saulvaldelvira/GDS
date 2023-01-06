@@ -7,7 +7,7 @@ Stack stack_init(int (*cmp) (void*, void*)){
         return (Stack){
                 .head = NULL,
                 .compare = cmp,
-                .free_on_delete = DONT_FREE_ON_DELETE
+                .free_on_delete = DontFreeOnDelete
         };
 }
 
@@ -75,7 +75,7 @@ bool stack_isempty(Stack stack){
         return stack.head == NULL;
 }
 
-static void free_node(StackNode *node, int free_element){
+static void free_node(StackNode *node, free_on_delete_t free_element){
         if (node == NULL) {
                 return;
         }
