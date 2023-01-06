@@ -3,6 +3,10 @@
 #include <stdio.h>
 #include "../Util/checks.h"
 
+struct QueueNode {
+    void *info;
+    struct QueueNode *next;
+};
 
 Queue queue_init(int (*cmp) (void*, void*)){
     return (Queue) {

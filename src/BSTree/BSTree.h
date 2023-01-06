@@ -15,12 +15,7 @@
     #define free_on_delete_defined
 #endif
 
-typedef struct BSNode {
-    void *info;
-    struct BSNode *right;
-    struct BSNode *left;
-    struct BSNode *father;
-} BSNode;
+typedef struct BSNode BSNode;
 
 /**
      * @brief BSTree (Binary Search Tree) structure.
@@ -63,6 +58,17 @@ typedef struct BSNode {
      * */
 typedef struct BSTree {
     BSNode *root;
+    /**
+    * Comparator function for 2 elements
+    *   \attention 
+    * This function is really important, because it's going to be used to compare two elements in this tree. It 
+    * should receive two void pointers p1 and p2 and return 1 if p1 > p2, -1 if p1 < p2 or 0 if p1 == p2 
+    *   \attention 
+    * There are a few functions already implemented for the most common data types (int, char, char *, float, double). 
+    * You can find them in the Comparators structure, defined in the "comparator.h" header file.
+    *   \note 
+    * Example of use: Comparators.integer (function to compare two void pointers representing int pointers).
+    */
     int (*compare) (void*,void*);
     size_t n_elements;
     free_on_delete_t free_on_delete; // Free the element when deleting it

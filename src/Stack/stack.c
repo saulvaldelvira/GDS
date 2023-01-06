@@ -3,6 +3,11 @@
 #include <stdio.h>
 #include "../Util/checks.h"
 
+struct StackNode {
+        void* info;
+        struct StackNode *next;
+};
+
 Stack stack_init(int (*cmp) (void*, void*)){
         return (Stack){
                 .head = NULL,

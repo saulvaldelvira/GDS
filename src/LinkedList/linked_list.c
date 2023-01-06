@@ -4,6 +4,12 @@
 #include <math.h>
 #include "../Util/checks.h"
 
+struct LLNode {
+    struct LLNode *next; // Pointer to the next node
+    struct LLNode *previous; // Pointer to the previous node
+    void *info; // Element stored in this node
+};
+
 LinkedList lnkd_list_init(int (*cmp) (void*, void*)){
     return (LinkedList) {
         .n_elements = 0,

@@ -18,11 +18,8 @@
 /**
  * Node of a Linked List
 */
-typedef struct LLNode {
-    struct LLNode *next; // Pointer to the next node
-    struct LLNode *previous; // Pointer to the previous node
-    void *info; // Element stored in this node
-} LLNode;   
+typedef struct LLNode LLNode;
+
 /**
  * @brief Linked List structure.
  * 

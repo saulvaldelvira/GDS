@@ -15,10 +15,7 @@
     #define free_on_delete_defined
 #endif
 
-typedef struct QueueNode {
-    void *info;
-    struct QueueNode *next;
-} QueueNode;
+typedef struct QueueNode QueueNode;
 
 /**
  * The Queue works in a similar way to a LinkedList. But in this case, the elements are removed from the head.

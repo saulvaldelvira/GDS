@@ -4,6 +4,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+struct BSNode {
+    void *info;
+    struct BSNode *right;
+    struct BSNode *left;
+    struct BSNode *father;
+};
+
 BSTree bst_init(int (*cmp) (void*,void*)){
     return (BSTree) {
         .root = NULL,

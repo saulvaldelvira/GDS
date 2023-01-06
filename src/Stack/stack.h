@@ -25,10 +25,7 @@
     #define free_on_delete_defined
 #endif
 
-typedef struct StackNode {
-        void* info;
-        struct StackNode *next;
-} StackNode;
+typedef struct StackNode StackNode;
 
 /**
  * The Stack works in a similar way to a LinkedList. But in this case, the elements are allways added in the head.
