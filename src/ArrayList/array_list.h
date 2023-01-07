@@ -3,13 +3,9 @@
 #define ARRAYLIST_H
     #include <stddef.h>
     #include <stdbool.h>
-    
+    #include "../definitions.h"
     #define ARRAY_LIST_DEFAULT_SIZE 10
 
-#ifndef free_on_delete_defined
-    typedef enum free_on_delete { FreeOnDelete=1, DontFreeOnDelete=0} free_on_delete_t;
-    #define free_on_delete_defined
-#endif
     /**
      * Represents a position on the list. Used in methods to return a value alongside a status identifier of the operation result.
     */
@@ -65,7 +61,6 @@
      *  freed on deletion.
      * */
     typedef struct ArrayList {
-        void **elements;
         size_t n_elements;
         size_t max_elements;
         /**
@@ -81,6 +76,7 @@
         */
         int (*compare) (void*, void*);
         free_on_delete_t free_on_delete; // Free the element when deleting it
+        void **elements;
     } ArrayList;
     
     /**

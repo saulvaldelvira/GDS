@@ -9,11 +9,7 @@
 #define NON_EXISTING_ELEMENT -1
 #define EMPTY_TREE -1
 
-// free_on_delete posible values
-#ifndef free_on_delete_defined
-    typedef enum free_on_delete { FreeOnDelete=1, DontFreeOnDelete=0} free_on_delete_t;
-    #define free_on_delete_defined
-#endif
+#include "../definitions.h"
 
 typedef struct BSNode BSNode;
 
@@ -88,7 +84,7 @@ extern BSTree bst_init(int (*cmp) (void*,void*));
      *  See the BSTree structure documentation for more info
      * @param free_on_delete If true, the information of the nodes will be also freed on node deletion
     */
-static inline void bst_configure(BSTree *tree, int free_on_delete){
+static inline void bst_configure(BSTree *tree, free_on_delete_t free_on_delete){
     tree->free_on_delete = free_on_delete;
 }
 

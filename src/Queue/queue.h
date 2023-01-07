@@ -9,11 +9,7 @@
 
 #include <stdbool.h>
 
-// free_on_delete posible values
-#ifndef free_on_delete_defined
-    typedef enum free_on_delete { FreeOnDelete=1, DontFreeOnDelete=0} free_on_delete_t;
-    #define free_on_delete_defined
-#endif
+#include "../definitions.h"
 
 typedef struct QueueNode QueueNode;
 

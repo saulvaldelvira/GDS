@@ -7,6 +7,8 @@
 #undef COMPARATOR_ENABLE
 #undef TIMESTAMP_ENABLE
 
+#include <stdint.h>
+
 int main(){
         int n = 10000;
         double arr_time, lnkd_time;
@@ -19,7 +21,7 @@ int main(){
         ArrayList arr = arrlist_empty(Comparator.integer);
         arrlist_configure(&arr, FreeOnDelete);
         assert(arrlist_isempty(arr));
-        for(int i=0; i < n; i++){
+        for(intptr_t i=0; i < n; i++){
                 assert(arrlist_append(&arr, alloc_int(i)));
                 assert(arr.n_elements == (size_t) i+1);
         }
