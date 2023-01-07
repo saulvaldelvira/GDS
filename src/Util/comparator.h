@@ -21,7 +21,7 @@
         int (*character)           (void*, void*);
         int (*floating)            (void*, void*);
         int (*double_floating)     (void*, void*);
-    } Comparator= { 
+    } Comparator = { 
                     .integer = *compare_int,
                     .character = *compare_char,
                     .floating = *compare_float,
