@@ -126,7 +126,7 @@ The function "Comparator.compare_literal_integer" takes two void pointers, casts
 }
 
  ```
-Since intptr_t is the largest data type than can be safely casted this way, this function can be used for ints, longs, chars, etc.
+Since intptr_t is the largest data type than can be safely casted this way, this function can be used for ints, longs and chars. Basically any data type that is smaller than a pointer.
 
 ### NOTE
 Keep in mind that you can only store elements this way <b>as long as sizeof(data_type) <= sizeof(void*)</b> <br>
