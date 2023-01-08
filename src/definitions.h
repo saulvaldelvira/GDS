@@ -11,5 +11,6 @@
 
 typedef enum free_on_delete {FreeOnDelete=1, DontFreeOnDelete=0} free_on_delete_t;
 
+#define offset(ptr,index,size) (void*)(((unsigned char*)ptr) + index * size)
 
 #endif
