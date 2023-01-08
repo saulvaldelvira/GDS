@@ -1,7 +1,9 @@
 /**
  * Autor:   Saúl Valdelvira Iglesias
  * Email:   saulvaldelvira@gmail.com
- * Version: 31-12-2022
+ * Version: 08-01-2023
+ * Copyright: Saúl Valdelvira Iglesias (2023)
+ * Licensed under the GNU GPL V.3. See /LICENSE file for more info
 */
 #pragma once
 #ifndef LINKED_LINKED_LIST_H

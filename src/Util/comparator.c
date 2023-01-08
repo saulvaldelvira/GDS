@@ -1,3 +1,10 @@
+/**
+ * Autor:   Saúl Valdelvira Iglesias
+ * Email:   saulvaldelvira@gmail.com
+ * Version: 08-01-2023
+ * Copyright: Saúl Valdelvira Iglesias (2023)
+ * Licensed under the GNU GPL V.3. See /LICENSE file for more info
+*/
 #define DISABLE_COMPARATOR
 #include "comparator.h"
 #undef DISABLE_COMPARATOR
