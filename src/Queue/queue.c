@@ -8,7 +8,7 @@ struct QueueNode {
     struct QueueNode *next;
 };
 
-Queue queue_init(int (*cmp) (void*, void*)){
+Queue queue_init(int (*cmp) (const void*, const void*)){
     return (Queue) {
         .head = NULL,
         .tail = NULL,

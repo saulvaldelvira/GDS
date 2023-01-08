@@ -8,7 +8,7 @@ struct StackNode {
         struct StackNode *next;
 };
 
-Stack stack_init(int (*cmp) (void*, void*)){
+Stack stack_init(int (*cmp) (const void*, const void*)){
         return (Stack){
                 .head = NULL,
                 .compare = cmp,

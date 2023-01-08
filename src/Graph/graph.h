@@ -11,7 +11,7 @@ typedef struct Graph {
         size_t max_elements;
         size_t data_size; // Size of the data type stored (in bytes)
         free_on_delete_t free_on_delete;
-        int (*compare) (void*, void*);
+        int (*compare) (const void*, const void*);
         float **weights;
         bool **edges;
         void *nodes;
@@ -19,7 +19,7 @@ typedef struct Graph {
 
 
 
-Graph graph_init(int size, size_t data_size, int (*cmp) (void*, void*));
+Graph graph_init(int size, size_t data_size, int (*cmp) (const void*, const void*));
 
 static inline void graph_configure(Graph *graph, free_on_delete_t free_on_delete){
         graph->free_on_delete = free_on_delete;

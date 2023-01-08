@@ -70,7 +70,7 @@ typedef struct LinkedList {
      *   \note 
      * Example of use: Comparators.integer (function to compare two void pointers representing int pointers).
      */
-     int (*compare) (void*, void*);
+     int (*compare) (const void*, const void*);
      // Flags: Determine the behaviour when deleting a node
      free_on_delete_t free_on_delete; // Free the element in the node when deleting it
 } LinkedList;
@@ -80,7 +80,7 @@ typedef struct LinkedList {
  * @param cmp pointer to a function that receives two void pointers and returns 1 if the first one is greater than the 
  *              second, 0 if they are equal and -1 if the first one is smaller than the second one
 */
-LinkedList lnkd_list_init(int (*cmp) (void*, void*));
+LinkedList lnkd_list_init(int (*cmp) (const void*, const void*));
 
 /**
  * \brief 

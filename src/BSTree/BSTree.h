@@ -65,7 +65,7 @@ typedef struct BSTree {
     *   \note 
     * Example of use: Comparators.integer (function to compare two void pointers representing int pointers).
     */
-    int (*compare) (void*,void*);
+    int (*compare) (const void*,const void*);
     size_t n_elements;
     free_on_delete_t free_on_delete; // Free the element when deleting it
 } BSTree;
@@ -75,7 +75,7 @@ typedef struct BSTree {
  * @param comparator function to compare two elements of the tree. 
  *  Must return -1 if element1 < element2, 1 if element1 > element2 and 0 if element1 == element2
 */
-extern BSTree bst_init(int (*cmp) (void*,void*));
+extern BSTree bst_init(int (*cmp) (const void*, const void*));
 
  /**
      * \brief 

@@ -4,10 +4,10 @@
 #include <stdlib.h>
 #include "../Util/checks.h"
 
-ArrayList arrlist_empty(int (*cmp) (void*, void*)){
+ArrayList arrlist_empty(int (*cmp) (const void*, const void*)){
     return arrlist_init(ARRAY_LIST_DEFAULT_SIZE, cmp);
 }
-ArrayList arrlist_init(size_t size, int (*cmp) (void*, void*)){
+ArrayList arrlist_init(size_t size, int (*cmp) (const void*, const void*)){
     void **elements = calloc(ARRAY_LIST_DEFAULT_SIZE, sizeof(void*));
     CHECK_MEMORY(elements, arrlist_init, (ArrayList){})
     return (ArrayList) {

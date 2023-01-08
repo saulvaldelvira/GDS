@@ -4,23 +4,23 @@
     #include <stdbool.h>
     #include <math.h>
 
-    #define COMPARATOR_FUNCTION(name) int (*name) (void*,void*)
+    #define COMPARATOR_FUNCTION(name) int (*name) (const void*,const void*)
 
     // COMMON COMPARATOR FUNCTIONS
-    int compare_int(void *e_1, void *e_2);
-    int compare_char(void *e_1, void *e_2);
-    int compare_float(void *e_1, void *e_2);
-    int compare_double(void *e_1, void *e_2);
+    int compare_int(const void *e_1, const void *e_2);
+    int compare_char(const void *e_1, const void *e_2);
+    int compare_float(const void *e_1, const void *e_2);
+    int compare_double(const void *e_1, const void *e_2);
 
     #define DEFAULT_FLOAT_PRECISION 100000000
     #define DEFAULT_DOUBLE_PRECISION 100000000000000000
 
 #ifndef DISABLE_COMPARATOR
     static struct {
-        int (*integer)             (void*, void*);
-        int (*character)           (void*, void*);
-        int (*floating)            (void*, void*);
-        int (*double_floating)     (void*, void*);
+        int (*integer)             (const void*, const void*);
+        int (*character)           (const void*, const void*);
+        int (*floating)            (const void*, const void*);
+        int (*double_floating)     (const void*, const void*);
     } Comparator = { 
                     .integer = *compare_int,
                     .character = *compare_char,

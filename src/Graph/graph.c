@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <math.h>
 
-Graph graph_init(int size, size_t data_size, int (*cmp) (void*, void*)){
+Graph graph_init(int size, size_t data_size, int (*cmp) (const void*, const void*)){
         void* nodes = malloc(size * data_size);
         CHECK_MEMORY(nodes, graph_init, (Graph){})
 

@@ -10,7 +10,7 @@ struct LLNode {
     void *info; // Element stored in this node
 };
 
-LinkedList lnkd_list_init(int (*cmp) (void*, void*)){
+LinkedList lnkd_list_init(int (*cmp) (const void*, const void*)){
     return (LinkedList) {
         .n_elements = 0,
         .head = NULL,

@@ -22,14 +22,14 @@ typedef struct Queue {
     QueueNode *head;
     QueueNode *tail;
     // Comparator function
-    int (*compare) (void*, void*);
+    int (*compare) (const void*, const void*);
     free_on_delete_t free_on_delete;
 } Queue;
 
 /**
  * @return a new Queue structure
 */
-extern Queue queue_init(int (*cmp) (void*, void*));
+extern Queue queue_init(int (*cmp) (const void*, const void*));
 
 /**
  * \brief Configures the Queue.free_on_delete parameter. 

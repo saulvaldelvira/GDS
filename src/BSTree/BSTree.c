@@ -11,7 +11,7 @@ struct BSNode {
     struct BSNode *father;
 };
 
-BSTree bst_init(int (*cmp) (void*,void*)){
+BSTree bst_init(int (*cmp) (const void*,const void*)){
     return (BSTree) {
         .root = NULL,
         .compare = cmp,
@@ -58,7 +58,7 @@ static struct add_rec_ret
      * The use  of struct add_rec_ret is to be able to check the struct add_rec_ret.status when this chain of recursive calls ends and returns to bst_add. This way, we can
      * check if the operation was a sucess and increment the n_elements acordingly, or else we have to return an error status.
     */
-add_rec(BSNode *node, void *element, int (*cmp) (void*,void*)){
+add_rec(BSNode *node, void *element, int (*cmp) (const void*,const void*)){
     if (node == NULL){ // The element does not exist in the tree
         BSNode *aux = init_node(element); // Create the node
         if (!aux){ // If memory could not be allocated, return with an error status
@@ -133,7 +133,7 @@ static struct remove_rec_ret {
  * 3) If there are left and right son, we set the current node's info to the BIGGEST element starting from the left son. 
  *      After that, there are two nodes with the same info, so we delete the node that previosly stored this info, since it will now be stored in this node
 */
-remove_rec(BSNode *node, void *element, int (*cmp) (void*,void*), free_on_delete_t free_element){
+remove_rec(BSNode *node, void *element, int (*cmp) (const void*,const void*), free_on_delete_t free_element){
     if (node == NULL){
         return (struct remove_rec_ret){NULL, NON_EXISTING_ELEMENT};
     }
@@ -181,7 +181,7 @@ int bst_remove(BSTree *tree, void *element){
     return ret.status; 
 }
 
-static void* get_rec(BSNode *node, void *element, int (*cmp) (void*,void*)){
+static void* get_rec(BSNode *node, void *element, int (*cmp) (const void*,const void*)){
     if(node == NULL){
         return NULL;
     }

@@ -31,7 +31,7 @@ typedef struct StackNode StackNode;
 typedef struct Stack {
         StackNode *head;
         // Comparator function
-        int (*compare) (void*, void*);
+        int (*compare) (const void*, const void*);
         free_on_delete_t free_on_delete;
 } Stack;
 
@@ -39,7 +39,7 @@ typedef struct Stack {
  * Initializes an empty Stack
  * @param comp the comparator funtion for two elements
 */
-extern Stack stack_init(int (*cmp) (void*, void*));
+extern Stack stack_init(int (*cmp) (const void*, const void*));
 
 /**
  * Sets the value of stack->free_on_delete to the parameter free_on_delete
