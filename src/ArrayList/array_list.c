@@ -23,8 +23,7 @@ ArrayList arrlist_init(size_t data_size, size_t size, int (*cmp) (const void*, c
         .data_size = data_size,
         .n_elements = 0,
         .max_elements = size,
-        .compare = cmp,
-        .free_on_delete = DontFreeOnDelete
+        .compare = cmp
     };
 }
 

@@ -79,7 +79,6 @@
         * Example of use: Comparators.integer (function to compare two void pointers representing int pointers).
         */
         int (*compare) (const void*, const void*);
-        free_on_delete_t free_on_delete; // Free the element when deleting it
         void *elements;
     } ArrayList;
     
@@ -94,17 +93,6 @@
      * Innitializes an arraylist of the given size and with the given comparator function.
     */
     extern ArrayList arrlist_init(size_t data_size, size_t size, int (*cmp) (const void*, const void*));
-
-    /**
-     * \brief 
-     * Configures the behavior of the list when deleting a node. 
-     * \note
-     *  See the LinkedList structure documentation for more info
-     * @param free_on_delete If true, the elements will be also freed on deletion
-    */
-    static inline void arrlist_configure(ArrayList *list, free_on_delete_t free_on_delete){
-        list->free_on_delete = free_on_delete;
-    }
 
     /**
      * \brief
