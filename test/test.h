@@ -11,7 +11,7 @@
 #endif
 
 #include "../src/Util/checks.h"
-
+#include <stdint.h>
 #include <time.h>
 
 #ifndef __linux__ // Needed for use of CLOCK_REALTIME outside Linux
@@ -43,6 +43,5 @@ static inline int rand_range(int min, int max){
 #define END_MSG(name) printf("[" #name " test finished in "); \
                         if(timestamp>=1.0) printf("%.3f seconds]\n\n", timestamp); \
                         else printf("%.2f miliseconds]\n\n", timestamp * 1000);
-
 
 #endif
