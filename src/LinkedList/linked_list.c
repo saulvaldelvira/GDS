@@ -17,13 +17,13 @@ struct LLNode {
     void *info; // Element stored in this node
 };
 
-LinkedList lnkd_list_init(int (*cmp) (const void*, const void*)){
+LinkedList lnkd_list_init(size_t data_size, int (*cmp) (const void*, const void*)){
     return (LinkedList) {
         .n_elements = 0,
         .head = NULL,
         .tail = NULL,
         .compare = cmp,
-        .free_on_delete = DontFreeOnDelete
+        .data_size = data_size
     };
 }
 
@@ -31,7 +31,7 @@ LinkedList lnkd_list_init(int (*cmp) (const void*, const void*)){
  * Initializes a new LLNode with the given info
 */
 static LLNode* lnkd_list_innit_node(void *info){
-    LLNode *node = calloc(1, sizeof(LLNode));
+    LLNode *node = malloc(sizeof(LLNode));
     CHECK_MEMORY(node, lnkd_list_innit_node , NULL)
     node->info = info;
     node->next = NULL;
