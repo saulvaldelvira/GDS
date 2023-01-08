@@ -10,8 +10,8 @@
 #include <stdint.h>
 
 void literals(){
-        size_t n = 100;
-        printf("Testing literals...\n");
+        size_t n = 10000;
+        printf("->Testing literals...\n");
         TIMESTAMP_START
         ArrayList arr = arrlist_empty(Comparator.literal_integer);
         
@@ -38,7 +38,7 @@ void literals(){
 
 
         TIMESTAMP_STOP
-        printf("Done in %.3f seconds\n", timestamp);
+        printf("\tDone in %.3f seconds\n", timestamp);
 }
 
 int main(){

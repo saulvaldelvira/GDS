@@ -10,7 +10,7 @@
 #undef DISABLE_COMPARATOR
 #include <stdint.h>
 
-#define NOT_NULL(a,b) if(a == NULL){if(b == NULL){return 0;}return -1;}else if(b == NULL){return 1;}
+#define NOT_NULL(a,b) if(a == 0){if(b == 0){return 0;}return -1;}else if(b == 0){return 1;}
 
 // COMPARATORS
 int compare_int(const void *e_1, const void *e_2){
