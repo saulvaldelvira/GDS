@@ -18,6 +18,8 @@
     int compare_char(const void *e_1, const void *e_2);
     int compare_float(const void *e_1, const void *e_2);
     int compare_double(const void *e_1, const void *e_2);
+    int compare_long_long(const void *e_1, const void *e_2);
+    int compare_literal_integer(const void *e_1, const void *e_2);
 
     #define DEFAULT_FLOAT_PRECISION 100000000
     #define DEFAULT_DOUBLE_PRECISION 100000000000000000
@@ -28,11 +30,15 @@
         int (*character)           (const void*, const void*);
         int (*floating)            (const void*, const void*);
         int (*double_floating)     (const void*, const void*);
+        int (*long_long)           (const void*, const void*);
+        int (*literal_integer)            (const void*, const void*);
     } Comparator = { 
                     .integer = *compare_int,
                     .character = *compare_char,
                     .floating = *compare_float,
                     .double_floating = *compare_double,
+                    .long_long = *compare_long_long,
+                    .literal_integer = *compare_literal_integer
                 };
 #endif
 

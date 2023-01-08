@@ -16,7 +16,7 @@ ArrayList arrlist_empty(int (*cmp) (const void*, const void*)){
 }
 ArrayList arrlist_init(size_t size, int (*cmp) (const void*, const void*)){
     void **elements = calloc(ARRAY_LIST_DEFAULT_SIZE, sizeof(void*));
-    CHECK_MEMORY(elements, arrlist_init, (ArrayList){})
+    CHECK_MEMORY(elements, arrlist_init, (ArrayList) {0})
     return (ArrayList) {
         .elements = elements,
         .n_elements = 0,
@@ -69,7 +69,7 @@ bool arrlist_isempty(ArrayList list){
 }
 
 index_t arrlist_set_at(ArrayList *list, size_t index, void *element){
-    CHECK_NULL(list == NULL || element == NULL, arrlist_set_at, INDEX_NOT_FOUND)
+    CHECK_NULL(list, arrlist_set_at, INDEX_NOT_FOUND)
     CHECK_BOUNDS(index, list->n_elements, arrlist_set_at, INDEX_NOT_FOUND);
     void *ret; // Element in the given index
     if (list->free_on_delete == FreeOnDelete){ // If we have to free the element
@@ -83,7 +83,7 @@ index_t arrlist_set_at(ArrayList *list, size_t index, void *element){
 }
 
 index_t arrlist_set(ArrayList *list, void *element, void *replacement){
-    CHECK_NULL(list == NULL || element == NULL || replacement == NULL, arrlist_set, INDEX_NOT_FOUND)
+    CHECK_NULL(list, arrlist_set, INDEX_NOT_FOUND)
     for (size_t i=0; i < list->n_elements; i++){
         if ((*list->compare) (list->elements[i], element) == 0){
             if(list->free_on_delete == FreeOnDelete){
@@ -102,7 +102,6 @@ void* arrlist_get_at(ArrayList list, size_t index){
 }
 
 void* arrlist_get(ArrayList list, void *element){
-    CHECK_NULL(element == NULL, arrlist_get, NULL)
     for (size_t i = 0; i < list.n_elements; i++){
         if((*list.compare) (list.elements[i], element) == 0){
             return list.elements[i];
@@ -112,7 +111,7 @@ void* arrlist_get(ArrayList list, void *element){
 }
 
 index_t arrlist_remove_at(ArrayList *list, size_t index){
-    CHECK_NULL(list == NULL, arrlist_remove_at, INDEX_NOT_FOUND)
+    CHECK_NULL(list, arrlist_remove_at, INDEX_NOT_FOUND)
     CHECK_BOUNDS(index, list->n_elements, arrlist_remove_at, INDEX_NOT_FOUND)
     void *e;
     if(list->free_on_delete == FreeOnDelete){
@@ -129,7 +128,7 @@ index_t arrlist_remove_at(ArrayList *list, size_t index){
 }
 
 index_t arrlist_remove(ArrayList *list, void *element){
-    CHECK_NULL(list == NULL || element == NULL, arrlist_remove, INDEX_NOT_FOUND)
+    CHECK_NULL(list, arrlist_remove, INDEX_NOT_FOUND)
     index_t i = arrlist_indexof(*list, element);
     if(i.status){
         return arrlist_remove_at(list, i.value.index);

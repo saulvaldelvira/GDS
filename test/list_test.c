@@ -9,6 +9,38 @@
 
 #include <stdint.h>
 
+void literals(){
+        size_t n = 100;
+        printf("Testing literals...\n");
+        TIMESTAMP_START
+        ArrayList arr = arrlist_empty(Comparator.literal_integer);
+        
+        for (size_t i=0; i < n; i++){
+                assert(arrlist_append(&arr, (void*) i));
+                assert(i+1 == arr.n_elements);
+        }
+        for (size_t i=0; i < n; i++){
+                assert(arrlist_exists(arr, (void*) i));
+                assert(arrlist_remove(&arr, (void*) i).status);
+                assert((n-i-1) == arr.n_elements);
+        }
+
+        LinkedList lnk = lnkd_list_init(Comparator.literal_integer);
+        for (size_t i=0; i < n; i++){
+                assert(lnkd_list_push_back(&lnk, (void*) i));
+                assert(i+1 == lnk.n_elements);
+        }
+        for (size_t i=0; i < n; i++){
+                assert(lnkd_list_exists(lnk, (void*) i));
+                assert(lnkd_list_remove(&lnk, (void*) i));
+                assert((n-i-1) == lnk.n_elements);
+        }
+
+
+        TIMESTAMP_STOP
+        printf("Done in %.3f seconds\n", timestamp);
+}
+
 int main(){
         int n = 10000;
         double arr_time, lnkd_time;
@@ -109,7 +141,12 @@ int main(){
 
         printf("\tDone in %.3f seconds\n", lnkd_time);
 
-        timestamp = lnkd_time + arr_time;
+        double total = lnkd_time + arr_time;
+
+
+        literals();
+
+        timestamp += total;
 
         END_MSG(List)
         return 0;

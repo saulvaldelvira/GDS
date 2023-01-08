@@ -37,7 +37,7 @@ static StackNode* init_node(void *element){
 }
 
 int stack_push(Stack *stack, void *element){
-        CHECK_NULL(stack == NULL || element == NULL, stack_push, NULL_PARAMETER)
+        CHECK_NULL(stack, stack_push, NULL_PARAMETER)
         if(stack->head == NULL){
                 stack->head = init_node(element);
                 CHECK_MEMORY(stack->head, stack_push, ALLOCATION_ERROR)
@@ -52,7 +52,7 @@ int stack_push(Stack *stack, void *element){
 }
 
 void* stack_pop(Stack *stack){
-        CHECK_NULL(stack == NULL, stack_pop, NULL)
+        CHECK_NULL(stack, stack_pop, NULL)
         if(stack->head == NULL){
                 return NULL;
         }else{

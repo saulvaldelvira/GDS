@@ -32,7 +32,7 @@ LinkedList lnkd_list_init(int (*cmp) (const void*, const void*)){
 */
 static LLNode* lnkd_list_innit_node(void *info){
     LLNode *node = calloc(1, sizeof(LLNode));
-    CHECK_MEMORY(node, lnkd_list_append , NULL)
+    CHECK_MEMORY(node, lnkd_list_innit_node , NULL)
     node->info = info;
     node->next = NULL;
     node->previous = NULL;
@@ -40,7 +40,7 @@ static LLNode* lnkd_list_innit_node(void *info){
 }
 
 int lnkd_list_push_back(LinkedList *list, void *element){
-    CHECK_NULL(element == NULL, lnkd_list_append, NULL_PARAMETER)
+    CHECK_NULL(list, lnkd_list_push_back, NULL_PARAMETER)
     if(list->n_elements == 0){ // We add to the head
         list->head = lnkd_list_innit_node(element);
         if(!list->head){
@@ -60,7 +60,7 @@ int lnkd_list_push_back(LinkedList *list, void *element){
 }
 
 int lnkd_list_push_front(LinkedList *list, void *element){
-    CHECK_NULL(element == NULL, lnkd_list_append, NULL_PARAMETER)
+    CHECK_NULL(list, lnkd_list_append, NULL_PARAMETER)
     if(list->n_elements == 0){ // We add to the head
         list->head = lnkd_list_innit_node(element);
         if(!list->head){
@@ -99,7 +99,14 @@ void* lnkd_list_get(LinkedList list, void *element){
 }
 
 bool lnkd_list_exists(LinkedList list, void *element){
-    return lnkd_list_get(list, element) != NULL;
+    LLNode *aux = list.head;
+    while (aux != NULL) {
+        if ((*list.compare) (aux->info, element) == 0){
+            return true;
+        }
+        aux = aux->next;
+    }
+    return false;
 }
 
 bool lnkd_list_isempty(LinkedList list){
@@ -107,7 +114,7 @@ bool lnkd_list_isempty(LinkedList list){
 }
 
 bool lnkd_list_remove(LinkedList *list, void *element){
-    CHECK_NULL(list == NULL || element == NULL, lnkd_list_remove, false)
+    CHECK_NULL(list, lnkd_list_remove, false)
     LLNode *aux = list->head;
     while(aux != NULL && (*list->compare) (aux->info, element) != 0){
         aux = aux->next;

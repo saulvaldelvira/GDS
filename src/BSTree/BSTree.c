@@ -95,7 +95,7 @@ add_rec(BSNode *node, void *element, int (*cmp) (const void*,const void*)){
 }
 
 int bst_add(BSTree *tree, void *element){
-    CHECK_NULL(tree == NULL || element == NULL, bst_add, NULL_PARAMETER)
+    CHECK_NULL(tree, bst_add, NULL_PARAMETER)
     struct add_rec_ret ret = add_rec(tree->root, element, tree->compare);
     tree->root = ret.node;
     if (ret.status == 1){
@@ -179,7 +179,7 @@ remove_rec(BSNode *node, void *element, int (*cmp) (const void*,const void*), fr
 }
 
 int bst_remove(BSTree *tree, void *element){
-    CHECK_NULL(tree == NULL || element == NULL, bst_remove, NULL_PARAMETER)
+    CHECK_NULL(tree, bst_remove, NULL_PARAMETER)
     struct remove_rec_ret ret = remove_rec(tree->root, element, tree->compare, tree->free_on_delete);
     tree->root = ret.node;
     if (ret.status == 1){
@@ -203,7 +203,6 @@ static void* get_rec(BSNode *node, void *element, int (*cmp) (const void*,const 
 }
 
 void* bst_get(BSTree tree, void* element){
-    CHECK_NULL(element == NULL, bst_get, NULL)
     return get_rec(tree.root, element, tree.compare);
 }
 

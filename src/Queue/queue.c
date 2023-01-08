@@ -34,7 +34,7 @@ static QueueNode* queue_init_node(void *element){
 }
 
 int queue_enqueue(Queue *queue, void *element){
-    CHECK_NULL(queue == NULL || element == NULL, queue_enqueue, NULL_PARAMETER)
+    CHECK_NULL(queue, queue_enqueue, NULL_PARAMETER)
     if (queue->head == NULL) {
         queue->head = queue_init_node(element);
         CHECK_MEMORY(queue->head, queue_enqueue, ALLOCATION_ERROR)
@@ -48,7 +48,7 @@ int queue_enqueue(Queue *queue, void *element){
 }
 
 void* queue_dequeue(Queue *queue){
-    CHECK_NULL(queue == NULL, queue_dequeue, NULL)
+    CHECK_NULL(queue, queue_dequeue, NULL)
     if (queue->head == NULL){
         return NULL;
     }

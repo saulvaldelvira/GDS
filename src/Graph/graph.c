@@ -13,21 +13,21 @@
 
 Graph graph_init(int size, size_t data_size, int (*cmp) (const void*, const void*)){
         void* nodes = malloc(size * data_size);
-        CHECK_MEMORY(nodes, graph_init, (Graph){})
+        CHECK_MEMORY(nodes, graph_init, (Graph){0})
 
         float **weights = malloc(size * sizeof(float*));
-        CHECK_MEMORY(weights, graph_init, (Graph){})
+        CHECK_MEMORY(weights, graph_init, (Graph){0})
 
         bool **edges = malloc(size * sizeof(bool*));
-        CHECK_MEMORY(edges, graph_init, (Graph){})
+        CHECK_MEMORY(edges, graph_init, (Graph){0})
 
         for (int i=0; i < size; i++){
-                OFFSET(nodes, i, data_size) = NULL;
+                
 
                 weights[i] = malloc(size * sizeof(float));
-                CHECK_MEMORY(weights[i], graph_init, (Graph){})
+                CHECK_MEMORY(weights[i], graph_init, (Graph){0})
                 edges[i] =  malloc(size * sizeof(bool));
-                CHECK_MEMORY(edges[i], graph_init, (Graph){})
+                CHECK_MEMORY(edges[i], graph_init, (Graph){0})
 
                 for (int j = 0; j < size; j++){
                         weights[i][j] = INFINITY;
