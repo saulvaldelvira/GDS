@@ -1,7 +1,7 @@
 /**
  * Autor:   Saúl Valdelvira Iglesias
  * Email:   saulvaldelvira@gmail.com
- * Version: 08-01-2023
+ * Version: 09-01-2023
  * Copyright: Saúl Valdelvira Iglesias (2023)
  * Licensed under the GNU GPL V.3. See /LICENSE file for more info
 */
@@ -15,14 +15,14 @@
 ArrayList arrlist_empty(size_t data_size, int (*cmp) (const void*, const void*)){
     return arrlist_init(data_size, ARRAY_LIST_DEFAULT_SIZE, cmp);
 }
-ArrayList arrlist_init(size_t data_size, size_t size, int (*cmp) (const void*, const void*)){
+ArrayList arrlist_init(size_t data_size, size_t max_elements, int (*cmp) (const void*, const void*)){
     void *elements = malloc(ARRAY_LIST_DEFAULT_SIZE * data_size);
     CHECK_MEMORY(elements, arrlist_init, (ArrayList) {0})
     return (ArrayList) {
         .elements = elements,
         .data_size = data_size,
         .n_elements = 0,
-        .max_elements = size,
+        .max_elements = max_elements,
         .compare = cmp
     };
 }
@@ -147,12 +147,13 @@ void arrlist_free(ArrayList list){
     free(list.elements);
 }
 
-void arrlist_reset(ArrayList *list){
-    CHECK_NULL(list, arrlist_reset, ;)
+int arrlist_reset(ArrayList *list){
+    CHECK_NULL(list, arrlist_reset, NULL_PARAMETER)
     free(list->elements);
     list->elements = NULL;
     list->elements = malloc(ARRAY_LIST_DEFAULT_SIZE * list->data_size);
-    CHECK_MEMORY(list->elements, arrlist_reset, ;)
+    CHECK_MEMORY(list->elements, arrlist_reset, ALLOCATION_ERROR)
     list->n_elements = 0;
     list->max_elements = ARRAY_LIST_DEFAULT_SIZE;
+    return 1;
 }

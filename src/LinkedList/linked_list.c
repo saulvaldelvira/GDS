@@ -83,22 +83,22 @@ int lnkd_list_push_front(LinkedList *list, void *element){
     return 1;
 }
 
-bool lnkd_list_set(LinkedList *list, void *element, void *replacement){
-    CHECK_NULL(list, lnkd_list_set, false)
-    CHECK_NULL(element, lnkd_list_set, false)
-    CHECK_NULL(replacement, lnkd_list_set, false)
+int lnkd_list_set(LinkedList *list, void *element, void *replacement){
+    CHECK_NULL(list, lnkd_list_set, NULL_PARAMETER)
+    CHECK_NULL(element, lnkd_list_set, NULL_PARAMETER)
+    CHECK_NULL(replacement, lnkd_list_set, NULL_PARAMETER)
     LLNode *aux = list->head;
     while ( (*list->compare) (aux->info, element) != 0) {
         aux = aux->next;
         if(aux == NULL){
-            return false;
+            return -1;
         }
     }
     if(!memcpy(aux->info, replacement, list->data_size)){
         fprintf(stderr, "ERROR: lnkd_list_set\n");
-        return false;
+        return ALLOCATION_ERROR;
     }
-    return true;
+    return 1;
 }
 
 void* lnkd_list_get(LinkedList list, void *element, void *dest){
@@ -127,9 +127,9 @@ bool lnkd_list_isempty(LinkedList list){
     return list.n_elements == 0;
 }
 
-bool lnkd_list_remove(LinkedList *list, void *element){
-    CHECK_NULL(list, lnkd_list_remove, false)
-    CHECK_NULL(element, lnkd_list_remove, false)
+int lnkd_list_remove(LinkedList *list, void *element){
+    CHECK_NULL(list, lnkd_list_remove, NULL_PARAMETER)
+    CHECK_NULL(element, lnkd_list_remove, NULL_PARAMETER)
     LLNode *aux = list->head;
     while(aux != NULL && (*list->compare) (aux->info, element) != 0){
         aux = aux->next;
@@ -148,9 +148,9 @@ bool lnkd_list_remove(LinkedList *list, void *element){
         
         free(aux);
         list->n_elements--;
-        return true;
+        return 1;
     }
-    return false;
+    return -1;
 }
 
 static void lnkd_list_free_node(LLNode *node){
@@ -163,10 +163,11 @@ void lnkd_list_free(LinkedList list){
     lnkd_list_free_node(list.head);
 }
 
-void lnkd_list_reset(LinkedList *list){
-    CHECK_NULL(list, lnkd_list_reset, ;)
+int lnkd_list_reset(LinkedList *list){
+    CHECK_NULL(list, lnkd_list_reset, NULL_PARAMETER)
     lnkd_list_free_node(list->head);
     list->head = NULL;
     list->tail = NULL;
     list->n_elements = 0;
+    return 1;
 }

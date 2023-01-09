@@ -21,22 +21,11 @@
 typedef struct BSNode BSNode;
 
 /**
-     * @brief BSTree (Binary Search Tree) structure.
-     * 
-     * */
+ * @brief BSTree (Binary Search Tree) structure.
+ */
 typedef struct BSTree {
     BSNode *root;
-    /**
-    * Comparator function for 2 elements
-    *   \attention 
-    * This function is really important, because it's going to be used to compare two elements in this tree. It 
-    * should receive two void pointers p1 and p2 and return 1 if p1 > p2, -1 if p1 < p2 or 0 if p1 == p2 
-    *   \attention 
-    * There are a few functions already implemented for the most common data types (int, char, char *, float, double). 
-    * You can find them in the Comparators structure, defined in the "comparator.h" header file.
-    *   \note 
-    * Example of use: Comparators.integer (function to compare two void pointers representing int pointers).
-    */
+    // Comparator function for 2 elements
     int (*compare) (const void*,const void*);
     size_t n_elements;
     size_t data_size;
@@ -44,18 +33,19 @@ typedef struct BSTree {
 
 /**
  * Returns an empty new BSTree
+ * @param data_size size of the data stored.
  * @param comparator function to compare two elements of the tree. 
  *  Must return -1 if element1 < element2, 1 if element1 > element2 and 0 if element1 == element2
 */
 extern BSTree bst_init(size_t data_size, int (*cmp) (const void*, const void*));
 
 /**
- * @return 1 if it sucessfuly adds removes the element from the tree
+ * @return 1 if the operation is successful
 */
 extern int bst_add(BSTree *tree, void *element);
 
 /**
- * @return 1 if it sucessfuly removes the element from the tree
+ * @return 1 if the operation is successful
 */
 extern int bst_remove(BSTree *tree, void *element);
 
@@ -81,24 +71,25 @@ extern void bst_free(BSTree tree);
 
 /**
  * Frees the memory allocated for this tree and resets it to it's original state
+ * @return 1 if the operation is successful
 */
-extern void bst_reset(BSTree *tree);
+extern int bst_reset(BSTree *tree);
 
 /**
- * Returns an array with all the elements of the tree traversed in-order.
- * @note the size of the array will obviously be the number of elements in the tree, so there is no need to return it.
+ * @return an array with all the elements of the tree traversed in-order.
+ * @note the size of the array will naturally be the number of elements in the tree, so there is no need to return it.
 */
 extern void* bst_inorder(BSTree tree);
 
 /**
- * Returns an array with all the elements of the tree traversed pre-order.
- * @note the size of the array will obviously be the number of elements in the tree, so there is no need to return it.
+ * @return an array with all the elements of the tree traversed pre-order.
+ * @note the size of the array will naturally be the number of elements in the tree, so there is no need to return it.
 */
 extern void** bst_preorder(BSTree tree);
 
 /**
- * Returns an array with all the elements of the tree traversed post-order.
- * @note the size of the array will obviously be the number of elements in the tree, so there is no need to return it.
+ * @return an array with all the elements of the tree traversed post-order.
+ * @note the size of the array will naturally be the number of elements in the tree, so there is no need to return it.
 */
 extern void** bst_postorder(BSTree tree);
 

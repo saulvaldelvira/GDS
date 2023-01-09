@@ -110,8 +110,9 @@ void stack_free(Stack stack){
 
 }
 
-void stack_reset(Stack *stack){
-        CHECK_NULL(stack, stack_reset, ;)
+int stack_reset(Stack *stack){
+        CHECK_NULL(stack, stack_reset, NULL_PARAMETER)
         free_node(stack->head);
         stack->head = NULL;
+        return 1;
 }

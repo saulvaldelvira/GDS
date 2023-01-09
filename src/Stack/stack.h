@@ -38,49 +38,48 @@ typedef struct Stack {
 } Stack;
 
 /**
- * Initializes an empty Stack
+ * Initializes an empty Stack.
+ * @param data_size the size of the data being stored.
  * @param comp the comparator funtion for two elements
 */
-extern Stack stack_init(size_t data_size, int (*cmp) (const void*, const void*));
+Stack stack_init(size_t data_size, int (*cmp) (const void*, const void*));
 
 
 /**
  * Pushes the given element to the top of the stack
+ * @return 1 if the operation is successful
 */
-extern int stack_push(Stack *stack, void *element);
+int stack_push(Stack *stack, void *element);
 
 /**
- * @return the last pushed element (and delete it from the stack)
+ * @return the last pushed element (and deletes it from the stack)
 */
-extern void* stack_pop(Stack *stack, void *dest);
+void* stack_pop(Stack *stack, void *dest);
 
 /**
  * @return the last pushed element (without deleting it)
 */
-extern void* stack_peek(Stack stack, void *dest);
+void* stack_peek(Stack stack, void *dest);
 
 /**
  * @return true if the element exists in the stack 
 */
-extern bool stack_search(Stack stack, void *element);
+bool stack_search(Stack stack, void *element);
 
 /**
  * @return true if the stack is empty
 */
-extern bool stack_isempty(Stack stack);
+bool stack_isempty(Stack stack);
 
 /**
- * Frees the memory allocated for the stack. 
- * @note The behviour of this routine towards the memory for the elements of the Stack (the void pointers) is defined by 
- * stack.free_on_delete. See the Stack struct documentation for more info.
+ * Frees the memory allocated for the stack.
 */
-extern void stack_free(Stack stack);
+void stack_free(Stack stack);
 
 /**
  * Frees the memory allocated for the stack AND resets it to the initial state of a stack
- * @note The behviour of this routine towards the memory for the elements of the Stack (the void pointers) is defined by 
- * stack.free_on_delete. See the Stack struct documentation for more info.
+ * @return 1 if the operation is successful
 */
-extern void stack_reset(Stack *stack);
+int stack_reset(Stack *stack);
 
 #endif

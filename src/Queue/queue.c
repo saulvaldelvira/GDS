@@ -107,9 +107,10 @@ void queue_free(Queue queue){
     queue_free_node(queue.head);
 }
 
-void queue_reset(Queue *queue){
-    CHECK_NULL(queue, queue_reset, ;)
+int queue_reset(Queue *queue){
+    CHECK_NULL(queue, queue_reset, NULL_PARAMETER)
     queue_free_node(queue->head);
     queue->head = NULL;
     queue->tail = NULL;
+    return 1;
 }

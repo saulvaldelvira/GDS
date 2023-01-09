@@ -240,11 +240,12 @@ void bst_free(BSTree tree){
     free_rec(tree.root);
 }
 
-void bst_reset(BSTree *tree){
-    CHECK_NULL(tree, bst_reset, ;)
+int bst_reset(BSTree *tree){
+    CHECK_NULL(tree, bst_reset, NULL_PARAMETER)
     free_rec(tree->root);
     tree->root = NULL;
     tree->n_elements = 0;
+    return 1;
 }
 
 #define ORDERS_ERROR (struct orders_ret) {.elements = NULL, .elements_size = 0, .status = -1}
