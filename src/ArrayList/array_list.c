@@ -137,7 +137,8 @@ void arrlist_free(ArrayList list){
 }
 
 void arrlist_reset(ArrayList *list){
-    arrlist_free(*list);
+    free(list->elements);
+    list->elements = NULL;
     list->elements = malloc(ARRAY_LIST_DEFAULT_SIZE * list->data_size);
     CHECK_MEMORY(list->elements, arrlist_reset, ;)
     list->n_elements = 0;

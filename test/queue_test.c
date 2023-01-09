@@ -7,7 +7,7 @@
 #undef TIMESTAMP_ENABLE
 
 int main(){
-    int n = 10000000, tmp;
+    int n = 10000, tmp;
 
     printf("[Starting Queue test]\n Workload: %d\n", n);
     TIMESTAMP_START

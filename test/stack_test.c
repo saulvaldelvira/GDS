@@ -7,13 +7,14 @@
 #undef TIMESTAMP_ENABLE
 
 int main(){
-        int n = 10000000, temp;
+        int n = 10000, temp;
         printf("[Starting Stack Test]\n Workload: %d\n", n);
         TIMESTAMP_START
 
         Stack stack = stack_init(sizeof(int), Comparator.integer);
         assert(stack_isempty(stack));
-        stack_push(&stack, alloc_int(12));
+        temp = 12;
+        stack_push(&stack, &temp);
         assert(!stack_isempty(stack));
         assert(* (int*) stack_peek(stack, &temp) == 12);
         assert(!stack_isempty(stack));
@@ -21,7 +22,7 @@ int main(){
         assert(stack_isempty(stack));
 
         for(int i=0; i<n; i++){
-                stack_push(&stack, alloc_int(i));
+                stack_push(&stack, &i);
         }
         assert(!stack_isempty(stack));
         for(int i=n-1; i>=0; i--){

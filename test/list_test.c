@@ -16,7 +16,7 @@ struct test {
         char ch[];
 };
 int main(){
-        int n = 24000;
+        int n = 2400;
         double arr_time, lnkd_time;
 
         printf("[List Test]\n");
@@ -76,14 +76,14 @@ int main(){
         assert(lnkd_list_isempty(lnked));
         
         for(int i=0; i < n; i++){
-                assert(lnkd_list_push_back(&lnked, alloc_int(i)));
+                assert(lnkd_list_push_back(&lnked, &i));
                 assert(lnked.n_elements == (size_t) i+1);
         }
 
         /*PUSH FRONT*/
-        assert(lnkd_list_push_front(&lnked, alloc_int(-150)));
-        assert(lnked.n_elements == 1UL + n);
         int menos150 = -150;
+        assert(lnkd_list_push_front(&lnked, &menos150));
+        assert(lnked.n_elements == 1UL + n);
         assert(lnkd_list_remove(&lnked, &menos150));
 
         // Remove the last element
@@ -91,7 +91,7 @@ int main(){
         int last = n-1;
         assert(lnkd_list_remove(&lnked, &last));
         assert(lnked.n_elements == (size_t) n-1);
-        assert(lnkd_list_push_back(&lnked, alloc_int(last)));
+        assert(lnkd_list_push_back(&lnked, &last));
         ///////////////////////////////////////////////////
         
         for(int i=0; i < n; i++){

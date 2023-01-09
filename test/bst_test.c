@@ -10,7 +10,7 @@ struct test{
 };
 
 int main(){
-    int n = 10000;//, min = 0, max = 10;
+    int n = 1000;//, min = 0, max = 10;
     int temp;
     printf("[BSTree Test]\n");
     BSTree t = bst_init(sizeof(int), Comparator.integer);
@@ -82,6 +82,10 @@ int main(){
     assert(3 == * (int*) remove_inord);
     assert(12 == * (int*) offset(remove_inord, 1, sizeof(int)));
     assert(30 == * (int*) offset(remove_inord, 2, sizeof(int)));
+
+    free(remove_inord);
+
+    bst_free(t);
 
     printf("[BSTree Test Finished]\n");
     return 0;

@@ -158,12 +158,14 @@ remove_rec(BSNode *node, void *element, int (*cmp) (const void*,const void*), si
         ret = remove_rec(node->left, element, cmp, size);
         node->left = ret.node;
     }else {
+        ret.status = 1;
+        BSNode *aux = node;
         if (node->left == NULL){
             node = node->right;
         } else if(node->right == NULL) {
             node = node->left;
         }else { // Case 3
-            BSNode *aux = get_max(node->left); // Get the biggest son starting in the left node
+            aux = get_max(node->left); // Get the biggest son starting in the left node
             if(aux != node->left){ // This means the left node have at least one right son
                 aux->father->right = NULL; // We simply clear that reference
             }else{ // If aux node is the left node itself (The biggest element from the left is theleft itself.)
@@ -172,11 +174,9 @@ remove_rec(BSNode *node, void *element, int (*cmp) (const void*,const void*), si
             if(!memcpy(node->info, aux->info, size)){
                 fprintf(stderr, "ERROR: could not remove (line 174)\n");
                 ret.status = -1;
-            }else{
-                ret.status = 1;
             }
-            free(aux); // Free aux
         }
+        free(aux); // Free aux
     }
     ret.node = node;
     return ret;
@@ -185,8 +185,8 @@ remove_rec(BSNode *node, void *element, int (*cmp) (const void*,const void*), si
 int bst_remove(BSTree *tree, void *element){
     CHECK_NULL(tree, bst_remove, NULL_PARAMETER)
     struct remove_rec_ret ret = remove_rec(tree->root, element, tree->compare, tree->data_size);
-    tree->root = ret.node;
-    if (ret.status == 1){
+    if (ret.status){
+        tree->root = ret.node;
         tree->n_elements--;
     }
     return ret.status; 
@@ -288,6 +288,8 @@ static struct orders_ret traversal_rec(BSNode *node, enum Traversal order, size_
     
     // If the tarversals from the right returned with error statuses, propagate it.
     if(left.status != 1 || right.status != 1){
+        free(left.elements);
+        free(right.elements);
         return ORDERS_ERROR;
     }
 
@@ -295,7 +297,12 @@ static struct orders_ret traversal_rec(BSNode *node, enum Traversal order, size_
     struct orders_ret result;
     result.elements_size = left.elements_size + right.elements_size + 1; // The +1 is for the element in this node
     result.elements = malloc(result.elements_size * size);
-    CHECK_MEMORY(result.elements, bst_inorder, ORDERS_ERROR)
+    if(!result.elements){
+        free(result.elements);
+        free(left.elements);
+        free(right.elements);
+        return ORDERS_ERROR;
+    }
     result.status = 1;
 
     size_t index = 0;
@@ -304,6 +311,9 @@ static struct orders_ret traversal_rec(BSNode *node, enum Traversal order, size_
 
     if(order == PRE_ORDER){
         if(!memcpy(result.elements, node->info, size)){
+            free(result.elements);
+            free(left.elements);
+            free(right.elements);
             return ORDERS_ERROR;
         }
         index++;
@@ -312,12 +322,18 @@ static struct orders_ret traversal_rec(BSNode *node, enum Traversal order, size_
     // Add the elements of the left
 
     if(!memcpy(offset(result.elements, index, size), left.elements, size * left.elements_size)){
+        free(result.elements);
+        free(left.elements);
+        free(right.elements);
         return ORDERS_ERROR;
     }
     index += left.elements_size;
 
     if(order == IN_ORDER){
         if(!memcpy(offset(result.elements, index, size), node->info, size)){
+            free(result.elements);
+            free(left.elements);
+            free(right.elements);
             return ORDERS_ERROR;
         }
         index++;
@@ -325,12 +341,18 @@ static struct orders_ret traversal_rec(BSNode *node, enum Traversal order, size_
 
     // Add the elements of the right
     if(!memcpy(offset(result.elements, index, size), right.elements, size * right.elements_size)){
+        free(result.elements);
+        free(left.elements);
+        free(right.elements);
         return ORDERS_ERROR;
     }
     index += right.elements_size;
 
     if(order == POST_ORDER){
         if(!memcpy(offset(result.elements, index, size), node->info, size)){
+            free(result.elements);
+            free(left.elements);
+            free(right.elements);
             return ORDERS_ERROR;
         }
     }
