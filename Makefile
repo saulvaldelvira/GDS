@@ -52,6 +52,7 @@ all_test: list_test stack_test queue_test bst_test
 
 clean:
 	find . -type f -name '*.o' -delete
+	find . -type f -name 'cachegrind.out.*' -delete
 
 purge: clean
 	find . -type f -name '*.out' -delete
