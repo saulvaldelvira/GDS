@@ -10,6 +10,7 @@
 #define QUEUE_H
 
 #include <stdbool.h>
+#include <stddef.h>
 
 #include "../definitions.h"
 
@@ -23,24 +24,15 @@ typedef struct QueueNode QueueNode;
 typedef struct Queue {
     QueueNode *head;
     QueueNode *tail;
+    size_t data_size;
     // Comparator function
     int (*compare) (const void*, const void*);
-    free_on_delete_t free_on_delete;
 } Queue;
 
 /**
  * @return a new Queue structure
 */
-extern Queue queue_init(int (*cmp) (const void*, const void*));
-
-/**
- * \brief Configures the Queue.free_on_delete parameter. 
- * \note This can also be achieved by modifying the free_on_delete value itself, without any function call.
- * That's why i made it inline. The function is just so it's easy to understand what this instructiong does
-*/
-static inline void queue_configure(Queue *queue, free_on_delete_t free_on_delete){
-    queue->free_on_delete = free_on_delete;
-}
+extern Queue queue_init(size_t size, int (*cmp) (const void*, const void*));
 
 /**
  * Adds the element to the queue
@@ -50,12 +42,12 @@ extern int queue_enqueue(Queue *queue, void *element);
 /**
  * @return the corresponding element of the queue (the one added first) and removes it from the queue
 */
-extern void* queue_dequeue(Queue *queue);
+extern void* queue_dequeue(Queue *queue, void *dest);
 
 /**
  * @return the corresponding element of the queue (the one added first), without removing it
 */
-extern void* queue_peek(Queue queue);
+extern void* queue_peek(Queue queue, void *dest);
 
 /**
  * @return true if the element is in the queue

@@ -9,29 +9,32 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "../Util/checks.h"
+#include <memory.h>
 
 struct StackNode {
-        void* info;
         struct StackNode *next;
+        unsigned char info[];
 };
 
-Stack stack_init(int (*cmp) (const void*, const void*)){
+Stack stack_init(size_t data_size, int (*cmp) (const void*, const void*)){
         return (Stack){
                 .head = NULL,
                 .compare = cmp,
-                .free_on_delete = DontFreeOnDelete
+                .data_size = data_size
         };
 }
 
 /**
  * Initializes a new StackNode with the given info
 */
-static StackNode* init_node(void *element){
-        StackNode *node = malloc(sizeof(StackNode));
-        if(!node){
+static StackNode* init_node(void *element, size_t size){
+        StackNode *node = malloc(offsetof(StackNode, info) + size);
+
+        if(!node || !memcpy(node->info, element, size)){
+                fprintf(stderr, "ERROR: Could not initilize node\n");
                 return NULL;
         }
-        node->info = element;
+
         node->next = NULL;
         return node;
 }
@@ -39,36 +42,39 @@ static StackNode* init_node(void *element){
 int stack_push(Stack *stack, void *element){
         CHECK_NULL(stack, stack_push, NULL_PARAMETER)
         if(stack->head == NULL){
-                stack->head = init_node(element);
+                stack->head = init_node(element, stack->data_size);
                 CHECK_MEMORY(stack->head, stack_push, ALLOCATION_ERROR)
         }else{ // Push an element to the head
-                StackNode *aux = init_node(element);
+                StackNode *aux = init_node(element, stack->data_size);
                 CHECK_MEMORY(aux, stack_push, ALLOCATION_ERROR)
-                aux->info = element;
+
                 aux->next = stack->head;
                 stack->head = aux;
         }
         return 1;
 }
 
-void* stack_pop(Stack *stack){
+void* stack_pop(Stack *stack, void *dest){
         CHECK_NULL(stack, stack_pop, NULL)
         if(stack->head == NULL){
                 return NULL;
         }else{
                 StackNode* aux = stack->head;    // Save the head
                 stack->head = stack->head->next; // Change it to the next element
-                void *element = aux->info;       // Save the element
+                if(!memcpy(dest, aux->info, stack->data_size)){       // Save the element
+                        fprintf(stderr, "ERROR: Could not pop element\n");
+                        return NULL;
+                }
                 free(aux);                       // Free the old head
-                return element;                  // Return the element
+                return dest;                  // Return the element
         }
 }
 
-void* stack_peek(Stack stack){
+void* stack_peek(Stack stack, void *dest){
         if(stack.head->info == NULL){
                 return NULL;
         }else{
-                return stack.head->info;
+                return memcpy(dest, stack.head->info, stack.data_size);
         }
 }
 
@@ -87,23 +93,20 @@ bool stack_isempty(Stack stack){
         return stack.head == NULL;
 }
 
-static void free_node(StackNode *node, free_on_delete_t free_element){
+static void free_node(StackNode *node){
         if (node == NULL) {
                 return;
         }
-        if (free_element) {
-                free(node->info);
-        }
-        free_node(node->next, free_element);
+        free_node(node->next);
         free(node);
 }
 
 void stack_free(Stack stack){
-        free_node(stack.head, stack.free_on_delete);
+        free_node(stack.head);
 
 }
 
 void stack_reset(Stack *stack){
-        free_node(stack->head, stack->free_on_delete);
+        free_node(stack->head);
         stack->head = NULL;
 }
