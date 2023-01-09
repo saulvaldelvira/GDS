@@ -10,30 +10,34 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <memory.h>
 
 struct BSNode {
-    void *info;
     struct BSNode *right;
     struct BSNode *left;
     struct BSNode *father;
+    unsigned char info[];
 };
 
-BSTree bst_init(int (*cmp) (const void*,const void*)){
+BSTree bst_init(size_t data_size, int (*cmp) (const void*,const void*)){
     return (BSTree) {
         .root = NULL,
         .compare = cmp,
         .n_elements = 0,
-        .free_on_delete = 0
+        .data_size = data_size
     };
 }
 
-static BSNode* init_node(void *info){
-    BSNode *node = malloc(sizeof(BSNode));
+static BSNode* init_node(void *info, size_t size){
+    BSNode *node = malloc(offsetof(BSNode, info) + size);
     CHECK_MEMORY(node, init_node, NULL)
-    node->info = info;
     node->left = NULL;
     node->right = NULL;
     node->father = NULL;
+    if(!memcpy(node->info, info, size)){
+        fprintf(stderr, "ERROR: Could not initialize node\n");
+        return NULL;
+    }
     return node;
 }
 
@@ -65,9 +69,9 @@ static struct add_rec_ret
      * The use  of struct add_rec_ret is to be able to check the struct add_rec_ret.status when this chain of recursive calls ends and returns to bst_add. This way, we can
      * check if the operation was a sucess and increment the n_elements acordingly, or else we have to return an error status.
     */
-add_rec(BSNode *node, void *element, int (*cmp) (const void*,const void*)){
+add_rec(BSNode *node, void *element, int (*cmp) (const void*,const void*), size_t size){
     if (node == NULL){ // The element does not exist in the tree
-        BSNode *aux = init_node(element); // Create the node
+        BSNode *aux = init_node(element, size); // Create the node
         if (!aux){ // If memory could not be allocated, return with an error status
             return (struct add_rec_ret) {aux, ALLOCATION_ERROR, false};
         } else { // Return the new node with a sucess status
@@ -77,10 +81,10 @@ add_rec(BSNode *node, void *element, int (*cmp) (const void*,const void*)){
     struct add_rec_ret ret;
     int c = (*cmp) (element, node->info);
     if (c > 0){ // The element is higher than the node's info. Search right
-        ret = add_rec(node->right, element, cmp);
+        ret = add_rec(node->right, element, cmp, size);
         node->right = ret.node; // Update the right node
     }else if (c < 0){ // The element is lower than the node's info. Search left
-        ret = add_rec(node->left, element, cmp);
+        ret = add_rec(node->left, element, cmp, size);
         node->left = ret.node; // Update the left node
     }else { // Repeated element, return with an error status
         return (struct add_rec_ret) {node, REPEATED_ELEMENT, false};
@@ -96,7 +100,8 @@ add_rec(BSNode *node, void *element, int (*cmp) (const void*,const void*)){
 
 int bst_add(BSTree *tree, void *element){
     CHECK_NULL(tree, bst_add, NULL_PARAMETER)
-    struct add_rec_ret ret = add_rec(tree->root, element, tree->compare);
+    CHECK_NULL(element, bst_add, NULL_PARAMETER)
+    struct add_rec_ret ret = add_rec(tree->root, element, tree->compare, tree->data_size);
     tree->root = ret.node;
     if (ret.status == 1){
         tree->n_elements++;
@@ -114,16 +119,6 @@ static BSNode* get_max(BSNode *node){
     return node;
 }
 
-/*static BSNode* get_min(BSNode *node){
-    if (node == NULL){
-        return NULL;
-    }
-    while (node->left != NULL){
-        node = node->left;
-    }
-    return node;
-}*/
-
 // Auxiliar struct for the remove_rec function (NOTE: this is part of the function name)
 static struct remove_rec_ret {
     BSNode* node;
@@ -140,7 +135,7 @@ static struct remove_rec_ret {
  * 3) If there are left and right son, we set the current node's info to the BIGGEST element starting from the left son. 
  *      After that, there are two nodes with the same info, so we delete the node that previosly stored this info, since it will now be stored in this node
 */
-remove_rec(BSNode *node, void *element, int (*cmp) (const void*,const void*), free_on_delete_t free_element){
+remove_rec(BSNode *node, void *element, int (*cmp) (const void*,const void*), size_t size){
     if (node == NULL){
         return (struct remove_rec_ret){NULL, NON_EXISTING_ELEMENT};
     }
@@ -148,31 +143,31 @@ remove_rec(BSNode *node, void *element, int (*cmp) (const void*,const void*), fr
     int c = (*cmp) (element, node->info);
     struct remove_rec_ret ret;
     if (c > 0){ // The element is higher than the node's info
-        ret = remove_rec(node->right, element, cmp, free_element);
+        ret = remove_rec(node->right, element, cmp, size);
         node->right = ret.node;
     }else if (c < 0){
-        ret = remove_rec(node->left, element, cmp, free_element);
+        ret = remove_rec(node->left, element, cmp, size);
         node->left = ret.node;
     }else {
-        if(free_element == FreeOnDelete){
-            free(node->info);
-        }
-
+        ret.status = 1;
+        BSNode *aux = node;
         if (node->left == NULL){
             node = node->right;
         } else if(node->right == NULL) {
             node = node->left;
         }else { // Case 3
-            BSNode *aux = get_max(node->left); // Get the biggest son starting in the left node
+            aux = get_max(node->left); // Get the biggest son starting in the left node
             if(aux != node->left){ // This means the left node have at least one right son
                 aux->father->right = NULL; // We simply clear that reference
             }else{ // If aux node is the left node itself (The biggest element from the left is theleft itself.)
                 node->left = aux->left; // Now we can safely remove aux without losing the left son of aux (the right son is NULL)
             }
-            node->info = aux->info; // Change this node's info to aux's
-            free(aux); // Free aux
-            ret.status = 1;
+            if(!memcpy(node->info, aux->info, size)){
+                fprintf(stderr, "ERROR: could not remove (line 174)\n");
+                ret.status = -1;
+            }
         }
+        free(aux); // Free aux
     }
     ret.node = node;
     return ret;
@@ -180,68 +175,84 @@ remove_rec(BSNode *node, void *element, int (*cmp) (const void*,const void*), fr
 
 int bst_remove(BSTree *tree, void *element){
     CHECK_NULL(tree, bst_remove, NULL_PARAMETER)
-    struct remove_rec_ret ret = remove_rec(tree->root, element, tree->compare, tree->free_on_delete);
-    tree->root = ret.node;
-    if (ret.status == 1){
+    CHECK_NULL(element, bst_remove, NULL_PARAMETER)
+    struct remove_rec_ret ret = remove_rec(tree->root, element, tree->compare, tree->data_size);
+    if (ret.status){
+        tree->root = ret.node;
         tree->n_elements--;
     }
     return ret.status; 
 }
 
-static void* get_rec(BSNode *node, void *element, int (*cmp) (const void*,const void*)){
+static void* get_rec(BSNode *node, void *element, void *dest, int (*cmp) (const void*,const void*), size_t size){
     if(node == NULL){
         return NULL;
     }
     int c = (*cmp) (element, node->info);
     if(c < 0){
-        return get_rec(node->left, element, cmp);
+        return get_rec(node->left, element, dest, cmp, size);
     }else if(c > 0){
-        return get_rec(node->right, element, cmp);
+        return get_rec(node->right, element, dest, cmp, size);
     }else{
-        return node->info;
+        return memcpy(dest, node->info, size);
     }
 }
 
-void* bst_get(BSTree tree, void* element){
-    return get_rec(tree.root, element, tree.compare);
+void* bst_get(BSTree tree, void* element, void *dest){
+    CHECK_NULL(element, bst_get, NULL)
+    CHECK_NULL(dest, bst_get, NULL)
+    return get_rec(tree.root, element, dest, tree.compare, tree.data_size);
+}
+
+static bool exists_rec(BSNode *node, void *element, int (*cmp) (const void*,const void*)){
+    if(node == NULL){
+        return false;
+    }
+    int c = (*cmp) (element, node->info);
+    if(c < 0){
+        return exists_rec(node->left, element, cmp);
+    }else if(c > 0){
+        return exists_rec(node->right, element, cmp);
+    }else{
+        return true;
+    }
 }
 
 bool bst_exists(BSTree tree, void *element){
-    return get_rec(tree.root, element, tree.compare) != NULL;
+    CHECK_NULL(element, bst_exists, NULL)
+    return exists_rec(tree.root, element, tree.compare);
 }
 
 bool bst_isempty(BSTree tree){
     return tree.root == NULL;
 }
 
-static void free_rec(BSNode *node, free_on_delete_t free_element){
+static void free_rec(BSNode *node){
     if(node == NULL){
         return;
     }
-    if(free_element){
-        free(node->info);
-    }
-    free_rec(node->left, free_element);
-    free_rec(node->right, free_element);
+    free_rec(node->left);
+    free_rec(node->right);
     free(node);
 }
 
 void bst_free(BSTree tree){
-    free_rec(tree.root, tree.free_on_delete);
+    free_rec(tree.root);
 }
 
 void bst_reset(BSTree *tree){
-    free_rec(tree->root, tree->free_on_delete);
+    CHECK_NULL(tree, bst_reset, ;)
+    free_rec(tree->root);
     tree->root = NULL;
     tree->n_elements = 0;
 }
 
-#define ORDERS_ERROR (struct orders_ret) {.data = NULL, .data_size = 0, .status = -1}
+#define ORDERS_ERROR (struct orders_ret) {.elements = NULL, .elements_size = 0, .status = -1}
 
 // Auxiliar structure to use in the traversal methods
 struct orders_ret {
-    void** data;
-    size_t data_size;
+    void* elements;
+    size_t elements_size;
     int status;
 };
 
@@ -258,29 +269,36 @@ enum Traversal {
  * After that, it just takes those arrays and start building bigger arrays out of them, with the specified order.
  * In the last call, it will return an array with all the elements in the array.
 */
-static struct orders_ret traversal_rec(BSNode *node, enum Traversal order){
+static struct orders_ret traversal_rec(BSNode *node, enum Traversal order, size_t size){
     // If the node is null, return and empty array
     if(node == NULL){
         return (struct orders_ret) {
-            .data = NULL,
-            .data_size = 0,
+            .elements = NULL,
+            .elements_size = 0,
             .status = 1
         };
     }
 
-    struct orders_ret left = traversal_rec(node->left, order);
-    struct orders_ret right = traversal_rec(node->right, order);
+    struct orders_ret left = traversal_rec(node->left, order, size);
+    struct orders_ret right = traversal_rec(node->right, order, size);
     
     // If the tarversals from the right returned with error statuses, propagate it.
     if(left.status != 1 || right.status != 1){
+        free(left.elements);
+        free(right.elements);
         return ORDERS_ERROR;
     }
 
     // Create a new struct orders_ret to agregate the traversal from left and right and this current node all in one
     struct orders_ret result;
-    result.data_size = left.data_size + right.data_size + 1; // The +1 is for the element in this node
-    result.data = calloc(result.data_size, sizeof(void*));
-    CHECK_MEMORY(result.data, bst_inorder, ORDERS_ERROR)
+    result.elements_size = left.elements_size + right.elements_size + 1; // The +1 is for the element in this node
+    result.elements = malloc(result.elements_size * size);
+    if(!result.elements){
+        free(result.elements);
+        free(left.elements);
+        free(right.elements);
+        return ORDERS_ERROR;
+    }
     result.status = 1;
 
     size_t index = 0;
@@ -288,54 +306,79 @@ static struct orders_ret traversal_rec(BSNode *node, enum Traversal order){
     // Depending on the order paranmeter, the current node will be added before (pre order) in the middle (in order) or after (post order)
 
     if(order == PRE_ORDER){
-        result.data[index++] = node->info;
+        if(!memcpy(result.elements, node->info, size)){
+            free(result.elements);
+            free(left.elements);
+            free(right.elements);
+            return ORDERS_ERROR;
+        }
+        index++;
     }
 
     // Add the elements of the left
-    for (size_t i = 0; i < left.data_size; i++, index++){
-        result.data[index] = left.data[i];
+
+    if(!memcpy(offset(result.elements, index, size), left.elements, size * left.elements_size)){
+        free(result.elements);
+        free(left.elements);
+        free(right.elements);
+        return ORDERS_ERROR;
     }
+    index += left.elements_size;
 
     if(order == IN_ORDER){
-        result.data[index++] = node->info;
+        if(!memcpy(offset(result.elements, index, size), node->info, size)){
+            free(result.elements);
+            free(left.elements);
+            free(right.elements);
+            return ORDERS_ERROR;
+        }
+        index++;
     }
 
     // Add the elements of the right
-    for (size_t i = 0; i < right.data_size; i++, index++){
-        result.data[index] = right.data[i];
+    if(!memcpy(offset(result.elements, index, size), right.elements, size * right.elements_size)){
+        free(result.elements);
+        free(left.elements);
+        free(right.elements);
+        return ORDERS_ERROR;
     }
+    index += right.elements_size;
 
     if(order == POST_ORDER){
-        result.data[index++] = node->info;
+        if(!memcpy(offset(result.elements, index, size), node->info, size)){
+            free(result.elements);
+            free(left.elements);
+            free(right.elements);
+            return ORDERS_ERROR;
+        }
     }
 
     // Free the left and right arrays because our result.data already stores the elements thus this two arrays are useless now
-    free(left.data);
-    free(right.data);
-
+    free(left.elements);
+    free(right.elements);
     return result;
 }
 
-void** bst_inorder(BSTree tree){
-    struct orders_ret result = traversal_rec(tree.root, IN_ORDER);
+void* bst_inorder(BSTree tree){
+    struct orders_ret result = traversal_rec(tree.root, IN_ORDER, tree.data_size);
     if (result.status != 1){
         return NULL;
     }
-    return result.data;
+    return result.elements;
 }
 
 void** bst_preorder(BSTree tree){
-    struct orders_ret result = traversal_rec(tree.root, PRE_ORDER);
+    struct orders_ret result = traversal_rec(tree.root, PRE_ORDER, tree.data_size);
     if (result.status != 1){
         return NULL;
     }
-    return result.data;
+    return result.elements;
 }
 
 void** bst_postorder(BSTree tree){
-    struct orders_ret result = traversal_rec(tree.root, POST_ORDER);
+    struct orders_ret result = traversal_rec(tree.root, POST_ORDER, tree.data_size);
     if (result.status != 1){
         return NULL;
     }
-    return result.data;
+    return result.elements;
 }

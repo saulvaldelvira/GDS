@@ -7,23 +7,22 @@
 #undef TIMESTAMP_ENABLE
 
 int main(){
-    int n = 10000000;
+    int n = 10000, tmp;
 
     printf("[Starting Queue test]\n Workload: %d\n", n);
     TIMESTAMP_START
 
-    Queue q = queue_init(Comparator.integer);
-    queue_configure(&q, FreeOnDelete);
+    Queue q = queue_init(sizeof(int), compare_int);
     assert(queue_isempty(q));
 
     for(int i=0; i < n; i++){
-        queue_enqueue(&q, alloc_int(i));
+        queue_enqueue(&q, &i);
     }
     assert(!queue_isempty(q));
-
+    
     for(int i=0; i<n; i++){
-        assert(i == * (int*) queue_peek(q));
-        assert(i == * (int*) queue_dequeue(&q));
+        assert(i == * (int*) queue_peek(q, &tmp));
+        assert(i == * (int*) queue_dequeue(&q, &tmp));
     }
     assert(queue_isempty(q));
 

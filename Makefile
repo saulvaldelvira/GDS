@@ -1,8 +1,8 @@
-.PHONY: clean all_test list_test stack_test queue_test bst_test
+.PHONY: clean all_test list_test stack_test queue_test bst_test 
 SRC = src/
 UTIL_DIR = $(SRC)/Util
 BIN = bin/
-UTIL_OBJS = $(UTIL_DIR)/comparator.o $(UTIL_DIR)/allocate.o
+UTIL_OBJS = $(UTIL_DIR)/comparator.o
 LIST_OBJS = test/list_test.o $(SRC)/ArrayList/array_list.o $(SRC)/LinkedList/linked_list.o $(UTIL_OBJS)
 STACK_OBJS = test/stack_test.o $(SRC)/Stack/stack.o $(UTIL_OBJS)
 QUEUE_OBJS = test/queue_test.o $(SRC)/Queue/queue.o $(UTIL_OBJS)
@@ -10,7 +10,7 @@ BST_OBJS = test/bst_test.o $(SRC)/BSTree/BSTree.o $(UTIL_OBJS)
 GRAPH_OBJS = test/graph_test.o $(SRC)/Graph/graph.o $(UTIL_OBJS)
 
 CC = gcc
-CCFLAGS = -lm -Wall -Wextra -Werror
+CCFLAGS = -lm -Wall -Wextra -Werror -g
 
 list_test: $(BIN) $(BIN)/list_test.out
 	@ $(BIN)/list_test.out 

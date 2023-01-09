@@ -34,22 +34,15 @@ typedef struct Stack {
         StackNode *head;
         // Comparator function
         int (*compare) (const void*, const void*);
-        free_on_delete_t free_on_delete;
+        size_t data_size;
 } Stack;
 
 /**
  * Initializes an empty Stack
  * @param comp the comparator funtion for two elements
 */
-extern Stack stack_init(int (*cmp) (const void*, const void*));
+extern Stack stack_init(size_t data_size, int (*cmp) (const void*, const void*));
 
-/**
- * Sets the value of stack->free_on_delete to the parameter free_on_delete
- * See the defined macros FREE_ON_DELETE (1) and DONT_FREE_ON_DELETE (0)
-*/
-static inline void stack_configure(Stack *stack, free_on_delete_t free_on_delete){
-    stack->free_on_delete = free_on_delete;
-}
 
 /**
  * Pushes the given element to the top of the stack
@@ -59,12 +52,12 @@ extern int stack_push(Stack *stack, void *element);
 /**
  * @return the last pushed element (and delete it from the stack)
 */
-extern void* stack_pop(Stack *stack);
+extern void* stack_pop(Stack *stack, void *dest);
 
 /**
  * @return the last pushed element (without deleting it)
 */
-extern void* stack_peek(Stack stack);
+extern void* stack_peek(Stack stack, void *dest);
 
 /**
  * @return true if the element exists in the stack 

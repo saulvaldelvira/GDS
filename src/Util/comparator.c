@@ -10,11 +10,8 @@
 #undef DISABLE_COMPARATOR
 #include <stdint.h>
 
-#define NOT_NULL(a,b) if(a == 0){if(b == 0){return 0;}return -1;}else if(b == 0){return 1;}
-
 // COMPARATORS
 int compare_int(const void *e_1, const void *e_2){
-    NOT_NULL(e_1, e_2)
     int n_1 = * (int *) e_1;
     int n_2 = * (int *) e_2;
     if (n_1 > n_2){
@@ -27,7 +24,6 @@ int compare_int(const void *e_1, const void *e_2){
 }
 
 int compare_char(const void *e_1, const void *e_2){
-    NOT_NULL(e_1, e_2)
     char c_1 = * (char *) e_1;
     char c_2 = * (char *) e_2;
     if (c_1 > c_2){
@@ -40,7 +36,6 @@ int compare_char(const void *e_1, const void *e_2){
 }
 
 int compare_float(const void *e_1, const void *e_2){
-    NOT_NULL(e_1, e_2)
     float f_1 = * (float *) e_1;
     long long   i_1 = f_1 * Precision.float_precision;
 
@@ -56,7 +51,6 @@ int compare_float(const void *e_1, const void *e_2){
 }
 
 int compare_double(const void *e_1, const void *e_2){
-    NOT_NULL(e_1, e_2)
     double d_1 = * (double *) e_1;
     long long i_1 = d_1 * Precision.double_precision;
 
@@ -73,22 +67,8 @@ int compare_double(const void *e_1, const void *e_2){
 }
 
 int compare_long_long(const void *e_1, const void *e_2){
-    NOT_NULL(e_1, e_2)
     long long l_1 = * (long long *) e_1;
     long long l_2 = * (long long *) e_2;
-
-    if (l_1 > l_2){
-        return 1;
-    }else if (l_2 > l_1){
-        return -1;
-    }else{
-        return 0;
-    }
-}
-
-int compare_literal_integer(const void *e_1, const void *e_2) {
-    intptr_t l_1 = (intptr_t) e_1;
-    intptr_t l_2 = (intptr_t) e_2;
 
     if (l_1 > l_2){
         return 1;

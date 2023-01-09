@@ -10,57 +10,56 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../Util/checks.h"
+#include <memory.h>
 
-ArrayList arrlist_empty(int (*cmp) (const void*, const void*)){
-    return arrlist_init(ARRAY_LIST_DEFAULT_SIZE, cmp);
+ArrayList arrlist_empty(size_t data_size, int (*cmp) (const void*, const void*)){
+    return arrlist_init(data_size, ARRAY_LIST_DEFAULT_SIZE, cmp);
 }
-ArrayList arrlist_init(size_t size, int (*cmp) (const void*, const void*)){
-    void **elements = calloc(ARRAY_LIST_DEFAULT_SIZE, sizeof(void*));
+ArrayList arrlist_init(size_t data_size, size_t size, int (*cmp) (const void*, const void*)){
+    void *elements = malloc(ARRAY_LIST_DEFAULT_SIZE * data_size);
     CHECK_MEMORY(elements, arrlist_init, (ArrayList) {0})
     return (ArrayList) {
         .elements = elements,
+        .data_size = data_size,
         .n_elements = 0,
         .max_elements = size,
-        .compare = cmp,
-        .free_on_delete = DontFreeOnDelete
+        .compare = cmp
     };
 }
 
-/**
- * Reallocs the array of void pointers. It's the same as realloc but the new array is also allocated with 
- * calloc instead of malloc. The purpose is that empty pointers in the list have the value 0
-*/
-static void** re_calloc(void **arr, size_t size, size_t new_size){
-    void **tmp = calloc(new_size, sizeof(void*));
-    CHECK_MEMORY(tmp, arrlist_append, NULL)
-    for(size_t i = 0; i < size; i++){
-        tmp[i] = arr[i];
-    }
-    free(arr);
-    return tmp;
-}
 int arrlist_append(ArrayList *list, void *element){
+    CHECK_NULL(list, arrlist_append, NULL_PARAMETER)
+    CHECK_NULL(element, arrlist_append, NULL_PARAMETER)
     if(list->n_elements == list->max_elements){ // If the list is empty, double the array size
         list->max_elements *= 2;
-        list->elements = re_calloc(list->elements, list->n_elements, list->max_elements);
+        list->elements = realloc(list->elements, list->max_elements * list->data_size);
         if(list->elements == NULL){
             return ALLOCATION_ERROR;
         }
     }
-    list->elements[list->n_elements++] = element;
+
+    if(!memmove(offset(list->elements, list->n_elements, list->data_size), element, list->data_size)){
+        fprintf(stderr, "ERROR: could not append element\n");
+        return -1;
+    }
+    list->n_elements++;
     return 1;
 }
 
 index_t arrlist_indexof(ArrayList list, void *element){
+    CHECK_NULL(element, arrlist_indexof, INDEX_NOT_FOUND)
+    void *ptr; // Current element in the iteration
     for (size_t i=0; i<list.n_elements; i++){
-        if ((*list.compare) (list.elements[i], element) == 0){
-            return index_t_i(i);
+        ptr = offset(list.elements, i, list.data_size);
+        if ((*list.compare) (ptr, element) == 0){
+            return index_t(i);
         }
     }
     return INDEX_NOT_FOUND;
 }
 
 bool arrlist_exists(ArrayList list, void *element){
+    CHECK_NULL(element, arrlist_exists, false)
     return arrlist_indexof(list, element).status == 1;
 }
 
@@ -68,87 +67,91 @@ bool arrlist_isempty(ArrayList list){
     return list.n_elements == 0;
 }
 
-index_t arrlist_set_at(ArrayList *list, size_t index, void *element){
-    CHECK_NULL(list, arrlist_set_at, INDEX_NOT_FOUND)
-    CHECK_BOUNDS(index, list->n_elements, arrlist_set_at, INDEX_NOT_FOUND);
-    void *ret; // Element in the given index
-    if (list->free_on_delete == FreeOnDelete){ // If we have to free the element
-        free(list->elements[index]);
-        ret = NULL; // The return index_t's element will be NULL since that memory will alrready be free
-    }else{
-        ret = list->elements[index]; // Else we return that substituted element with the result
+int arrlist_set_at(ArrayList *list, size_t index, void *element){
+    CHECK_NULL(list, arrlist_set_at, NULL_PARAMETER)
+    CHECK_NULL(element, arrlist_set_at, NULL_PARAMETER)
+    CHECK_BOUNDS(index, list->n_elements, arrlist_set_at, INDEX_OUT_OF_BOUNDS);
+
+    if(!memmove(offset(list->elements, index, list->data_size), element, list->data_size)){
+        fprintf(stderr, "ERROR: arrlist_set_at\n");
+        return -1;
+
     }
-    list->elements[index] = element;
-    return index_t_e(ret);
+    return -1;
 }
 
-index_t arrlist_set(ArrayList *list, void *element, void *replacement){
-    CHECK_NULL(list, arrlist_set, INDEX_NOT_FOUND)
+int arrlist_set(ArrayList *list, void *element, void *replacement){
+    CHECK_NULL(list, arrlist_set, NULL_PARAMETER)
+    CHECK_NULL(element, arrlist_set, NULL_PARAMETER)
+    CHECK_NULL(replacement, arrlist_set, NULL_PARAMETER)
+    void *ptr;
     for (size_t i=0; i < list->n_elements; i++){
-        if ((*list->compare) (list->elements[i], element) == 0){
-            if(list->free_on_delete == FreeOnDelete){
-                free(list->elements[i]);
+        ptr = offset(list->elements, i, list->data_size);
+        if ((*list->compare) (ptr, element) == 0){
+            if(memmove(ptr, replacement, list->data_size)){
+                return 1;
+            }else{
+                return -1;
             }
-            list->elements[i] = replacement;
-            return index_t_i(i);
         }
     }
-    return INDEX_NOT_FOUND;
+    return INDEX_OUT_OF_BOUNDS;
 }
 
-void* arrlist_get_at(ArrayList list, size_t index){
+void* arrlist_get_at(ArrayList list, size_t index, void *dest){
     CHECK_BOUNDS(index, list.n_elements, arrlist_get_at, NULL)
-    return list.elements[index];
+    CHECK_NULL(dest, arrlist_get_at, NULL)
+    return memcpy(dest, offset(list.elements, index, list.data_size), list.data_size);
 }
 
-void* arrlist_get(ArrayList list, void *element){
+void* arrlist_get(ArrayList list, void *element, void *dest){
+    void *ptr;
+    CHECK_NULL(element, arrlist_get, NULL)
+    CHECK_NULL(dest, arrlist_get, NULL)
     for (size_t i = 0; i < list.n_elements; i++){
-        if((*list.compare) (list.elements[i], element) == 0){
-            return list.elements[i];
+        ptr = offset(list.elements, i, list.data_size);
+        if((*list.compare) (ptr, element) == 0){
+            return memcpy(dest, ptr, list.data_size);
         }
     }
     return NULL;
 }
 
-index_t arrlist_remove_at(ArrayList *list, size_t index){
-    CHECK_NULL(list, arrlist_remove_at, INDEX_NOT_FOUND)
-    CHECK_BOUNDS(index, list->n_elements, arrlist_remove_at, INDEX_NOT_FOUND)
-    void *e;
-    if(list->free_on_delete == FreeOnDelete){
-        free(list->elements[index]);
-        e = NULL;
-    }else {
-        e = list->elements[index];
-    }
-    for(size_t i=index; i<list->n_elements-1; i++){
-        list->elements[i] = list->elements[i+1];
+int arrlist_remove_at(ArrayList *list, size_t index){
+    CHECK_NULL(list, arrlist_remove_at, INDEX_OUT_OF_BOUNDS)
+    CHECK_BOUNDS(index, list->n_elements, arrlist_remove_at, INDEX_OUT_OF_BOUNDS)
+
+    if (index < list->n_elements - 1){
+        size_t leftover = (list->n_elements - index - 1) * list->data_size;
+        if(!memmove(offset(list->elements, index, list->data_size), offset(list->elements, index+1, list->data_size), leftover)){
+            fprintf(stderr, "ERROR: arrlist_remove at\n");
+            return -1;
+        }
     }
     list->n_elements--;
-    return index_t_e(e);
+    return 1;
 }
 
-index_t arrlist_remove(ArrayList *list, void *element){
-    CHECK_NULL(list, arrlist_remove, INDEX_NOT_FOUND)
+int arrlist_remove(ArrayList *list, void *element){
+    CHECK_NULL(list, arrlist_remove, INDEX_OUT_OF_BOUNDS)
+    CHECK_NULL(element, arrlist_remove, NULL_PARAMETER)
     index_t i = arrlist_indexof(*list, element);
     if(i.status){
-        return arrlist_remove_at(list, i.value.index);
+        return arrlist_remove_at(list, i.index);
     }else{
-        return INDEX_NOT_FOUND;
+        return INDEX_OUT_OF_BOUNDS;
     }
  }
 
 void arrlist_free(ArrayList list){
-    if(list.free_on_delete == FreeOnDelete){
-        for(size_t i = 0; i < list.n_elements; i++){
-            free(list.elements[i]);
-        }
-    }
     free(list.elements);
 }
 
 void arrlist_reset(ArrayList *list){
-    arrlist_free(*list);
-    list->elements = calloc(ARRAY_LIST_DEFAULT_SIZE, sizeof(void*));
+    CHECK_NULL(list, arrlist_reset, ;)
+    free(list->elements);
+    list->elements = NULL;
+    list->elements = malloc(ARRAY_LIST_DEFAULT_SIZE * list->data_size);
     CHECK_MEMORY(list->elements, arrlist_reset, ;)
     list->n_elements = 0;
     list->max_elements = ARRAY_LIST_DEFAULT_SIZE;

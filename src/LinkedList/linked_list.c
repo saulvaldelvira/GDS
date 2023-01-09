@@ -10,46 +10,50 @@
 #include <stdio.h>
 #include <math.h>
 #include "../Util/checks.h"
+#include <memory.h>
 
 struct LLNode {
     struct LLNode *next; // Pointer to the next node
     struct LLNode *previous; // Pointer to the previous node
-    void *info; // Element stored in this node
+    unsigned char info[];
 };
 
-LinkedList lnkd_list_init(int (*cmp) (const void*, const void*)){
+LinkedList lnkd_list_init(size_t data_size, int (*cmp) (const void*, const void*)){
     return (LinkedList) {
         .n_elements = 0,
         .head = NULL,
         .tail = NULL,
         .compare = cmp,
-        .free_on_delete = DontFreeOnDelete
+        .data_size = data_size
     };
 }
 
 /**
  * Initializes a new LLNode with the given info
 */
-static LLNode* lnkd_list_innit_node(void *info){
-    LLNode *node = calloc(1, sizeof(LLNode));
+static LLNode* lnkd_list_innit_node(void *info, size_t size){
+    LLNode *node = malloc(offsetof(LLNode, info) + size);
     CHECK_MEMORY(node, lnkd_list_innit_node , NULL)
-    node->info = info;
     node->next = NULL;
     node->previous = NULL;
+    if(!memcpy(node->info, info, size)){
+        fprintf(stderr, "ERROR: couldn't allocate node\n");
+    }
     return node;
 }
 
 int lnkd_list_push_back(LinkedList *list, void *element){
     CHECK_NULL(list, lnkd_list_push_back, NULL_PARAMETER)
+    CHECK_NULL(element, lnkd_list_push_back, NULL_PARAMETER)
     if(list->n_elements == 0){ // We add to the head
-        list->head = lnkd_list_innit_node(element);
+        list->head = lnkd_list_innit_node(element, list->data_size);
         if(!list->head){
             return ALLOCATION_ERROR;
         }
         list->tail = list->head;
     }else{ // We add to the tail
-        list->tail->next = lnkd_list_innit_node(element);
-        if(!list->tail){
+        list->tail->next = lnkd_list_innit_node(element, list->data_size);
+        if(!list->tail->next){
             return ALLOCATION_ERROR;
         }
         list->tail->next->previous = list->tail; // Create the "previous" reference in this new element
@@ -60,15 +64,16 @@ int lnkd_list_push_back(LinkedList *list, void *element){
 }
 
 int lnkd_list_push_front(LinkedList *list, void *element){
-    CHECK_NULL(list, lnkd_list_append, NULL_PARAMETER)
+    CHECK_NULL(list, lnkd_list_push_front, NULL_PARAMETER)
+    CHECK_NULL(list, lnkd_list_push_front, NULL_PARAMETER)
     if(list->n_elements == 0){ // We add to the head
-        list->head = lnkd_list_innit_node(element);
+        list->head = lnkd_list_innit_node(element, list->data_size);
         if(!list->head){
             return ALLOCATION_ERROR;
         }
         list->tail = list->head;
     }else{ // We add to the head
-        LLNode* aux = lnkd_list_innit_node(element);
+        LLNode* aux = lnkd_list_innit_node(element, list->data_size);
         CHECK_MEMORY(aux, lnkd_list_push_front, ALLOCATION_ERROR)
         aux->next = list->head;
         list->head->previous = aux;
@@ -79,6 +84,9 @@ int lnkd_list_push_front(LinkedList *list, void *element){
 }
 
 bool lnkd_list_set(LinkedList *list, void *element, void *replacement){
+    CHECK_NULL(list, lnkd_list_set, false)
+    CHECK_NULL(element, lnkd_list_set, false)
+    CHECK_NULL(replacement, lnkd_list_set, false)
     LLNode *aux = list->head;
     while ( (*list->compare) (aux->info, element) != 0) {
         aux = aux->next;
@@ -86,19 +94,25 @@ bool lnkd_list_set(LinkedList *list, void *element, void *replacement){
             return false;
         }
     }
-    aux->info = replacement;
+    if(!memcpy(aux->info, replacement, list->data_size)){
+        fprintf(stderr, "ERROR: lnkd_list_set\n");
+        return false;
+    }
     return true;
 }
 
-void* lnkd_list_get(LinkedList list, void *element){
+void* lnkd_list_get(LinkedList list, void *element, void *dest){
+    CHECK_NULL(element, lnkd_list_get, NULL)
+    CHECK_NULL(dest, lnkd_list_get, NULL)
     LLNode *aux = list.head;
     while (aux != NULL && (*list.compare) (aux->info, element) != 0) {
         aux = aux->next;
     }
-    return aux != NULL ? aux->info : NULL;
+    return aux == NULL ? NULL : memcpy(dest, aux->info, list.data_size);
 }
 
 bool lnkd_list_exists(LinkedList list, void *element){
+    CHECK_NULL(element, lnkd_list_exists, false)
     LLNode *aux = list.head;
     while (aux != NULL) {
         if ((*list.compare) (aux->info, element) == 0){
@@ -115,6 +129,7 @@ bool lnkd_list_isempty(LinkedList list){
 
 bool lnkd_list_remove(LinkedList *list, void *element){
     CHECK_NULL(list, lnkd_list_remove, false)
+    CHECK_NULL(element, lnkd_list_remove, false)
     LLNode *aux = list->head;
     while(aux != NULL && (*list->compare) (aux->info, element) != 0){
         aux = aux->next;
@@ -130,9 +145,7 @@ bool lnkd_list_remove(LinkedList *list, void *element){
             }
             aux->previous->next = aux->next;
         }
-        if (list->free_on_delete == FreeOnDelete){
-            free(aux->info);
-        }
+        
         free(aux);
         list->n_elements--;
         return true;
@@ -140,21 +153,19 @@ bool lnkd_list_remove(LinkedList *list, void *element){
     return false;
 }
 
-static void lnkd_list_free_node(LLNode *node, free_on_delete_t free_elements){
+static void lnkd_list_free_node(LLNode *node){
     if(node == NULL) return;
-    lnkd_list_free_node(node->next, free_elements);
-    if(free_elements == FreeOnDelete){
-        free(node->info);
-    }
+    lnkd_list_free_node(node->next);
     free(node);
 }
 
 void lnkd_list_free(LinkedList list){
-    lnkd_list_free_node(list.head, list.free_on_delete);
+    lnkd_list_free_node(list.head);
 }
 
 void lnkd_list_reset(LinkedList *list){
-    lnkd_list_free_node(list->head, list->free_on_delete);
+    CHECK_NULL(list, lnkd_list_reset, ;)
+    lnkd_list_free_node(list->head);
     list->head = NULL;
     list->tail = NULL;
     list->n_elements = 0;

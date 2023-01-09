@@ -61,6 +61,7 @@ typedef struct LinkedList {
     LLNode *head;
     LLNode *tail;
     size_t n_elements;
+    size_t data_size;
     /**
      * Comparator function for 2 elements
      *   \attention 
@@ -73,8 +74,6 @@ typedef struct LinkedList {
      * Example of use: Comparators.integer (function to compare two void pointers representing int pointers).
      */
      int (*compare) (const void*, const void*);
-     // Flags: Determine the behaviour when deleting a node
-     free_on_delete_t free_on_delete; // Free the element in the node when deleting it
 } LinkedList;
     
 /**
@@ -82,18 +81,7 @@ typedef struct LinkedList {
  * @param cmp pointer to a function that receives two void pointers and returns 1 if the first one is greater than the 
  *              second, 0 if they are equal and -1 if the first one is smaller than the second one
 */
-LinkedList lnkd_list_init(int (*cmp) (const void*, const void*));
-
-/**
- * \brief 
- * Configures the behavior of the list when deleting a node. 
- * \note
- *  See the LinkedList structure documentation for more info
- * @param free_on_delete If true, the information of the nodes will be also freed on node deletion
-*/
-static inline void lnkd_list_configure(LinkedList *list, free_on_delete_t free_on_delete){
-    list->free_on_delete = free_on_delete;
-}
+LinkedList lnkd_list_init(size_t size, int (*cmp) (const void*, const void*));
 
 /**
  * \brief
@@ -129,7 +117,7 @@ bool lnkd_list_set(LinkedList *list, void *element, void *replacement);
 /**
  * @return a pointer to the first element in the list that is equal to the parameter element.
 */
-void* lnkd_list_get(LinkedList list, void *element);
+void* lnkd_list_get(LinkedList list, void *element, void *dest);
 
 /**
 * @return true if the element exists in the list

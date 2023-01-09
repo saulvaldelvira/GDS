@@ -9,66 +9,78 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "../Util/checks.h"
+#include <memory.h>
 
 struct QueueNode {
-    void *info;
     struct QueueNode *next;
+    unsigned char info[];
 };
 
-Queue queue_init(int (*cmp) (const void*, const void*)){
+Queue queue_init(size_t data_size, int (*cmp) (const void*, const void*)){
     return (Queue) {
         .head = NULL,
         .tail = NULL,
-        .compare = cmp
+        .compare = cmp,
+        .data_size = data_size
     };
 }
 
 /**
  * Initializes a new QueueNode with the element
 */
-static QueueNode* queue_init_node(void *element){
-    QueueNode *node = malloc(sizeof(QueueNode));
-    node->info = element;
+static QueueNode* queue_init_node(void *element, size_t size){
+    QueueNode *node = malloc(offsetof(QueueNode, info) + size);
+    if(!memcpy(node->info, element, size)){
+        fprintf(stderr, "ERROR: Could not init node\n");
+        return NULL;
+    }
     node->next = NULL;
     return node;
 }
 
 int queue_enqueue(Queue *queue, void *element){
     CHECK_NULL(queue, queue_enqueue, NULL_PARAMETER)
+    CHECK_NULL(element, queue_enqueue, NULL_PARAMETER)
     if (queue->head == NULL) {
-        queue->head = queue_init_node(element);
+        queue->head = queue_init_node(element, queue->data_size);
         CHECK_MEMORY(queue->head, queue_enqueue, ALLOCATION_ERROR)
         queue->tail = queue->head;
     }else {
-        queue->tail->next = queue_init_node(element);
+        queue->tail->next = queue_init_node(element, queue->data_size);
         CHECK_MEMORY(queue->tail->next, queue_enqueue, ALLOCATION_ERROR)
         queue->tail = queue->tail->next;
     }
     return 1;
 }
 
-void* queue_dequeue(Queue *queue){
+void* queue_dequeue(Queue *queue, void *dest){
     CHECK_NULL(queue, queue_dequeue, NULL)
+    CHECK_NULL(dest, queue_dequeue, NULL)
     if (queue->head == NULL){
         return NULL;
     }
     QueueNode *aux = queue->head;    // Save the head
     queue->head = queue->head->next; // Change it to the next element
-    void *element = aux->info;       // Save the element
+    if(!memcpy(dest, aux->info, queue->data_size)){       // Save the element
+        fprintf(stderr, "ERROR: could not dequeue node\n");
+        return NULL;
+    }
     free(aux);                       // Free the old head
-    return element;                  // Return the element
+    return dest;                  // Return the element
 }
 
-void* queue_peek(Queue queue){
+void* queue_peek(Queue queue, void *dest){
+    CHECK_NULL(dest, queue_peek, NULL)
     if (queue.head == NULL){
         return NULL;
     }
     else {
-        return queue.head->info;
+        return memcpy(dest, queue.head->info, queue.data_size);
     }
 }
 
 bool queue_search(Queue queue, void *element){
+    CHECK_NULL(element, queue_search, false)
     QueueNode *aux = queue.head;
     while (aux != NULL){
         if((*queue.compare) (aux->info, element) == 0){
@@ -83,23 +95,21 @@ bool queue_isempty(Queue queue){
     return queue.head == NULL;
 }
 
-static void queue_free_node(QueueNode *node, free_on_delete_t free_element){
+static void queue_free_node(QueueNode *node){
     if (node == NULL){
         return;
     }
-    if (free_element == FreeOnDelete){
-        free(node->info);
-    }
-    queue_free_node(node->next, free_element);
+    queue_free_node(node->next);
     free(node);
 }
 
 void queue_free(Queue queue){
-    queue_free_node(queue.head, queue.free_on_delete);
+    queue_free_node(queue.head);
 }
 
 void queue_reset(Queue *queue){
-    queue_free_node(queue->head, queue->free_on_delete);
+    CHECK_NULL(queue, queue_reset, ;)
+    queue_free_node(queue->head);
     queue->head = NULL;
     queue->tail = NULL;
 }
