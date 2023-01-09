@@ -10,7 +10,6 @@
 #define ARRAYLIST_H
     #include <stddef.h>
     #include <stdbool.h>
-    #include "../definitions.h"
     #define ARRAY_LIST_DEFAULT_SIZE 12
 
     /**

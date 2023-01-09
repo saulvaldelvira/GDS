@@ -7,7 +7,7 @@
 */
 #include "BSTree.h"
 #include "../Util/checks.h"
-
+#include "../Util/definitions.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <memory.h>

@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "../Util/checks.h"
+#include "../Util/definitions.h"
 #include <memory.h>
 
 struct StackNode {

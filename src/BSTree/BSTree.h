@@ -16,8 +16,6 @@
 #define NON_EXISTING_ELEMENT -1
 #define EMPTY_TREE -1
 
-#include "../definitions.h"
-
 typedef struct BSNode BSNode;
 
 /**

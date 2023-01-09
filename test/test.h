@@ -13,6 +13,7 @@
 #include <stdint.h>
 #include <time.h>
 #include "../src/Util/void_cast.h"
+#include "../src/Util/definitions.h"
 
 #ifndef __linux__ // Needed for use of CLOCK_REALTIME outside Linux
     #define _GNU_SOURCE

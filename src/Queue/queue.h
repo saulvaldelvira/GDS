@@ -12,8 +12,6 @@
 #include <stdbool.h>
 #include <stddef.h>
 
-#include "../definitions.h"
-
 typedef struct QueueNode QueueNode;
 
 /**

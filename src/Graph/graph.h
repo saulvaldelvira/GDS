@@ -11,7 +11,6 @@
 
 #include <stddef.h>
 #include <stdbool.h>
-#include "../definitions.h"
 
 #define GRAPH_DEFAULT_SIZE 32
 

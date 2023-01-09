@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "../Util/checks.h"
+#include "../Util/definitions.h"
 #include <memory.h>
 
 ArrayList arrlist_empty(size_t data_size, int (*cmp) (const void*, const void*)){

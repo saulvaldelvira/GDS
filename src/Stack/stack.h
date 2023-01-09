@@ -21,8 +21,6 @@
     #define NULL_PARAMETER -3
 #endif
 
-#include "../definitions.h"
-
 typedef struct StackNode StackNode;
 
 /**
