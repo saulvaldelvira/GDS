@@ -1,6 +1,9 @@
 # VIM FILES
 *.*.swp
 
+# Cachegrind
+cachegrind.out.*
+
 .vscode
 
 # Bin folder
