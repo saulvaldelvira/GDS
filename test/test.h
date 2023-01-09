@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include "../src/Util/allocate.h"
 
 #ifdef COMPARATOR_ENABLE
     #include "../src/Util/comparator.h"
@@ -13,6 +12,7 @@
 #include "../src/Util/checks.h"
 #include <stdint.h>
 #include <time.h>
+#include "../src/Util/void_cast.h"
 
 #ifndef __linux__ // Needed for use of CLOCK_REALTIME outside Linux
     #define _GNU_SOURCE

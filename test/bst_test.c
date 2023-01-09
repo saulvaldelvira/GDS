@@ -74,9 +74,9 @@ int main(){
     for(size_t i=0; i < sizeof(nums2) / sizeof(nums2[0]); i++){
         assert(bst_add(&t, &nums2[i]));
     }
-    int cinco = 5, veintitres = 23;
-    assert(bst_remove(&t, &cinco));
-    assert(bst_remove(&t, &veintitres));
+    //int cinco = 5, veintitres = 23;
+    assert(bst_remove(&t, cast_int(5)));
+    assert(bst_remove(&t, cast_int(23)));
 
     void* remove_inord = bst_inorder(t);
     assert(3 == * (int*) remove_inord);
