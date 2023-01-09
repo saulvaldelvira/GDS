@@ -117,7 +117,7 @@ bool lnkd_list_set(LinkedList *list, void *element, void *replacement);
 /**
  * @return a pointer to the first element in the list that is equal to the parameter element.
 */
-void* lnkd_list_get(LinkedList list, void *element);
+void* lnkd_list_get(LinkedList list, void *element, void *dest);
 
 /**
 * @return true if the element exists in the list

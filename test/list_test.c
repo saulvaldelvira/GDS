@@ -10,8 +10,13 @@
 #include <stdint.h>
 
 #include <memory.h>
+struct test {
+        int a;
+        int b;
+        char ch[];
+};
 int main(){
-        int n = 12000;
+        int n = 24000;
         double arr_time, lnkd_time;
 
         printf("[List Test]\n");
@@ -66,8 +71,8 @@ int main(){
 
         TIMESTAMP_START
 
-        LinkedList lnked = lnkd_list_init(Comparator.integer);
-        lnkd_list_configure(&lnked, FreeOnDelete);
+        LinkedList lnked = lnkd_list_init(sizeof(int), Comparator.integer);
+        
         assert(lnkd_list_isempty(lnked));
         
         for(int i=0; i < n; i++){
@@ -91,7 +96,7 @@ int main(){
         
         for(int i=0; i < n; i++){
                 assert(lnkd_list_exists(lnked, &i));
-                assert(i == * (int *) lnkd_list_get(lnked, &i));
+                assert(i == * (int *) lnkd_list_get(lnked, &i, &tmp));
                 assert(lnkd_list_remove(&lnked, &i));
         }
         assert(lnked.n_elements == 0);
