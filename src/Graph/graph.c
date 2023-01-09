@@ -73,7 +73,6 @@ Graph graph_init(int (*cmp) (const void*, const void*)){
         return (Graph) {
                 .n_elements = 0,
                 .max_elements = GRAPH_DEFAULT_SIZE,
-                .free_on_delete = DontFreeOnDelete,
                 .compare = cmp,
                 .weights = weights,
                 .edges = edges,
@@ -100,6 +99,7 @@ int graph_remove_edge(Graph *graph, void *source, void *target);
 
 
 bool graph_exists(Graph graph, void *element){
+        CHECK_NULL(element, graph_exists, false)
         for (size_t i = 0; i < graph.n_elements; i++){
                 if((*graph.compare) (element, graph.nodes[i]) == 0){
                         return true;
@@ -115,6 +115,7 @@ void graph_free(Graph graph){
 }
 
 int graph_reset(Graph *graph){
+        CHECK_NULL(graph, graph_reset, NULL_PARAMETER)
         graph_free(*graph);
         graph->n_elements = 0;
         graph->max_elements = GRAPH_DEFAULT_SIZE;

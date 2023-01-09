@@ -24,7 +24,7 @@ int main(){
         printf("->ArrayList...\n");
         TIMESTAMP_START
         
-        ArrayList arr = arrlist_empty(sizeof(int), Comparator.integer);
+        ArrayList arr = arrlist_empty(sizeof(int), compare_int);
         assert(arrlist_isempty(arr));
         for(int i=0; i < n; i++){
                 assert(arrlist_append(&arr, &i));
@@ -71,7 +71,7 @@ int main(){
 
         TIMESTAMP_START
 
-        LinkedList lnked = lnkd_list_init(sizeof(int), Comparator.integer);
+        LinkedList lnked = lnkd_list_init(sizeof(int), compare_int);
         
         assert(lnkd_list_isempty(lnked));
         

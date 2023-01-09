@@ -13,7 +13,7 @@ int main(){
     int n = 1000;//, min = 0, max = 10;
     int temp;
     printf("[BSTree Test]\n");
-    BSTree t = bst_init(sizeof(int), Comparator.integer);
+    BSTree t = bst_init(sizeof(int), compare_int);
     // Random numbers test
     assert(!bst_exists(t, &n));
     printf("Add...\n");

@@ -12,7 +12,7 @@ int main(){
     printf("[Starting Queue test]\n Workload: %d\n", n);
     TIMESTAMP_START
 
-    Queue q = queue_init(sizeof(int), Comparator.integer);
+    Queue q = queue_init(sizeof(int), compare_int);
     assert(queue_isempty(q));
 
     for(int i=0; i < n; i++){

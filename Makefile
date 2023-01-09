@@ -2,7 +2,7 @@
 SRC = src/
 UTIL_DIR = $(SRC)/Util
 BIN = bin/
-UTIL_OBJS = $(UTIL_DIR)/comparator.o $(UTIL_DIR)/allocate.o
+UTIL_OBJS = $(UTIL_DIR)/comparator.o
 LIST_OBJS = test/list_test.o $(SRC)/ArrayList/array_list.o $(SRC)/LinkedList/linked_list.o $(UTIL_OBJS)
 STACK_OBJS = test/stack_test.o $(SRC)/Stack/stack.o $(UTIL_OBJS)
 QUEUE_OBJS = test/queue_test.o $(SRC)/Queue/queue.o $(UTIL_OBJS)

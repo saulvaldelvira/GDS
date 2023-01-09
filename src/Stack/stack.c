@@ -41,6 +41,7 @@ static StackNode* init_node(void *element, size_t size){
 
 int stack_push(Stack *stack, void *element){
         CHECK_NULL(stack, stack_push, NULL_PARAMETER)
+        CHECK_NULL(element, stack_push, NULL_PARAMETER)
         if(stack->head == NULL){
                 stack->head = init_node(element, stack->data_size);
                 CHECK_MEMORY(stack->head, stack_push, ALLOCATION_ERROR)
@@ -56,6 +57,7 @@ int stack_push(Stack *stack, void *element){
 
 void* stack_pop(Stack *stack, void *dest){
         CHECK_NULL(stack, stack_pop, NULL)
+        CHECK_NULL(dest, stack_pop, NULL)
         if(stack->head == NULL){
                 return NULL;
         }else{
@@ -71,6 +73,7 @@ void* stack_pop(Stack *stack, void *dest){
 }
 
 void* stack_peek(Stack stack, void *dest){
+        CHECK_NULL(dest, stack_peek, NULL)
         if(stack.head->info == NULL){
                 return NULL;
         }else{
@@ -79,6 +82,7 @@ void* stack_peek(Stack stack, void *dest){
 }
 
 bool stack_search(Stack stack, void *element){
+        CHECK_NULL(element, stack_search, false)
         StackNode *aux = stack.head;
         while (aux != NULL){
                 if((*stack.compare) (element, aux) == 0){
@@ -107,6 +111,7 @@ void stack_free(Stack stack){
 }
 
 void stack_reset(Stack *stack){
+        CHECK_NULL(stack, stack_reset, ;)
         free_node(stack->head);
         stack->head = NULL;
 }

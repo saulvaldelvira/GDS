@@ -44,6 +44,7 @@ static LLNode* lnkd_list_innit_node(void *info, size_t size){
 
 int lnkd_list_push_back(LinkedList *list, void *element){
     CHECK_NULL(list, lnkd_list_push_back, NULL_PARAMETER)
+    CHECK_NULL(element, lnkd_list_push_back, NULL_PARAMETER)
     if(list->n_elements == 0){ // We add to the head
         list->head = lnkd_list_innit_node(element, list->data_size);
         if(!list->head){
@@ -63,7 +64,8 @@ int lnkd_list_push_back(LinkedList *list, void *element){
 }
 
 int lnkd_list_push_front(LinkedList *list, void *element){
-    CHECK_NULL(list, lnkd_list_append, NULL_PARAMETER)
+    CHECK_NULL(list, lnkd_list_push_front, NULL_PARAMETER)
+    CHECK_NULL(list, lnkd_list_push_front, NULL_PARAMETER)
     if(list->n_elements == 0){ // We add to the head
         list->head = lnkd_list_innit_node(element, list->data_size);
         if(!list->head){
@@ -82,6 +84,9 @@ int lnkd_list_push_front(LinkedList *list, void *element){
 }
 
 bool lnkd_list_set(LinkedList *list, void *element, void *replacement){
+    CHECK_NULL(list, lnkd_list_set, false)
+    CHECK_NULL(element, lnkd_list_set, false)
+    CHECK_NULL(replacement, lnkd_list_set, false)
     LLNode *aux = list->head;
     while ( (*list->compare) (aux->info, element) != 0) {
         aux = aux->next;
@@ -97,6 +102,8 @@ bool lnkd_list_set(LinkedList *list, void *element, void *replacement){
 }
 
 void* lnkd_list_get(LinkedList list, void *element, void *dest){
+    CHECK_NULL(element, lnkd_list_get, NULL)
+    CHECK_NULL(dest, lnkd_list_get, NULL)
     LLNode *aux = list.head;
     while (aux != NULL && (*list.compare) (aux->info, element) != 0) {
         aux = aux->next;
@@ -105,6 +112,7 @@ void* lnkd_list_get(LinkedList list, void *element, void *dest){
 }
 
 bool lnkd_list_exists(LinkedList list, void *element){
+    CHECK_NULL(element, lnkd_list_exists, false)
     LLNode *aux = list.head;
     while (aux != NULL) {
         if ((*list.compare) (aux->info, element) == 0){
@@ -121,6 +129,7 @@ bool lnkd_list_isempty(LinkedList list){
 
 bool lnkd_list_remove(LinkedList *list, void *element){
     CHECK_NULL(list, lnkd_list_remove, false)
+    CHECK_NULL(element, lnkd_list_remove, false)
     LLNode *aux = list->head;
     while(aux != NULL && (*list->compare) (aux->info, element) != 0){
         aux = aux->next;
@@ -155,6 +164,7 @@ void lnkd_list_free(LinkedList list){
 }
 
 void lnkd_list_reset(LinkedList *list){
+    CHECK_NULL(list, lnkd_list_reset, ;)
     lnkd_list_free_node(list->head);
     list->head = NULL;
     list->tail = NULL;

@@ -11,7 +11,7 @@ int main(){
         printf("[Starting Stack Test]\n Workload: %d\n", n);
         TIMESTAMP_START
 
-        Stack stack = stack_init(sizeof(int), Comparator.integer);
+        Stack stack = stack_init(sizeof(int), compare_int);
         assert(stack_isempty(stack));
         temp = 12;
         stack_push(&stack, &temp);

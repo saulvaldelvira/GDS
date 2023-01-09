@@ -9,7 +9,7 @@ int main(){
         intptr_t n = 12000;
         printf("[Graph Test]\n");
         TIMESTAMP_START
-        Graph g = graph_init(Comparator.literal_integer);
+        Graph g = graph_init(compare_int);
         for(intptr_t i = 0; i < n; i++){
                 assert(graph_add_node(&g, (void*) i));
                 assert(g.n_elements == (size_t) i+1);

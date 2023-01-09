@@ -100,6 +100,7 @@ add_rec(BSNode *node, void *element, int (*cmp) (const void*,const void*), size_
 
 int bst_add(BSTree *tree, void *element){
     CHECK_NULL(tree, bst_add, NULL_PARAMETER)
+    CHECK_NULL(element, bst_add, NULL_PARAMETER)
     struct add_rec_ret ret = add_rec(tree->root, element, tree->compare, tree->data_size);
     tree->root = ret.node;
     if (ret.status == 1){
@@ -117,16 +118,6 @@ static BSNode* get_max(BSNode *node){
     }
     return node;
 }
-
-/*static BSNode* get_min(BSNode *node){
-    if (node == NULL){
-        return NULL;
-    }
-    while (node->left != NULL){
-        node = node->left;
-    }
-    return node;
-}*/
 
 // Auxiliar struct for the remove_rec function (NOTE: this is part of the function name)
 static struct remove_rec_ret {
@@ -184,6 +175,7 @@ remove_rec(BSNode *node, void *element, int (*cmp) (const void*,const void*), si
 
 int bst_remove(BSTree *tree, void *element){
     CHECK_NULL(tree, bst_remove, NULL_PARAMETER)
+    CHECK_NULL(element, bst_remove, NULL_PARAMETER)
     struct remove_rec_ret ret = remove_rec(tree->root, element, tree->compare, tree->data_size);
     if (ret.status){
         tree->root = ret.node;
@@ -207,6 +199,8 @@ static void* get_rec(BSNode *node, void *element, void *dest, int (*cmp) (const 
 }
 
 void* bst_get(BSTree tree, void* element, void *dest){
+    CHECK_NULL(element, bst_get, NULL)
+    CHECK_NULL(dest, bst_get, NULL)
     return get_rec(tree.root, element, dest, tree.compare, tree.data_size);
 }
 
@@ -225,6 +219,7 @@ static bool exists_rec(BSNode *node, void *element, int (*cmp) (const void*,cons
 }
 
 bool bst_exists(BSTree tree, void *element){
+    CHECK_NULL(element, bst_exists, NULL)
     return exists_rec(tree.root, element, tree.compare);
 }
 
@@ -246,6 +241,7 @@ void bst_free(BSTree tree){
 }
 
 void bst_reset(BSTree *tree){
+    CHECK_NULL(tree, bst_reset, ;)
     free_rec(tree->root);
     tree->root = NULL;
     tree->n_elements = 0;

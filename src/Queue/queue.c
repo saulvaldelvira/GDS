@@ -40,6 +40,7 @@ static QueueNode* queue_init_node(void *element, size_t size){
 
 int queue_enqueue(Queue *queue, void *element){
     CHECK_NULL(queue, queue_enqueue, NULL_PARAMETER)
+    CHECK_NULL(element, queue_enqueue, NULL_PARAMETER)
     if (queue->head == NULL) {
         queue->head = queue_init_node(element, queue->data_size);
         CHECK_MEMORY(queue->head, queue_enqueue, ALLOCATION_ERROR)
@@ -54,6 +55,7 @@ int queue_enqueue(Queue *queue, void *element){
 
 void* queue_dequeue(Queue *queue, void *dest){
     CHECK_NULL(queue, queue_dequeue, NULL)
+    CHECK_NULL(dest, queue_dequeue, NULL)
     if (queue->head == NULL){
         return NULL;
     }
@@ -68,6 +70,7 @@ void* queue_dequeue(Queue *queue, void *dest){
 }
 
 void* queue_peek(Queue queue, void *dest){
+    CHECK_NULL(dest, queue_peek, NULL)
     if (queue.head == NULL){
         return NULL;
     }
@@ -77,6 +80,7 @@ void* queue_peek(Queue queue, void *dest){
 }
 
 bool queue_search(Queue queue, void *element){
+    CHECK_NULL(element, queue_search, false)
     QueueNode *aux = queue.head;
     while (aux != NULL){
         if((*queue.compare) (aux->info, element) == 0){
@@ -104,6 +108,7 @@ void queue_free(Queue queue){
 }
 
 void queue_reset(Queue *queue){
+    CHECK_NULL(queue, queue_reset, ;)
     queue_free_node(queue->head);
     queue->head = NULL;
     queue->tail = NULL;

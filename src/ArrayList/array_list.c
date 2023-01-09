@@ -28,6 +28,8 @@ ArrayList arrlist_init(size_t data_size, size_t size, int (*cmp) (const void*, c
 }
 
 int arrlist_append(ArrayList *list, void *element){
+    CHECK_NULL(list, arrlist_append, NULL_PARAMETER)
+    CHECK_NULL(element, arrlist_append, NULL_PARAMETER)
     if(list->n_elements == list->max_elements){ // If the list is empty, double the array size
         list->max_elements *= 2;
         list->elements = realloc(list->elements, list->max_elements * list->data_size);
@@ -45,6 +47,7 @@ int arrlist_append(ArrayList *list, void *element){
 }
 
 index_t arrlist_indexof(ArrayList list, void *element){
+    CHECK_NULL(element, arrlist_indexof, INDEX_NOT_FOUND)
     void *ptr; // Current element in the iteration
     for (size_t i=0; i<list.n_elements; i++){
         ptr = offset(list.elements, i, list.data_size);
@@ -56,6 +59,7 @@ index_t arrlist_indexof(ArrayList list, void *element){
 }
 
 bool arrlist_exists(ArrayList list, void *element){
+    CHECK_NULL(element, arrlist_exists, false)
     return arrlist_indexof(list, element).status == 1;
 }
 
@@ -64,7 +68,8 @@ bool arrlist_isempty(ArrayList list){
 }
 
 int arrlist_set_at(ArrayList *list, size_t index, void *element){
-    CHECK_NULL(list, arrlist_set_at, INDEX_OUT_OF_BOUNDS)
+    CHECK_NULL(list, arrlist_set_at, NULL_PARAMETER)
+    CHECK_NULL(element, arrlist_set_at, NULL_PARAMETER)
     CHECK_BOUNDS(index, list->n_elements, arrlist_set_at, INDEX_OUT_OF_BOUNDS);
 
     if(!memmove(offset(list->elements, index, list->data_size), element, list->data_size)){
@@ -76,7 +81,9 @@ int arrlist_set_at(ArrayList *list, size_t index, void *element){
 }
 
 int arrlist_set(ArrayList *list, void *element, void *replacement){
-    CHECK_NULL(list, arrlist_set, INDEX_OUT_OF_BOUNDS)
+    CHECK_NULL(list, arrlist_set, NULL_PARAMETER)
+    CHECK_NULL(element, arrlist_set, NULL_PARAMETER)
+    CHECK_NULL(replacement, arrlist_set, NULL_PARAMETER)
     void *ptr;
     for (size_t i=0; i < list->n_elements; i++){
         ptr = offset(list->elements, i, list->data_size);
@@ -93,11 +100,14 @@ int arrlist_set(ArrayList *list, void *element, void *replacement){
 
 void* arrlist_get_at(ArrayList list, size_t index, void *dest){
     CHECK_BOUNDS(index, list.n_elements, arrlist_get_at, NULL)
+    CHECK_NULL(dest, arrlist_get_at, NULL)
     return memcpy(dest, offset(list.elements, index, list.data_size), list.data_size);
 }
 
 void* arrlist_get(ArrayList list, void *element, void *dest){
     void *ptr;
+    CHECK_NULL(element, arrlist_get, NULL)
+    CHECK_NULL(dest, arrlist_get, NULL)
     for (size_t i = 0; i < list.n_elements; i++){
         ptr = offset(list.elements, i, list.data_size);
         if((*list.compare) (ptr, element) == 0){
@@ -124,6 +134,7 @@ int arrlist_remove_at(ArrayList *list, size_t index){
 
 int arrlist_remove(ArrayList *list, void *element){
     CHECK_NULL(list, arrlist_remove, INDEX_OUT_OF_BOUNDS)
+    CHECK_NULL(element, arrlist_remove, NULL_PARAMETER)
     index_t i = arrlist_indexof(*list, element);
     if(i.status){
         return arrlist_remove_at(list, i.index);
@@ -137,6 +148,7 @@ void arrlist_free(ArrayList list){
 }
 
 void arrlist_reset(ArrayList *list){
+    CHECK_NULL(list, arrlist_reset, ;)
     free(list->elements);
     list->elements = NULL;
     list->elements = malloc(ARRAY_LIST_DEFAULT_SIZE * list->data_size);
