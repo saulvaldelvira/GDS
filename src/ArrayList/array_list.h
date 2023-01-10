@@ -12,16 +12,7 @@
 #include <stdbool.h>
 #define ARRAY_LIST_DEFAULT_SIZE 12
 
-/**
- * Represents a position on the list. Used in methods to return a value alongside a status identifier of the operation result.
-*/
-typedef struct index{
-    size_t index;
-    int status;
-} index_t;
-
-#define index_t(i)    (index_t) {.index = i, .status = 1}
-#define INDEX_NOT_FOUND (index_t) {.index = 0, -1} // An index_t struct with status set to -1, to represent a failure in the procedure
+#include "../Util/index_t.h"
 
 typedef struct _ArrayList ArrayList;
     

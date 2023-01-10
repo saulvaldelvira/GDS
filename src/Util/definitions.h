@@ -9,6 +9,7 @@
 #ifndef DEFINITIONS_H
 #define DEFINITIONS_H
 
-#define void_offset(ptr, bytes) (void*)(((unsigned char*)ptr) + bytes)
+#define void_offset(ptr, bytes) (void*)(((unsigned char*)ptr) + (bytes))
+#define matrix_offset(arr, dim, rows, cols) (arr+((dim)*(rows) + (cols)))
 
 #endif

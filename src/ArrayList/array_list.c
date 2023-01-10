@@ -26,10 +26,12 @@ struct _ArrayList {
 
 
 ArrayList* arrlist_empty(size_t data_size, int (*cmp) (const void*, const void*)){
+    CHECK_DATA_SIZE(data_size, arrlist_empty, NULL)
     return arrlist_init(data_size, ARRAY_LIST_DEFAULT_SIZE, cmp);
 }
 
 ArrayList* arrlist_init(size_t data_size, size_t max_elements, int (*cmp) (const void*, const void*)){
+    CHECK_DATA_SIZE(data_size, arrlist_init, NULL)
     CHECK_NULL(cmp, arrlist_init, NULL)
     ArrayList *list = malloc(sizeof(ArrayList));
     CHECK_MEMORY(list, arrlist_init, NULL)
@@ -63,8 +65,8 @@ int arrlist_append(ArrayList *list, void *element){
 }
 
 index_t arrlist_indexof(ArrayList *list, void *element){
-    CHECK_NULL(list, arrlist_indexof, INDEX_NOT_FOUND)
-    CHECK_NULL(element, arrlist_indexof, INDEX_NOT_FOUND)
+    CHECK_NULL(list, arrlist_indexof, INDEXT_NOT_FOUND)
+    CHECK_NULL(element, arrlist_indexof, INDEXT_NOT_FOUND)
     void *ptr; // Current element in the iteration
     for (size_t i=0; i<list->n_elements; i++){
         ptr = void_offset(list->elements, i * list->data_size);
@@ -72,7 +74,7 @@ index_t arrlist_indexof(ArrayList *list, void *element){
             return index_t(i);
         }
     }
-    return INDEX_NOT_FOUND;
+    return INDEXT_NOT_FOUND;
 }
 
 bool arrlist_exists(ArrayList *list, void *element){
@@ -162,7 +164,7 @@ int arrlist_remove(ArrayList *list, void *element){
     CHECK_NULL(element, arrlist_remove, NULL_PARAMETER)
     index_t i = arrlist_indexof(list, element);
     if(i.status){
-        return arrlist_remove_at(list, i.index);
+        return arrlist_remove_at(list, i.value);
     }else{
         return INDEX_OUT_OF_BOUNDS;
     }

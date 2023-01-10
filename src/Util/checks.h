@@ -12,6 +12,7 @@
 #define INDEX_OUT_OF_BOUNDS -1
 #define ALLOCATION_ERROR    -2
 #define NULL_PARAMETER      -3
+#define MEMORY_OP_ERROR     -4
 
 /**
  * If x is NULL, prints and error and returns the ret parameter
@@ -36,5 +37,9 @@
                                                     fprintf(stderr, "ERROR: Index " #index " out of bounds\nAt function " #func "\n"); \
                                                     return ret; \
                                                 }
+
+#define CHECK_MEMORY_OP(op, func, ret) if(op == NULL){fprintf(stderr, "ERROR: At memory operation " #op " \n In function " #func "\n"); return ret;}
+
+#define CHECK_DATA_SIZE(size, func, ret) if (size == 0){fprintf(stderr, "ERROR: Data size can't be 0\n In function " #func "\n"); return ret;}
 
 #endif
