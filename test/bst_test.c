@@ -10,15 +10,17 @@ struct test{
 };
 
 int main(){
+
+
     int n = 1000;//, min = 0, max = 10;
     int temp;
     printf("[BSTree Test]\n");
-    BSTree t = bst_init(sizeof(int), compare_int);
+    BSTree *t = bst_init(sizeof(int), compare_int);
     // Random numbers test
     assert(!bst_exists(t, &n));
     printf("Add...\n");
     for(int i=0; i<n; i++){
-        assert(bst_add(&t, &i));
+        assert(bst_add(t, &i));
         assert(bst_exists(t, &i));
         bst_get(t, &i, &temp);
         assert(temp == i);
@@ -26,20 +28,20 @@ int main(){
     
     printf("Remove...\n");
     for(int i=0; i<n; i++){
-        bst_remove(&t, &i);
+        bst_remove(t, &i);
     }
 
     // Orders test
     printf("Traversals... \n");
-    bst_reset(&t);
+    bst_reset(t);
     int nums[] = {12, 9, 7, 10, 0, 8, 11, 30, 25, 32, 31, 33};
     for(size_t i=0; i < sizeof(nums) / sizeof(nums[0]); i++){
-        assert(bst_add(&t, &nums[i]));
+        assert(bst_add(t, &nums[i]));
     }
 
     void* inord = bst_inorder(t);
     printf("\tInorder: \t");
-    for(size_t i=0; i < t.n_elements; i++){
+    for(size_t i=0; i < bst_n_elements(t); i++){
         printf("%d-", * (int*) void_offset(inord, i * sizeof(int)));
     }
     printf("\n");
@@ -49,7 +51,7 @@ int main(){
 
     void* preord = bst_preorder(t);
     printf("\n\tPreorder:  \t");
-    for(size_t i=0; i < t.n_elements; i++){
+    for(size_t i=0; i < bst_n_elements(t); i++){
         printf("%d-", * (int*) void_offset(preord, i * sizeof(int)));
     }
     printf("\n");
@@ -59,7 +61,7 @@ int main(){
 
     void* postord = bst_postorder(t);
     printf("\n\tPostorder: \t");
-    for(size_t i=0; i < t.n_elements; i++){
+    for(size_t i=0; i < bst_n_elements(t); i++){
         printf("%d-", * (int*) void_offset(postord, i * sizeof(int)));
     }
     printf("\n");
@@ -69,14 +71,16 @@ int main(){
 
 
     // Remove test
-    bst_reset(&t);
+    t = bst_reset(t);
+    assert(t != NULL);
+
     int nums2[] = {12, 5, 3, 23, 30};
     for(size_t i=0; i < sizeof(nums2) / sizeof(nums2[0]); i++){
-        assert(bst_add(&t, &nums2[i]));
+        assert(bst_add(t, &nums2[i]));
     }
     //int cinco = 5, veintitres = 23;
-    assert(bst_remove(&t, cast_int(5)));
-    assert(bst_remove(&t, cast_int(23)));
+    assert(bst_remove(t, cast_int(5)));
+    assert(bst_remove(t, cast_int(23)));
 
     void* remove_inord = bst_inorder(t);
     assert(3 == * (int*) remove_inord);

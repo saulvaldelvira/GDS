@@ -14,11 +14,11 @@ It's important to note that these structures store the VALUE of the elements, no
 
 ```c
 int main(){
-    ArrayList list = arrlist_empty(sizeof(int), compare_int);
+    ArrayList *list = arrlist_empty(sizeof(int), compare_int);
     int tmp = 12;
-    arrlist_append(&list, &tmp);
+    arrlist_append(list, &tmp);
     tmp = 3;
-    arrlist_append(&list, &tmp);
+    arrlist_append(list, &tmp);
 
     arrlist_free(list);
     return 0;
@@ -55,9 +55,9 @@ int compare_int(void* param_1, void* param_2){
 }
 
 int main(){
-    LinkedList list = lnkd_list_init(compare_int); // Pass compare_int as a parameter
+    LinkedList *list = lnkd_list_init(compare_int); // Pass compare_int as a parameter
     int one = 1;
-    lnkd_list_push_back(&list, &one);
+    lnkd_list_push_back(list, &one);
     assert(lnkd_list_exists(list, &one)); // This will return true.
 }
 ```
@@ -67,6 +67,6 @@ int main(){
 #include "comparator.h"
 
 int main(){
-    LinkedList list = lnkd_list_init(Comparator.integer); // To compare ints
+    LinkedList *list = lnkd_list_init(Comparator.integer); // To compare ints
 }
 ```

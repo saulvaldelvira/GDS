@@ -24,11 +24,12 @@ int main(){
         printf("->ArrayList...\n");
         TIMESTAMP_START
         
-        ArrayList arr = arrlist_empty(sizeof(int), compare_int);
+        ArrayList *arr = arrlist_empty(sizeof(int), compare_int);
+
         assert(arrlist_isempty(arr));
         for(int i=0; i < n; i++){
-                assert(arrlist_append(&arr, &i));
-                assert(arr.n_elements == (size_t) i+1);
+                assert(arrlist_append(arr, &i));
+                assert(arrlist_n_elements(arr) == (size_t) i+1);
         }
         assert(!arrlist_isempty(arr));
         int menosveinte = -20, treinta = 30;
@@ -44,21 +45,21 @@ int main(){
                 assert(arrlist_indexof(arr, &i).index == (size_t) i);
                 assert(i == * (int*) arrlist_get_at(arr, i, &tmp));
                 assert(i == * (int*) arrlist_get(arr, &i, &tmp));
-                assert(arrlist_remove(&arr, &i));
+                assert(arrlist_remove(arr, &i));
         }
-        assert(arr.n_elements == 0);
+        assert(arrlist_n_elements(arr) == 0);
 
         // Set test 2
         int one = 1;
         int two = 2;
         int three = 3;
 
-        assert(arrlist_append(&arr, &one));
-        assert(arrlist_set_at(&arr, 0, &two));
+        assert(arrlist_append(arr, &one));
+        assert(arrlist_set_at(arr, 0, &two));
         
         assert(two == * (int*) arrlist_get_at(arr, 0, &tmp));
         
-        assert(arrlist_set(&arr, &two, &three) != INDEX_OUT_OF_BOUNDS);
+        assert(arrlist_set(arr, &two, &three) != INDEX_OUT_OF_BOUNDS);
         assert(three == * (int*) arrlist_get_at(arr, 0, &tmp));
         /////////////////////////////////////////////////////
 
@@ -71,35 +72,35 @@ int main(){
 
         TIMESTAMP_START
 
-        LinkedList lnked = lnkd_list_init(sizeof(int), compare_int);
+        LinkedList *lnked = lnkd_list_init(sizeof(int), compare_int);
         
         assert(lnkd_list_isempty(lnked));
         
         for(int i=0; i < n; i++){
-                assert(lnkd_list_push_back(&lnked, &i));
-                assert(lnked.n_elements == (size_t) i+1);
+                assert(lnkd_list_push_back(lnked, &i));
+                assert(lnkd_list_n_elements(lnked) == (size_t) i+1);
         }
 
         /*PUSH FRONT*/
         int menos150 = -150;
-        assert(lnkd_list_push_front(&lnked, &menos150));
-        assert(lnked.n_elements == 1UL + n);
-        assert(lnkd_list_remove(&lnked, &menos150));
+        assert(lnkd_list_push_front(lnked, &menos150));
+        assert(lnkd_list_n_elements(lnked) == 1UL + n);
+        assert(lnkd_list_remove(lnked, &menos150));
 
         // Remove the last element
         assert(!lnkd_list_isempty(lnked));
         int last = n-1;
-        assert(lnkd_list_remove(&lnked, &last));
-        assert(lnked.n_elements == (size_t) n-1);
-        assert(lnkd_list_push_back(&lnked, &last));
+        assert(lnkd_list_remove(lnked, &last));
+        assert(lnkd_list_n_elements(lnked) == (size_t) n-1);
+        assert(lnkd_list_push_back(lnked, &last));
         ///////////////////////////////////////////////////
         
         for(int i=0; i < n; i++){
                 assert(lnkd_list_exists(lnked, &i));
                 assert(i == * (int *) lnkd_list_get(lnked, &i, &tmp));
-                assert(lnkd_list_remove(&lnked, &i));
+                assert(lnkd_list_remove(lnked, &i));
         }
-        assert(lnked.n_elements == 0);
+        assert(lnkd_list_n_elements(lnked) == 0);
         lnkd_list_free(lnked);
 
         TIMESTAMP_STOP

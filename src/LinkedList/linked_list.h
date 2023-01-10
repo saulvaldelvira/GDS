@@ -13,21 +13,9 @@
 #include <stdbool.h>
 
 /**
- * Node of a Linked List
-*/
-typedef struct LLNode LLNode;
-
-/**
  * @brief Linked List structure.
  */
-typedef struct LinkedList {
-    LLNode *head;
-    LLNode *tail;
-    size_t n_elements;
-    size_t data_size;
-    // Comparator function for 2 elements
-    int (*compare) (const void*, const void*);
-} LinkedList;
+typedef struct _LinkedList LinkedList;
     
 /**
  * Initializes the linked list 
@@ -35,7 +23,7 @@ typedef struct LinkedList {
  * @param cmp pointer to a function that receives two void pointers and returns 1 if the first one is greater than the 
  *              second, 0 if they are equal and -1 if the first one is smaller than the second one
 */
-LinkedList lnkd_list_init(size_t data_size, int (*cmp) (const void*, const void*));
+LinkedList* lnkd_list_init(size_t data_size, int (*cmp) (const void*, const void*));
 
 /**
  * Adds the given element to the end of the list
@@ -60,17 +48,22 @@ int lnkd_list_set(LinkedList *list, void *element, void *replacement);
  * @param dest adress to store the reuslt in. MUST BE INITIALIZED.
  * @return a pointer to the first element in the list that is equal to the parameter element.
 */
-void* lnkd_list_get(LinkedList list, void *element, void *dest);
+void* lnkd_list_get(LinkedList *list, void *element, void *dest);
 
 /**
 * @return true if the element exists in the list
 */
-bool lnkd_list_exists(LinkedList list, void *element);
+bool lnkd_list_exists(LinkedList *list, void *element);
+
+/**
+ * @return the number of elements in the list
+*/
+size_t lnkd_list_n_elements(LinkedList *list);
 
 /**
 * @return true if the list is empty
 */
-bool lnkd_list_isempty(LinkedList list);
+bool lnkd_list_isempty(LinkedList *list);
     
 /**
  * Removes the element from the list
@@ -81,12 +74,12 @@ int lnkd_list_remove(LinkedList *list, void *element);
 /**
  * Frees the memory allocated on the list.
 */
-void lnkd_list_free(LinkedList list);
+int lnkd_list_free(LinkedList *list);
 
 /**
  * Frees the memory allocated on the list, and resets it to it's initial state
- * @return 1 if the operation is successful
+ * @return the same pointer if sucess, NULL if the operation fails
 */
-int lnkd_list_reset(LinkedList *list);    
+LinkedList* lnkd_list_reset(LinkedList *list);    
 
 #endif

@@ -16,18 +16,10 @@
 #define NON_EXISTING_ELEMENT -1
 #define EMPTY_TREE -1
 
-typedef struct BSNode BSNode;
-
 /**
  * @brief BSTree (Binary Search Tree) structure.
  */
-typedef struct BSTree {
-    BSNode *root;
-    // Comparator function for 2 elements
-    int (*compare) (const void*,const void*);
-    size_t n_elements;
-    size_t data_size;
-} BSTree;
+typedef struct _BSTree BSTree;
 
 /**
  * Returns an empty new BSTree
@@ -35,61 +27,67 @@ typedef struct BSTree {
  * @param comparator function to compare two elements of the tree. 
  *  Must return -1 if element1 < element2, 1 if element1 > element2 and 0 if element1 == element2
 */
-extern BSTree bst_init(size_t data_size, int (*cmp) (const void*, const void*));
+BSTree* bst_init(size_t data_size, int (*cmp) (const void*, const void*));
 
 /**
  * @return 1 if the operation is successful
 */
-extern int bst_add(BSTree *tree, void *element);
+int bst_add(BSTree *tree, void *element);
 
 /**
  * @return 1 if the operation is successful
 */
-extern int bst_remove(BSTree *tree, void *element);
+int bst_remove(BSTree *tree, void *element);
 
 /**
  * @return the element, if it can find it, or NULL if it does not exists in the tree
 */
-extern void* bst_get(BSTree tree, void* element, void *dest);
+void* bst_get(BSTree *tree, void* element, void *dest);
 
 /**
  * @return true if the element exists in the tree
 */
-extern bool bst_exists(BSTree tree, void *element);
+bool bst_exists(BSTree *tree, void *element);
+
+/**
+ * @return the number of elements in the tree
+*/
+size_t bst_n_elements(BSTree *tree);
 
 /**
  * @return true if the tree is empty
 */
-extern bool bst_isempty(BSTree tree);
+bool bst_isempty(BSTree *tree);
 
 /**
  * Frees the memory allocated for this tree
+ * @return 1 if the operation is successful
 */
-extern void bst_free(BSTree tree);
+int bst_free(BSTree *tree);
 
 /**
  * Frees the memory allocated for this tree and resets it to it's original state
- * @return 1 if the operation is successful
+ * @return the same pointer if sucess, NULL if the operation fails
 */
-extern int bst_reset(BSTree *tree);
-
-/**
- * @return an array with all the elements of the tree traversed in-order.
- * @note the size of the array will naturally be the number of elements in the tree, so there is no need to return it.
-*/
-extern void* bst_inorder(BSTree tree);
+BSTree* bst_reset(BSTree *tree);
 
 /**
  * @return an array with all the elements of the tree traversed pre-order.
  * @note the size of the array will naturally be the number of elements in the tree, so there is no need to return it.
 */
-extern void** bst_preorder(BSTree tree);
+void** bst_preorder(BSTree *tree);
+
+/**
+ * @return an array with all the elements of the tree traversed in-order.
+ * @note the size of the array will naturally be the number of elements in the tree, so there is no need to return it.
+*/
+void* bst_inorder(BSTree *tree);
 
 /**
  * @return an array with all the elements of the tree traversed post-order.
  * @note the size of the array will naturally be the number of elements in the tree, so there is no need to return it.
 */
-extern void** bst_postorder(BSTree tree);
+void** bst_postorder(BSTree *tree);
 
 
 #endif

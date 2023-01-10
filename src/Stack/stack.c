@@ -12,17 +12,28 @@
 #include "../Util/definitions.h"
 #include <memory.h>
 
-struct StackNode {
+typedef struct StackNode {
         struct StackNode *next;
         unsigned char info[];
+} StackNode;
+
+struct _Stack {
+        StackNode *head;
+        // Comparator function
+        int (*compare) (const void*, const void*);
+        size_t data_size;
 };
 
-Stack stack_init(size_t data_size, int (*cmp) (const void*, const void*)){
-        return (Stack){
-                .head = NULL,
-                .compare = cmp,
-                .data_size = data_size
-        };
+Stack* stack_init(size_t data_size, int (*cmp) (const void*, const void*)){
+        CHECK_NULL(cmp, stack_init, NULL)
+        // Allocate stack
+        Stack *stack = malloc(sizeof(Stack));
+        CHECK_MEMORY(stack, stack_init, NULL)
+        // Initialize stack
+        stack->head = NULL;
+        stack->compare = cmp;
+        stack->data_size = data_size;
+        return stack;
 }
 
 /**
@@ -59,9 +70,7 @@ int stack_push(Stack *stack, void *element){
 void* stack_pop(Stack *stack, void *dest){
         CHECK_NULL(stack, stack_pop, NULL)
         CHECK_NULL(dest, stack_pop, NULL)
-        if(stack->head == NULL){
-                return NULL;
-        }else{
+        if(stack->head != NULL){
                 StackNode* aux = stack->head;    // Save the head
                 stack->head = stack->head->next; // Change it to the next element
                 if(!memcpy(dest, aux->info, stack->data_size)){       // Save the element
@@ -69,24 +78,27 @@ void* stack_pop(Stack *stack, void *dest){
                         return NULL;
                 }
                 free(aux);                       // Free the old head
-                return dest;                  // Return the element
+                return dest;  
         }
+        return NULL;
 }
 
-void* stack_peek(Stack stack, void *dest){
+void* stack_peek(Stack *stack, void *dest){
+        CHECK_NULL(stack, stack_peek, NULL)
         CHECK_NULL(dest, stack_peek, NULL)
-        if(stack.head->info == NULL){
+        if(stack->head->info == NULL){
                 return NULL;
         }else{
-                return memcpy(dest, stack.head->info, stack.data_size);
+                return memcpy(dest, stack->head->info, stack->data_size);
         }
 }
 
-bool stack_search(Stack stack, void *element){
+bool stack_search(Stack *stack, void *element){
+        CHECK_NULL(stack, stack_search, false)
         CHECK_NULL(element, stack_search, false)
-        StackNode *aux = stack.head;
+        StackNode *aux = stack->head;
         while (aux != NULL){
-                if((*stack.compare) (element, aux) == 0){
+                if((*stack->compare) (element, aux) == 0){
                         return true;
                 }
                 aux = aux->next;
@@ -94,8 +106,9 @@ bool stack_search(Stack stack, void *element){
         return false;
 }
 
-bool stack_isempty(Stack stack){
-        return stack.head == NULL;
+bool stack_isempty(Stack *stack){
+        CHECK_NULL(stack, stack_isempty, false)
+        return stack->head == NULL;
 }
 
 static void free_node(StackNode *node){
@@ -106,14 +119,16 @@ static void free_node(StackNode *node){
         free(node);
 }
 
-void stack_free(Stack stack){
-        free_node(stack.head);
-
+int stack_free(Stack *stack){
+        CHECK_NULL(stack, stack_free, NULL_PARAMETER)
+        free_node(stack->head);
+        free(stack);
+        return 1;
 }
 
-int stack_reset(Stack *stack){
-        CHECK_NULL(stack, stack_reset, NULL_PARAMETER)
+Stack* stack_reset(Stack *stack){
+        CHECK_NULL(stack, stack_reset, NULL)
         free_node(stack->head);
         stack->head = NULL;
-        return 1;
+        return stack;
 }

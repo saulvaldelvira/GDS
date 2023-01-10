@@ -12,18 +12,30 @@
 #include "../Util/definitions.h"
 #include <memory.h>
 
-struct QueueNode {
+typedef struct QueueNode {
     struct QueueNode *next;
     unsigned char info[];
+} QueueNode;
+
+struct _Queue {
+    QueueNode *head;
+    QueueNode *tail;
+    size_t data_size;
+    // Comparator function
+    int (*compare) (const void*, const void*);
 };
 
-Queue queue_init(size_t data_size, int (*cmp) (const void*, const void*)){
-    return (Queue) {
-        .head = NULL,
-        .tail = NULL,
-        .compare = cmp,
-        .data_size = data_size
-    };
+Queue* queue_init(size_t data_size, int (*cmp) (const void*, const void*)){
+    CHECK_NULL(cmp, queue_init, NULL)
+    // Allocate queue
+    Queue *queue = malloc(sizeof(Queue));
+    CHECK_MEMORY(queue, queue_init, NULL)
+    // Initialize queue
+    queue->head = NULL;
+    queue->tail = NULL;
+    queue->compare = cmp;
+    queue->data_size = data_size;
+    return queue;
 }
 
 /**
@@ -70,21 +82,23 @@ void* queue_dequeue(Queue *queue, void *dest){
     return dest;                  // Return the element
 }
 
-void* queue_peek(Queue queue, void *dest){
+void* queue_peek(Queue *queue, void *dest){
+    CHECK_NULL(queue, queue_peek, NULL)
     CHECK_NULL(dest, queue_peek, NULL)
-    if (queue.head == NULL){
+    if (queue->head == NULL){
         return NULL;
     }
     else {
-        return memcpy(dest, queue.head->info, queue.data_size);
+        return memcpy(dest, queue->head->info, queue->data_size);
     }
 }
 
-bool queue_search(Queue queue, void *element){
+bool queue_search(Queue *queue, void *element){
+    CHECK_NULL(queue, queue_search, false)
     CHECK_NULL(element, queue_search, false)
-    QueueNode *aux = queue.head;
+    QueueNode *aux = queue->head;
     while (aux != NULL){
-        if((*queue.compare) (aux->info, element) == 0){
+        if((*queue->compare) (aux->info, element) == 0){
             return true;
         }
         aux = aux->next;
@@ -92,8 +106,9 @@ bool queue_search(Queue queue, void *element){
     return false;
 }
 
-bool queue_isempty(Queue queue){
-    return queue.head == NULL;
+bool queue_isempty(Queue *queue){
+    CHECK_NULL(queue, queue_isempty, false)
+    return queue->head == NULL;
 }
 
 static void queue_free_node(QueueNode *node){
@@ -104,14 +119,17 @@ static void queue_free_node(QueueNode *node){
     free(node);
 }
 
-void queue_free(Queue queue){
-    queue_free_node(queue.head);
+int queue_free(Queue *queue){
+    CHECK_NULL(queue, queue_free, NULL_PARAMETER)
+    queue_free_node(queue->head);
+    free(queue);
+    return 1;
 }
 
-int queue_reset(Queue *queue){
-    CHECK_NULL(queue, queue_reset, NULL_PARAMETER)
+Queue* queue_reset(Queue *queue){
+    CHECK_NULL(queue, queue_reset, NULL)
     queue_free_node(queue->head);
     queue->head = NULL;
     queue->tail = NULL;
-    return 1;
+    return queue;
 }

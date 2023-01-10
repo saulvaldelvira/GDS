@@ -21,26 +21,19 @@
     #define NULL_PARAMETER -3
 #endif
 
-typedef struct StackNode StackNode;
-
 /**
  * The Stack works in a similar way to a LinkedList. But in this case, the elements are allways added in the head.
  * This is because a Stack is a Data Structure that follows a LIFO (Last In First Out) dynamic. The last element added 
  * is the first one that goes out.
 */
-typedef struct Stack {
-        StackNode *head;
-        // Comparator function
-        int (*compare) (const void*, const void*);
-        size_t data_size;
-} Stack;
+typedef struct _Stack Stack;
 
 /**
  * Initializes an empty Stack.
  * @param data_size the size of the data being stored.
  * @param comp the comparator funtion for two elements
 */
-Stack stack_init(size_t data_size, int (*cmp) (const void*, const void*));
+Stack* stack_init(size_t data_size, int (*cmp) (const void*, const void*));
 
 
 /**
@@ -57,27 +50,28 @@ void* stack_pop(Stack *stack, void *dest);
 /**
  * @return the last pushed element (without deleting it)
 */
-void* stack_peek(Stack stack, void *dest);
+void* stack_peek(Stack *stack, void *dest);
 
 /**
  * @return true if the element exists in the stack 
 */
-bool stack_search(Stack stack, void *element);
+bool stack_search(Stack *stack, void *element);
 
 /**
  * @return true if the stack is empty
 */
-bool stack_isempty(Stack stack);
+bool stack_isempty(Stack *stack);
 
 /**
  * Frees the memory allocated for the stack.
+ * @return true 1 if he operation is successful
 */
-void stack_free(Stack stack);
+int stack_free(Stack *stack);
 
 /**
  * Frees the memory allocated for the stack AND resets it to the initial state of a stack
- * @return 1 if the operation is successful
+ * @return the same pointer if sucess, NULL if the operation fails
 */
-int stack_reset(Stack *stack);
+Stack* stack_reset(Stack *stack);
 
 #endif

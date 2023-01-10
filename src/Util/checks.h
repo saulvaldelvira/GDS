@@ -25,7 +25,7 @@
  * If the expresion is true, prints and error and returns the ret parameter
 */
 #define CHECK_NULL(ptr, func, ret) if(!ptr){ \
-                                        fprintf(stderr, "ERROR: NULL parameters in function " #func "\n"); \
+                                        fprintf(stderr, "ERROR: NULL parameter " #ptr " in function " #func "\n"); \
                                         return ret; \
                                     }
 
