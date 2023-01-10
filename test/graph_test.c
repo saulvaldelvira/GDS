@@ -6,16 +6,17 @@
 #include "../src/Graph/graph.h"
 
 int main(){
-        intptr_t n = 12000;
+        intptr_t n = 1200;
         printf("[Graph Test]\n");
         TIMESTAMP_START
-        Graph g = graph_init(compare_int);
-        for(intptr_t i = 0; i < n; i++){
-                assert(graph_add_node(&g, (void*) i));
-                assert(g.n_elements == (size_t) i+1);
+        Graph *g = graph_empty(sizeof(int) ,compare_int);
+        for(int i = 0; i < n; i++){
+                assert(graph_add_node(g, &i));
+                assert(graph_n_elements(g) == (size_t) i+1);
         }
-        for(intptr_t i = 0; i < n; i++){
-                assert(graph_exists(g, (void*) i));
+        for(int i = 0; i < n; i++){
+                assert(graph_exists(g, &i));
+                assert(graph_remove_node(g, &i));
         }
         TIMESTAMP_STOP
         graph_free(g);
