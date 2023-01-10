@@ -38,11 +38,11 @@ int main(){
         index_t ret = arrlist_indexof(arr, &treinta);
 
         assert(ret.status);
-        assert(ret.index == (size_t) treinta);
+        assert(ret.value == (size_t) treinta);
         int tmp;
         for(int i=n-1; i >= 0; i--){
                 assert(arrlist_exists(arr, &i));
-                assert(arrlist_indexof(arr, &i).index == (size_t) i);
+                assert(arrlist_indexof(arr, &i).value == (size_t) i);
                 assert(i == * (int*) arrlist_get_at(arr, i, &tmp));
                 assert(i == * (int*) arrlist_get(arr, &i, &tmp));
                 assert(arrlist_remove(arr, &i));
