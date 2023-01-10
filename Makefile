@@ -10,7 +10,7 @@ BST_OBJS = test/bst_test.o $(SRC)/BSTree/BSTree.o $(UTIL_OBJS)
 GRAPH_OBJS = test/graph_test.o $(SRC)/Graph/graph.o $(UTIL_OBJS)
 
 CC = gcc
-CCFLAGS = -lm -Wall -Wextra -Werror -g -pedantic
+CCFLAGS = -lm -Wall -Wextra -Werror -g -pedantic 
 
 list_test: $(BIN) $(BIN)/list_test.out
 	@ $(BIN)/list_test.out 
