@@ -318,7 +318,7 @@ static struct orders_ret traversal_rec(BSNode *node, enum Traversal order, size_
 
     // Add the elements of the left
 
-    if(!memcpy(offset(result.elements, index, size), left.elements, size * left.elements_size)){
+    if(!memcpy(void_offset(result.elements, index * size), left.elements, size * left.elements_size)){
         free(result.elements);
         free(left.elements);
         free(right.elements);
@@ -327,7 +327,7 @@ static struct orders_ret traversal_rec(BSNode *node, enum Traversal order, size_
     index += left.elements_size;
 
     if(order == IN_ORDER){
-        if(!memcpy(offset(result.elements, index, size), node->info, size)){
+        if(!memcpy(void_offset(result.elements, index * size), node->info, size)){
             free(result.elements);
             free(left.elements);
             free(right.elements);
@@ -337,7 +337,7 @@ static struct orders_ret traversal_rec(BSNode *node, enum Traversal order, size_
     }
 
     // Add the elements of the right
-    if(!memcpy(offset(result.elements, index, size), right.elements, size * right.elements_size)){
+    if(!memcpy(void_offset(result.elements, index * size), right.elements, size * right.elements_size)){
         free(result.elements);
         free(left.elements);
         free(right.elements);
@@ -346,7 +346,7 @@ static struct orders_ret traversal_rec(BSNode *node, enum Traversal order, size_
     index += right.elements_size;
 
     if(order == POST_ORDER){
-        if(!memcpy(offset(result.elements, index, size), node->info, size)){
+        if(!memcpy(void_offset(result.elements, index * size), node->info, size)){
             free(result.elements);
             free(left.elements);
             free(right.elements);

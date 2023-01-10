@@ -9,6 +9,6 @@
 #ifndef DEFINITIONS_H
 #define DEFINITIONS_H
 
-#define offset(ptr,index,size) (void*)(((unsigned char*)ptr) + index * size)
+#define void_offset(ptr, bytes) (void*)(((unsigned char*)ptr) + bytes)
 
 #endif

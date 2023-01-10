@@ -39,7 +39,7 @@ int arrlist_append(ArrayList *list, void *element){
         }
     }
 
-    if(!memmove(offset(list->elements, list->n_elements, list->data_size), element, list->data_size)){
+    if(!memmove(void_offset(list->elements, list->n_elements * list->data_size), element, list->data_size)){
         fprintf(stderr, "ERROR: could not append element\n");
         return -1;
     }
@@ -51,7 +51,7 @@ index_t arrlist_indexof(ArrayList list, void *element){
     CHECK_NULL(element, arrlist_indexof, INDEX_NOT_FOUND)
     void *ptr; // Current element in the iteration
     for (size_t i=0; i<list.n_elements; i++){
-        ptr = offset(list.elements, i, list.data_size);
+        ptr = void_offset(list.elements, i * list.data_size);
         if ((*list.compare) (ptr, element) == 0){
             return index_t(i);
         }
@@ -73,7 +73,7 @@ int arrlist_set_at(ArrayList *list, size_t index, void *element){
     CHECK_NULL(element, arrlist_set_at, NULL_PARAMETER)
     CHECK_BOUNDS(index, list->n_elements, arrlist_set_at, INDEX_OUT_OF_BOUNDS);
 
-    if(!memmove(offset(list->elements, index, list->data_size), element, list->data_size)){
+    if(!memmove(void_offset(list->elements, index * list->data_size), element , list->data_size)){
         fprintf(stderr, "ERROR: arrlist_set_at\n");
         return -1;
 
@@ -87,7 +87,7 @@ int arrlist_set(ArrayList *list, void *element, void *replacement){
     CHECK_NULL(replacement, arrlist_set, NULL_PARAMETER)
     void *ptr;
     for (size_t i=0; i < list->n_elements; i++){
-        ptr = offset(list->elements, i, list->data_size);
+        ptr = void_offset(list->elements, i * list->data_size);
         if ((*list->compare) (ptr, element) == 0){
             if(memmove(ptr, replacement, list->data_size)){
                 return 1;
@@ -102,7 +102,7 @@ int arrlist_set(ArrayList *list, void *element, void *replacement){
 void* arrlist_get_at(ArrayList list, size_t index, void *dest){
     CHECK_BOUNDS(index, list.n_elements, arrlist_get_at, NULL)
     CHECK_NULL(dest, arrlist_get_at, NULL)
-    return memcpy(dest, offset(list.elements, index, list.data_size), list.data_size);
+    return memcpy(dest, void_offset(list.elements, index * list.data_size), list.data_size);
 }
 
 void* arrlist_get(ArrayList list, void *element, void *dest){
@@ -110,7 +110,7 @@ void* arrlist_get(ArrayList list, void *element, void *dest){
     CHECK_NULL(element, arrlist_get, NULL)
     CHECK_NULL(dest, arrlist_get, NULL)
     for (size_t i = 0; i < list.n_elements; i++){
-        ptr = offset(list.elements, i, list.data_size);
+        ptr = void_offset(list.elements, i * list.data_size);
         if((*list.compare) (ptr, element) == 0){
             return memcpy(dest, ptr, list.data_size);
         }
@@ -124,7 +124,7 @@ int arrlist_remove_at(ArrayList *list, size_t index){
 
     if (index < list->n_elements - 1){
         size_t leftover = (list->n_elements - index - 1) * list->data_size;
-        if(!memmove(offset(list->elements, index, list->data_size), offset(list->elements, index+1, list->data_size), leftover)){
+        if(!memmove(void_offset(list->elements, index * list->data_size), void_offset(list->elements, (index+1) * list->data_size), leftover)){
             fprintf(stderr, "ERROR: arrlist_remove at\n");
             return -1;
         }

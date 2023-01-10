@@ -40,7 +40,7 @@ int main(){
     void* inord = bst_inorder(t);
     printf("\tInorder: \t");
     for(size_t i=0; i < t.n_elements; i++){
-        printf("%d-", * (int*) offset(inord, i, sizeof(int)));
+        printf("%d-", * (int*) void_offset(inord, i * sizeof(int)));
     }
     printf("\n");
     printf("\tExpected result: 0-7-8-9-10-11-12-25-30-31-32-33-\n");
@@ -50,7 +50,7 @@ int main(){
     void* preord = bst_preorder(t);
     printf("\n\tPreorder:  \t");
     for(size_t i=0; i < t.n_elements; i++){
-        printf("%d-", * (int*) offset(preord, i, sizeof(int)));
+        printf("%d-", * (int*) void_offset(preord, i * sizeof(int)));
     }
     printf("\n");
     printf("\tExpected result: 12-9-7-0-8-10-11-30-25-32-31-33-\n");
@@ -60,7 +60,7 @@ int main(){
     void* postord = bst_postorder(t);
     printf("\n\tPostorder: \t");
     for(size_t i=0; i < t.n_elements; i++){
-        printf("%d-", * (int*) offset(postord, i, sizeof(int)));
+        printf("%d-", * (int*) void_offset(postord, i * sizeof(int)));
     }
     printf("\n");
     printf("\tExpected result: 0-8-7-11-10-9-25-31-33-32-30-12-\n");
@@ -80,8 +80,8 @@ int main(){
 
     void* remove_inord = bst_inorder(t);
     assert(3 == * (int*) remove_inord);
-    assert(12 == * (int*) offset(remove_inord, 1, sizeof(int)));
-    assert(30 == * (int*) offset(remove_inord, 2, sizeof(int)));
+    assert(12 == * (int*) void_offset(remove_inord, 1 * sizeof(int)));
+    assert(30 == * (int*) void_offset(remove_inord, 2 * sizeof(int)));
 
     free(remove_inord);
 
