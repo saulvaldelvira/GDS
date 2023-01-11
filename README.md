@@ -25,7 +25,7 @@ int main(){
 }
 ```
 
-In the example above, both 12 and 3 are added into the list, since every call to the append function just copies 4 bytes (sizeof(int)) from the value stored in tmp into the list. To acess the elements into the structures, pointer arithmetic is used.
+In the example above, both 12 and 3 are added into the list, since every call to the append function just copies 4 bytes (sizeof(int)) from the value stored in tmp into the list. To acess and work with the elements into the structures, pointer arithmetic is used.
 
 ## How are elements compared?
 This is an important issue. Since we store "generic" data, we must have a way to compare that data. <br>
