@@ -21,7 +21,7 @@
 	void set_float_precision(int num_decimals);
 	void set_double_precision(int num_decimals);
 
-	#define DEFAULT_FLOAT_PRECISION 100000000
+	#define DEFAULT_FLOAT_PRECISION 0.00000001f
 	#define DEFAULT_DOUBLE_PRECISION 100000000000000000
 
 	
