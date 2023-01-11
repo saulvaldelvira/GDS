@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 #include <stdbool.h>
+#include "../Util/comparator.h"
 
 /**
  * @brief Linked List structure.
@@ -23,7 +24,7 @@ typedef struct _LinkedList LinkedList;
  * @param cmp pointer to a function that receives two void pointers and returns 1 if the first one is greater than the 
  *              second, 0 if they are equal and -1 if the first one is smaller than the second one
 */
-LinkedList* lnkd_list_init(size_t data_size, int (*cmp) (const void*, const void*));
+LinkedList* lnkd_list_init(size_t data_size, comparator_function_t cmp);
 
 /**
  * Adds the given element to the end of the list

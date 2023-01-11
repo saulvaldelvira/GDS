@@ -1,14 +1,28 @@
 /**
  * Autor:   Saúl Valdelvira Iglesias
  * Email:   saulvaldelvira@gmail.com
- * Version: 08-01-2023
+ * Version: 11-01-2023
  * Copyright (C) 2022-2023 Saúl Valdelvira
  * Licensed under the GNU GPL V.3. See /LICENSE file for more info
 */
-#define DISABLE_COMPARATOR
 #include "comparator.h"
-#undef DISABLE_COMPARATOR
-#include <stdint.h>
+#include <math.h>
+
+static struct {
+	long long float_precision;
+	long long double_precision;
+} Precision = {
+	.float_precision = DEFAULT_FLOAT_PRECISION,
+	.double_precision = DEFAULT_DOUBLE_PRECISION
+};
+
+void set_float_precision(int num_decimals){
+	Precision.float_precision = pow(10, num_decimals);
+}
+	
+void set_double_precision(int num_decimals){
+	Precision.double_precision = pow(10, num_decimals);
+}
 
 // COMPARATORS
 int compare_int(const void *e_1, const void *e_2){

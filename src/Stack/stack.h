@@ -11,6 +11,7 @@
 
 #include <stddef.h>
 #include <stdbool.h>
+#include "../Util/comparator.h"
 
 // ERRORS
 #ifndef ALLOCATION_ERROR
@@ -33,7 +34,7 @@ typedef struct _Stack Stack;
  * @param data_size the size of the data being stored.
  * @param comp the comparator funtion for two elements
 */
-Stack* stack_init(size_t data_size, int (*cmp) (const void*, const void*));
+Stack* stack_init(size_t data_size, comparator_function_t cmp);
 
 
 /**

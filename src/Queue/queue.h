@@ -11,6 +11,7 @@
 
 #include <stdbool.h>
 #include <stddef.h>
+#include "../Util/comparator.h"
 
 /**
  * The Queue works in a similar way to a LinkedList. But in this case, the elements are removed from the head.
@@ -23,7 +24,7 @@ typedef struct _Queue Queue;
  * @param data_size the size of the data being stored.
  * @return a new Queue structure
 */
-Queue* queue_init(size_t data_size, int (*cmp) (const void*, const void*));
+Queue* queue_init(size_t data_size, comparator_function_t cmp);
 
 /**
  * Adds the element to the queue

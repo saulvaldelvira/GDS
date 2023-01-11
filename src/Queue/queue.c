@@ -14,7 +14,7 @@
 
 typedef struct QueueNode {
 	struct QueueNode *next;
-	unsigned char info[];
+	byte_t info[];
 } QueueNode;
 
 struct _Queue {
@@ -22,10 +22,10 @@ struct _Queue {
 	QueueNode *tail;
 	size_t data_size;
 	// Comparator function
-	int (*compare) (const void*, const void*);
+	comparator_function_t compare;
 };
 
-Queue* queue_init(size_t data_size, int (*cmp) (const void*, const void*)){
+Queue* queue_init(size_t data_size, comparator_function_t cmp){
 	if (data_size <= 0){
 		printerr_data_size(queue_init);
 		return NULL;

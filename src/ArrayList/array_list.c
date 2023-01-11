@@ -18,14 +18,13 @@ struct _ArrayList {
 	size_t n_elements;
 	size_t max_elements;
 	size_t data_size;
-
 	// Comparator function for 2 elements
-	int (*compare) (const void*, const void*);
+	comparator_function_t compare;
 	void *elements;
 };
 
 
-ArrayList* arrlist_empty(size_t data_size, int (*cmp) (const void*, const void*)){
+ArrayList* arrlist_empty(size_t data_size, comparator_function_t cmp){
 	if (data_size <= 0){
 		printerr_data_size(arrlist_empty);
 		return NULL;
@@ -33,7 +32,7 @@ ArrayList* arrlist_empty(size_t data_size, int (*cmp) (const void*, const void*)
 	return arrlist_init(data_size, ARRAY_LIST_DEFAULT_SIZE, cmp);
 }
 
-ArrayList* arrlist_init(size_t data_size, size_t max_elements, int (*cmp) (const void*, const void*)){
+ArrayList* arrlist_init(size_t data_size, size_t max_elements, comparator_function_t cmp){
 	if (data_size <= 0){
 		printerr_data_size(arrlist_init);
 		return NULL;
@@ -183,13 +182,6 @@ void* arrlist_get(ArrayList *list, void *element, void *dest){
 		printerr_null_param(arrlist_get);
 		return NULL;
 	}
-	/*void *ptr;
-	for (size_t i = 0; i < list->n_elements; i++){
-	ptr = void_offset(list->elements, i * list->data_size);
-	if((*list->compare) (ptr, element) == 0){
-		return memcpy(dest, ptr, list->data_size);
-	}
-	}*/
 	index_t index = arrlist_indexof(list, element);
 	if (!index.status){
 		return NULL;

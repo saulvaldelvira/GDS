@@ -14,17 +14,17 @@
 
 typedef struct StackNode {
 	struct StackNode *next;
-	unsigned char info[];
+	byte_t info[];
 } StackNode;
 
 struct _Stack {
 	StackNode *head;
 	// Comparator function
-	int (*compare) (const void*, const void*);
+	comparator_function_t compare;
 	size_t data_size;
 };
 
-Stack* stack_init(size_t data_size, int (*cmp) (const void*, const void*)){
+Stack* stack_init(size_t data_size, comparator_function_t cmp){
 	if (data_size <= 0){
 		printerr_data_size(stack_init);
 		return NULL;

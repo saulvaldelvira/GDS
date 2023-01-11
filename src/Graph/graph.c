@@ -18,7 +18,7 @@ struct _Graph {
 	size_t n_elements;
 	size_t max_elements;
 	size_t data_size;
-	int (*compare) (const void*, const void*);
+	comparator_function_t compare;
 	float **weights;
 	int8_t **edges;
 	void *nodes;
@@ -128,7 +128,7 @@ static int expand_memory(size_t data_size, size_t old_size, size_t new_size, voi
 	return SUCCESS;
 }
 
-Graph* graph_empty(size_t data_size, int (*cmp) (const void*, const void*)){
+Graph* graph_empty(size_t data_size, comparator_function_t cmp){
 	if (data_size <= 0){
 		printerr_data_size(graph_empty);
 		return NULL;
@@ -140,7 +140,7 @@ Graph* graph_empty(size_t data_size, int (*cmp) (const void*, const void*)){
 	return graph_init(data_size, GRAPH_DEFAULT_SIZE, cmp);
 }
 
-Graph* graph_init(size_t data_size, size_t n_elements, int (*cmp) (const void*, const void*)){
+Graph* graph_init(size_t data_size, size_t n_elements, comparator_function_t cmp){
 	if (data_size <= 0){
 		printerr_data_size(graph_init);
 		return NULL;

@@ -19,7 +19,7 @@
 typedef struct LLNode {
 	struct LLNode *next; // Pointer to the next node
 	struct LLNode *previous; // Pointer to the previous node
-	unsigned char info[];
+	byte_t info[];
 }LLNode;
 
 struct _LinkedList {
@@ -28,10 +28,10 @@ struct _LinkedList {
 	size_t n_elements;
 	size_t data_size;
 	// Comparator function for 2 elements
-	int (*compare) (const void*, const void*);
+	comparator_function_t compare;
 };
 
-LinkedList* lnkd_list_init(size_t data_size, int (*cmp) (const void*, const void*)){
+LinkedList* lnkd_list_init(size_t data_size, comparator_function_t cmp){
 	if (data_size <= 0){
 		printerr_data_size(lnkd_list_init);
 		return NULL;

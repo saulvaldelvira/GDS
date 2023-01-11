@@ -11,6 +11,8 @@
 
 #include <stdbool.h>
 #include <stddef.h>
+#include "../Util/comparator.h"
+
 
 #define REPEATED_ELEMENT -1
 #define NON_EXISTING_ELEMENT -1
@@ -27,7 +29,7 @@ typedef struct _BSTree BSTree;
  * @param comparator function to compare two elements of the tree. 
  *  Must return -1 if element1 < element2, 1 if element1 > element2 and 0 if element1 == element2
 */
-BSTree* bst_init(size_t data_size, int (*cmp) (const void*, const void*));
+BSTree* bst_init(size_t data_size, comparator_function_t cmp);
 
 /**
  * @return 1 if the operation is successful

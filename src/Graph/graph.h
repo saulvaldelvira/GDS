@@ -11,14 +11,15 @@
 
 #include <stddef.h>
 #include <stdbool.h>
+#include "../Util/comparator.h"
 
 #define GRAPH_DEFAULT_SIZE 32
 
 typedef struct _Graph Graph;
 
-Graph* graph_empty(size_t data_size, int (*cmp) (const void*, const void*));
+Graph* graph_empty(size_t data_size, comparator_function_t cmp);
 
-Graph* graph_init(size_t data_size, size_t n_elements, int (*cmp) (const void*, const void*));
+Graph* graph_init(size_t data_size, size_t n_elements, comparator_function_t cmp);
 
 int graph_add_node(Graph *graph, void *element);
 int graph_remove_node(Graph *graph, void *element);

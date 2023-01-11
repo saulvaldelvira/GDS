@@ -16,18 +16,18 @@ typedef struct BSNode {
 	struct BSNode *right;
 	struct BSNode *left;
 	struct BSNode *father;
-	unsigned char info[];
+	byte_t info[];
 }BSNode;
 
 struct _BSTree {
 	BSNode *root;
 	// Comparator function for 2 elements
-	int (*compare) (const void*,const void*);
+	comparator_function_t compare;
 	size_t n_elements;
 	size_t data_size;
 };
 
-BSTree* bst_init(size_t data_size, int (*cmp) (const void*,const void*)){
+BSTree* bst_init(size_t data_size, comparator_function_t cmp){
 	if (data_size <= 0){
 		printerr_data_size(bst_init);
 		return NULL;
@@ -92,7 +92,7 @@ static struct add_rec_ret
 	 * The use  of struct add_rec_ret is to be able to check the struct add_rec_ret.status when this chain of recursive calls ends and returns to bst_add. This way, we can
 	 * check if the operation was a SUCCESS and increment the n_elements acordingly, or else we have to return an error status.
 	*/
-add_rec(BSNode *node, void *element, int (*cmp) (const void*,const void*), size_t size){
+add_rec(BSNode *node, void *element, comparator_function_t cmp, size_t size){
 	if (node == NULL){ // The element does not exist in the tree
 		BSNode *aux = init_node(element, size); // Create the node
 		if (!aux){ // If memory could not be allocated, return with an error status
@@ -160,7 +160,7 @@ static struct remove_rec_ret {
  * 3) If there are left and right son, we set the current node's info to the BIGGEST element starting from the left son.
  *      After that, there are two nodes with the same info, so we delete the node that previosly stored this info, since it will now be stored in this node
 */
-remove_rec(BSNode *node, void *element, int (*cmp) (const void*,const void*), size_t size){
+remove_rec(BSNode *node, void *element, comparator_function_t cmp, size_t size){
 	if (node == NULL){
 		return (struct remove_rec_ret){NULL, NON_EXISTING_ELEMENT};
 	}
@@ -211,7 +211,7 @@ int bst_remove(BSTree *tree, void *element){
 	return ret.status;
 }
 
-static void* get_rec(BSNode *node, void *element, void *dest, int (*cmp) (const void*,const void*), size_t size){
+static void* get_rec(BSNode *node, void *element, void *dest, comparator_function_t cmp, size_t size){
 	if(node == NULL){
 		return NULL;
 	}
@@ -233,7 +233,7 @@ void* bst_get(BSTree *tree, void* element, void *dest){
 	return get_rec(tree->root, element, dest, tree->compare, tree->data_size);
 }
 
-static bool exists_rec(BSNode *node, void *element, int (*cmp) (const void*,const void*)){
+static bool exists_rec(BSNode *node, void *element, comparator_function_t cmp){
 	if(node == NULL){
 		return false;
 	}

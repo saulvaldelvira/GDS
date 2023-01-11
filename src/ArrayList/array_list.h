@@ -13,6 +13,7 @@
 #define ARRAY_LIST_DEFAULT_SIZE 12
 
 #include "../Util/index_t.h"
+#include "../Util/comparator.h"
 
 typedef struct _ArrayList ArrayList;
 	
@@ -22,7 +23,7 @@ typedef struct _ArrayList ArrayList;
  * @param comp pointer to a function that receives two void pointers and returns 1 if the first one is greater than the 
  *              second, 0 if they are equal and -1 if the first one is smaller than the second one
  */
-ArrayList* arrlist_empty(size_t data_size, int (*cmp) (const void*, const void*));
+ArrayList* arrlist_empty(size_t data_size, comparator_function_t cmp);
 
 /**
  * Innitializes an arraylist with a custom max number of elements
@@ -31,7 +32,7 @@ ArrayList* arrlist_empty(size_t data_size, int (*cmp) (const void*, const void*)
  * @param comp pointer to a function that receives two void pointers and returns 1 if the first one is greater than the 
  *              second, 0 if they are equal and -1 if the first one is smaller than the second one
  */
-ArrayList* arrlist_init(size_t data_size, size_t max_elements, int (*cmp) (const void*, const void*));
+ArrayList* arrlist_init(size_t data_size, size_t max_elements, comparator_function_t cmp);
 
 /**
  * \brief
