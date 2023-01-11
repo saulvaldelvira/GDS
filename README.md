@@ -9,7 +9,7 @@ It includes:
 ## How it works
 These structures are "generic" in the way that the only information they need about the data type stored is its size. <br>
 When creating 
-one of these structures, you'll have to pass a parameter specifying the size in bytes of the data type stored. To operate with these structures (add, remove, search, etc.) you just have to pass a void pointer to an element. <br>
+one of these structures, you'll have to pass a parameter specifying the size in bytes of the data type stored. To operate with these structures, for example adding an element, you just have to pass a void pointer to an element. <br>
 It's important to note that these structures store the VALUE of the elements, not their references, so even if you pass a void pointer to an element, these structures will COPY the value stored in that adress. <b> They do not store the adress into an array of pointers </b>. This makes the structures more memory safe and efficient.
 
 ```c
