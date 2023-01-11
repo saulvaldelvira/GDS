@@ -14,11 +14,11 @@
 
 // ERRORS
 #ifndef ALLOCATION_ERROR
-    #define ALLOCATION_ERROR -2
+	#define ALLOCATION_ERROR -2
 #endif
 
 #ifndef NULL_PARAMETER
-    #define NULL_PARAMETER -3
+	#define NULL_PARAMETER -3
 #endif
 
 /**

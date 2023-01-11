@@ -15,13 +15,13 @@
 #include "array_list.h"
 
 struct _ArrayList {
-        size_t n_elements;
-        size_t max_elements;
-        size_t data_size;
-        
-        // Comparator function for 2 elements
-        int (*compare) (const void*, const void*);
-        void *elements;
+	size_t n_elements;
+	size_t max_elements;
+	size_t data_size;
+
+	// Comparator function for 2 elements
+	int (*compare) (const void*, const void*);
+	void *elements;
 };
 
 
@@ -49,16 +49,16 @@ int arrlist_append(ArrayList *list, void *element){
     CHECK_NULL(list, arrlist_append, NULL_PARAMETER)
     CHECK_NULL(element, arrlist_append, NULL_PARAMETER)
     if(list->n_elements == list->max_elements){ // If the list is empty, double the array size
-        list->max_elements *= 2;
-        list->elements = realloc(list->elements, list->max_elements * list->data_size);
-        if(list->elements == NULL){
-            return ALLOCATION_ERROR;
-        }
+	list->max_elements *= 2;
+	list->elements = realloc(list->elements, list->max_elements * list->data_size);
+	if(list->elements == NULL){
+	    return ALLOCATION_ERROR;
+	}
     }
 
     if(!memmove(void_offset(list->elements, list->n_elements * list->data_size), element, list->data_size)){
-        fprintf(stderr, "ERROR: could not append element\n");
-        return -1;
+	fprintf(stderr, "ERROR: could not append element\n");
+	return -1;
     }
     list->n_elements++;
     return 1;
@@ -69,10 +69,10 @@ index_t arrlist_indexof(ArrayList *list, void *element){
     CHECK_NULL(element, arrlist_indexof, INDEXT_NOT_FOUND)
     void *ptr; // Current element in the iteration
     for (size_t i=0; i<list->n_elements; i++){
-        ptr = void_offset(list->elements, i * list->data_size);
-        if ((*list->compare) (ptr, element) == 0){
-            return index_t(i);
-        }
+	ptr = void_offset(list->elements, i * list->data_size);
+	if ((*list->compare) (ptr, element) == 0){
+	    return index_t(i);
+	}
     }
     return INDEXT_NOT_FOUND;
 }
@@ -98,8 +98,8 @@ int arrlist_set_at(ArrayList *list, size_t index, void *element){
     CHECK_BOUNDS(index, list->n_elements, arrlist_set_at, INDEX_OUT_OF_BOUNDS);
 
     if(!memmove(void_offset(list->elements, index * list->data_size), element , list->data_size)){
-        fprintf(stderr, "ERROR: arrlist_set_at\n");
-        return -1;
+	fprintf(stderr, "ERROR: arrlist_set_at\n");
+	return -1;
 
     }
     return -1;
@@ -111,14 +111,14 @@ int arrlist_set(ArrayList *list, void *element, void *replacement){
     CHECK_NULL(replacement, arrlist_set, NULL_PARAMETER)
     void *ptr;
     for (size_t i=0; i < list->n_elements; i++){
-        ptr = void_offset(list->elements, i * list->data_size);
-        if ((*list->compare) (ptr, element) == 0){
-            if(memmove(ptr, replacement, list->data_size)){
-                return 1;
-            }else{
-                return -1;
-            }
-        }
+	ptr = void_offset(list->elements, i * list->data_size);
+	if ((*list->compare) (ptr, element) == 0){
+	    if(memmove(ptr, replacement, list->data_size)){
+		return 1;
+	    }else{
+		return -1;
+	    }
+	}
     }
     return INDEX_OUT_OF_BOUNDS;
 }
@@ -136,10 +136,10 @@ void* arrlist_get(ArrayList *list, void *element, void *dest){
     CHECK_NULL(dest, arrlist_get, NULL)
     void *ptr;
     for (size_t i = 0; i < list->n_elements; i++){
-        ptr = void_offset(list->elements, i * list->data_size);
-        if((*list->compare) (ptr, element) == 0){
-            return memcpy(dest, ptr, list->data_size);
-        }
+	ptr = void_offset(list->elements, i * list->data_size);
+	if((*list->compare) (ptr, element) == 0){
+	    return memcpy(dest, ptr, list->data_size);
+	}
     }
     return NULL;
 }
@@ -149,11 +149,11 @@ int arrlist_remove_at(ArrayList *list, size_t index){
     CHECK_BOUNDS(index, list->n_elements, arrlist_remove_at, INDEX_OUT_OF_BOUNDS)
 
     if (index < list->n_elements - 1){
-        size_t leftover = (list->n_elements - index - 1) * list->data_size;
-        if(!memmove(void_offset(list->elements, index * list->data_size), void_offset(list->elements, (index+1) * list->data_size), leftover)){
-            fprintf(stderr, "ERROR: arrlist_remove at\n");
-            return -1;
-        }
+	size_t leftover = (list->n_elements - index - 1) * list->data_size;
+	if(!memmove(void_offset(list->elements, index * list->data_size), void_offset(list->elements, (index+1) * list->data_size), leftover)){
+	    fprintf(stderr, "ERROR: arrlist_remove at\n");
+	    return -1;
+	}
     }
     list->n_elements--;
     return 1;
@@ -164,9 +164,9 @@ int arrlist_remove(ArrayList *list, void *element){
     CHECK_NULL(element, arrlist_remove, NULL_PARAMETER)
     index_t i = arrlist_indexof(list, element);
     if(i.status){
-        return arrlist_remove_at(list, i.value);
+	return arrlist_remove_at(list, i.value);
     }else{
-        return INDEX_OUT_OF_BOUNDS;
+	return INDEX_OUT_OF_BOUNDS;
     }
  }
 

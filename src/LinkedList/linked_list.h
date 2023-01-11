@@ -16,7 +16,7 @@
  * @brief Linked List structure.
  */
 typedef struct _LinkedList LinkedList;
-    
+
 /**
  * Initializes the linked list 
  * @param data_size size of the data stored.
@@ -64,7 +64,7 @@ size_t lnkd_list_n_elements(LinkedList *list);
 * @return true if the list is empty
 */
 bool lnkd_list_isempty(LinkedList *list);
-    
+	
 /**
  * Removes the element from the list
  * @return 1 if the operation is successful

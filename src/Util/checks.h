@@ -18,25 +18,25 @@
  * If x is NULL, prints and error and returns the ret parameter
 */
 #define CHECK_MEMORY(x, func, ret) if(!x){ \
-                            fprintf(stderr, "ERROR: Unable to allocate memory for " #x ".\nOn function " #func "\n"); \
-                            return ret; \
-                        }
+					fprintf(stderr, "ERROR: Unable to allocate memory for " #x ".\nOn function " #func "\n"); \
+					return ret; \
+				   }
 
 /**
  * If the expresion is true, prints and error and returns the ret parameter
 */
 #define CHECK_NULL(ptr, func, ret) if(!ptr){ \
-                                        fprintf(stderr, "ERROR: NULL parameter " #ptr " in function " #func "\n"); \
-                                        return ret; \
-                                    }
+					fprintf(stderr, "ERROR: NULL parameter " #ptr " in function " #func "\n"); \
+					return ret; \
+				   }
 
 /**
  * If index is >= upper, prints and error and returns the ret parameter
 */
 #define CHECK_BOUNDS(index, upper, func, ret) if (index >= upper){ \
-                                                    fprintf(stderr, "ERROR: Index " #index " out of bounds\nAt function " #func "\n"); \
-                                                    return ret; \
-                                                }
+						fprintf(stderr, "ERROR: Index " #index " out of bounds\nAt function " #func "\n"); \
+						return ret; \
+					      }
 
 #define CHECK_MEMORY_OP(op, func, ret) if (op == NULL){fprintf(stderr, "ERROR: At memory operation \n In function " #func "\n"); return ret;}
 

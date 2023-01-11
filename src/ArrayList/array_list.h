@@ -15,7 +15,7 @@
 #include "../Util/index_t.h"
 
 typedef struct _ArrayList ArrayList;
-    
+	
 /**
  * Creates an empty ArrayList.
  * @param data_size the size (in bytes of the data stored)

@@ -7,26 +7,26 @@
 #undef TIMESTAMP_ENABLE
 
 int main(){
-    int n = 10000, tmp;
+	int n = 10000, tmp;
 
-    printf("[Starting Queue test]\n Workload: %d\n", n);
-    TIMESTAMP_START
+	printf("[Starting Queue test]\n Workload: %d\n", n);
+	TIMESTAMP_START
 
-    Queue *q = queue_init(sizeof(int), compare_int);
-    assert(queue_isempty(q));
+	Queue *q = queue_init(sizeof(int), compare_int);
+	assert(queue_isempty(q));
 
-    for(int i=0; i < n; i++){
-        queue_enqueue(q, &i);
-    }
-    assert(!queue_isempty(q));
-    
-    for(int i=0; i<n; i++){
-        assert(i == * (int*) queue_peek(q, &tmp));
-        assert(i == * (int*) queue_dequeue(q, &tmp));
-    }
-    assert(queue_isempty(q));
-    queue_free(q);
+	for(int i=0; i < n; i++){
+		queue_enqueue(q, &i);
+	}
+	assert(!queue_isempty(q));
+	
+	for(int i=0; i<n; i++){
+		assert(i == * (int*) queue_peek(q, &tmp));
+		assert(i == * (int*) queue_dequeue(q, &tmp));
+	}
+	assert(queue_isempty(q));
+	queue_free(q);
 
-    TIMESTAMP_STOP
-    END_MSG(Queue)
+	TIMESTAMP_STOP
+	END_MSG(Queue)
 }
