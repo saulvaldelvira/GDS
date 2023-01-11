@@ -1,7 +1,7 @@
 /**
  * Autor:   Saúl Valdelvira Iglesias
  * Email:   saulvaldelvira@gmail.com
- * Version: 08-01-2023
+ * Version: 11-01-2023
  * Copyright: Saúl Valdelvira Iglesias (2023)
  * Licensed under the GNU GPL V.3. See /LICENSE file for more info
 */
@@ -9,7 +9,7 @@
 #ifndef CHECKS_H
 #define CHECKS_H
 
-#define SUCCESS		             1
+#define SUCCESS		         1
 #define ERROR                    0
 #define INDEX_BOUNDS_ERROR      -1
 #define ALLOCATION_ERROR        -2
