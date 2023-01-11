@@ -28,6 +28,10 @@ struct _BSTree {
 };
 
 BSTree* bst_init(size_t data_size, int (*cmp) (const void*,const void*)){
+	if (data_size <= 0){
+		printerr_data_size(bst_init);
+		return NULL;
+	}
 	if (!cmp){
 		printerr_null_param(bst_init);
 		return NULL;

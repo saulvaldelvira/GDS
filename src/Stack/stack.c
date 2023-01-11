@@ -25,6 +25,10 @@ struct _Stack {
 };
 
 Stack* stack_init(size_t data_size, int (*cmp) (const void*, const void*)){
+	if (data_size <= 0){
+		printerr_data_size(stack_init);
+		return NULL;
+	}
 	if (!cmp){
 		printerr_null_param(stack_init);
 		return NULL;

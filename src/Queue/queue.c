@@ -26,6 +26,10 @@ struct _Queue {
 };
 
 Queue* queue_init(size_t data_size, int (*cmp) (const void*, const void*)){
+	if (data_size <= 0){
+		printerr_data_size(queue_init);
+		return NULL;
+	}
 	if (!cmp){
 		printerr_null_param(queue_init);
 		return NULL;

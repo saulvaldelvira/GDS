@@ -32,6 +32,10 @@ struct _LinkedList {
 };
 
 LinkedList* lnkd_list_init(size_t data_size, int (*cmp) (const void*, const void*)){
+	if (data_size <= 0){
+		printerr_data_size(lnkd_list_init);
+		return NULL;
+	}
 	if (!cmp){
 		printerr_null_param(lnkd_list_init);
 		return NULL;
