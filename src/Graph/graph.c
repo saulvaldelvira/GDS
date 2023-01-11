@@ -20,7 +20,7 @@ struct _Graph {
 	size_t data_size;
 	int (*compare) (const void*, const void*);
 	float **weights;
-	char **edges;
+	int8_t **edges;
 	void *nodes;
 };
 
@@ -32,17 +32,17 @@ struct _Graph {
  *      In the case of edges, since we allocate them with calloc, the values are already 0 by default.
  * 4) Frees the old spaces
 */
-static int expand_memory(size_t data_size, size_t old_size, size_t new_size, void **nodes_ptr, float ***weights_ptr, char ***edges_ptr){
+static int expand_memory(size_t data_size, size_t old_size, size_t new_size, void **nodes_ptr, float ***weights_ptr, int8_t ***edges_ptr){
 	// Allocate nodes
 	void *nodes = malloc( new_size * data_size);
 	CHECK_MEMORY(nodes, expand_memory, ALLOCATION_ERROR)
 
 	// Allocate weights
-	float **weights = malloc(new_size * sizeof(float*));
+	float **weights = malloc(new_size * sizeof(*weights));
 	CHECK_MEMORY(weights, expand_memory, ALLOCATION_ERROR)
 
 	// Allocate edges (only the columns)
-	char **edges = malloc(new_size * sizeof(char*));
+	int8_t **edges = malloc(new_size * sizeof(*edges));
 	CHECK_MEMORY(edges, expand_memory, ALLOCATION_ERROR)
 
 	// Copy old node values in the range [0, oldSize) and free the old one
@@ -54,16 +54,16 @@ static int expand_memory(size_t data_size, size_t old_size, size_t new_size, voi
 	// We divide the loop in two ranges [0 - oldSize) and [oldSize - newSize)
 	// In the first one, we allocate the new memmory and copy the old values. 
 	for (size_t i = 0; i < old_size; i++){
-		weights[i] = malloc(new_size * sizeof(float));
+		weights[i] = malloc(new_size * sizeof(*weights[i]));
 		CHECK_MEMORY(weights[i], expand_memory, ALLOCATION_ERROR)
 
-		tmp = memcpy(weights[i], (*weights_ptr)[i], sizeof(float)*old_size);
+		tmp = memcpy(weights[i], (*weights_ptr)[i], sizeof(*weights[i])*old_size);
 		CHECK_MEMORY_OP(tmp, expand_memory, MEMORY_OP_ERROR)
 
-		edges[i] = calloc(new_size, sizeof(char));
+		edges[i] = calloc(new_size, sizeof(*edges[i]));
 		CHECK_MEMORY(edges[i], expand_memory, ALLOCATION_ERROR)
 
-		tmp = memcpy(edges[i], (*edges_ptr)[i], sizeof(char)*old_size);
+		tmp = memcpy(edges[i], (*edges_ptr)[i], sizeof(*edges[i])*old_size);
 		CHECK_MEMORY_OP(tmp, expand_memory, MEMORY_OP_ERROR)
 
 		// Set the new rows to INFINITY. Edges are already 0 because of the call to calloc
@@ -78,10 +78,10 @@ static int expand_memory(size_t data_size, size_t old_size, size_t new_size, voi
 
 	// In the second one, we also allocate memory but we set the default values, since there are no old values to copy
 	for (size_t i = old_size; i < new_size; i++){
-		weights[i] = malloc(new_size * sizeof(float));
+		weights[i] = malloc(new_size * sizeof(*weights[i]));
 		CHECK_MEMORY(weights[i], expand_memory, ALLOCATION_ERROR)
 
-		edges[i] = calloc(new_size, sizeof(char));
+		edges[i] = calloc(new_size, sizeof(*edges[i]));
 		CHECK_MEMORY(edges[i], expand_memory, ALLOCATION_ERROR)
 
 		for (size_t j = 0; j < new_size; j++){
@@ -106,11 +106,11 @@ Graph* graph_empty(size_t data_size, int (*cmp) (const void*, const void*)){
 Graph* graph_init(size_t data_size, size_t n_elements, int (*cmp) (const void*, const void*)){
 	CHECK_DATA_SIZE(data_size, graph_init, NULL)
 	CHECK_NULL(cmp, graph_init, NULL)
-	Graph *graph = malloc(sizeof(Graph));
+	Graph *graph = malloc(sizeof(*graph));
 
 	void *nodes = NULL;
 	float **weights = NULL;
-	char **edges = NULL;
+	int8_t **edges = NULL;
 
 	if (expand_memory(data_size, 0, n_elements,  &nodes, &weights, &edges) == ALLOCATION_ERROR){
 		return NULL;
@@ -176,14 +176,14 @@ int graph_remove_node(Graph *graph, void *element){
 		target = (void*) (graph->weights[index.value]);
 		source = (void*) (graph->weights[graph->n_elements-1]);
 
-		target = memmove(target, source, graph->max_elements * sizeof(float));
+		target = memmove(target, source, graph->max_elements * sizeof(*graph->weights[0]));
 		CHECK_MEMORY_OP(target, graph_remove_node, MEMORY_OP_ERROR)
 
 		// Swap the edges columns of the element to be removed and the last one 
 		target = (void*) (graph->edges[index.value]);
 		source = (void*) (graph->edges[graph->n_elements-1]);
 
-		target = memmove(target, source, graph->max_elements * sizeof(char));
+		target = memmove(target, source, graph->max_elements * sizeof(*graph->edges[0]));
 		CHECK_MEMORY_OP(target, graph_remove_node, MEMORY_OP_ERROR)
 
 		// Swap rows of the element to be removed and the last one 

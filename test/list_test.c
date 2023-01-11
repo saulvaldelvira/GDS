@@ -33,7 +33,7 @@ int main(){
 	}
 	assert(!arrlist_isempty(arr));
 	int menosveinte = -20, treinta = 30;
-	assert(arrlist_indexof(arr, &menosveinte).status == -1);
+	assert(arrlist_indexof(arr, &menosveinte).status == ELEMENT_NOT_FOUND_ERROR);
 
 	index_t ret = arrlist_indexof(arr, &treinta);
 
@@ -59,7 +59,7 @@ int main(){
 	
 	assert(two == * (int*) arrlist_get_at(arr, 0, &tmp));
 	
-	assert(arrlist_set(arr, &two, &three) != INDEX_OUT_OF_BOUNDS);
+	assert(arrlist_set(arr, &two, &three) != ELEMENT_NOT_FOUND_ERROR);
 	assert(three == * (int*) arrlist_get_at(arr, 0, &tmp));
 	/////////////////////////////////////////////////////
 
