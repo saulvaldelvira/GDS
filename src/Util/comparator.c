@@ -6,7 +6,6 @@
  * Licensed under the GNU GPL V.3. See /LICENSE file for more info
 */
 #include "comparator.h"
-#include <math.h>
 
 // COMPARATORS
 int compare_int(const void *e_1, const void *e_2){
@@ -32,6 +31,28 @@ int compare_char(const void *e_1, const void *e_2){
 		return 0;
 	}
 }
+
+int compare_long_long(const void *e_1, const void *e_2){
+	long long l_1 = * (long long *) e_1;
+	long long l_2 = * (long long *) e_2;
+
+	if (l_1 > l_2){
+		return 1;
+	}else if (l_2 > l_1){
+		return -1;
+	}else{
+		return 0;
+	}
+}
+
+/**
+ * I know these float and double comparator functions are not very "sophisitcated"
+ * I really aim to learn how floating point arithmetic really works in computers. 
+ * This semester we are gonna learn about it in class :D.
+ * For now this functions only wrap a simple comparison, but I would like to make better functions that warantee 
+ * a precision. Time will come.
+ *  ~ 11-01-2023
+*/
 
 int compare_float(const void *e_1, const void *e_2){
 	float f_1 = * (float *) e_1;
@@ -60,15 +81,22 @@ int compare_double(const void *e_1, const void *e_2){
 	}
 }
 
-int compare_long_long(const void *e_1, const void *e_2){
-	long long l_1 = * (long long *) e_1;
-	long long l_2 = * (long long *) e_2;
+/* This is just garbage (for now...)
 
-	if (l_1 > l_2){
-		return 1;
-	}else if (l_2 > l_1){
-		return -1;
-	}else{
-		return 0;
-	}
+#include <math.h>
+
+static struct {
+	long long float_precision;
+	long long double_precision;
+} Precision = {
+	.float_precision = DEFAULT_FLOAT_PRECISION,
+	.double_precision = DEFAULT_DOUBLE_PRECISION
+};
+
+void set_float_precision(int num_decimals){
+	Precision.float_precision = pow(10, num_decimals);
 }
+
+void set_double_precision(int num_decimals){
+	Precision.double_precision = pow(10, num_decimals);
+}*/
