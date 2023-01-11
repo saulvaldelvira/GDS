@@ -19,34 +19,76 @@ struct _Graph {
         size_t max_elements;
         size_t data_size;
         int (*compare) (const void*, const void*);
-        float *weights;
-        char *edges;
+        float **weights;
+        char **edges;
         void *nodes;
 };
 
-static int expand_memory(size_t data_size, size_t old_size, size_t new_size, void **nodes_ptr, float **weights_ptr, char **edges_ptr){
+/**
+ * Expands the graph number of elements. This means
+ * 1) Allocates new spaces for nodes, weights and edges.
+ * 2) Copies old values into the new, bigger spaces.
+ * 3) Fills the new spaces with the default values (0 for edges and INFINITY for weights)
+ *      In the case of edges, since we allocate them with calloc, the values are already 0 by default.
+ * 4) Frees the old spaces
+*/
+static int expand_memory(size_t data_size, size_t old_size, size_t new_size, void **nodes_ptr, float ***weights_ptr, char ***edges_ptr){
+        // Allocate nodes
         void *nodes = malloc( new_size * data_size);
         CHECK_MEMORY(nodes, expand_memory, ALLOCATION_ERROR)
 
-        float *weights = malloc(new_size * new_size * sizeof(float));
+        // Allocate weights
+        float **weights = malloc(new_size * sizeof(float*));
         CHECK_MEMORY(weights, expand_memory, ALLOCATION_ERROR)
 
-        char *edges = malloc(new_size * new_size * sizeof(char));
+        // Allocate edges (only the columns)
+        char **edges = malloc(new_size * sizeof(char*));
         CHECK_MEMORY(edges, expand_memory, ALLOCATION_ERROR)
 
-        if(!memcpy(nodes, *nodes_ptr, old_size * data_size) || !memcpy(weights, *weights_ptr, old_size * sizeof(float)) || !memcpy(edges, *edges_ptr, old_size * sizeof(char))){
-                fprintf(stderr, "ERROR: Could not expand graph\n");
-                return -1;
-        }
-
-        memset(edges + (old_size * sizeof(char)), 0, new_size - (old_size * sizeof(char)));
-
-        float *tmp = weights + old_size;
-        for (size_t i = old_size; i < new_size; i++, tmp++){
-                *tmp = INFINITY;
-        }
-
+        // Copy old node values in the range [0, oldSize) and free the old one
+        void *tmp = memcpy(nodes, *nodes_ptr, old_size * data_size);
+        CHECK_MEMORY_OP(tmp, expand_memory, MEMORY_OP_ERROR)
         free((*nodes_ptr));
+
+        // Initialize the columns for edges and weights.
+        // We divide the loop in two ranges [0 - oldSize) and [oldSize - newSize)
+        // In the first one, we allocate the new memmory and copy the old values. 
+        for (size_t i = 0; i < old_size; i++){
+                weights[i] = malloc(new_size * sizeof(float));
+                CHECK_MEMORY(weights[i], expand_memory, ALLOCATION_ERROR)
+
+                tmp = memcpy(weights[i], (*weights_ptr)[i], sizeof(float)*old_size);
+                CHECK_MEMORY_OP(tmp, expand_memory, MEMORY_OP_ERROR)
+
+                edges[i] = calloc(new_size, sizeof(char));
+                CHECK_MEMORY(edges[i], expand_memory, ALLOCATION_ERROR)
+
+                tmp = memcpy(edges[i], (*edges_ptr)[i], sizeof(char)*old_size);
+                CHECK_MEMORY_OP(tmp, expand_memory, MEMORY_OP_ERROR)
+
+                // Set the new rows to INFINITY. Edges are already 0 because of the call to calloc
+                for (size_t j = old_size; j < new_size; j++){
+                        weights[i][j] = INFINITY;
+                }
+
+                // Free the old pointers
+                free((*weights_ptr)[i]);
+                free((*edges_ptr)[i]);
+        }
+
+        // In the second one, we also allocate memory but we set the default values, since there are no old values to copy
+        for (size_t i = old_size; i < new_size; i++){
+                weights[i] = malloc(new_size * sizeof(float));
+                CHECK_MEMORY(weights[i], expand_memory, ALLOCATION_ERROR)
+
+                edges[i] = calloc(new_size, sizeof(char));
+                CHECK_MEMORY(edges[i], expand_memory, ALLOCATION_ERROR)
+
+                for (size_t j = 0; j < new_size; j++){
+                        weights[i][j] = INFINITY;
+                }
+        }
+
         free((*weights_ptr));
         free((*edges_ptr));
 
@@ -67,8 +109,8 @@ Graph* graph_init(size_t data_size, size_t n_elements, int (*cmp) (const void*, 
         Graph *graph = malloc(sizeof(Graph));
 
         void *nodes = NULL;
-        float *weights = NULL;
-        char *edges = NULL;
+        float **weights = NULL;
+        char **edges = NULL;
 
         if (expand_memory(data_size, 0, n_elements,  &nodes, &weights, &edges) == ALLOCATION_ERROR){
                 return NULL;
@@ -109,14 +151,20 @@ static index_t indexof(Graph *graph, void *element){
         return INDEXT_NOT_FOUND;
 }
 
+/**
+ * Removes a node from the graph. This means
+ * To do so it swaps the elements to delete with the last elements in the array of nodes.
+ * It also has to swap the edges and weights values.
+ * After decrementing the n_elements values, the old (now "removed") node becomes garbage memory to be overwritten in the next add
+*/
 int graph_remove_node(Graph *graph, void *element){
         CHECK_NULL(graph, graph_remove_node, NULL_PARAMETER)
         CHECK_NULL(element, graph_remove_node, NULL_PARAMETER)
-        index_t index = indexof(graph, element);
+        index_t index = indexof(graph, element); // Get the index of the node
         if (!index.status){
                 return INDEX_OUT_OF_BOUNDS;
         }
-        // Move latest node to this position
+        // Move latest node to this position (only if it is not already the last)
         if (index.value != graph->n_elements-1){
                 // Set node at index to the last node in the array
                 void *target = void_offset(graph->nodes, index.value * graph->data_size);
@@ -124,43 +172,43 @@ int graph_remove_node(Graph *graph, void *element){
                 target = memmove(target, source, graph->data_size);
                 CHECK_MEMORY_OP(target, graph_remove_node, MEMORY_OP_ERROR)
 
-                target = (void*) (graph->weights + index.value);
-                source = (void*) (graph->weights + graph->n_elements-1);
+                // Swap the weights columns of the element to be removed and the last one 
+                target = (void*) (graph->weights[index.value]);
+                source = (void*) (graph->weights[graph->n_elements-1]);
 
                 target = memmove(target, source, graph->max_elements * sizeof(float));
                 CHECK_MEMORY_OP(target, graph_remove_node, MEMORY_OP_ERROR)
 
-                target = (void*) (graph->edges + index.value);
-                source = (void*) (graph->edges + graph->n_elements-1);
+                // Swap the edges columns of the element to be removed and the last one 
+                target = (void*) (graph->edges[index.value]);
+                source = (void*) (graph->edges[graph->n_elements-1]);
 
                 target = memmove(target, source, graph->max_elements * sizeof(char));
                 CHECK_MEMORY_OP(target, graph_remove_node, MEMORY_OP_ERROR)
 
+                // Swap rows of the element to be removed and the last one 
                 for (size_t i = 0; i < graph->max_elements; i++){
-                        float *f_target = matrix_offset(graph->weights, graph->max_elements, index.value, i);
-                        float *f_source = matrix_offset(graph->weights, graph->max_elements, graph->max_elements-1, i);
-                        *f_target = *f_source;
-                        *f_source = INFINITY;
+                        graph->edges[i][index.value] = graph->edges[i][graph->n_elements-1];
+                        graph->weights[i][index.value] = graph->weights[i][graph->n_elements-1];
 
-                        f_target = matrix_offset(graph->weights, graph->max_elements, i, index.value);
-                        f_source = matrix_offset(graph->weights, graph->max_elements, i, graph->max_elements-1);
-
-                        *f_target = *f_source;
-                        *f_source = INFINITY;
-
-                        char *c_target = matrix_offset(graph->edges, graph->max_elements, index.value, i);
-                        char *c_source = matrix_offset(graph->edges, graph->max_elements, graph->max_elements-1, i);
-                        *c_target = *c_source;
-                        *c_source = 0;
-
-                        c_target = matrix_offset(graph->edges, graph->max_elements, i, index.value);
-                        c_source = matrix_offset(graph->edges, graph->max_elements, i, graph->max_elements-1);
-
-                        *c_target = *c_source;
-                        *c_source = 0;
+                        // We also have to set the edges and weights to default to guarantee that in the next add, those edges and weights will not hold garbage
+                        graph->edges[i][graph->n_elements-1] = 0;
+                        graph->edges[graph->n_elements-1][i] = 0;
+                        graph->weights[i][graph->n_elements-1] = INFINITY;
+                        graph->weights[graph->n_elements-1][i] = INFINITY;
                 }
-
+        // If the node to remove is the last, we still have to clear the values. The reason i didn't just put this loop outside the if-else
+        // Statement is because if so, in the case we remove a non-last element (most) we should iteratre twice. This way, we have longer code. But
+        // At runtime, the loop will only run once. (Hope I wrote this clear enough :p)
+        }else{ 
+                for (size_t i = 0; i < graph->max_elements; i++){
+                        graph->edges[i][graph->n_elements-1] = 0;
+                        graph->edges[graph->n_elements-1][i] = 0;
+                        graph->weights[i][graph->n_elements-1] = INFINITY;
+                        graph->weights[graph->n_elements-1][i] = INFINITY;
+                }
         }
+
         graph->n_elements--;
         return 1;
 }
@@ -184,20 +232,27 @@ size_t graph_n_elements(Graph *graph){
         return graph->n_elements;
 }
 
-int graph_free(Graph *graph){
-        CHECK_NULL(graph, graph_free, NULL_PARAMETER)
+static void free_contents(Graph *graph){
         free(graph->nodes);
+
+        for (size_t i = 0; i < graph->max_elements; i++){
+                free(graph->edges[i]);
+                free(graph->weights[i]);
+        }
         free(graph->edges);
         free(graph->weights);
+}
+
+int graph_free(Graph *graph){
+        CHECK_NULL(graph, graph_free, NULL_PARAMETER)
+        free_contents(graph);
         free(graph);
         return 1;
 }
 
 Graph* graph_reset(Graph *graph){
         CHECK_NULL(graph, graph_reset, NULL)
-        free(graph->nodes);
-        free(graph->edges);
-        free(graph->weights);
+        free_contents(graph);
         graph->n_elements = 0;
         graph->max_elements = GRAPH_DEFAULT_SIZE;
         graph->edges = NULL;

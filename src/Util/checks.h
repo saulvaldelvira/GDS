@@ -38,7 +38,7 @@
                                                     return ret; \
                                                 }
 
-#define CHECK_MEMORY_OP(op, func, ret) if(op == NULL){fprintf(stderr, "ERROR: At memory operation " #op " \n In function " #func "\n"); return ret;}
+#define CHECK_MEMORY_OP(op, func, ret) if (op == NULL){fprintf(stderr, "ERROR: At memory operation \n In function " #func "\n"); return ret;}
 
 #define CHECK_DATA_SIZE(size, func, ret) if (size == 0){fprintf(stderr, "ERROR: Data size can't be 0\n In function " #func "\n"); return ret;}
 
