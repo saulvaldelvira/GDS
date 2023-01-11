@@ -8,7 +8,7 @@
 #include "queue.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include "../Util/checks.h"
+#include "../Util/error.h"
 #include "../Util/definitions.h"
 #include <memory.h>
 
@@ -26,10 +26,16 @@ struct _Queue {
 };
 
 Queue* queue_init(size_t data_size, int (*cmp) (const void*, const void*)){
-	CHECK_NULL(cmp, queue_init, NULL)
+	if (!cmp){
+		printerr_null_param(queue_init);
+		return NULL;
+	}
 	// Allocate queue
-	Queue *queue = malloc(sizeof(Queue));
-	CHECK_MEMORY(queue, queue_init, NULL)
+	Queue *queue = malloc(sizeof(*queue));
+	if (!queue){
+		printerr_allocation(queue_init);
+		return NULL;
+	}
 	// Initialize queue
 	queue->head = NULL;
 	queue->tail = NULL;
@@ -44,7 +50,7 @@ Queue* queue_init(size_t data_size, int (*cmp) (const void*, const void*)){
 static QueueNode* queue_init_node(void *element, size_t size){
 	QueueNode *node = malloc(offsetof(QueueNode, info) + size);
 	if(!memcpy(node->info, element, size)){
-		fprintf(stderr, "ERROR: Could not init node\n");
+		printerr_memory_op(queue_init_node);
 		return NULL;
 	}
 	node->next = NULL;
@@ -52,39 +58,49 @@ static QueueNode* queue_init_node(void *element, size_t size){
 }
 
 int queue_enqueue(Queue *queue, void *element){
-	CHECK_NULL(queue, queue_enqueue, NULL_PARAMETER)
-	CHECK_NULL(element, queue_enqueue, NULL_PARAMETER)
+	if (!queue || !element){
+		printerr_null_param(queue_enqueue);
+		return NULL_PARAMETER_ERROR;
+	}
 	if (queue->head == NULL) {
 		queue->head = queue_init_node(element, queue->data_size);
-		CHECK_MEMORY(queue->head, queue_enqueue, ALLOCATION_ERROR)
+		if (!queue->head){
+			return ALLOCATION_ERROR;
+		}
 		queue->tail = queue->head;
 	}else {
 		queue->tail->next = queue_init_node(element, queue->data_size);
-		CHECK_MEMORY(queue->tail->next, queue_enqueue, ALLOCATION_ERROR)
+		if (!queue->tail->next){
+			return ALLOCATION_ERROR;
+		}
 		queue->tail = queue->tail->next;
 	}
-	return 1;
+	return SUCCESS;
 }
 
 void* queue_dequeue(Queue *queue, void *dest){
-	CHECK_NULL(queue, queue_dequeue, NULL)
-	CHECK_NULL(dest, queue_dequeue, NULL)
+	if (!queue || !dest){
+		printerr_null_param(queue_dequeue);
+		return NULL;
+	}
 	if (queue->head == NULL){
 		return NULL;
 	}
 	QueueNode *aux = queue->head;    // Save the head
 	queue->head = queue->head->next; // Change it to the next element
 	if(!memcpy(dest, aux->info, queue->data_size)){       // Save the element
-		fprintf(stderr, "ERROR: could not dequeue node\n");
+		printerr_memory_op(queue_dequeue);
 		return NULL;
 	}
-	free(aux);                       // Free the old head
+	free(aux);                    // Free the old head
 	return dest;                  // Return the element
 }
 
 void* queue_peek(Queue *queue, void *dest){
-	CHECK_NULL(queue, queue_peek, NULL)
-	CHECK_NULL(dest, queue_peek, NULL)
+	if (!queue || !dest){
+		printerr_null_param(queue_peek);
+		return NULL;
+	}
 	if (queue->head == NULL){
 		return NULL;
 	}
@@ -94,8 +110,10 @@ void* queue_peek(Queue *queue, void *dest){
 }
 
 bool queue_search(Queue *queue, void *element){
-	CHECK_NULL(queue, queue_search, false)
-	CHECK_NULL(element, queue_search, false)
+	if (!queue || !element){
+		printerr_null_param(queue_search);
+		return false;
+	}
 	QueueNode *aux = queue->head;
 	while (aux != NULL){
 		if((*queue->compare) (aux->info, element) == 0){
@@ -107,7 +125,10 @@ bool queue_search(Queue *queue, void *element){
 }
 
 bool queue_isempty(Queue *queue){
-	CHECK_NULL(queue, queue_isempty, false)
+	if (!queue){
+		printerr_null_param(queue_isempty);
+		return false;
+	}
 	return queue->head == NULL;
 }
 
@@ -120,14 +141,20 @@ static void queue_free_node(QueueNode *node){
 }
 
 int queue_free(Queue *queue){
-	CHECK_NULL(queue, queue_free, NULL_PARAMETER)
+	if (!queue){
+		printerr_null_param(queue_free);
+		return NULL_PARAMETER_ERROR;
+	}
 	queue_free_node(queue->head);
 	free(queue);
-	return 1;
+	return SUCCESS;
 }
 
 Queue* queue_reset(Queue *queue){
-	CHECK_NULL(queue, queue_reset, NULL)
+	if (!queue){
+		printerr_null_param(queue_reset);
+		return NULL;
+	}
 	queue_free_node(queue->head);
 	queue->head = NULL;
 	queue->tail = NULL;

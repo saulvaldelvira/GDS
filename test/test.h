@@ -9,7 +9,7 @@
 	#include "../src/Util/comparator.h"
 #endif
 
-#include "../src/Util/checks.h"
+#include "../src/Util/error.h"
 #include <stdint.h>
 #include <time.h>
 #include "../src/Util/void_cast.h"

@@ -10,7 +10,6 @@ typedef struct index{
 	int status;
 } index_t;
 
-#define index_t(i)    (index_t) {.value = i, .status = 1}
-#define INDEXT_NOT_FOUND (index_t) {.value = 0, -1} // An index_t struct with status set to -1, to represent a failure in the procedure
+#define index_t(i,s)    (index_t) {.value = i, .status = s}
 
 #endif

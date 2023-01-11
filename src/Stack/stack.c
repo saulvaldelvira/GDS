@@ -8,7 +8,7 @@
 #include "stack.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include "../Util/checks.h"
+#include "../Util/error.h"
 #include "../Util/definitions.h"
 #include <memory.h>
 
@@ -25,10 +25,16 @@ struct _Stack {
 };
 
 Stack* stack_init(size_t data_size, int (*cmp) (const void*, const void*)){
-	CHECK_NULL(cmp, stack_init, NULL)
+	if (!cmp){
+		printerr_null_param(stack_init);
+		return NULL;
+	}
 	// Allocate stack
-	Stack *stack = malloc(sizeof(Stack));
-	CHECK_MEMORY(stack, stack_init, NULL)
+	Stack *stack = malloc(sizeof(*stack));
+	if (!stack){
+		printerr_allocation(stack_init);
+		return NULL;
+	}
 	// Initialize stack
 	stack->head = NULL;
 	stack->compare = cmp;
@@ -41,9 +47,12 @@ Stack* stack_init(size_t data_size, int (*cmp) (const void*, const void*)){
 */
 static StackNode* init_node(void *element, size_t size){
 	StackNode *node = malloc(offsetof(StackNode, info) + size);
-
-	if(!node || !memcpy(node->info, element, size)){
-		fprintf(stderr, "ERROR: Could not initilize node\n");
+	if (!node){
+		printerr_allocation(init_node);
+		return NULL;
+	}
+	if (!memcpy(node->info, element, size)){
+		printerr_memory_op(init_node);
 		return NULL;
 	}
 
@@ -52,29 +61,39 @@ static StackNode* init_node(void *element, size_t size){
 }
 
 int stack_push(Stack *stack, void *element){
-	CHECK_NULL(stack, stack_push, NULL_PARAMETER)
-	CHECK_NULL(element, stack_push, NULL_PARAMETER)
+	if(!stack || !element){
+		printerr_null_param(stack_push);
+		return NULL_PARAMETER_ERROR;
+	}
 	if(stack->head == NULL){
 		stack->head = init_node(element, stack->data_size);
-		CHECK_MEMORY(stack->head, stack_push, ALLOCATION_ERROR)
+		if (!stack->head){
+			printerr_allocation(stack_push);
+			return ALLOCATION_ERROR;
+		}
 	}else{ // Push an element to the head
 		StackNode *aux = init_node(element, stack->data_size);
-		CHECK_MEMORY(aux, stack_push, ALLOCATION_ERROR)
-
+		if (!aux){
+			printerr_allocation(stack_push);
+			return ALLOCATION_ERROR;
+		}
 		aux->next = stack->head;
 		stack->head = aux;
 	}
-	return 1;
+	return SUCCESS;
 }
 
 void* stack_pop(Stack *stack, void *dest){
-	CHECK_NULL(stack, stack_pop, NULL)
-	CHECK_NULL(dest, stack_pop, NULL)
+	if(!stack || !dest){
+		printerr_null_param(stack_pop);
+		return NULL;
+	}
 	if(stack->head != NULL){
 		StackNode* aux = stack->head;    // Save the head
 		stack->head = stack->head->next; // Change it to the next element
-		if(!memcpy(dest, aux->info, stack->data_size)){       // Save the element
-			fprintf(stderr, "ERROR: Could not pop element\n");
+		dest = memcpy(dest, aux->info, stack->data_size);
+		if(!dest){       // Save the element
+			printerr_memory_op(stack_pop);
 			return NULL;
 		}
 		free(aux);                       // Free the old head
@@ -84,9 +103,11 @@ void* stack_pop(Stack *stack, void *dest){
 }
 
 void* stack_peek(Stack *stack, void *dest){
-	CHECK_NULL(stack, stack_peek, NULL)
-	CHECK_NULL(dest, stack_peek, NULL)
-	if(stack->head->info == NULL){
+	if(!stack || !dest){
+		printerr_null_param(stack_peek);
+		return NULL;
+	}
+	if(stack->head == NULL){
 		return NULL;
 	}else{
 		return memcpy(dest, stack->head->info, stack->data_size);
@@ -94,8 +115,10 @@ void* stack_peek(Stack *stack, void *dest){
 }
 
 bool stack_search(Stack *stack, void *element){
-	CHECK_NULL(stack, stack_search, false)
-	CHECK_NULL(element, stack_search, false)
+	if(!stack || !element){
+		printerr_null_param(stack_search);
+		return false;
+	}
 	StackNode *aux = stack->head;
 	while (aux != NULL){
 		if((*stack->compare) (element, aux) == 0){
@@ -107,7 +130,10 @@ bool stack_search(Stack *stack, void *element){
 }
 
 bool stack_isempty(Stack *stack){
-	CHECK_NULL(stack, stack_isempty, false)
+	if (!stack){
+		printerr_null_param(stack_isempty);
+		return false;
+	}
 	return stack->head == NULL;
 }
 
@@ -120,14 +146,20 @@ static void free_node(StackNode *node){
 }
 
 int stack_free(Stack *stack){
-	CHECK_NULL(stack, stack_free, NULL_PARAMETER)
+	if (!stack){
+		printerr_null_param(stack_free);
+		return NULL_PARAMETER_ERROR;
+	}
 	free_node(stack->head);
 	free(stack);
 	return 1;
 }
 
 Stack* stack_reset(Stack *stack){
-	CHECK_NULL(stack, stack_reset, NULL)
+	if (!stack){
+		printerr_null_param(stack_reset);
+		return NULL;
+	}
 	free_node(stack->head);
 	stack->head = NULL;
 	return stack;
