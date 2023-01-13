@@ -9,7 +9,6 @@
 #include "../Util/error.h"
 #include "../Util/definitions.h"
 #include <stdlib.h>
-#include <stdio.h>
 #include <math.h>
 #include <memory.h>
 #include "../Util/index_t.h"
@@ -194,7 +193,7 @@ int graph_add_node(Graph *graph, void *element){
 	return SUCCESS;
 }
 
-static index_t indexof(Graph *graph, void *element){
+index_t graph_indexof(Graph *graph, void *element){
 	for (size_t i = 0; i < graph->n_elements; i++){
 		if((*graph->compare)(void_offset(graph->nodes, i * graph->data_size), element) == 0){
 			return index_t(i,SUCCESS);
@@ -214,7 +213,7 @@ int graph_remove_node(Graph *graph, void *element){
 		printerr_null_param(graph_remove_node);
 		return NULL_PARAMETER_ERROR;
 	}
-	index_t index = indexof(graph, element); // Get the index of the node
+	index_t index = graph_indexof(graph, element); // Get the index of the node
 	if (index.status != SUCCESS){
 		return index.status;
 	}
@@ -276,11 +275,75 @@ int graph_remove_node(Graph *graph, void *element){
 	return SUCCESS;
 }
 
-int graph_add_edge(Graph *graph, void *source, void *target, float weight);
-int graph_remove_edge(Graph *graph, void *source, void *target);
+int graph_add_edge(Graph *graph, void *source, void *target, float weight){
+	if (!graph || !source || !target){
+		printerr_null_param(graph_add_edge);
+		return NULL_PARAMETER_ERROR;
+	}
+	index_t index_src = graph_indexof(graph, source);
+	if (index_src.status != SUCCESS){
+		return index_src.status;
+	}
+	index_t index_tar = graph_indexof(graph, target);
+	if (index_tar.status != SUCCESS){
+		return index_tar.status;
+	}
+	graph->edges[index_src.value][index_tar.value] = 1;
+	graph->weights[index_src.value][index_tar.value] = weight;
+	return SUCCESS;
+}
 
+int graph_remove_edge(Graph *graph, void *source, void *target){
+	if (!graph || !source || !target){
+		printerr_null_param(graph_remove_edge);
+		return NULL_PARAMETER_ERROR;
+	}
+	index_t index_src = graph_indexof(graph, source);
+	if (index_src.status != SUCCESS){
+		return index_src.status;
+	}
+	index_t index_tar = graph_indexof(graph, target);
+	if (index_tar.status != SUCCESS){
+		return index_tar.status;
+	}
+	graph->edges[index_src.value][index_tar.value] = 0;
+	graph->weights[index_src.value][index_tar.value] = INFINITY;
+	return SUCCESS;
+}
 
-bool graph_exists(Graph *graph, void *element){
+float graph_get_edge(Graph *graph, void *source, void *target){
+	if (!graph || !source || !target){
+		printerr_null_param(graph_get_edge);
+		return NULL_PARAMETER_ERROR;
+	}
+	index_t index_src = graph_indexof(graph, source);
+	if (index_src.status != SUCCESS){
+		return index_src.status;
+	}
+	index_t index_tar = graph_indexof(graph, target);
+	if (index_tar.status != SUCCESS){
+		return index_tar.status;
+	}
+	return graph->weights[index_src.value][index_tar.value];
+}
+
+bool graph_exists_edge(Graph *graph, void *source, void *target){
+	if (!graph || !source || !target){
+		printerr_null_param(graph_exists_edge);
+		return NULL_PARAMETER_ERROR;
+	}
+	index_t index_src = graph_indexof(graph, source);
+	if (index_src.status != SUCCESS){
+		return index_src.status;
+	}
+	index_t index_tar = graph_indexof(graph, target);
+	if (index_tar.status != SUCCESS){
+		return index_tar.status;
+	}
+	return graph->edges[index_src.value][index_tar.value];
+}
+
+bool graph_exists_node(Graph *graph, void *element){
 	if (!graph || !element){
 		printerr_null_param(graph_exists);
 		return false;
@@ -301,6 +364,125 @@ size_t graph_n_elements(Graph *graph){
 		return 0; // ??Also wrongggg
 	}
 	return graph->n_elements;
+}
+
+/**
+ * Initializes the DijkstraData_t structure.
+*/
+static void graph_init_dijkstra(DijkstraData_t *dijkstra, Graph *graph, size_t source){
+	dijkstra->D = malloc(graph->n_elements * sizeof(*dijkstra->D));
+	dijkstra->P = malloc(graph->n_elements * sizeof(*dijkstra->P));
+	if (!dijkstra->D || !dijkstra->P){
+		printerr_allocation(graph_dijkstra);
+		dijkstra->status = ALLOCATION_ERROR;
+		return;
+	}
+
+	for (size_t i = 0; i < graph->n_elements; i++){
+		dijkstra->D[i] = graph->weights[source][i];
+		if (graph->edges[source][i]){ // If there's an edge
+			dijkstra->P[i].value = source; // Add the pivot
+			dijkstra->P[i].status = 1; // Mark as valid
+		} else{
+			dijkstra->P[i].status = -1; // Mark as an index in wich there is no pivot
+		}
+		
+	}
+	// The source node's cheapest path is allways itself with weight 0
+	dijkstra->D[source] = 0.0f;
+	dijkstra->P[source].value = source;
+	dijkstra->P[source].status = 1;
+
+	dijkstra->n_elements = graph->n_elements;
+	dijkstra->status = 1;
+}
+
+/**
+ * Returns the next pivot for the algorithm. 
+ * The next pivot is the node with the lowest cost that has not been visited yet
+ * @param S an array of visited nodes. 1 if visited, 0 if not visited
+ * @param D an array of weights
+ * @param n_elements the number of elements in the arrays
+*/
+static index_t graph_get_pivot(u_int8_t *S, float *D, size_t n_elements){
+	index_t pivot = {.value = 0, .status=-1};
+	float min = INFINITY;
+	for (size_t i = 0; i < n_elements; i++){
+		if (!S[i] && D[i] < min){ // If not visited and weight < min
+			min = D[i];
+			pivot.value = i;
+			pivot.status = 1;
+		}
+	}
+	return pivot;
+}
+
+DijkstraData_t graph_dijkstra(Graph *graph, void *source){
+	DijkstraData_t dijkstra = {.D = NULL, .P = NULL, .n_elements = 0, .status = NULL_PARAMETER_ERROR};
+	if (!graph || !source){
+		printerr_null_param(graph_dijkstra);
+		return dijkstra;
+	}
+	index_t source_index = graph_indexof(graph, source);
+	if (source_index.status != SUCCESS || graph->n_elements == 0){
+		dijkstra.status = source_index.status;
+		return dijkstra;
+	}
+
+	graph_init_dijkstra(&dijkstra, graph, source_index.value);
+
+	// Initialize the visited array
+	u_int8_t *S = calloc(graph->n_elements, sizeof(*S));
+	if (!S) {
+		printerr_allocation(graph_dijkstra);
+		free(dijkstra.D);
+		free(dijkstra.P);
+		dijkstra.D = NULL;
+		dijkstra.P = NULL;
+		dijkstra.status = ALLOCATION_ERROR;
+		return dijkstra;
+	}
+
+	// Mark the start node as visited (because of the initialization)
+	S[source_index.value] = 1;
+
+	index_t pivot = graph_get_pivot(S, dijkstra.D, graph->n_elements);
+	while (pivot.status != -1){ // While there's still pivots
+		size_t p = pivot.value;
+		for (size_t i = 0; i < graph->n_elements; i++){
+			if (S[i]){ // If already visited continue
+				continue;
+			}
+			// Calculate the cost to i through this pivot
+			float w = dijkstra.D[p] + graph->weights[p][i];
+
+			// If the cost is < that the actual cost AND it exists an edge between the pivot and i
+			if (dijkstra.D[i] > w && graph->edges[p][i]){
+				dijkstra.D[i] = w;
+				dijkstra.P[i].value = p;
+				dijkstra.P[i].status = 1;
+			}
+		}
+		// Mark the pivot as visited and get the next one
+		S[p] = 1;
+		pivot = graph_get_pivot(S, dijkstra.D, graph->n_elements);
+	}
+	
+	free(S); // Free the visited array
+	dijkstra.status = SUCCESS;
+	return dijkstra;
+}
+
+void graph_print_dijkstra_data(FILE *output, DijkstraData_t data) {
+	fprintf(output, "[DIJKSTRA]\n");
+	fprintf(output, "i\tD\tP\n");
+	for (size_t i = 0; i < data.n_elements; i++){
+		if (data.P[i].status == 1){ // If the pivot exists, print it
+			fprintf(output, "%-3zu\t%.3f\t%zu\n", i, data.D[i], data.P[i].value);
+		} else { // Print a '-' to mark represent an unexisting pivot
+ 			fprintf(output, "%-3zu\t%.3f\t-\n", i, data.D[i]);
+		}
+	}
 }
 
 static void free_contents(Graph *graph){
