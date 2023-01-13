@@ -63,7 +63,7 @@ DijkstraData_t graph_dijkstra(Graph *graph, void *source);
 void graph_print_dijkstra_data(FILE *output, DijkstraData_t data);
 
 /**
- * Frees the allocated memory for the given DijkstraData_t D and P arrays
+ * Frees the allocated memory for the given DijkstraData_t's D and P arrays
 */
 void graph_free_dijkstra_data(DijkstraData_t data);
 
