@@ -52,7 +52,8 @@ typedef struct DijkstraData {
  *      D (float*) an array of weights
  *      P (struct index_t) the pivot nodes (NOTE this is a struct, if the status is not SUCESS (1), this means there's no pivot)
  *      n_elements (size_t) the number of elements in the arrays
- *      status the return status of the operation. If the algorith does not encounter any issue, returns SUCESS (1) 
+ *      status the return status of the operation. If the algorith does not encounter any issue, returns SUCESS (1)
+ * @note REMEMBER to free the D and P arrays!! There's a fucntion graph_free_dijkstra_data that does that for you.
 */
 DijkstraData_t graph_dijkstra(Graph *graph, void *source);
 
@@ -61,6 +62,10 @@ DijkstraData_t graph_dijkstra(Graph *graph, void *source);
 */
 void graph_print_dijkstra_data(FILE *output, DijkstraData_t data);
 
+/**
+ * Frees the allocated memory for the given DijkstraData_t D and P arrays
+*/
+void graph_free_dijkstra_data(DijkstraData_t data);
 
 int graph_free(Graph *graph);
 Graph* graph_reset(Graph *graph);

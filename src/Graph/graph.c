@@ -374,6 +374,8 @@ static void graph_init_dijkstra(DijkstraData_t *dijkstra, Graph *graph, size_t s
 	dijkstra->P = malloc(graph->n_elements * sizeof(*dijkstra->P));
 	if (!dijkstra->D || !dijkstra->P){
 		printerr_allocation(graph_dijkstra);
+		free(dijkstra->D);
+		free(dijkstra->P);
 		dijkstra->status = ALLOCATION_ERROR;
 		return;
 	}
@@ -394,7 +396,7 @@ static void graph_init_dijkstra(DijkstraData_t *dijkstra, Graph *graph, size_t s
 	dijkstra->P[source].status = 1;
 
 	dijkstra->n_elements = graph->n_elements;
-	dijkstra->status = 1;
+	dijkstra->status = SUCCESS;
 }
 
 /**
@@ -430,6 +432,9 @@ DijkstraData_t graph_dijkstra(Graph *graph, void *source){
 	}
 
 	graph_init_dijkstra(&dijkstra, graph, source_index.value);
+	if (dijkstra.status != SUCCESS){
+		return dijkstra;
+	}
 
 	// Initialize the visited array
 	u_int8_t *S = calloc(graph->n_elements, sizeof(*S));
@@ -483,6 +488,11 @@ void graph_print_dijkstra_data(FILE *output, DijkstraData_t data) {
  			fprintf(output, "%-3zu\t%.3f\t-\n", i, data.D[i]);
 		}
 	}
+}
+
+void graph_free_dijkstra_data(DijkstraData_t data){
+	free(data.D);
+	free(data.P);
 }
 
 static void free_contents(Graph *graph){

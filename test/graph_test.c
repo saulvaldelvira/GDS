@@ -29,6 +29,7 @@ void dijkstra_test(){
 
 	DijkstraData_t dijkstra = graph_dijkstra(g, &a);
 	graph_print_dijkstra_data(stdout, dijkstra);
+	graph_free_dijkstra_data(dijkstra);
 
 	dijkstra = graph_dijkstra(g, &b);
 	graph_print_dijkstra_data(stdout, dijkstra);
@@ -37,19 +38,23 @@ void dijkstra_test(){
 	assert(dijkstra.P[2].status == 1);
 	assert(dijkstra.P[3].status != 1);
 	assert(dijkstra.P[4].status == 1);
+	graph_free_dijkstra_data(dijkstra);
 
 	dijkstra = graph_dijkstra(g, &c);
 	graph_print_dijkstra_data(stdout, dijkstra);
+	graph_free_dijkstra_data(dijkstra);
 
 	dijkstra = graph_dijkstra(g, &d);
 	graph_print_dijkstra_data(stdout, dijkstra);
+	graph_free_dijkstra_data(dijkstra);
 
 	dijkstra = graph_dijkstra(g, &e);
 	graph_print_dijkstra_data(stdout, dijkstra);
-
+	graph_free_dijkstra_data(dijkstra);
 
 	dijkstra = graph_dijkstra(g, cast_char('F'));
 	assert(dijkstra.status == ELEMENT_NOT_FOUND_ERROR);
+	graph_free_dijkstra_data(dijkstra);
 
 	printf("\n****************************************************\n");
 	printf("Here bellow should appear a NULL parameter error.\n");
@@ -58,6 +63,8 @@ void dijkstra_test(){
 	printf("****************************************************\n");
 
 	graph_free(g);
+	free(dijkstra.D);
+	free(dijkstra.P);
 }
 
 int main(){
