@@ -38,18 +38,18 @@ Graph* graph_init(size_t data_size, size_t n_elements, comparator_function_t cmp
  * Adds a node to the graph.
  * @return 1 if the operation is successful
 */
-int graph_add_node(Graph *graph, void *element);
+int graph_add_node(Graph *graph, void *node);
 
 /**
  * Removes a node from the graph.
  * @return 1 if the operation is successful
 */
-int graph_remove_node(Graph *graph, void *element);
+int graph_remove_node(Graph *graph, void *node);
 
 /**
  * @return true if the node exists in the graph
 */
-bool graph_exists_node(Graph *graph, void *element);
+bool graph_exists_node(Graph *graph, void *node);
 
 /**
  * Adds an edge between source and target, with the given weight
@@ -79,14 +79,14 @@ bool graph_exists_edge(Graph *graph, void *source, void *target);
  * If the status is != 1, this means the element is not present in the graph, and the value is garbage.
  * @note This is because the size_t type can't hold negative values, so we need these two elements (status and value) to cover all cases
 */
-index_t graph_indexof(Graph *graph, void *element);
+index_t graph_indexof(Graph *graph, void *node);
 
 /**
  * @return the number of elements in the graph
 */
 size_t graph_n_elements(Graph *graph);
 
-/// DIJKSTRA 
+/////// DIJKSTRA ///////
 
 // Structure to return in the graph_dijkstra method. Holds the result of the algorithm.
 typedef struct DijkstraData {
@@ -118,13 +118,16 @@ void graph_print_dijkstra_data(FILE *output, DijkstraData_t data);
 */
 void graph_free_dijkstra_data(DijkstraData_t *data);
 
+///////////////////////////////////////////////////////////////////////////////
 
-/// FLOYD ///////////////////////////////////////////////
+/////// FLOYD ///////
+
+// Struct to return the result of floyd's algorithm
 typedef struct FloydData {
-        float **A;
-        index_t **P;
+        float **A; //  A matrix of weights
+        index_t **P; // P matrixt of pivots
         size_t n_elements;
-        int status;
+        int status; // represents the result status of the operation (1 if success)
 } FloydData_t;
 
 /**
@@ -141,6 +144,50 @@ void graph_print_floyd_data(FILE *output, FloydData_t data);
  * Frees all memory allocated for the given FloydData_t
 */
 void graph_free_floyd_data(FloydData_t *data);
+
+/////////////////////////////////////////////////////////
+
+//// OTHER ALGORITHMS ////
+
+// Represents the Degree of a node
+typedef struct NodeDegree {
+        size_t deg_in;
+        size_t deg_out;
+        size_t deg;
+        int status;
+} NodeDegree_t;
+
+/**
+ * @note Returns a NodeDegree_t struct with the above information. 
+ * @param     status:  if 1, this means the operation was successful and the rest of the elements are valid
+ * @param     deg_out: the out degree of the node. This means, number of edges going into the node.
+ * @param     deg_in:  the in degree of the node. This means, number of edges starting from the node.
+ * @param     deg:     total degree of the node. It's value is deg_in plus deg_out.
+*/
+NodeDegree_t graph_get_degree(Graph *graph, void *node);
+
+/**
+ * @return true if the given node is a source node. 
+ * @note A node is source if the in degree (number of edges entering the node) is 0
+ *      and the out degree is > 0 (at least an edge is born from the node)
+*/
+bool graph_is_source_node(Graph *graph, void *node);
+
+/**
+ * @return true if the given node is a drain node. 
+ * @note A node is source if the out degree (number of edges exiting the node) is 0
+ *      and the in degree is > 0 (at least an edge eneters the node)
+*/
+bool graph_is_drain_node(Graph *graph, void *node);
+
+/**
+ * @return true if the given node is isolated.
+ * @note A node is isolated if its degree is 0, wich means no 
+ * edges go into the node, and no edges start from the node.
+*/
+bool graph_is_isolated_node(Graph *graph, void *node);
+
+
 /////////////////////////////////////////////////////////
 
 /**

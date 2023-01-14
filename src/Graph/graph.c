@@ -177,8 +177,8 @@ Graph* graph_init(size_t data_size, size_t n_elements, comparator_function_t cmp
 ///////////////////////////////////////////////////////////////////////////////
 
 /// NODES /////////////////////////////////////////////////////////////////////
-int graph_add_node(Graph *graph, void *element){
-	if (!graph || !element){
+int graph_add_node(Graph *graph, void *node){
+	if (!graph || !node){
 		printerr_null_param(graph_add_node);
 		return NULL_PARAMETER_ERROR;
 	}
@@ -189,7 +189,7 @@ int graph_add_node(Graph *graph, void *element){
 		}
 	}
 	void *tmp = void_offset(graph->nodes, graph->n_elements * graph->data_size); // Position to copy value into
-	tmp = memcpy(tmp, element, graph->data_size); // Perform the copy and store the reuslt
+	tmp = memcpy(tmp, node, graph->data_size); // Perform the copy and store the reuslt
 	if (!tmp){
 		printerr_memory_op(graph_add_node);
 		return MEMORY_OP_ERROR;
@@ -204,12 +204,12 @@ int graph_add_node(Graph *graph, void *element){
  * It also has to swap the edges and weights values.
  * After decrementing the n_elements values, the old (now "removed") node becomes garbage memory to be overwritten in the next add
 */
-int graph_remove_node(Graph *graph, void *element){
-	if (!graph || !element){
+int graph_remove_node(Graph *graph, void *node){
+	if (!graph || !node){
 		printerr_null_param(graph_remove_node);
 		return NULL_PARAMETER_ERROR;
 	}
-	index_t index = graph_indexof(graph, element); // Get the index of the node
+	index_t index = graph_indexof(graph, node); // Get the index of the node
 	if (index.status != SUCCESS){
 		return index.status;
 	}
@@ -224,7 +224,7 @@ int graph_remove_node(Graph *graph, void *element){
 			return MEMORY_OP_ERROR;
 		}
 
-		// Swap the weights columns of the element to be removed and the last one 
+		// Swap the weights columns of the node to be removed and the last one 
 		target = (void*) (graph->weights[index.value]);
 		source = (void*) (graph->weights[graph->n_elements-1]);
 
@@ -234,7 +234,7 @@ int graph_remove_node(Graph *graph, void *element){
 			return MEMORY_OP_ERROR;
 		}
 
-		// Swap the edges columns of the element to be removed and the last one 
+		// Swap the edges columns of the node to be removed and the last one 
 		target = (void*) (graph->edges[index.value]);
 		source = (void*) (graph->edges[graph->n_elements-1]);
 
@@ -244,7 +244,7 @@ int graph_remove_node(Graph *graph, void *element){
 			return MEMORY_OP_ERROR;
 		}
 
-		// Swap rows of the element to be removed and the last one 
+		// Swap rows of the node to be removed and the last one 
 		for (size_t i = 0; i < graph->max_elements; i++){
 			graph->edges[i][index.value] = graph->edges[i][graph->n_elements-1];
 			graph->weights[i][index.value] = graph->weights[i][graph->n_elements-1];
@@ -257,7 +257,7 @@ int graph_remove_node(Graph *graph, void *element){
 		}
 	// If the node to remove is the last, we still have to clear the values. 
 	// The reason i didn't just put this loop outside the if-else
-	// Statement is because if so, in the case we remove a non-last element (most) we should iteratre twice. 
+	// Statement is because if so, in the case we remove a non-last node (most) we should iteratre twice. 
 	// This way, we have longer code, but At runtime, the loop will only run once. (Hope I wrote this clear enough :p)
 	}else{ 
 		for (size_t i = 0; i < graph->max_elements; i++){
@@ -272,15 +272,15 @@ int graph_remove_node(Graph *graph, void *element){
 	return SUCCESS;
 }
 
-bool graph_exists_node(Graph *graph, void *element){
-	if (!graph || !element){
+bool graph_exists_node(Graph *graph, void *node){
+	if (!graph || !node){
 		printerr_null_param(graph_exists);
 		return false;
 	}
 	void *tmp;
 	for (size_t i = 0; i < graph->n_elements; i++){
 		tmp = void_offset(graph->nodes, graph->data_size * i);
-		if((*graph->compare) (element, tmp) == 0){
+		if((*graph->compare) (node, tmp) == 0){
 			return true;
 		}
 	}
@@ -370,9 +370,9 @@ size_t graph_n_elements(Graph *graph){
 	return graph->n_elements;
 }
 
-index_t graph_indexof(Graph *graph, void *element){
+index_t graph_indexof(Graph *graph, void *node){
 	for (size_t i = 0; i < graph->n_elements; i++){
-		if((*graph->compare)(void_offset(graph->nodes, i * graph->data_size), element) == 0){
+		if((*graph->compare)(void_offset(graph->nodes, i * graph->data_size), node) == 0){
 			return index_t(i,SUCCESS);
 		}
 	}
@@ -607,6 +607,58 @@ void graph_free_floyd_data(FloydData_t *data){
 	free(data->P);
 	data->A = NULL;
 	data->P = NULL;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+//// OTHER ALGORITHMS ////////////////////////////////////////////////////////
+
+NodeDegree_t graph_get_degree(Graph *graph, void *node){
+	NodeDegree_t degree = {0, 0, 0, NULL_PARAMETER_ERROR};
+	if (!graph || !node){
+		printerr_null_param(graph_get_degree);
+		return degree;
+	}
+	index_t index = graph_indexof(graph, node);
+	if (index.status != SUCCESS){
+		degree.status = index.status
+		return degree;
+	}
+	degree.status = SUCCESS;
+	for (size_t i = 0; i < graph->n_elements; i++){
+		if (graph->edges[i][index.value] == 1){
+			degree.deg_in++;
+		}
+		if (graph->edges[index.value][i] == 1){
+			degree.deg_out++;
+		}
+	}
+	degree.deg = degree.deg_in + degree.deg_out;
+	return degree;
+}
+
+bool graph_is_source_node(Graph *graph, void *node){
+	NodeDegree_t degree = graph_get_degree(graph, node);
+	if (degree.status != SUCCESS){
+		return false;
+	}
+	return degree.deg_in == 0 && degree.deg_out > 0;
+}
+
+bool graph_is_drain_node(Graph *graph, void *node){
+	NodeDegree_t degree = graph_get_degree(graph, node);
+	if (degree.status != SUCCESS){
+		return false;
+	}
+	return degree.deg_out == 0 && degree.deg_in > 0;
+}
+
+bool graph_is_isolated_node(Graph *graph, void *node){
+	NodeDegree_t degree = graph_get_degree(graph, node);
+	if (degree.status != SUCCESS){
+		return false;
+	}
+	return degree.deg == 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

@@ -97,6 +97,31 @@ void floyd_test(void){
 	graph_free(g);
 }
 
+void drain_source(void){
+	Graph *g = graph_empty(sizeof(char), compare_char);
+	char a = 'A', b = 'B', c = 'C', d = 'D';
+
+	graph_add_node(g, &a);
+	graph_add_node(g, &b);
+	graph_add_node(g, &c);
+	graph_add_node(g, &d);
+
+	graph_add_edge(g, &a, &b, 1.0f);
+	graph_add_edge(g, &a, &c, 1.0f);
+	graph_add_edge(g, &c, &d, 1.0f);
+	graph_add_edge(g, &b, &d, 1.0f);
+
+	assert(graph_is_drain_node(g, &d));
+	assert(!graph_is_drain_node(g, &a));
+	assert(!graph_is_drain_node(g, &c));
+
+	assert(graph_is_source_node(g, &a));
+	assert(!graph_is_source_node(g, &d));
+	assert(!graph_is_source_node(g, &b));
+
+	graph_free(g);
+}
+
 int main(){
 	intptr_t n = 1200;
 	printf("[Graph Test]\n");
@@ -126,6 +151,9 @@ int main(){
 
 	printf("FLOYD...\n");
 	floyd_test();
+
+	printf("OTHER ALGORITHMS...\n");
+	drain_source();
 
 	TIMESTAMP_STOP
 	graph_free(g);
