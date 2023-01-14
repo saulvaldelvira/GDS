@@ -56,7 +56,7 @@ int compare_int(const void* param_1, const void* param_2){
 }
 
 int main(){
-    LinkedList *list = lnkd_list_init(compare_int); // Pass compare_int as a parameter
+    LinkedList *list = lnkd_list_init(sizeof(int), compare_int); // Pass compare_int as a parameter
     int one = 1;
     lnkd_list_push_back(list, &one);
     assert(lnkd_list_exists(list, &one)); // This will return true.
@@ -68,6 +68,6 @@ int main(){
 #include "comparator.h"
 
 int main(){
-    LinkedList *list = lnkd_list_init(Comparator.integer); // To compare ints
+    LinkedList *list = lnkd_list_init(sizeof(char), compare_char); // To compare chars
 }
 ```
