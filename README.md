@@ -41,7 +41,7 @@ And it must return <br>
   
 For example:<br>
 ```c
-int compare_int(void* param_1, void* param_2){
+int compare_int(const void* param_1, const void* param_2){
     // Take the int values
     int i_1 = * (int*) param_1;
     int i_2 = * (int*) param_2;
