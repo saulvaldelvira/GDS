@@ -23,6 +23,8 @@ struct _Graph {
 	void *nodes;
 };
 
+/// CONSTRUCTORS //////////////////////////////////////////////////////////////
+
 /**
  * Expands the graph number of elements. This means
  * 1) Allocates new spaces for nodes, weights and edges.
@@ -172,6 +174,9 @@ Graph* graph_init(size_t data_size, size_t n_elements, comparator_function_t cmp
 	return graph;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
+/// NODES /////////////////////////////////////////////////////////////////////
 int graph_add_node(Graph *graph, void *element){
 	if (!graph || !element){
 		printerr_null_param(graph_add_node);
@@ -191,15 +196,6 @@ int graph_add_node(Graph *graph, void *element){
 	}
 	graph->n_elements++;
 	return SUCCESS;
-}
-
-index_t graph_indexof(Graph *graph, void *element){
-	for (size_t i = 0; i < graph->n_elements; i++){
-		if((*graph->compare)(void_offset(graph->nodes, i * graph->data_size), element) == 0){
-			return index_t(i,SUCCESS);
-		}
-	}
-	return index_t(0,ELEMENT_NOT_FOUND_ERROR);
 }
 
 /**
@@ -259,9 +255,10 @@ int graph_remove_node(Graph *graph, void *element){
 			graph->weights[i][graph->n_elements-1] = INFINITY;
 			graph->weights[graph->n_elements-1][i] = INFINITY;
 		}
-	// If the node to remove is the last, we still have to clear the values. The reason i didn't just put this loop outside the if-else
-	// Statement is because if so, in the case we remove a non-last element (most) we should iteratre twice. This way, we have longer code. But
-	// At runtime, the loop will only run once. (Hope I wrote this clear enough :p)
+	// If the node to remove is the last, we still have to clear the values. 
+	// The reason i didn't just put this loop outside the if-else
+	// Statement is because if so, in the case we remove a non-last element (most) we should iteratre twice. 
+	// This way, we have longer code, but At runtime, the loop will only run once. (Hope I wrote this clear enough :p)
 	}else{ 
 		for (size_t i = 0; i < graph->max_elements; i++){
 			graph->edges[i][graph->n_elements-1] = 0;
@@ -274,6 +271,26 @@ int graph_remove_node(Graph *graph, void *element){
 	graph->n_elements--;
 	return SUCCESS;
 }
+
+bool graph_exists_node(Graph *graph, void *element){
+	if (!graph || !element){
+		printerr_null_param(graph_exists);
+		return false;
+	}
+	void *tmp;
+	for (size_t i = 0; i < graph->n_elements; i++){
+		tmp = void_offset(graph->nodes, graph->data_size * i);
+		if((*graph->compare) (element, tmp) == 0){
+			return true;
+		}
+	}
+	return false;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+
+///// EDGES ///////////////////////////////////////////////////////////////////
 
 int graph_add_edge(Graph *graph, void *source, void *target, float weight){
 	if (!graph || !source || !target){
@@ -343,20 +360,7 @@ bool graph_exists_edge(Graph *graph, void *source, void *target){
 	return graph->edges[index_src.value][index_tar.value];
 }
 
-bool graph_exists_node(Graph *graph, void *element){
-	if (!graph || !element){
-		printerr_null_param(graph_exists);
-		return false;
-	}
-	void *tmp;
-	for (size_t i = 0; i < graph->n_elements; i++){
-		tmp = void_offset(graph->nodes, graph->data_size * i);
-		if((*graph->compare) (element, tmp) == 0){
-			return true;
-		}
-	}
-	return false;
-}
+///////////////////////////////////////////////////////////////////////////////
 
 size_t graph_n_elements(Graph *graph){
 	if (!graph){
@@ -365,6 +369,17 @@ size_t graph_n_elements(Graph *graph){
 	}
 	return graph->n_elements;
 }
+
+index_t graph_indexof(Graph *graph, void *element){
+	for (size_t i = 0; i < graph->n_elements; i++){
+		if((*graph->compare)(void_offset(graph->nodes, i * graph->data_size), element) == 0){
+			return index_t(i,SUCCESS);
+		}
+	}
+	return index_t(0,ELEMENT_NOT_FOUND_ERROR);
+}
+
+/// DIJKSTRA //////////////////////////////////////////////////////////////////
 
 /**
  * Initializes the DijkstraData_t structure.
@@ -490,10 +505,113 @@ void graph_print_dijkstra_data(FILE *output, DijkstraData_t data) {
 	}
 }
 
-void graph_free_dijkstra_data(DijkstraData_t data){
-	free(data.D);
-	free(data.P);
+void graph_free_dijkstra_data(DijkstraData_t *data){
+	free(data->D);
+	free(data->P);
+	data->D = NULL;
+	data->P = NULL;
 }
+
+///////////////////////////////////////////////////////////////////////////////
+
+// FLOYD //////////////////////////////////////////////////////////////////////
+
+/**
+ * Initializes the FloydData_t struct
+*/
+static void graph_init_floyd(FloydData_t *floyd, Graph *graph){
+	floyd->A = malloc(sizeof(*floyd->A) * graph->n_elements);
+	floyd->P = malloc(sizeof(*floyd->P) * graph->n_elements);
+	if (!floyd->A || !floyd->P){
+		printerr_allocation(graph_init_floyd);
+		floyd->status = ALLOCATION_ERROR;
+		free(floyd->A);
+		free(floyd->P);
+		return;
+	}
+	
+	for (size_t i = 0; i < graph->n_elements; i++){
+		floyd->A[i] = malloc(sizeof(*floyd->A[i]) * graph->n_elements);
+		floyd->P[i] = malloc(sizeof(*floyd->P[i]) * graph->n_elements);
+		if (!floyd->A[i] || !floyd->P[i]){
+			printerr_allocation(graph_init_floyd);
+			floyd->n_elements = i+1; // Number of arrays already allocated
+			graph_free_floyd_data(floyd); // Free everything before returning
+			floyd->status = ALLOCATION_ERROR;
+			return;
+		}
+
+		for (size_t j = 0; j < graph->n_elements; j++){
+			floyd->A[i][j] = graph->weights[i][j];
+			floyd->P[i][j].status = -1; // At the begining, all pivots are -1
+		}
+		floyd->A[i][i] = 0.0f; // The cost from an elements to itself is always 0
+	}
+	floyd->n_elements = graph->n_elements;
+	floyd->status = SUCCESS;
+}
+
+FloydData_t graph_floyd(Graph *graph){
+	FloydData_t floyd = {.A = NULL, .P = NULL, .n_elements = 0, .status = NULL_PARAMETER_ERROR};
+	if (!graph){
+		printerr_null_param(graph_floyd);
+		return floyd;
+	}
+	graph_init_floyd(&floyd, graph);
+	if (floyd.status != SUCCESS){
+		return floyd;
+	}
+	for (size_t pivot = 0; pivot < graph->n_elements; pivot++){
+		for (size_t i = 0; i < graph->n_elements; i++){
+			for (size_t j = 0; j < graph->n_elements; j++){
+				float w = floyd.A[i][pivot] + floyd.A[pivot][j]; // Cost from i to j, going through the pivot
+				if (floyd.A[i][j] > w){ // If it's better that the cost of going directly from i to j
+					floyd.A[i][j] = w;
+					floyd.P[i][j].value = pivot;
+					floyd.P[i][j].status = 1;
+				}
+			}
+		}
+	}
+	return floyd;
+	
+}
+
+void graph_print_floyd_data(FILE *output, FloydData_t data){
+	fprintf(output, "[FLOYD]\nD:\n");
+	for (size_t i = 0; i < data.n_elements; i++){
+		for (size_t j = 0; j < data.n_elements; j++){
+			fprintf(output, "%.2f\t", data.A[i][j]);
+		}
+		fprintf(output, "\n");
+	}
+	fprintf(output, "P:\n");
+	for (size_t i = 0; i < data.n_elements; i++){
+		for (size_t j = 0; j < data.n_elements; j++){
+			if (data.P[i][j].status == 1){
+				fprintf(output, "%zu\t", data.P[i][j].value);
+			}else{
+				fprintf(output, "-\t");
+			}
+		}
+		fprintf(output, "\n");
+	}
+}
+
+void graph_free_floyd_data(FloydData_t *data){
+	for (size_t i = 0; i < data->n_elements; i++){
+		free(data->A[i]);
+		free(data->P[i]);
+	}
+	free(data->A);
+	free(data->P);
+	data->A = NULL;
+	data->P = NULL;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+/// FREE //////////////////////////////////////////////////////////////////////
 
 static void free_contents(Graph *graph){
 	free(graph->nodes);
@@ -513,7 +631,7 @@ int graph_free(Graph *graph){
 	}
 	free_contents(graph);
 	free(graph);
-	return 1;
+	return SUCCESS;
 }
 
 Graph* graph_reset(Graph *graph){

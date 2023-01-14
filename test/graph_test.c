@@ -5,7 +5,7 @@
 #undef TIMESTAMP_ENABLE
 #include "../src/Graph/graph.h"
 
-void dijkstra_test(){
+void dijkstra_test(void){
 	Graph *g = graph_empty(sizeof(char) , compare_char);
 
 	char a = 'A', b = 'B', c = 'C', d = 'D' , e = 'E';
@@ -29,7 +29,7 @@ void dijkstra_test(){
 
 	DijkstraData_t dijkstra = graph_dijkstra(g, &a);
 	graph_print_dijkstra_data(stdout, dijkstra);
-	graph_free_dijkstra_data(dijkstra);
+	graph_free_dijkstra_data(&dijkstra);
 
 	dijkstra = graph_dijkstra(g, &b);
 	graph_print_dijkstra_data(stdout, dijkstra);
@@ -38,23 +38,23 @@ void dijkstra_test(){
 	assert(dijkstra.P[2].status == 1);
 	assert(dijkstra.P[3].status != 1);
 	assert(dijkstra.P[4].status == 1);
-	graph_free_dijkstra_data(dijkstra);
+	graph_free_dijkstra_data(&dijkstra);
 
 	dijkstra = graph_dijkstra(g, &c);
 	graph_print_dijkstra_data(stdout, dijkstra);
-	graph_free_dijkstra_data(dijkstra);
+	graph_free_dijkstra_data(&dijkstra);
 
 	dijkstra = graph_dijkstra(g, &d);
 	graph_print_dijkstra_data(stdout, dijkstra);
-	graph_free_dijkstra_data(dijkstra);
+	graph_free_dijkstra_data(&dijkstra);
 
 	dijkstra = graph_dijkstra(g, &e);
 	graph_print_dijkstra_data(stdout, dijkstra);
-	graph_free_dijkstra_data(dijkstra);
+	graph_free_dijkstra_data(&dijkstra);
 
 	dijkstra = graph_dijkstra(g, cast_char('F'));
 	assert(dijkstra.status == ELEMENT_NOT_FOUND_ERROR);
-	graph_free_dijkstra_data(dijkstra);
+	graph_free_dijkstra_data(&dijkstra);
 
 	printf("\n****************************************************\n");
 	printf("Here bellow should appear a NULL parameter error.\n");
@@ -65,6 +65,36 @@ void dijkstra_test(){
 	graph_free(g);
 	free(dijkstra.D);
 	free(dijkstra.P);
+}
+
+void floyd_test(void){
+	Graph *g = graph_empty(sizeof(char), compare_char);
+	char a = 'A', b = 'B', c = 'C', d = 'D', e = 'E', f = 'F';
+	assert(graph_add_node(g, &a));
+	assert(graph_add_node(g, &b));
+	assert(graph_add_node(g, &c));
+	assert(graph_add_node(g, &d));
+	assert(graph_add_node(g, &e));
+	assert(graph_add_node(g, &f));
+
+	assert(graph_add_edge(g, &a, &b, 3.0f));
+	assert(graph_add_edge(g, &a, &c, 4.0f));
+	assert(graph_add_edge(g, &a, &e, 8.0f));
+
+	assert(graph_add_edge(g, &b, &e, 5.0f));
+
+	assert(graph_add_edge(g, &c, &e, 3.0f));
+
+	assert(graph_add_edge(g, &e, &f, 3.0f));
+	assert(graph_add_edge(g, &e, &d, 7.0f));
+
+	assert(graph_add_edge(g, &f, &d, 2.0f));
+
+	FloydData_t floyd = graph_floyd(g);
+	assert(floyd.status == SUCCESS);
+	graph_print_floyd_data(stdout, floyd);
+	graph_free_floyd_data(&floyd);
+	graph_free(g);
 }
 
 int main(){
@@ -94,6 +124,8 @@ int main(){
 	printf("DIJKSTRA...\n");
 	dijkstra_test();
 
+	printf("FLOYD...\n");
+	floyd_test();
 
 	TIMESTAMP_STOP
 	graph_free(g);
