@@ -32,7 +32,7 @@ In the example above, both 12 and 3 are added into the list, since every call to
 This is an important issue. Since we store "generic" data, we must have a way to compare that data. <br>
 That's why all this structures require a function pointer to be passed, also as a parameter when they are constructed. This function must be like this <br>
 ```c
-int func_name (void* param_1, void* param_2);
+int func_name (const void* param_1, const void* param_2);
 ```
 And it must return <br>
 * <b> 1</b> if param_1 is > than param_2
