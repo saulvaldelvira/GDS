@@ -26,16 +26,17 @@ struct _Graph {
 /// CONSTRUCTORS //////////////////////////////////////////////////////////////
 
 /**
- * Expands the graph number of elements. This means
+ * Expands the graph's number of elements to new_size. This means
  * 1) Allocates new spaces for nodes, weights and edges.
- * 2) Copies old values into the new, bigger spaces.
- * 3) Fills the new spaces with the default values (0 for edges and INFINITY for weights)
+ * 2) Copies old values into these new, bigger spaces.
+ * 3) Fills rest of the new spaces with the default values (0 for edges and INFINITY for weights)
  *      In the case of edges, since we allocate them with calloc, the values are already 0 by default.
  * 4) Frees the old spaces
+ * 5) Sets the graphs nodes, weights and edges to be this new spaces. Also update max_elements value to new_size
 */
-static int expand_memory(size_t data_size, size_t old_size, size_t new_size, void **nodes_ptr, float ***weights_ptr, int8_t ***edges_ptr){
+static int expand_memory(Graph *graph, size_t new_size){
 	// Allocate nodes
-	void *nodes = malloc( new_size * data_size);
+	void *nodes = malloc(new_size * graph->data_size);
 	if (!nodes){
 		printerr_allocation(expand_memory);
 		return ALLOCATION_ERROR;
@@ -48,7 +49,7 @@ static int expand_memory(size_t data_size, size_t old_size, size_t new_size, voi
 		return ALLOCATION_ERROR;
 	}
 
-	// Allocate edges (only the columns)
+	// Allocate edges
 	int8_t **edges = malloc(new_size * sizeof(*edges));
 	if (!edges){
 		printerr_allocation(expand_memory);
@@ -56,53 +57,56 @@ static int expand_memory(size_t data_size, size_t old_size, size_t new_size, voi
 	}
 
 	// Copy old node values in the range [0, oldSize) and free the old one
-	void *tmp = memcpy(nodes, *nodes_ptr, old_size * data_size);
+	void *tmp = memcpy(nodes, graph->nodes, graph->max_elements * graph->data_size);
 	if (!tmp){
 		printerr_memory_op(expand_memory);
 		return MEMORY_OP_ERROR;
 	}
-	free((*nodes_ptr));
+	free(graph->nodes);
 
 	// Initialize the columns for edges and weights.
 	// We divide the loop in two ranges [0 - oldSize) and [oldSize - newSize)
 	// In the first one, we allocate the new memmory and copy the old values. 
-	for (size_t i = 0; i < old_size; i++){
+	for (size_t i = 0; i < graph->max_elements; i++){
+		// Allocate weights[i] and copy old values
 		weights[i] = malloc(new_size * sizeof(*weights[i]));
 		if (!weights[i]){
 			printerr_allocation(expand_memory);
 			return ALLOCATION_ERROR;
 		}
 
-		tmp = memcpy(weights[i], (*weights_ptr)[i], sizeof(*weights[i])*old_size);
+		tmp = memcpy(weights[i], graph->weights[i], sizeof(*weights[i])*graph->max_elements);
 		if (!tmp){
 			printerr_memory_op(expand_memory);
 			return MEMORY_OP_ERROR;
 		}
 
+		// Allocate edges[i] and copy old values
 		edges[i] = calloc(new_size, sizeof(*edges[i]));
 		if (!edges[i]){
 			printerr_allocation(expand_memory);
 			return ALLOCATION_ERROR;
 		}
 
-		tmp = memcpy(edges[i], (*edges_ptr)[i], sizeof(*edges[i])*old_size);
+		tmp = memcpy(edges[i], graph->edges[i], sizeof(*edges[i])*graph->max_elements);
 		if (!tmp){
 			printerr_memory_op(expand_memory);
 			return MEMORY_OP_ERROR;
 		}
 
-		// Set the new rows to INFINITY. Edges are already 0 because of the call to calloc
-		for (size_t j = old_size; j < new_size; j++){
+		// Set the new rows to INFINITY. Edges are already 0 because of calloc.
+		for (size_t j = graph->max_elements; j < new_size; j++){
 			weights[i][j] = INFINITY;
 		}
 
 		// Free the old pointers
-		free((*weights_ptr)[i]);
-		free((*edges_ptr)[i]);
+		free(graph->weights[i]);
+		free(graph->edges[i]);
 	}
 
-	// In the second one, we also allocate memory but we set the default values, since there are no old values to copy
-	for (size_t i = old_size; i < new_size; i++){
+	// In the second one [oldSize, newSize), we also allocate memory 
+	// but, since there are no old values to copy, we just set the default values
+	for (size_t i = graph->max_elements; i < new_size; i++){
 		weights[i] = malloc(new_size * sizeof(*weights[i]));
 		if (!weights[i]){
 			printerr_allocation(expand_memory);
@@ -119,13 +123,14 @@ static int expand_memory(size_t data_size, size_t old_size, size_t new_size, voi
 			weights[i][j] = INFINITY;
 		}
 	}
+	// Free old pointers
+	free(graph->weights);
+	free(graph->edges);
 
-	free((*weights_ptr));
-	free((*edges_ptr));
-
-	*nodes_ptr = nodes;
-	*weights_ptr = weights;
-	*edges_ptr = edges;
+	graph->nodes = nodes;
+	graph->weights = weights;
+	graph->edges = edges;
+	graph->max_elements = new_size;
 	return SUCCESS;
 }
 
@@ -156,21 +161,20 @@ Graph* graph_init(size_t data_size, size_t n_elements, comparator_function_t cmp
 		return NULL;
 	}
 
-	void *nodes = NULL;
-	float **weights = NULL;
-	int8_t **edges = NULL;
+	graph->n_elements = 0;
+	graph->max_elements = 0;
+	graph->compare = cmp;
+	graph->weights = NULL;
+	graph->edges = NULL;
+	graph->nodes = NULL;
+	graph->data_size = data_size;
 
-	if (expand_memory(data_size, 0, n_elements,  &nodes, &weights, &edges) != SUCCESS){
+	// "Expanding" from 0 to n_elements turns into just initializing 
+	// weights, edges and nodes to their default size and state.
+	if (expand_memory(graph, n_elements) != SUCCESS){
 		return NULL;
 	}
 
-	graph->n_elements = 0;
-	graph->max_elements = n_elements;
-	graph->compare = cmp;
-	graph->weights = weights;
-	graph->edges = edges;
-	graph->nodes = nodes;
-	graph->data_size = data_size;
 	return graph;
 }
 
@@ -183,8 +187,7 @@ int graph_add_node(Graph *graph, void *node){
 		return NULL_PARAMETER_ERROR;
 	}
 	if (graph->n_elements == graph->max_elements){
-		graph->max_elements *= 2;
-		if (expand_memory(graph->data_size, graph->n_elements, graph->max_elements, &graph->nodes, &graph->weights, &graph->edges) != SUCCESS) {
+		if (expand_memory(graph, graph->max_elements * 2) != SUCCESS) {
 			return ALLOCATION_ERROR;
 		}
 	}
@@ -752,11 +755,11 @@ Graph* graph_reset(Graph *graph){
 	}
 	free_contents(graph);
 	graph->n_elements = 0;
-	graph->max_elements = GRAPH_DEFAULT_SIZE;
+	graph->max_elements = 0;
 	graph->edges = NULL;
 	graph->nodes = NULL;
 	graph->weights = NULL;
-	if (expand_memory(graph->data_size, 0, GRAPH_DEFAULT_SIZE,  &graph->nodes, &graph->weights, &graph->edges) != SUCCESS){
+	if (expand_memory(graph, GRAPH_DEFAULT_SIZE) != SUCCESS){
 		return NULL;
 	}
 	return graph;
