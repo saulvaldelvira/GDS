@@ -5,6 +5,7 @@ It includes:
 * [Stack](src/Stack)
 * [Queue](src/Queue)
 * Trees: [BSTree](src/BSTree)
+* [Graph](src/Graph)
 
 ## How it works
 These structures are "generic" in the way that the only information they need about the data type stored is its size. <br>
