@@ -621,7 +621,7 @@ NodeDegree_t graph_get_degree(Graph *graph, void *node){
 	}
 	index_t index = graph_indexof(graph, node);
 	if (index.status != SUCCESS){
-		degree.status = index.status
+		degree.status = index.status;
 		return degree;
 	}
 	degree.status = SUCCESS;
@@ -661,6 +661,65 @@ bool graph_is_isolated_node(Graph *graph, void *node){
 	return degree.deg == 0;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
+////// Deep First Traverse ////////////////////////////////////////////////////
+static int traverse_df_rec(traverse_df_data_t *data, size_t index, u_int8_t *visited, Graph *graph){
+	visited[index] = 1;
+	void *dst = void_offset(data->elements, data->elements_size * graph->data_size);
+	void *src = void_offset(graph->nodes, index * graph->data_size);
+	dst = memcpy(dst, src, graph->data_size);
+	if (!dst){
+		printerr_memory_op(traverse_df_rec);
+		free(data->elements);
+		return MEMORY_OP_ERROR;
+	}
+	data->elements_size++;
+	int s;
+	for (size_t i = 0; i < graph->n_elements; i++){
+		if (visited[i] == 0 && graph->edges[index][i] == 1){
+			s = traverse_df_rec(data, i, visited, graph);
+			if (s != SUCCESS){
+				return s;
+			} 
+		}
+	}
+	return SUCCESS;
+}
+
+traverse_df_data_t graph_traverse_DF(Graph *graph, void *node){
+	traverse_df_data_t df = {NULL, 0, NULL_PARAMETER_ERROR};
+	if (!graph){
+		printerr_null_param(graph_traverse_DF);
+		return df;
+	}
+	index_t index = graph_indexof(graph, node);
+	if (index.status != SUCCESS){
+		df.status = index.status;
+		return df;
+	}
+	df.status = SUCCESS;
+	df.elements_size = 0;
+	df.elements = calloc(graph->n_elements , graph->data_size);
+
+	u_int8_t *visited = calloc(graph->n_elements, sizeof(*visited));
+	if (!df.elements || !visited){
+		printerr_allocation(graph_traverse_DF);
+		df.status = ALLOCATION_ERROR;
+		return df;
+	}
+
+	int s = traverse_df_rec(&df, index.value, visited, graph);
+	if (s != SUCCESS){
+		free(visited);
+		free(df.elements);
+		df.status = s;
+		return df;
+	}
+
+	free(visited);
+	return df;
+}
 ///////////////////////////////////////////////////////////////////////////////
 
 /// FREE //////////////////////////////////////////////////////////////////////

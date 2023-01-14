@@ -122,6 +122,53 @@ void drain_source(void){
 	graph_free(g);
 }
 
+void traverse_df(void){
+	Graph *graph = graph_empty(sizeof(char), compare_char);
+	char a = 'A', b = 'B', c = 'C', d = 'D', 
+		e = 'E', f = 'F', g = 'G', h = 'H', i = 'I', j = 'J';
+
+	graph_add_node(graph, &a);
+	graph_add_node(graph, &b);
+	graph_add_node(graph, &c);
+	graph_add_node(graph, &d);	
+	graph_add_node(graph, &e);
+	graph_add_node(graph, &f);
+	graph_add_node(graph, &g);
+	graph_add_node(graph, &h);
+	graph_add_node(graph, &i);
+	graph_add_node(graph, &j);
+
+	graph_add_edge(graph, &a, &b, 1.0f);
+	graph_add_edge(graph, &a, &h, 1.0f);
+
+	graph_add_edge(graph, &b, &c, 1.0f);
+	graph_add_edge(graph, &b, &d, 1.0f);
+	graph_add_edge(graph, &b, &g, 1.0f);
+
+	graph_add_edge(graph, &c, &e, 1.0f);
+	graph_add_edge(graph, &c, &f, 1.0f);
+
+	graph_add_edge(graph, &d, &i, 1.0f);
+
+	graph_add_edge(graph, &e, &f, 1.0f);
+	graph_add_edge(graph, &e, &d, 1.0f);
+
+	graph_add_edge(graph, &g, &h, 1.0f);
+
+	graph_add_edge(graph, &i, &j, 1.0f);
+	graph_add_edge(graph, &i, &f, 1.0f);
+
+	traverse_df_data_t df = graph_traverse_DF(graph, &a);
+	printf("DF: ");
+	for (int i=0; i < 10; i++){
+		void *tmp = void_offset(df.elements, i);
+		printf("%c-", * (char*) tmp);
+	}
+	printf("\n");
+	free(df.elements);
+	graph_free(graph);
+}
+
 int main(){
 	intptr_t n = 1200;
 	printf("[Graph Test]\n");
@@ -154,6 +201,7 @@ int main(){
 
 	printf("OTHER ALGORITHMS...\n");
 	drain_source();
+	traverse_df();
 
 	TIMESTAMP_STOP
 	graph_free(g);

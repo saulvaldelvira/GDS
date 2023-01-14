@@ -187,6 +187,25 @@ bool graph_is_drain_node(Graph *graph, void *node);
 */
 bool graph_is_isolated_node(Graph *graph, void *node);
 
+/////////////////////////////////////////////////////////
+
+////// Deep First Traverse //////////////////////////////
+typedef struct traverse_df_data {
+	void *elements;
+	size_t elements_size;
+        int status;
+}traverse_df_data_t;
+
+/**
+ * Traverses the graph using the Deep First algorithm.
+ * This means that it visits the "sons" of a graph first, and then the "brothers".
+ * @param node to start the search in
+ * @return A struct that contains an array with all the objects in the graph, traversed Deep First. This 
+ * struct also contains a size_t variable "elements_size" that indicates the number of elements in the array. 
+ * This is because, as there might be unreachable nodes, it's posible that the length of the array is < than the number of elements in the graph.
+ * @note Remember to free the returned array when you finish working with it.
+*/
+traverse_df_data_t graph_traverse_DF(Graph *graph, void *node);
 
 /////////////////////////////////////////////////////////
 
