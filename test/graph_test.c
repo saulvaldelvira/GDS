@@ -56,17 +56,19 @@ void dijkstra_test(void){
 	assert(dijkstra.status == ELEMENT_NOT_FOUND_ERROR);
 	graph_free_dijkstra_data(&dijkstra);
 
-	printf("\n****************************************************\n");
-	printf("Here bellow should appear a NULL parameter error.\n");
-	dijkstra = graph_dijkstra(NULL, NULL);
-	assert(dijkstra.status == NULL_PARAMETER_ERROR);
-	printf("****************************************************\n");
+	if (!quiet){
+		printf("\n****************************************************\n");
+		printf("Here bellow should appear a NULL parameter error.\n");
+		dijkstra = graph_dijkstra(NULL, NULL);
+		assert(dijkstra.status == NULL_PARAMETER_ERROR);
+		printf("****************************************************\n");
+	}
 
 	graph_free(g);
 	free(dijkstra.D);
 	free(dijkstra.P);
 }
-
+	
 void floyd_test(void){
 	Graph *g = graph_empty(sizeof(char), compare_char);
 	char a = 'A', b = 'B', c = 'C', d = 'D', e = 'E', f = 'F';
@@ -158,14 +160,16 @@ void traverse_df(void){
 	graph_add_edge(graph, &i, &j, 1.0f);
 	graph_add_edge(graph, &i, &f, 1.0f);
 
-	traverse_df_data_t df = graph_traverse_DF(graph, &a);
-	printf("DF: ");
-	for (int i=0; i < 10; i++){
-		void *tmp = void_offset(df.elements, i);
-		printf("%c-", * (char*) tmp);
+	if (!quiet){
+		traverse_df_data_t df = graph_traverse_DF(graph, &a);
+		printf("DF: ");
+		for (int i=0; i < 10; i++){
+			void *tmp = void_offset(df.elements, i);
+			printf("%c-", * (char*) tmp);
+		}
+		printf("\n");
+		free(df.elements);
 	}
-	printf("\n");
-	free(df.elements);
 	graph_free(graph);
 }
 
@@ -190,10 +194,12 @@ void eccentricity_test(void){
 	graph_add_edge(g, &c, &b, 5.0f);
 	assert(graph_eccentricity(g, &b) == 8.0f);
 
-	printf("\n********************************************************\n");
-	printf("Here bellow should appear a NULL parameter error.\n");
-	assert(graph_eccentricity(NULL, NULL) == NULL_PARAMETER_ERROR * 1.0f);
-	printf("********************************************************\n");
+	if (!quiet){
+		printf("\n********************************************************\n");
+		printf("Here bellow should appear a NULL parameter error.\n");
+		assert(graph_eccentricity(NULL, NULL) == NULL_PARAMETER_ERROR * 1.0f);
+		printf("********************************************************\n");
+	}
 	assert(graph_eccentricity(g, cast_char('J')) == ELEMENT_NOT_FOUND_ERROR * 1.0f);
 
 	graph_add_node(g, &e);
@@ -206,6 +212,10 @@ void eccentricity_test(void){
 int main(){
 	intptr_t n = 1200;
 	printf("[Graph Test]\n");
+	if (quiet){
+		printf("...\n");
+	}
+
 	TIMESTAMP_START
 	Graph *g = graph_empty(sizeof(int) ,compare_int);
 	for(int i = 0; i < n; i++){
@@ -227,19 +237,20 @@ int main(){
 	}
 
 
-	printf("Dijkstra...\n");
-	dijkstra_test();
+	if(!quiet){
+		printf("Dijkstra...\n");
+		dijkstra_test();
 
-	printf("\nFloyd...\n");
-	floyd_test();
+		printf("\nFloyd...\n");
+		floyd_test();
+	}
 
-	printf("\nNode Degree...\n");
 	drain_source();
 
-	printf("\nTraverse DF...\n");
+	LOG(printf("\nTraverse DF...\n"));
 	traverse_df();
 
-	printf("\nEccentricity...\n");
+	LOG(printf("\nEccentricity...\n"));
 	eccentricity_test();
 
 	TIMESTAMP_STOP

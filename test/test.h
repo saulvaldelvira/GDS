@@ -45,5 +45,13 @@ static inline int rand_range(int min, int max){
 		      else printf("%.2f miliseconds]\n\n", timestamp * 1000);
 
 #include <math.h>
+#include <stdbool.h>
+
+#ifdef QUIET
+bool quiet = true;
+#else
+bool quiet = false;
+#endif
+#define LOG(x) if (!quiet){x;}
 
 #endif
