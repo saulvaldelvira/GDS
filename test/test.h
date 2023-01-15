@@ -44,4 +44,6 @@ static inline int rand_range(int min, int max){
 		      if(timestamp>=1.0) printf("%.3f seconds]\n\n", timestamp); \
 		      else printf("%.2f miliseconds]\n\n", timestamp * 1000);
 
+#include <math.h>
+
 #endif

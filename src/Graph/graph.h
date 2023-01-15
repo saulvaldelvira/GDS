@@ -199,6 +199,12 @@ bool graph_is_drain_node(Graph *graph, void *node);
 */
 bool graph_is_isolated_node(Graph *graph, void *node);
 
+/**
+ * @return The eccentricity of the node. This means, the highest of
+ * the min cost paths between the node and the rest of nodes.
+*/ 
+float graph_eccentricity(Graph *graph, void *node);
+
 /////////////////////////////////////////////////////////
 
 ////// Deep First Traverse //////////////////////////////

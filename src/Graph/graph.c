@@ -676,6 +676,26 @@ bool graph_is_isolated_node(Graph *graph, void *node){
 	return degree.deg == 0;
 }
 
+float graph_eccentricity(Graph *graph, void *node){
+	if (!graph || !node){
+		printerr_null_param(graph_eccentricity);
+		return NULL_PARAMETER_ERROR * 1.0f;
+	}
+	index_t index = graph_indexof(graph, node);
+	if (index.status != SUCCESS){
+		return index.status * 1.0f;
+	}
+
+	FloydData_t floyd = graph_floyd(graph);
+	float max = -1.0f;
+	for (size_t i = 0; i < graph->n_elements; i++){
+		if (floyd.A[i][index.value] > max){
+			max = floyd.A[i][index.value];
+		}
+	}
+	return max;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 ////// Deep First Traverse ////////////////////////////////////////////////////
