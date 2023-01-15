@@ -1,4 +1,4 @@
-.PHONY: clean all_test list_test stack_test queue_test bst_test 
+.PHONY: clean purge all_test list_test stack_test queue_test bst_test 
 SRC = src/
 UTIL_DIR = $(SRC)/Util
 BIN = bin/
@@ -8,9 +8,13 @@ STACK_OBJS = test/stack_test.o $(SRC)/Stack/stack.o $(UTIL_OBJS)
 QUEUE_OBJS = test/queue_test.o $(SRC)/Queue/queue.o $(UTIL_OBJS)
 BST_OBJS = test/bst_test.o $(SRC)/BSTree/BSTree.o $(UTIL_OBJS)
 GRAPH_OBJS = test/graph_test.o $(SRC)/Graph/graph.o $(UTIL_OBJS)
-
 CC = gcc
-CCFLAGS = -lm -Wall -Wextra -Werror -g -pedantic 
+CCFLAGS = -lm -Wall -Wextra -Werror -g -pedantic
+
+#To set optimization level append "O=X" in make command. X is the optimiztion level. 
+ifdef O
+CCFLAGS += -O$(O)
+endif
 
 list_test: $(BIN) $(BIN)/list_test.out
 	@ $(BIN)/list_test.out 
