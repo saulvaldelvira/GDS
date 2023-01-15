@@ -11,11 +11,12 @@ GRAPH_OBJS = test/graph_test.o $(SRC)/Graph/graph.o $(UTIL_OBJS)
 CC = gcc
 CCFLAGS = -lm -Wall -Wextra -Werror -g -pedantic
 
-#To set optimization level append "O=X" in make command. X is the optimiztion level. 
+# To set optimization level append "O=X" in make command. X is the optimiztion level. 
 ifdef O
 CCFLAGS += -O$(O)
 endif
 
+# To make the test NOT print full status in console
 ifdef QUIET
 CCFLAGS += -DQUIET
 endif
