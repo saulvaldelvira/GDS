@@ -128,9 +128,9 @@ bool arrlist_isempty(ArrayList *list){
 	return list->n_elements == 0;
 }
 
-size_t arrlist_n_elements(ArrayList *list){
+size_t arrlist_size(ArrayList *list){
 	if (!list){
-		printerr_null_param(arrlist_n_elements);
+		printerr_null_param(arrlist_size);
 		return false;
 	}
 	return list->n_elements;

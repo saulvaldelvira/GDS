@@ -96,7 +96,7 @@ index_t graph_indexof(Graph *graph, void *node);
 /**
  * @return the number of elements in the graph
 */
-size_t graph_n_elements(Graph *graph);
+size_t graph_size(Graph *graph);
 
 /////// DIJKSTRA ///////
 

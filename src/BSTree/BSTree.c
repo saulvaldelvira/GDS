@@ -267,9 +267,9 @@ bool bst_exists(BSTree *tree, void *element){
 	return exists_rec(tree->root, element, tree->compare);
 }
 
-size_t bst_n_elements(BSTree *tree){
+size_t bst_size(BSTree *tree){
 	if (!tree){
-		printerr_null_param(bst_n_elements);
+		printerr_null_param(bst_size);
 		return 0; // Should we use index_t ???
 	}
 	return tree->n_elements;

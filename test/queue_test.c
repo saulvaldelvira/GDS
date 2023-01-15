@@ -16,13 +16,16 @@ int main(){
 	assert(queue_isempty(q));
 
 	for(int i=0; i < n; i++){
-		queue_enqueue(q, &i);
+		assert(queue_enqueue(q, &i));
+		assert(queue_size(q) == (size_t) i + 1);
 	}
 	assert(!queue_isempty(q));
-	
+	assert(queue_size(q) == (size_t) n);
 	for(int i=0; i<n; i++){
+		assert(queue_size(q) == (size_t) n - i);
 		assert(i == * (int*) queue_peek(q, &tmp));
 		assert(i == * (int*) queue_dequeue(q, &tmp));
+		assert(queue_size(q) == (size_t) n - i - 1);
 	}
 	assert(queue_isempty(q));
 	queue_free(q);

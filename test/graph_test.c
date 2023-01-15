@@ -176,7 +176,7 @@ int main(){
 	Graph *g = graph_empty(sizeof(int) ,compare_int);
 	for(int i = 0; i < n; i++){
 		assert(graph_add_node(g, &i));
-		assert(graph_n_elements(g) == (size_t) i+1);
+		assert(graph_size(g) == (size_t) i+1);
 	}
 
 	assert(graph_add_edge(g, cast_int(12), cast_int(15), 0.2f));

@@ -71,7 +71,7 @@ bool lnkd_list_exists(LinkedList *list, void *element);
 /**
  * @return the number of elements in the list
 */
-size_t lnkd_list_n_elements(LinkedList *list);
+size_t lnkd_list_size(LinkedList *list);
 
 /**
 * @return true if the list is empty

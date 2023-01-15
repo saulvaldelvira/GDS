@@ -66,7 +66,7 @@ bool bst_exists(BSTree *tree, void *element);
 /**
  * @return the number of elements in the tree
 */
-size_t bst_n_elements(BSTree *tree);
+size_t bst_size(BSTree *tree);
 
 /**
  * @return true if the tree is empty

@@ -73,7 +73,7 @@ bool arrlist_isempty(ArrayList *list);
 /**
  * @return the number of elements in the list
  */
-size_t arrlist_n_elements(ArrayList *list);
+size_t arrlist_size(ArrayList *list);
 
 /**
  * Replaces the element at the given index with the element passed as a parameter

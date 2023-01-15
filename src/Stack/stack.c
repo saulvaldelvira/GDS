@@ -34,6 +34,7 @@ struct _Stack {
 	// Comparator function
 	comparator_function_t compare;
 	size_t data_size;
+	size_t n_elements;
 };
 
 Stack* stack_init(size_t data_size, comparator_function_t cmp){
@@ -55,6 +56,7 @@ Stack* stack_init(size_t data_size, comparator_function_t cmp){
 	stack->head = NULL;
 	stack->compare = cmp;
 	stack->data_size = data_size;
+	stack->n_elements = 0;
 	return stack;
 }
 
@@ -96,6 +98,7 @@ int stack_push(Stack *stack, void *element){
 		aux->next = stack->head;
 		stack->head = aux;
 	}
+	stack->n_elements++;
 	return SUCCESS;
 }
 
@@ -113,6 +116,7 @@ void* stack_pop(Stack *stack, void *dest){
 			return NULL;
 		}
 		free(aux);                       // Free the old head
+		stack->n_elements--;
 		return dest;  
 	}
 	return NULL;
@@ -143,6 +147,14 @@ bool stack_search(Stack *stack, void *element){
 		aux = aux->next;
 	} 
 	return false;
+}
+
+size_t stack_size(Stack *queue){
+	if (!queue){
+		printerr_null_param(stack_size);
+		return 0;
+	}
+	return queue->n_elements;
 }
 
 bool stack_isempty(Stack *stack){

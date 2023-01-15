@@ -71,6 +71,11 @@ void* stack_peek(Stack *stack, void *dest);
 bool stack_search(Stack *stack, void *element);
 
 /**
+ * @return the number of elements in the Stack
+*/
+size_t stack_size(Stack *queue);
+
+/**
  * @return true if the stack is empty
 */
 bool stack_isempty(Stack *stack);

@@ -60,6 +60,12 @@ void* queue_peek(Queue *queue, void *dest);
 bool queue_search(Queue *queue, void *element);
 
 /**
+ * @return the number of elements in the Queue
+*/
+size_t queue_size(Queue *queue);
+
+
+/**
  * @return true if the queue is empty
 */
 bool queue_isempty(Queue *queue);

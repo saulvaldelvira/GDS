@@ -29,7 +29,7 @@ int main(){
 	assert(arrlist_isempty(arr));
 	for(int i=0; i < n; i++){
 		assert(arrlist_append(arr, &i));
-		assert(arrlist_n_elements(arr) == (size_t) i+1);
+		assert(arrlist_size(arr) == (size_t) i+1);
 	}
 	assert(!arrlist_isempty(arr));
 	int menosveinte = -20, treinta = 30;
@@ -47,7 +47,7 @@ int main(){
 		assert(i == * (int*) arrlist_get(arr, &i, &tmp));
 		assert(arrlist_remove(arr, &i));
 	}
-	assert(arrlist_n_elements(arr) == 0);
+	assert(arrlist_size(arr) == 0);
 
 	// Set test 2
 	int one = 1;
@@ -78,20 +78,20 @@ int main(){
 	
 	for(int i=0; i < n; i++){
 		assert(lnkd_list_push_back(lnked, &i));
-		assert(lnkd_list_n_elements(lnked) == (size_t) i+1);
+		assert(lnkd_list_size(lnked) == (size_t) i+1);
 	}
 
 	/*PUSH FRONT*/
 	int menos150 = -150;
 	assert(lnkd_list_push_front(lnked, &menos150));
-	assert(lnkd_list_n_elements(lnked) == 1UL + n);
+	assert(lnkd_list_size(lnked) == 1UL + n);
 	assert(lnkd_list_remove(lnked, &menos150));
 
 	// Remove the last element
 	assert(!lnkd_list_isempty(lnked));
 	int last = n-1;
 	assert(lnkd_list_remove(lnked, &last));
-	assert(lnkd_list_n_elements(lnked) == (size_t) n-1);
+	assert(lnkd_list_size(lnked) == (size_t) n-1);
 	assert(lnkd_list_push_back(lnked, &last));
 	///////////////////////////////////////////////////
 	
@@ -100,7 +100,7 @@ int main(){
 		assert(i == * (int *) lnkd_list_get(lnked, &i, &tmp));
 		assert(lnkd_list_remove(lnked, &i));
 	}
-	assert(lnkd_list_n_elements(lnked) == 0);
+	assert(lnkd_list_size(lnked) == 0);
 	lnkd_list_free(lnked);
 
 	TIMESTAMP_STOP

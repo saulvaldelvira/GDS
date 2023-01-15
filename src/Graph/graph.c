@@ -377,9 +377,9 @@ bool graph_exists_edge(Graph *graph, void *source, void *target){
 
 ///////////////////////////////////////////////////////////////////////////////
 
-size_t graph_n_elements(Graph *graph){
+size_t graph_size(Graph *graph){
 	if (!graph){
-		printerr_null_param(graph_n_elements);
+		printerr_null_param(graph_size);
 		return 0; // ??Also wrongggg
 	}
 	return graph->n_elements;

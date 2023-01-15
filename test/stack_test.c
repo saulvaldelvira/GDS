@@ -22,12 +22,14 @@ int main(){
 	assert(stack_isempty(stack));
 
 	for(int i=0; i<n; i++){
-		stack_push(stack, &i);
+		assert(stack_push(stack, &i));
+		assert(stack_size(stack) == (size_t) i + 1);
 	}
 	assert(!stack_isempty(stack));
 	for(int i=n-1; i>=0; i--){
 		assert(i == * (int*) stack_peek(stack, &temp));
 		assert(i == * (int*) stack_pop(stack, &temp));
+		assert(stack_size(stack) == (size_t) i);
 	}
 	assert(stack_isempty(stack));
 	stack_free(stack);

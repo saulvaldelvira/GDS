@@ -33,6 +33,7 @@ struct _Queue {
 	QueueNode *head;
 	QueueNode *tail;
 	size_t data_size;
+	size_t n_elements;
 	// Comparator function
 	comparator_function_t compare;
 };
@@ -57,6 +58,7 @@ Queue* queue_init(size_t data_size, comparator_function_t cmp){
 	queue->tail = NULL;
 	queue->compare = cmp;
 	queue->data_size = data_size;
+	queue->n_elements = 0;
 	return queue;
 }
 
@@ -91,6 +93,7 @@ int queue_enqueue(Queue *queue, void *element){
 		}
 		queue->tail = queue->tail->next;
 	}
+	queue->n_elements++;
 	return SUCCESS;
 }
 
@@ -109,6 +112,7 @@ void* queue_dequeue(Queue *queue, void *dest){
 		return NULL;
 	}
 	free(aux);                    // Free the old head
+	queue->n_elements--;
 	return dest;                  // Return the element
 }
 
@@ -138,6 +142,14 @@ bool queue_search(Queue *queue, void *element){
 		aux = aux->next;
 	}
 	return false;
+}
+
+size_t queue_size(Queue *queue){
+	if (!queue){
+		printerr_null_param(queue_size);
+		return 0;
+	}
+	return queue->n_elements;
 }
 
 bool queue_isempty(Queue *queue){

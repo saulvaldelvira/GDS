@@ -176,9 +176,9 @@ bool lnkd_list_exists(LinkedList *list, void *element){
 	return false;
 }
 
-size_t lnkd_list_n_elements(LinkedList *list){
+size_t lnkd_list_size(LinkedList *list){
 	if (!list){
-		printerr_null_param(lnkd_list_n_elements);
+		printerr_null_param(lnkd_list_size);
 		return 0;
 	}
 	return list->n_elements;

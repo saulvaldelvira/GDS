@@ -41,7 +41,7 @@ int main(){
 
 	void* inord = bst_inorder(t);
 	printf("\tInorder: \t");
-	for(size_t i=0; i < bst_n_elements(t); i++){
+	for(size_t i=0; i < bst_size(t); i++){
 		printf("%d-", * (int*) void_offset(inord, i * sizeof(int)));
 	}
 	printf("\n");
@@ -51,7 +51,7 @@ int main(){
 
 	void* preord = bst_preorder(t);
 	printf("\n\tPreorder:  \t");
-	for(size_t i=0; i < bst_n_elements(t); i++){
+	for(size_t i=0; i < bst_size(t); i++){
 		printf("%d-", * (int*) void_offset(preord, i * sizeof(int)));
 	}
 	printf("\n");
@@ -61,7 +61,7 @@ int main(){
 
 	void* postord = bst_postorder(t);
 	printf("\n\tPostorder: \t");
-	for(size_t i=0; i < bst_n_elements(t); i++){
+	for(size_t i=0; i < bst_size(t); i++){
 		printf("%d-", * (int*) void_offset(postord, i * sizeof(int)));
 	}
 	printf("\n");
