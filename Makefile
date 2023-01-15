@@ -16,6 +16,10 @@ ifdef O
 CCFLAGS += -O$(O)
 endif
 
+ifdef QUIET
+CCFLAGS += -DQUIET
+endif
+
 list_test: $(BIN) $(BIN)/list_test.out
 	@ $(BIN)/list_test.out 
 
