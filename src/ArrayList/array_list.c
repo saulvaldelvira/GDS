@@ -15,7 +15,7 @@
  *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
  *
  *  Email: saulvaldelvira@gmail.com
- *  Version: 14-01-2023
+ *  Version: 17-01-2023
  */
 
 #include <stdlib.h>
