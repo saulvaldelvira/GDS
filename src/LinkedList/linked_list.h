@@ -45,10 +45,20 @@ LinkedList* lnkd_list_init(size_t data_size, comparator_function_t cmp);
 int lnkd_list_push_back(LinkedList *list, void *element);
 
 /**
+ * Pushes back in the list the first [array_length] elements in the array
+*/
+int lnkd_list_push_back_array(LinkedList *list, void *array, size_t array_length);
+
+/**
  * Adds the given element to the start of the list
  * @return 1 if the operation is successful
 */
 int lnkd_list_push_front(LinkedList *list, void *element);
+
+/**
+ * Pushes front in the list the first [array_length] elements in the array
+*/
+int lnkd_list_push_front_array(LinkedList *list, void *array, size_t array_length);
 
 /**
  * Changes the given element in the list with the replacement, if it exists.
@@ -83,6 +93,11 @@ bool lnkd_list_isempty(LinkedList *list);
  * @return 1 if the operation is successful
 */
 int lnkd_list_remove(LinkedList *list, void *element);
+
+/**
+ * Removes from the list the first [array_length] elements of the array
+*/
+int lnkd_list_remove_array(LinkedList *list, void *array, size_t array_length);
 
 /**
  * Frees the memory allocated on the list.

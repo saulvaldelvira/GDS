@@ -1,8 +1,7 @@
 #include "../src/BSTree/BSTree.h"
-
-#define COMPARATOR_ENABLE
+#define QUIET_DISABLE
 #include "test.h"
-#undef COMPARATOR_ENABLE
+#undef QUIET_DISABLE
 
 struct test{
 	int *i;
@@ -15,6 +14,7 @@ int main(){
 	int n = 1000;//, min = 0, max = 10;
 	int temp;
 	printf("[BSTree Test]\n");
+	TIMESTAMP_START
 	BSTree *t = bst_init(sizeof(int), compare_int);
 	// Random numbers test
 	assert(!bst_exists(t, &n));
@@ -35,9 +35,7 @@ int main(){
 	printf("Traversals... \n");
 	bst_reset(t);
 	int nums[] = {12, 9, 7, 10, 0, 8, 11, 30, 25, 32, 31, 33};
-	for(size_t i=0; i < sizeof(nums) / sizeof(nums[0]); i++){
-		assert(bst_add(t, &nums[i]));
-	}
+	assert(bst_add_array(t, nums, 12UL));
 
 	void* inord = bst_inorder(t);
 	printf("\tInorder: \t");
@@ -75,9 +73,8 @@ int main(){
 	assert(t != NULL);
 
 	int nums2[] = {12, 5, 3, 23, 30};
-	for(size_t i=0; i < sizeof(nums2) / sizeof(nums2[0]); i++){
-		assert(bst_add(t, &nums2[i]));
-	}
+	assert(bst_add_array(t, nums2, 5UL));
+
 	//int cinco = 5, veintitres = 23;
 	assert(bst_remove(t, cast_int(5)));
 	assert(bst_remove(t, cast_int(23)));
@@ -89,8 +86,16 @@ int main(){
 
 	free(remove_inord);
 
+	t = bst_reset(t);
+
+	assert(bst_add_array(t, nums, 12UL));
+	assert(bst_remove_array(t, nums, 12UL));
+	assert(bst_size(t) == 0UL);
+
 	bst_free(t);
 
-	printf("[BSTree Test Finished]\n");
+	TIMESTAMP_STOP
+	END_MSG(BSTree);
+	
 	return 0;
 }

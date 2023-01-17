@@ -56,9 +56,19 @@ Stack* stack_init(size_t data_size, comparator_function_t cmp);
 int stack_push(Stack *stack, void *element);
 
 /**
+ * Pushes [array_length] elements from array
+*/
+int stack_push_array(Stack *stack, void *array, size_t array_length);
+
+/**
  * @return the last pushed element (and deletes it from the stack)
 */
 void* stack_pop(Stack *stack, void *dest);
+
+/**
+ * Pops [dest_length] elements into array_dest
+*/
+int stack_pop_array(Stack *stack, void *array_dest, size_t dest_length);
 
 /**
  * @return the last pushed element (without deleting it)

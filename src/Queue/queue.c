@@ -97,6 +97,23 @@ int queue_enqueue(Queue *queue, void *element){
 	return SUCCESS;
 }
 
+int queue_enqueue_array(Queue *queue, void *array, size_t array_length){
+	if (!queue || !array){
+		printerr_null_param(queue_enqueue_array);
+		return NULL_PARAMETER_ERROR;
+	}
+	void *tmp;
+	int status;
+	for (size_t i = 0; i < array_length; i++){
+		tmp = void_offset(array, i * queue->data_size);
+		status = queue_enqueue(queue, tmp);
+		if (status != SUCCESS){
+			return status;
+		}
+	}
+	return SUCCESS;
+}
+
 void* queue_dequeue(Queue *queue, void *dest){
 	if (!queue || !dest){
 		printerr_null_param(queue_dequeue);
@@ -114,6 +131,22 @@ void* queue_dequeue(Queue *queue, void *dest){
 	free(aux);                    // Free the old head
 	queue->n_elements--;
 	return dest;                  // Return the element
+}
+
+int queue_dequeue_array(Queue *queue, void *dest_array, size_t dest_length){
+	if (!queue || !dest_array){
+		printerr_null_param(queue_enqueue_array);
+		return NULL_PARAMETER_ERROR;
+	}
+	void *tmp;
+	for (size_t i = 0; i < dest_length; i++){
+		tmp = void_offset(dest_array, i * queue->data_size);
+		tmp = queue_dequeue(queue, tmp);
+		if (!tmp){
+			return MEMORY_OP_ERROR;
+		}
+	}
+	return SUCCESS;
 }
 
 void* queue_peek(Queue *queue, void *dest){

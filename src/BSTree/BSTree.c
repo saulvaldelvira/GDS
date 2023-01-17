@@ -145,6 +145,23 @@ int bst_add(BSTree *tree, void *element){
 	return ret.status;
 }
 
+int bst_add_array(BSTree *tree, void *array, size_t array_length){
+	if (!tree || !array){
+		printerr_null_param(bst_add_array);
+		return NULL_PARAMETER_ERROR;
+	}
+	void *tmp;
+	int status;
+	for (size_t i = 0; i < array_length; i++){
+		tmp = void_offset(array, i * tree->data_size);
+		status = bst_add(tree, tmp);
+		if (status != SUCCESS){
+			return status;
+		}
+	}
+	return SUCCESS;
+}
+
 static BSNode* get_max(BSNode *node){
 	if (node == NULL){
 		return NULL;
@@ -220,6 +237,24 @@ int bst_remove(BSTree *tree, void *element){
 		tree->n_elements--;
 	}
 	return ret.status;
+}
+
+
+int bst_remove_array(BSTree *tree, void *array, size_t array_length){
+	if (!tree || !array){
+		printerr_null_param(bst_remove_array);
+		return NULL_PARAMETER_ERROR;
+	}
+	void *tmp;
+	int status;
+	for (size_t i = 0; i < array_length; i++){
+		tmp = void_offset(array, i * tree->data_size);
+		status = bst_remove(tree, tmp);
+		if (status != SUCCESS){
+			return status;
+		}
+	}
+	return SUCCESS;
 }
 
 static void* get_rec(BSNode *node, void *element, void *dest, comparator_function_t cmp, size_t size){

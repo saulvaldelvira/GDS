@@ -52,6 +52,12 @@ static AVLNode* init_node(void *element, size_t data_size){
         return node;
 }
 
+/**
+ * Updates the node's height.
+ * An AVL Node's height is the highest of it's son's heights plus one.
+ * If a son is NULL, the other son's height is used.
+ * If both are NULL this means the current node is a leaf of the three, thus it's height is set to 0.
+*/
 static void node_update_height(AVLNode *node){
 	if (!node){
 		return;
@@ -67,11 +73,20 @@ static void node_update_height(AVLNode *node){
         }
 }
 
+/**
+ * 
+*/
 static int node_bf(AVLNode *node){
         int l_height = node->left  != NULL ? node->left->height  : -1;
         int r_height = node->right != NULL ? node->right->height : -1;
         return r_height - l_height;
 }
+
+/*inline int node_bf(AVLNode *node){
+        return (node->left  != NULL ? node->left->height  : -1) 
+		- 
+		(node->right != NULL ? node->right->height : -1);
+}*/
 
 static AVLNode* single_right_rotation(AVLNode *node){
 #if DEBUG
@@ -250,6 +265,23 @@ int avl_add(AVLTree *tree, void *element){
         return SUCCESS;
 }
 
+int avl_add_array(AVLTree *tree, void *array, size_t array_length){
+	if (!tree || !array){
+                printerr_null_param(avl_add_array);
+                return NULL_PARAMETER_ERROR;
+        }
+	void *tmp;
+	int status;
+	for (size_t i = 0; i < array_length; i++){
+		tmp = void_offset(array, i * tree->data_size);
+		status = avl_add(tree, tmp);
+		if (status != SUCCESS){
+			return status;
+		}
+	}
+	return SUCCESS;
+}
+
 static AVLNode* get_max(AVLNode *node){
 	if (node == NULL){
 		return NULL;
@@ -325,6 +357,23 @@ int avl_remove(AVLTree *tree, void *element){
 	}
 	tree->root = ret.node;
 	tree->n_elements--;
+	return SUCCESS;
+}
+
+int avl_remove_array(AVLTree *tree, void *array, size_t array_length){
+	if (!tree || !array){
+                printerr_null_param(avl_remove_array);
+                return NULL_PARAMETER_ERROR;
+        }
+	void *tmp;
+	int status;
+	for (size_t i = 0; i < array_length; i++){
+		tmp = void_offset(array, i * tree->data_size);
+		status = avl_remove(tree, tmp);
+		if (status != SUCCESS){
+			return status;
+		}
+	}
 	return SUCCESS;
 }
 
@@ -571,10 +620,11 @@ int avl_free(AVLTree *tree){
 }
 
 AVLTree* avl_reset(AVLTree *tree){
-	int s = avl_free(tree);
-	if (s != SUCCESS){
+	if (!tree){
+		printerr_null_param(avl_reset);
 		return NULL;
 	}
+	free_node(tree->root);
 	tree->root = NULL;
 	tree->n_elements = 0;
 	return tree;

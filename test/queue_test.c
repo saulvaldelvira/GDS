@@ -1,10 +1,8 @@
 #include "../src/Queue/queue.h"
 
-#define COMPARATOR_ENABLE
-#define TIMESTAMP_ENABLE
+#define QUIET_DISABLE
 #include "test.h"
-#undef COMPARATOR_ENABLE
-#undef TIMESTAMP_ENABLE
+#undef QUIET_DISABLE
 
 int main(){
 	int n = 10000, tmp;
@@ -28,6 +26,18 @@ int main(){
 		assert(queue_size(q) == (size_t) n - i - 1);
 	}
 	assert(queue_isempty(q));
+
+	q  = queue_reset(q);
+	int nums[] = {1, 2, 3, 4, 5, 6, 7, 8};
+	int dest[8];
+	assert(queue_enqueue_array(q, nums, 8));
+	assert(8UL == queue_size(q));
+	assert(queue_dequeue_array(q, dest, 8));
+	assert(queue_isempty(q));
+	for (int i = 0; i < 8; i++){
+		assert(nums[i] == dest[i]);
+	}
+
 	queue_free(q);
 
 	TIMESTAMP_STOP

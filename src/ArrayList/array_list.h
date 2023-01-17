@@ -50,9 +50,14 @@ ArrayList* arrlist_init(size_t data_size, size_t max_elements, comparator_functi
  * \brief
  * Adds the value inside element into the list
  * 
- * \return 1 if the operation is successful
+ * @return 1 if the operation is successful
  */
 int arrlist_append(ArrayList *list, void *element);
+
+/**
+ * Appends [array_length] elements to the list, from the given array.
+*/
+int arrlist_append_array(ArrayList *list, void *array, size_t array_length);
 
 /**
  * Returns the index of the given element in the array of the list
@@ -82,7 +87,7 @@ int arrlist_set_at(ArrayList *list, size_t index, void *element);
 
 /**
  * Replaces element with replacement in the list.
- * \return 1 if the operation is successful
+ * @return 1 if the operation is successful
  */
 int arrlist_set(ArrayList *list, void *element, void *replacement);
 
@@ -90,27 +95,32 @@ int arrlist_set(ArrayList *list, void *element, void *replacement);
 
 /**
  * @param dest the memory adress to copy the value into. MUST BE INITIALIZED.
- * \return The element at the given index or NULL if it the index is out of bounds
+ * @return The element at the given index or NULL if it the index is out of bounds
  */
 void* arrlist_get_at(ArrayList *list, size_t index, void *dest);
 
 /**
  * @param dest the memory adress to copy the value into. MUST BE INITIALIZED.
- * \return The first ocurrence of the given element or NULL if it doesn't exist in the list
+ * @return The first ocurrence of the given element or NULL if it doesn't exist in the list
  */
 void* arrlist_get(ArrayList *list, void *element, void *dest);
 
 /**
  * Removes the element at the given index
- * \return 1 if the operation is successful.
+ * @return 1 if the operation is successful.
  */
 int arrlist_remove_at(ArrayList *list, size_t index);
 
 /**
  * Removes the specified element
- * \return 1 if the operation is successful.
+ * @return 1 if the operation is successful.
  */
 int arrlist_remove(ArrayList *list, void *element);
+
+/**
+ * Removes from the first [array_length] elements of the array.
+*/
+int arrlist_remove_array(ArrayList *list, void *array, size_t array_length);
 
 /**
  * Frees the list from memory

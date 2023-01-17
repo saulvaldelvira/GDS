@@ -96,6 +96,23 @@ int arrlist_append(ArrayList *list, void *element){
 	return SUCCESS;
 }
 
+int arrlist_append_array(ArrayList *list, void *array, size_t array_length){
+	if (!list || !array){
+		printerr_null_param(arrlist_append_array);
+		return NULL_PARAMETER_ERROR;
+	}
+	void *tmp;
+	int status;
+	for (size_t i = 0; i < array_length; i++){
+		tmp = void_offset(array, i * list->data_size);
+		status = arrlist_append(list, tmp);
+		if (status != SUCCESS){
+			return status;
+		}
+	}
+	return SUCCESS;
+}
+
 index_t arrlist_indexof(ArrayList *list, void *element){
 	if (!list || !element){
 		printerr_null_param(arrlist_indexof);
@@ -235,7 +252,24 @@ int arrlist_remove(ArrayList *list, void *element){
 		return i.status;
 	}
 	return arrlist_remove_at(list, i.value);
- }
+}
+
+int arrlist_remove_array(ArrayList *list, void *array, size_t array_length){
+	if (!list || !array){
+		printerr_null_param(arrlist_remove_array);
+		return NULL_PARAMETER_ERROR;
+	}
+	void *tmp;
+	int status;
+	for (size_t i = 0; i < array_length; i++){
+		tmp = void_offset(array, i * list->data_size);
+		status = arrlist_remove(list, tmp);
+		if (status != SUCCESS){
+			return status;
+		}
+	}
+	return SUCCESS;
+}
 
 int arrlist_free(ArrayList *list){
 	if (!list){

@@ -4,14 +4,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-
-#ifdef COMPARATOR_ENABLE
-	#include "../src/Util/comparator.h"
-#endif
-
-#include "../src/Util/error.h"
+#include <math.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <time.h>
+
+#include "../src/Util/comparator.h"
+#include "../src/Util/error.h"
 #include "../src/Util/void_cast.h"
 #include "../src/Util/definitions.h"
 
@@ -20,7 +19,7 @@
 	#define _POSIX_C_SOURCE 1999309L
 #endif
 
-#ifdef TIMESTAMP_ENABLE 
+#ifndef TIMESTAMP_DISABLE 
 	static double timestamp;
 
 	#define TIMESTAMP_START timestamp = get_time();
@@ -40,18 +39,19 @@ static inline double get_time(){
 static inline int rand_range(int min, int max){
 	return rand()%((max+1)-min) + min;
 }
+
 #define END_MSG(name) printf("[" #name " test finished in "); \
 		      if(timestamp>=1.0) printf("%.3f seconds]\n\n", timestamp); \
 		      else printf("%.2f miliseconds]\n\n", timestamp * 1000);
 
-#include <math.h>
-#include <stdbool.h>
-
-#ifdef QUIET
-bool quiet = true;
-#else
-bool quiet = false;
+#ifndef QUIET_DISABLE
+	#ifdef QUIET
+	static bool quiet = true;
+	#else
+	static bool quiet = false;
+	#endif
 #endif
+
 #define LOG(x) if (!quiet){x;}
 
 #endif

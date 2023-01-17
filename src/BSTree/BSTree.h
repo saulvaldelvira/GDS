@@ -49,9 +49,19 @@ BSTree* bst_init(size_t data_size, comparator_function_t cmp);
 int bst_add(BSTree *tree, void *element);
 
 /**
+ * Adds the first [array_length] elements of the array to the tree
+*/
+int bst_add_array(BSTree *tree, void *array, size_t array_length);
+
+/**
  * @return 1 if the operation is successful
 */
 int bst_remove(BSTree *tree, void *element);
+
+/**
+ * Removes from the tree the first [array_length] elements of the array
+*/
+int bst_remove_array(BSTree *tree, void *array, size_t array_length);
 
 /**
  * @return the element, if it can find it, or NULL if it does not exists in the tree

@@ -1,4 +1,7 @@
+#define QUIET_DISABLE
 #include "test.h"
+#undef QUIET_DISABLE
+
 #include "../src/AVLTree/AVLTree.h"
 
 void print_preord(AVLTree *tree){
@@ -21,34 +24,23 @@ void assert_preord(AVLTree *tree, int exp[]){
 }
 
 int main(){
-        int n = 1200;
         printf("[AVLTree Test]\n");
+        TIMESTAMP_START
         AVLTree *t = avl_init(sizeof(int), compare_int);
         assert(avl_size(t) == 0UL);
         assert(avl_isempty(t));
 
-        /*for (int i = 0; i < 1200; i++){
-                assert(avl_add(t, &i) == SUCCESS);
-                assert(avl_exists(t, &i));
-                assert(avl_size(t) == 1UL + i);
-        }*/
-        (void) n;
-
         int nums[] = {10, 6, 15, 3, 9, 14, 20, 2, 4, 7, 12};
 
-        int i;
-        for (i = 0; i < 7; i++){
-                assert(avl_add(t, &nums[i]));
-        }
+        assert(avl_add_array(t, nums, 7UL));
 
         int exp1 [] = {10, 6, 3, 9, 15, 14, 20};
         assert_preord(t, exp1);
 
         assert(!avl_isempty(t));
 
-        for (; i < 11; i++){
-                assert(avl_add(t, &nums[i]));
-        }
+        assert(avl_add_array(t, &nums[7], 4UL));
+
         int exp2 [] = {10, 6, 3, 2, 4, 9, 7, 15, 14, 12, 20};
         assert_preord(t, exp2);
 
@@ -80,8 +72,17 @@ int main(){
         int exp9 [] = {7, 2, 1, 14, 12, 15};
         assert_preord(t, exp9);
 
-        avl_free(t);
+        t = avl_reset(t);
 
-        printf("[AVLTree Test Finshed]\n");
+        assert(avl_add_array(t, nums, 11UL));
+        assert(avl_remove_array(t, nums, 11UL));
+        assert(avl_isempty(t));
+
+
+        avl_free(t);
+        TIMESTAMP_STOP
+        
+        END_MSG(AVLTree);
+
         return 0;
 }

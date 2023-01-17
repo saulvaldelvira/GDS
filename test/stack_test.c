@@ -1,10 +1,8 @@
 #include "../src/Stack/stack.h"
 
-#define COMPARATOR_ENABLE
-#define TIMESTAMP_ENABLE
+#define QUIET_DISABLE
 #include "test.h"
-#undef COMPARATOR_ENABLE
-#undef TIMESTAMP_ENABLE
+#undef QUIET_DISABLE
 
 int main(){
 	int n = 10000, temp;
@@ -32,6 +30,16 @@ int main(){
 		assert(stack_size(stack) == (size_t) i);
 	}
 	assert(stack_isempty(stack));
+
+	stack = stack_reset(stack);
+	int nums[] = {1, 2, 3, 4, 5, 6, 7, 8};
+	int pop[8];
+	assert(stack_push_array(stack, nums, 8));
+	assert(8UL == stack_size(stack));
+	assert(stack_pop_array(stack, pop, 8));
+	assert(stack_isempty(stack));
+
+
 	stack_free(stack);
 
 	TIMESTAMP_STOP

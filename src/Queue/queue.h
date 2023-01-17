@@ -45,9 +45,19 @@ Queue* queue_init(size_t data_size, comparator_function_t cmp);
 int queue_enqueue(Queue *queue, void *element);
 
 /**
+ * Enqueues the first [array_length] elements in array
+*/
+int queue_enqueue_array(Queue *queue, void *array, size_t array_length);
+
+/**
  * @return the corresponding element of the queue (the one added first) and removes it from the queue
 */
 void* queue_dequeue(Queue *queue, void *dest);
+
+/**
+ * Dequeues [array_length] elements into dest_array
+*/
+int queue_dequeue_array(Queue *queue, void *dest_array, size_t dest_length);
 
 /**
  * @return the corresponding element of the queue (the one added first), without removing it
@@ -63,7 +73,6 @@ bool queue_search(Queue *queue, void *element);
  * @return the number of elements in the Queue
 */
 size_t queue_size(Queue *queue);
-
 
 /**
  * @return true if the queue is empty

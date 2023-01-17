@@ -106,6 +106,23 @@ int lnkd_list_push_back(LinkedList *list, void *element){
 	return SUCCESS;
 }
 
+int lnkd_list_push_back_array(LinkedList *list, void *array, size_t array_length){
+	if (!list || !array){
+		printerr_null_param(lnkd_list_push_back_array);
+		return NULL_PARAMETER_ERROR;
+	}
+	void *tmp;
+	int status;
+	for (size_t i = 0; i < array_length; i++){
+		tmp = void_offset(array, i * list->data_size);
+		status = lnkd_list_push_back(list, tmp);
+		if (status != SUCCESS){
+			return status;
+		}
+	}
+	return SUCCESS;
+}
+
 int lnkd_list_push_front(LinkedList *list, void *element){
 	if (!list || !element){
 		printerr_null_param(lnkd_list_push_front);
@@ -127,6 +144,23 @@ int lnkd_list_push_front(LinkedList *list, void *element){
 		list->head = aux;
 	}
 	list->n_elements++;
+	return SUCCESS;
+}
+
+int lnkd_list_push_front_array(LinkedList *list, void *array, size_t array_length){
+	if (!list || !array){
+		printerr_null_param(lnkd_list_push_front_array);
+		return NULL_PARAMETER_ERROR;
+	}
+	void *tmp;
+	int status;
+	for (size_t i = 0; i < array_length; i++){
+		tmp = void_offset(array, i * list->data_size);
+		status = lnkd_list_push_front(list, tmp);
+		if (status != SUCCESS){
+			return status;
+		}
+	}
 	return SUCCESS;
 }
 
@@ -218,6 +252,23 @@ int lnkd_list_remove(LinkedList *list, void *element){
 		return SUCCESS;
 	}
 	return ELEMENT_NOT_FOUND_ERROR;
+}
+
+int lnkd_list_remove_array(LinkedList *list, void *array, size_t array_length){
+	if (!list || !array){
+		printerr_null_param(lnkd_list_push_remove_array);
+		return NULL_PARAMETER_ERROR;
+	}
+	void *tmp;
+	int status;
+	for (size_t i = 0; i < array_length; i++){
+		tmp = void_offset(array, i * list->data_size);
+		status = lnkd_list_remove(list, tmp);
+		if (status != SUCCESS){
+			return status;
+		}
+	}
+	return SUCCESS;
 }
 
 static void lnkd_list_free_node(LLNode *node){

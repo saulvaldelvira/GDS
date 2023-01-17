@@ -32,24 +32,24 @@ struct _Graph {
 	comparator_function_t compare;
 	float **weights;
 	int8_t **edges;
-	void *nodes;
+	void *vertices;
 };
 
 /// CONSTRUCTORS //////////////////////////////////////////////////////////////
 
 /**
  * Expands the graph's number of elements to new_size. This means
- * 1) Allocates new spaces for nodes, weights and edges.
+ * 1) Allocates new spaces for vertices, weights and edges.
  * 2) Copies old values into these new, bigger spaces.
  * 3) Fills rest of the new spaces with the default values (0 for edges and INFINITY for weights)
  *      In the case of edges, since we allocate them with calloc, the values are already 0 by default.
  * 4) Frees the old spaces
- * 5) Sets the graphs nodes, weights and edges to be this new spaces. Also update max_elements value to new_size
+ * 5) Sets the graphs vertices, weights and edges to be this new spaces. Also update max_elements value to new_size
 */
 static int expand_memory(Graph *graph, size_t new_size){
-	// Allocate nodes
-	void *nodes = malloc(new_size * graph->data_size);
-	if (!nodes){
+	// Allocate vertices
+	void *vertices = malloc(new_size * graph->data_size);
+	if (!vertices){
 		printerr_allocation(expand_memory);
 		return ALLOCATION_ERROR;
 	}
@@ -68,13 +68,13 @@ static int expand_memory(Graph *graph, size_t new_size){
 		return ALLOCATION_ERROR;
 	}
 
-	// Copy old node values in the range [0, oldSize) and free the old one
-	void *tmp = memcpy(nodes, graph->nodes, graph->max_elements * graph->data_size);
+	// Copy old vertex values in the range [0, oldSize) and free the old one
+	void *tmp = memcpy(vertices, graph->vertices, graph->max_elements * graph->data_size);
 	if (!tmp){
 		printerr_memory_op(expand_memory);
 		return MEMORY_OP_ERROR;
 	}
-	free(graph->nodes);
+	free(graph->vertices);
 
 	// Initialize the columns for edges and weights.
 	// We divide the loop in two ranges [0 - oldSize) and [oldSize - newSize)
@@ -139,7 +139,7 @@ static int expand_memory(Graph *graph, size_t new_size){
 	free(graph->weights);
 	free(graph->edges);
 
-	graph->nodes = nodes;
+	graph->vertices = vertices;
 	graph->weights = weights;
 	graph->edges = edges;
 	graph->max_elements = new_size;
@@ -178,11 +178,11 @@ Graph* graph_init(size_t data_size, size_t n_elements, comparator_function_t cmp
 	graph->compare = cmp;
 	graph->weights = NULL;
 	graph->edges = NULL;
-	graph->nodes = NULL;
+	graph->vertices = NULL;
 	graph->data_size = data_size;
 
 	// "Expanding" from 0 to n_elements turns into just initializing 
-	// weights, edges and nodes to their default size and state.
+	// weights, edges and vertices to their default size and state.
 	if (expand_memory(graph, n_elements) != SUCCESS){
 		return NULL;
 	}
@@ -190,12 +190,28 @@ Graph* graph_init(size_t data_size, size_t n_elements, comparator_function_t cmp
 	return graph;
 }
 
+int graph_fill(Graph *graph, void *array_vertices, void *array_sources, void *array_targets, float *array_weights, size_t vertices_length, size_t edges_length){
+	if (!graph || !array_vertices || !array_sources || !array_targets || !array_weights){
+		printerr_null_param(graph_fill);
+		return NULL_PARAMETER_ERROR;
+	}
+	int status = graph_add_vertices_array(graph, array_vertices, vertices_length);
+	if (status != SUCCESS){
+		return status;
+	}
+	status = graph_add_edges_array(graph, array_sources, array_targets, array_weights, edges_length);
+	if (status != SUCCESS){
+		return status;
+	}
+	return SUCCESS;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
-/// NODES /////////////////////////////////////////////////////////////////////
-int graph_add_node(Graph *graph, void *node){
-	if (!graph || !node){
-		printerr_null_param(graph_add_node);
+/// vertices /////////////////////////////////////////////////////////////////////
+int graph_add_vertex(Graph *graph, void *vertex){
+	if (!graph || !vertex){
+		printerr_null_param(graph_add_vertex);
 		return NULL_PARAMETER_ERROR;
 	}
 	if (graph->n_elements == graph->max_elements){
@@ -203,63 +219,80 @@ int graph_add_node(Graph *graph, void *node){
 			return ALLOCATION_ERROR;
 		}
 	}
-	void *tmp = void_offset(graph->nodes, graph->n_elements * graph->data_size); // Position to copy value into
-	tmp = memcpy(tmp, node, graph->data_size); // Perform the copy and store the reuslt
+	void *tmp = void_offset(graph->vertices, graph->n_elements * graph->data_size); // Position to copy value into
+	tmp = memcpy(tmp, vertex, graph->data_size); // Perform the copy and store the reuslt
 	if (!tmp){
-		printerr_memory_op(graph_add_node);
+		printerr_memory_op(graph_add_vertex);
 		return MEMORY_OP_ERROR;
 	}
 	graph->n_elements++;
 	return SUCCESS;
 }
 
-/**
- * Removes a node from the graph. This means
- * To do so it swaps the elements to delete with the last elements in the array of nodes.
- * It also has to swap the edges and weights values.
- * After decrementing the n_elements values, the old (now "removed") node becomes garbage memory to be overwritten in the next add
-*/
-int graph_remove_node(Graph *graph, void *node){
-	if (!graph || !node){
-		printerr_null_param(graph_remove_node);
+int graph_add_vertices_array(Graph *graph, void *array, size_t array_length){
+	if (!graph || !array){
+		printerr_null_param(graph_add_vertices_array);
 		return NULL_PARAMETER_ERROR;
 	}
-	index_t index = graph_indexof(graph, node); // Get the index of the node
+	void *tmp;
+	int status;
+	for (size_t i = 0; i < array_length; i++){
+		tmp = void_offset(array, i * graph->data_size);
+		status = graph_add_vertex(graph, tmp);
+		if (status != SUCCESS){
+			return status;
+		}
+	}
+	return SUCCESS;
+}
+
+/**
+ * Removes a vertex from the graph. This means
+ * To do so it swaps the elements to delete with the last elements in the array of vertices.
+ * It also has to swap the edges and weights values.
+ * After decrementing the n_elements values, the old (now "removed") vertex becomes garbage memory to be overwritten in the next add
+*/
+int graph_remove_vertex(Graph *graph, void *vertex){
+	if (!graph || !vertex){
+		printerr_null_param(graph_remove_vertex);
+		return NULL_PARAMETER_ERROR;
+	}
+	index_t index = graph_indexof(graph, vertex); // Get the index of the vertex
 	if (index.status != SUCCESS){
 		return index.status;
 	}
-	// Move latest node to this position (only if it is not already the last)
+	// Move latest vertex to this position (only if it is not already the last)
 	if (index.value != graph->n_elements-1){
-		// Set node at index to the last node in the array
-		void *target = void_offset(graph->nodes, index.value * graph->data_size);
-		void *source = void_offset(graph->nodes, (graph->n_elements-1) * graph->data_size);
+		// Set vertex at index to the last vertex in the array
+		void *target = void_offset(graph->vertices, index.value * graph->data_size);
+		void *source = void_offset(graph->vertices, (graph->n_elements-1) * graph->data_size);
 		target = memmove(target, source, graph->data_size);
 		if (!target){
-			printerr_memory_op(graph_remove_node);
+			printerr_memory_op(graph_remove_vertex);
 			return MEMORY_OP_ERROR;
 		}
 
-		// Swap the weights columns of the node to be removed and the last one 
+		// Swap the weights columns of the vertex to be removed and the last one 
 		target = (void*) (graph->weights[index.value]);
 		source = (void*) (graph->weights[graph->n_elements-1]);
 
 		target = memmove(target, source, graph->max_elements * sizeof(*graph->weights[0]));
 		if (!target){
-			printerr_memory_op(graph_remove_node);
+			printerr_memory_op(graph_remove_vertex);
 			return MEMORY_OP_ERROR;
 		}
 
-		// Swap the edges columns of the node to be removed and the last one 
+		// Swap the edges columns of the vertex to be removed and the last one 
 		target = (void*) (graph->edges[index.value]);
 		source = (void*) (graph->edges[graph->n_elements-1]);
 
 		target = memmove(target, source, graph->max_elements * sizeof(*graph->edges[0]));
 		if (!target){
-			printerr_memory_op(graph_remove_node);
+			printerr_memory_op(graph_remove_vertex);
 			return MEMORY_OP_ERROR;
 		}
 
-		// Swap rows of the node to be removed and the last one 
+		// Swap rows of the vertex to be removed and the last one 
 		for (size_t i = 0; i < graph->max_elements; i++){
 			graph->edges[i][index.value] = graph->edges[i][graph->n_elements-1];
 			graph->weights[i][index.value] = graph->weights[i][graph->n_elements-1];
@@ -270,9 +303,9 @@ int graph_remove_node(Graph *graph, void *node){
 			graph->weights[i][graph->n_elements-1] = INFINITY;
 			graph->weights[graph->n_elements-1][i] = INFINITY;
 		}
-	// If the node to remove is the last, we still have to clear the values. 
+	// If the vertex to remove is the last, we still have to clear the values. 
 	// The reason i didn't just put this loop outside the if-else
-	// Statement is because if so, in the case we remove a non-last node (most) we should iteratre twice. 
+	// Statement is because if so, in the case we remove a non-last vertex (most) we should iteratre twice. 
 	// This way, we have longer code, but At runtime, the loop will only run once. (Hope I wrote this clear enough :p)
 	}else{ 
 		for (size_t i = 0; i < graph->max_elements; i++){
@@ -287,15 +320,32 @@ int graph_remove_node(Graph *graph, void *node){
 	return SUCCESS;
 }
 
-bool graph_exists_node(Graph *graph, void *node){
-	if (!graph || !node){
+int graph_remove_vertices_array(Graph *graph, void *array, size_t array_length){
+	if (!graph || !array){
+		printerr_null_param(graph_remove_vertices_array);
+		return NULL_PARAMETER_ERROR;
+	}
+	void *tmp;
+	int status;
+	for (size_t i = 0; i < array_length; i++){
+		tmp = void_offset(array, i * graph->data_size);
+		status = graph_remove_vertex(graph, tmp);
+		if (status != SUCCESS){
+			return status;
+		}
+	}
+	return SUCCESS;
+}
+
+bool graph_exists_vertex(Graph *graph, void *vertex){
+	if (!graph || !vertex){
 		printerr_null_param(graph_exists);
 		return false;
 	}
 	void *tmp;
 	for (size_t i = 0; i < graph->n_elements; i++){
-		tmp = void_offset(graph->nodes, graph->data_size * i);
-		if((*graph->compare) (node, tmp) == 0){
+		tmp = void_offset(graph->vertices, graph->data_size * i);
+		if((*graph->compare) (vertex, tmp) == 0){
 			return true;
 		}
 	}
@@ -325,6 +375,25 @@ int graph_add_edge(Graph *graph, void *source, void *target, float weight){
 	return SUCCESS;
 }
 
+int graph_add_edges_array(Graph *graph, void *array_sources, void *array_targets, float *array_weights, size_t arrays_length){
+	if (!graph || !array_sources || !array_targets || !array_weights){
+		printerr_null_param(graph_add_edges_array);
+		return NULL_PARAMETER_ERROR;
+	}
+	void *src;
+	void *trg;
+	int status;
+	for (size_t i = 0; i < arrays_length; i++){
+		src = void_offset(array_sources, i * graph->data_size);
+		trg = void_offset(array_targets, i * graph->data_size);
+		status = graph_add_edge(graph, src, trg, array_weights[i]);
+		if (status != SUCCESS){
+			return status;
+		}
+	}
+	return SUCCESS;
+}
+
 int graph_remove_edge(Graph *graph, void *source, void *target){
 	if (!graph || !source || !target){
 		printerr_null_param(graph_remove_edge);
@@ -340,6 +409,25 @@ int graph_remove_edge(Graph *graph, void *source, void *target){
 	}
 	graph->edges[index_src.value][index_tar.value] = 0;
 	graph->weights[index_src.value][index_tar.value] = INFINITY;
+	return SUCCESS;
+}
+
+int graph_remove_edges_array(Graph *graph, void *array_sources, void *array_targets, size_t arrays_length){
+	if (!graph || !array_sources || !array_targets){
+		printerr_null_param(graph_remove_edges_array);
+		return NULL_PARAMETER_ERROR;
+	}
+	void *src;
+	void *trg;
+	int status;
+	for (size_t i = 0; i < arrays_length; i++){
+		src = void_offset(array_sources, i * graph->data_size);
+		trg = void_offset(array_targets, i * graph->data_size);
+		status = graph_remove_edge(graph, src, trg);
+		if (status != SUCCESS){
+			return status;
+		}
+	}
 	return SUCCESS;
 }
 
@@ -385,9 +473,17 @@ size_t graph_size(Graph *graph){
 	return graph->n_elements;
 }
 
-index_t graph_indexof(Graph *graph, void *node){
+bool graph_isempty(Graph *graph){
+	if (!graph){
+		printerr_null_param(graph_isempty);
+		return false;
+	}
+	return graph->n_elements == 0;
+}
+
+index_t graph_indexof(Graph *graph, void *vertex){
 	for (size_t i = 0; i < graph->n_elements; i++){
-		if((*graph->compare)(void_offset(graph->nodes, i * graph->data_size), node) == 0){
+		if((*graph->compare)(void_offset(graph->vertices, i * graph->data_size), vertex) == 0){
 			return index_t(i,SUCCESS);
 		}
 	}
@@ -420,7 +516,7 @@ static void graph_init_dijkstra(DijkstraData_t *dijkstra, Graph *graph, size_t s
 		}
 		
 	}
-	// The source node's cheapest path is allways itself with weight 0
+	// The source vertex's cheapest path is allways itself with weight 0
 	dijkstra->D[source] = 0.0f;
 	dijkstra->P[source].value = source;
 	dijkstra->P[source].status = 1;
@@ -431,8 +527,8 @@ static void graph_init_dijkstra(DijkstraData_t *dijkstra, Graph *graph, size_t s
 
 /**
  * Returns the next pivot for the algorithm. 
- * The next pivot is the node with the lowest cost that has not been visited yet
- * @param S an array of visited nodes. 1 if visited, 0 if not visited
+ * The next pivot is the vertex with the lowest cost that has not been visited yet
+ * @param S an array of visited vertices. 1 if visited, 0 if not visited
  * @param D an array of weights
  * @param n_elements the number of elements in the arrays
 */
@@ -478,7 +574,7 @@ DijkstraData_t graph_dijkstra(Graph *graph, void *source){
 		return dijkstra;
 	}
 
-	// Mark the start node as visited (because of the initialization)
+	// Mark the start vertex as visited (because of the initialization)
 	S[source_index.value] = 1;
 
 	index_t pivot = graph_get_pivot(S, dijkstra.D, graph->n_elements);
@@ -628,13 +724,13 @@ void graph_free_floyd_data(FloydData_t *data){
 
 //// OTHER ALGORITHMS ////////////////////////////////////////////////////////
 
-NodeDegree_t graph_get_degree(Graph *graph, void *node){
-	NodeDegree_t degree = {0, 0, 0, NULL_PARAMETER_ERROR};
-	if (!graph || !node){
+vertexDegree_t graph_get_degree(Graph *graph, void *vertex){
+	vertexDegree_t degree = {0, 0, 0, NULL_PARAMETER_ERROR};
+	if (!graph || !vertex){
 		printerr_null_param(graph_get_degree);
 		return degree;
 	}
-	index_t index = graph_indexof(graph, node);
+	index_t index = graph_indexof(graph, vertex);
 	if (index.status != SUCCESS){
 		degree.status = index.status;
 		return degree;
@@ -652,36 +748,36 @@ NodeDegree_t graph_get_degree(Graph *graph, void *node){
 	return degree;
 }
 
-bool graph_is_source_node(Graph *graph, void *node){
-	NodeDegree_t degree = graph_get_degree(graph, node);
+bool graph_is_source_vertex(Graph *graph, void *vertex){
+	vertexDegree_t degree = graph_get_degree(graph, vertex);
 	if (degree.status != SUCCESS){
 		return false;
 	}
 	return degree.deg_in == 0 && degree.deg_out > 0;
 }
 
-bool graph_is_drain_node(Graph *graph, void *node){
-	NodeDegree_t degree = graph_get_degree(graph, node);
+bool graph_is_drain_vertex(Graph *graph, void *vertex){
+	vertexDegree_t degree = graph_get_degree(graph, vertex);
 	if (degree.status != SUCCESS){
 		return false;
 	}
 	return degree.deg_out == 0 && degree.deg_in > 0;
 }
 
-bool graph_is_isolated_node(Graph *graph, void *node){
-	NodeDegree_t degree = graph_get_degree(graph, node);
+bool graph_is_isolated_vertex(Graph *graph, void *vertex){
+	vertexDegree_t degree = graph_get_degree(graph, vertex);
 	if (degree.status != SUCCESS){
 		return false;
 	}
 	return degree.deg == 0;
 }
 
-float graph_eccentricity(Graph *graph, void *node){
-	if (!graph || !node){
+float graph_eccentricity(Graph *graph, void *vertex){
+	if (!graph || !vertex){
 		printerr_null_param(graph_eccentricity);
 		return NULL_PARAMETER_ERROR * 1.0f;
 	}
-	index_t index = graph_indexof(graph, node);
+	index_t index = graph_indexof(graph, vertex);
 	if (index.status != SUCCESS){
 		return index.status * 1.0f;
 	}
@@ -702,7 +798,7 @@ float graph_eccentricity(Graph *graph, void *node){
 static int traverse_df_rec(traverse_df_data_t *data, size_t index, u_int8_t *visited, Graph *graph){
 	visited[index] = 1;
 	void *dst = void_offset(data->elements, data->elements_size * graph->data_size);
-	void *src = void_offset(graph->nodes, index * graph->data_size);
+	void *src = void_offset(graph->vertices, index * graph->data_size);
 	dst = memcpy(dst, src, graph->data_size);
 	if (!dst){
 		printerr_memory_op(traverse_df_rec);
@@ -722,13 +818,13 @@ static int traverse_df_rec(traverse_df_data_t *data, size_t index, u_int8_t *vis
 	return SUCCESS;
 }
 
-traverse_df_data_t graph_traverse_DF(Graph *graph, void *node){
+traverse_df_data_t graph_traverse_DF(Graph *graph, void *vertex){
 	traverse_df_data_t df = {NULL, 0, NULL_PARAMETER_ERROR};
 	if (!graph){
 		printerr_null_param(graph_traverse_DF);
 		return df;
 	}
-	index_t index = graph_indexof(graph, node);
+	index_t index = graph_indexof(graph, vertex);
 	if (index.status != SUCCESS){
 		df.status = index.status;
 		return df;
@@ -760,7 +856,7 @@ traverse_df_data_t graph_traverse_DF(Graph *graph, void *node){
 /// FREE //////////////////////////////////////////////////////////////////////
 
 static void free_contents(Graph *graph){
-	free(graph->nodes);
+	free(graph->vertices);
 
 	for (size_t i = 0; i < graph->max_elements; i++){
 		free(graph->edges[i]);
@@ -789,7 +885,7 @@ Graph* graph_reset(Graph *graph){
 	graph->n_elements = 0;
 	graph->max_elements = 0;
 	graph->edges = NULL;
-	graph->nodes = NULL;
+	graph->vertices = NULL;
 	graph->weights = NULL;
 	if (expand_memory(graph, GRAPH_DEFAULT_SIZE) != SUCCESS){
 		return NULL;

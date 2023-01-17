@@ -102,6 +102,23 @@ int stack_push(Stack *stack, void *element){
 	return SUCCESS;
 }
 
+int stack_push_array(Stack *stack, void *array, size_t array_length){
+	if (!stack || !array){
+		printerr_null_param(stack_push_array);
+		return NULL_PARAMETER_ERROR;
+	}
+	void *tmp;
+	int status;
+	for (size_t i = 0; i < array_length; i++){
+		tmp = void_offset(array, i * stack->data_size);
+		status = stack_push(stack, tmp);
+		if (status != SUCCESS){
+			return status;
+		}
+	}
+	return SUCCESS;
+}
+
 void* stack_pop(Stack *stack, void *dest){
 	if(!stack || !dest){
 		printerr_null_param(stack_pop);
@@ -120,6 +137,23 @@ void* stack_pop(Stack *stack, void *dest){
 		return dest;  
 	}
 	return NULL;
+}
+
+
+int stack_pop_array(Stack *stack, void *array_dest, size_t dest_length){
+	if(!stack || !array_dest){
+		printerr_null_param(stack_pop_array);
+		return MEMORY_OP_ERROR;
+	}
+	void *tmp;
+	for (size_t i = 0; i < dest_length; i++){
+		tmp = void_offset(array_dest, i * stack->data_size);
+		tmp = stack_pop(stack, tmp);
+		if (!tmp){
+			return MEMORY_OP_ERROR;
+		}
+	}
+	return SUCCESS;
 }
 
 void* stack_peek(Stack *stack, void *dest){

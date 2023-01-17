@@ -1,11 +1,9 @@
 #include "../src/ArrayList/array_list.h"
 #include "../src/LinkedList/linked_list.h"
 
-#define COMPARATOR_ENABLE
-#define TIMESTAMP_ENABLE
+#define QUIET_DISABLE
 #include "test.h"
-#undef COMPARATOR_ENABLE
-#undef TIMESTAMP_ENABLE
+#undef QUIET_DISABLE
 
 #include <stdint.h>
 
@@ -62,7 +60,12 @@ int main(){
 	assert(arrlist_set(arr, &two, &three) != ELEMENT_NOT_FOUND_ERROR);
 	assert(three == * (int*) arrlist_get_at(arr, 0, &tmp));
 	/////////////////////////////////////////////////////
-
+	arr = arrlist_reset(arr);
+	int nums[] = {1, 2, 3, 4, 5};
+	assert(arrlist_append_array(arr, nums, 5));
+	assert(5UL == arrlist_size(arr));
+	assert(arrlist_remove_array(arr, nums, 5));
+	assert(arrlist_isempty(arr));
 	arrlist_free(arr);
 
 	TIMESTAMP_STOP
@@ -101,6 +104,15 @@ int main(){
 		assert(lnkd_list_remove(lnked, &i));
 	}
 	assert(lnkd_list_size(lnked) == 0);
+
+	lnked = lnkd_list_reset(lnked);
+	assert(lnkd_list_push_back_array(lnked, nums, 5UL));
+	assert(5UL == lnkd_list_size(lnked));
+	assert(lnkd_list_remove_array(lnked, nums, 5UL));
+	assert(lnkd_list_isempty(lnked));
+	assert(lnkd_list_push_front_array(lnked, nums, 5UL));
+	assert(5UL == lnkd_list_size(lnked));
+
 	lnkd_list_free(lnked);
 
 	TIMESTAMP_STOP
@@ -111,7 +123,6 @@ int main(){
 	double total = lnkd_time + arr_time;
 
 	timestamp += total;
-
 
 
 	END_MSG(List)
