@@ -76,13 +76,12 @@ static BSNode* init_node(void *info, size_t size){
 	return node;
 }
 
-// Auxiliar struct for the add_rec function (NOTE: this is part of the function name)
-static struct add_rec_ret
-{
+// Auxiliar struct for the add_rec function
+struct add_rec_ret {
 	BSNode* node;
 	int status;
 	bool last_op_was_add;
-}
+};
 	/**
 	 * This method is a little bit tricky, specially for the weird struct that it returns.
 	 * It works recursivelly.
@@ -104,7 +103,7 @@ static struct add_rec_ret
 	 * The use  of struct add_rec_ret is to be able to check the struct add_rec_ret.status when this chain of recursive calls ends and returns to bst_add. This way, we can
 	 * check if the operation was a SUCCESS and increment the n_elements acordingly, or else we have to return an error status.
 	*/
-add_rec(BSNode *node, void *element, comparator_function_t cmp, size_t size){
+static struct add_rec_ret add_rec(BSNode *node, void *element, comparator_function_t cmp, size_t size){
 	if (node == NULL){ // The element does not exist in the tree
 		BSNode *aux = init_node(element, size); // Create the node
 		if (!aux){ // If memory could not be allocated, return with an error status
@@ -156,11 +155,11 @@ static BSNode* get_max(BSNode *node){
 	return node;
 }
 
-// Auxiliar struct for the remove_rec function (NOTE: this is part of the function name)
-static struct remove_rec_ret {
+// Auxiliar struct for the remove_rec function
+struct remove_rec_ret {
 	BSNode* node;
 	int status;
-}
+};
 /**
  * This function behaves similarly to the add_rec. It starts searching through the tree->
  * After every call, we update the current node's references to left or right (depending on the result of the comparison).
@@ -172,7 +171,7 @@ static struct remove_rec_ret {
  * 3) If there are left and right son, we set the current node's info to the BIGGEST element starting from the left son.
  *      After that, there are two nodes with the same info, so we delete the node that previosly stored this info, since it will now be stored in this node
 */
-remove_rec(BSNode *node, void *element, comparator_function_t cmp, size_t size){
+static struct remove_rec_ret remove_rec(BSNode *node, void *element, comparator_function_t cmp, size_t size){
 	if (node == NULL){
 		return (struct remove_rec_ret){NULL, NON_EXISTING_ELEMENT};
 	}
@@ -233,7 +232,12 @@ static void* get_rec(BSNode *node, void *element, void *dest, comparator_functio
 	}else if(c > 0){
 		return get_rec(node->right, element, dest, cmp, size);
 	}else{
-		return memcpy(dest, node->info, size);
+		if (!memcpy(dest, node->info, size)){
+			printerr_memory_op(get_rec);
+			return NULL;
+		} else{
+			return dest;
+		}
 	}
 }
 
@@ -314,7 +318,7 @@ BSTree* bst_reset(BSTree *tree){
 }
 
 // Auxiliar structure to use in the traversal methods
-struct orders_ret {
+struct traversal_ret {
 	void* elements;
 	size_t elements_size;
 	int status;
@@ -333,19 +337,19 @@ enum Traversal {
  * After that, it just takes those arrays and start building bigger arrays out of them, with the specified order.
  * In the last call, it will return an array with all the elements in the array.
 */
-static struct orders_ret traversal_rec(BSNode *node, enum Traversal order, size_t size){
+static struct traversal_ret traversal_rec(BSNode *node, enum Traversal order, size_t size){
 	// If the node is null, return and empty array
 	if(node == NULL){
-		return (struct orders_ret) {
+		return (struct traversal_ret) {
 			.elements = NULL,
 			.elements_size = 0,
 			.status = SUCCESS
 		};
 	}
 
-	struct orders_ret left = traversal_rec(node->left, order, size);
-	struct orders_ret right = traversal_rec(node->right, order, size);
-	struct orders_ret result;
+	struct traversal_ret left = traversal_rec(node->left, order, size);
+	struct traversal_ret right = traversal_rec(node->right, order, size);
+	struct traversal_ret result;
 
 	// If the tarversals from the right returned with error statuses, propagate it.
 	if(left.status != SUCCESS || right.status != SUCCESS){
@@ -353,7 +357,7 @@ static struct orders_ret traversal_rec(BSNode *node, enum Traversal order, size_
 		goto free_garbage;
 	}
 
-	// Create a new struct orders_ret to agregate the traversal from left and right and this current node all in one
+	// Create a new struct traversal_ret to agregate the traversal from left and right and this current node all in one
 	result.elements_size = left.elements_size + right.elements_size + 1; // The +1 is for the element in this node
 	result.elements = malloc(result.elements_size * size);
 	if(!result.elements){
@@ -433,12 +437,12 @@ static struct orders_ret traversal_rec(BSNode *node, enum Traversal order, size_
 		return result;
 }
 
-void** bst_preorder(BSTree *tree){
+void* bst_preorder(BSTree *tree){
 	if (!tree){
 		printerr_null_param(bst_preorder);
 		return NULL;
 	}
-	struct orders_ret result = traversal_rec(tree->root, PRE_ORDER, tree->data_size);
+	struct traversal_ret result = traversal_rec(tree->root, PRE_ORDER, tree->data_size);
 	if (result.status != SUCCESS){
 		return NULL;
 	}
@@ -450,19 +454,19 @@ void* bst_inorder(BSTree *tree){
 		printerr_null_param(bst_inorder);
 		return NULL;
 	}
-	struct orders_ret result = traversal_rec(tree->root, IN_ORDER, tree->data_size);
+	struct traversal_ret result = traversal_rec(tree->root, IN_ORDER, tree->data_size);
 	if (result.status != SUCCESS){
 		return NULL;
 	}
 	return result.elements;
 }
 
-void** bst_postorder(BSTree *tree){
+void* bst_postorder(BSTree *tree){
 	if (!tree){
 		printerr_null_param(bst_postorder);
 		return NULL;
 	}
-	struct orders_ret result = traversal_rec(tree->root, POST_ORDER, tree->data_size);
+	struct traversal_ret result = traversal_rec(tree->root, POST_ORDER, tree->data_size);
 	if (result.status != SUCCESS){
 		return NULL;
 	}

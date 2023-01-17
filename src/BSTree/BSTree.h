@@ -89,7 +89,7 @@ BSTree* bst_reset(BSTree *tree);
  * @return an array with all the elements of the tree traversed pre-order.
  * @note the size of the array will naturally be the number of elements in the tree, so there is no need to return it.
 */
-void** bst_preorder(BSTree *tree);
+void* bst_preorder(BSTree *tree);
 
 /**
  * @return an array with all the elements of the tree traversed in-order.
@@ -101,7 +101,7 @@ void* bst_inorder(BSTree *tree);
  * @return an array with all the elements of the tree traversed post-order.
  * @note the size of the array will naturally be the number of elements in the tree, so there is no need to return it.
 */
-void** bst_postorder(BSTree *tree);
+void* bst_postorder(BSTree *tree);
 
 
 #endif
