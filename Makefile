@@ -7,6 +7,7 @@ LIST_OBJS = test/list_test.o $(SRC)/ArrayList/array_list.o $(SRC)/LinkedList/lin
 STACK_OBJS = test/stack_test.o $(SRC)/Stack/stack.o $(UTIL_OBJS)
 QUEUE_OBJS = test/queue_test.o $(SRC)/Queue/queue.o $(UTIL_OBJS)
 BST_OBJS = test/bst_test.o $(SRC)/BSTree/BSTree.o $(UTIL_OBJS)
+AVL_OBJS = test/avl_test.o $(SRC)/AVLTree/AVLTree.o $(UTIL_OBJS)
 GRAPH_OBJS = test/graph_test.o $(SRC)/Graph/graph.o $(UTIL_OBJS)
 CC = gcc
 CCFLAGS = -lm -Wall -Wextra -Werror -g -pedantic
@@ -21,6 +22,10 @@ ifdef QUIET
 CCFLAGS += -DQUIET
 endif
 
+ifdef DEBUG
+CCFLAGS += -DDEBUG
+endif
+
 list_test: $(BIN) $(BIN)/list_test.out
 	@ $(BIN)/list_test.out 
 
@@ -32,6 +37,9 @@ queue_test: $(BIN) $(BIN)/queue_test.out
 
 bst_test: $(BIN) $(BIN)/bst_test.out
 	@ $(BIN)/bst_test.out
+
+avl_test: $(BIN) $(BIN)/avl_test.out
+	@ $(BIN)/avl_test.out
 
 graph_test: $(BIN) $(BIN)/graph_test.out
 	@ $(BIN)/graph_test.out
@@ -47,6 +55,9 @@ $(BIN)/queue_test.out:  $(QUEUE_OBJS)
 
 $(BIN)/bst_test.out: $(BST_OBJS)
 	@ $(CC) -o $@ $(BST_OBJS) $(CCFLAGS)
+
+$(BIN)/avl_test.out: $(AVL_OBJS)
+	@ $(CC) -o $@ $(AVL_OBJS) $(CCFLAGS)
 
 $(BIN)/graph_test.out: $(GRAPH_OBJS)
 	@ $(CC) -o $@ $(GRAPH_OBJS) $(CCFLAGS)

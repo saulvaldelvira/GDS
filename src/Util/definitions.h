@@ -26,5 +26,6 @@
 typedef unsigned char byte_t;
 #define void_offset(ptr, bytes) (void*)(((byte_t*)ptr) + (bytes))
 #define matrix_offset(arr, dim, rows, cols) (arr+((dim)*(rows) + (cols)))
+#define MAX(x,y) ((x) > (y) ? (x) : (y))
 
 #endif

@@ -30,6 +30,7 @@
 #define NULL_PARAMETER_ERROR    -3
 #define MEMORY_OP_ERROR         -4
 #define ELEMENT_NOT_FOUND_ERROR -5
+#define REPEATED_ELEMENT_ERROR  -6
 
 #define printerr_allocation(func) fprintf(stderr, "ERROR: Unable to allocate memory for on function " #func "\n");
 
