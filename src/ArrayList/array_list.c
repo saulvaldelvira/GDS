@@ -237,7 +237,7 @@ void* arrlist_get_into_array(ArrayList *list, void *array, size_t array_length){
 	}
 	return array;
 }
-
+//
 void* arrlist_get_array(ArrayList *list, size_t array_length){
 	if (!list){
 		printerr_null_param(arrlist_get_array);
