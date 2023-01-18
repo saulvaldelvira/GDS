@@ -8,6 +8,29 @@ struct test{
 	char *c;
 };
 
+void join_test(){
+        BSTree *t1 = bst_init(sizeof(int), compare_int);
+        BSTree *t2 = bst_init(sizeof(int), compare_int);
+
+        for (int i = 0; i < 10; i++){
+                bst_add(t1, &i);
+        }
+
+        for (int i = 10; i < 20; i++){
+                bst_add(t2, &i);
+        }
+
+        BSTree *joint = bst_join(t1, t2);
+
+        for (int i = 0; i < 20; i++){
+                assert(bst_exists(joint, &i));
+        }
+
+        bst_free(t1);
+        bst_free(t2);
+        bst_free(joint);
+}
+
 int main(){
 
 
@@ -91,6 +114,8 @@ int main(){
 	assert(bst_size(t) == 0UL);
 
 	bst_free(t);
+
+	join_test();
 
 	TIMESTAMP_STOP
 	END_MSG(BSTree);

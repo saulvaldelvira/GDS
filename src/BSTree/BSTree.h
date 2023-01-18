@@ -83,6 +83,8 @@ size_t bst_size(BSTree *tree);
 */
 bool bst_isempty(BSTree *tree);
 
+BSTree* bst_join(BSTree *tree_1, BSTree *tree_2);
+
 /**
  * Frees the memory allocated for this tree
  * @return 1 if the operation is successful
