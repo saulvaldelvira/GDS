@@ -12,7 +12,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Test
-      run: make all_test
     - name: showdir
       run: ls -all
+    - name: Test
+      run: make all_test
+    
