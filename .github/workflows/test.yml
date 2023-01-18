@@ -16,4 +16,4 @@ jobs:
     - name: Test
       run: make all_test
     - name: Memory Leaks
-      run:  for t in ./bin/*; do valgrind --leak-check=yes --error-exitcode=1 "$t"; done 
+      run:  make valgrind_test

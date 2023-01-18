@@ -74,6 +74,8 @@ void* avl_get(AVLTree *tree, void *element, void *dest);
 */
 size_t avl_size(AVLTree *tree);
 
+int avl_height(AVLTree *tree);
+
 /**
  * @return true if the tree is empty
 */

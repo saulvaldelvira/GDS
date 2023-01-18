@@ -106,6 +106,17 @@ void* arrlist_get_at(ArrayList *list, size_t index, void *dest);
 void* arrlist_get(ArrayList *list, void *element, void *dest);
 
 /**
+ * Gets the first [array_length] elements from the list into the array
+*/
+void* arrlist_get_into_array(ArrayList *list, void *array, size_t array_length);
+
+/**
+ * Allocates an array of [array_length] elements and fills it with
+ * the first [array_length] elements fom the list
+*/
+void* arrlist_get_array(ArrayList *list, size_t array_length);
+
+/**
  * Removes the element at the given index
  * @return 1 if the operation is successful.
  */

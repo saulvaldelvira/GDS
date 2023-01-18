@@ -195,6 +195,46 @@ void* lnkd_list_get(LinkedList *list, void *element, void *dest){
 	return aux == NULL ? NULL : memcpy(dest, aux->info, list->data_size);
 }
 
+void* lnkd_list_get_into_array(LinkedList *list, void *array, size_t array_length){
+	if (!list || !array){
+		printerr_null_param(lnkd_list_get_into_array);
+		return NULL;
+	}
+	if (array_length > list->n_elements){
+		array_length = list->n_elements;
+	}
+	LLNode *aux = list->head;
+	for (size_t i = 0; i < array_length; i++){
+		void *dst = void_offset(array, i * list->data_size);
+		if (!memcpy(dst, aux->info, list->data_size)){
+			printerr_memory_op(arrlist_get_into_array);
+			return NULL;
+		}
+		aux = aux->next;
+	}
+	return array;
+
+}
+
+void* lnkd_list_get_array(LinkedList *list, size_t array_length){
+	if (!list){
+		printerr_null_param(lnkd_list_get_array);
+		return NULL;
+	}
+	if (array_length > list->n_elements){
+		array_length = list->n_elements;
+	}
+	void *array = malloc(list->data_size * array_length);
+	if (!array){
+		return NULL;
+	}
+	if (!lnkd_list_get_into_array(list, array, array_length)){
+		free(array);
+		return NULL;
+	}
+	return array;
+}
+
 bool lnkd_list_exists(LinkedList *list, void *element){
 	if (!list || !element){
 		printerr_null_param(lnkd_list_exists);

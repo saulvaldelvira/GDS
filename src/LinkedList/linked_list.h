@@ -73,6 +73,10 @@ int lnkd_list_set(LinkedList *list, void *element, void *replacement);
 */
 void* lnkd_list_get(LinkedList *list, void *element, void *dest);
 
+void* lnkd_list_get_into_array(LinkedList *list, void *array, size_t array_length);
+
+void* lnkd_list_get_array(LinkedList *list, size_t array_length);
+
 /**
 * @return true if the element exists in the list
 */

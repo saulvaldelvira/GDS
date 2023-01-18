@@ -442,6 +442,17 @@ bool avl_isempty(AVLTree *tree){
 	return tree->root == NULL;
 }
 
+int avl_height(AVLTree *tree){
+	if (!tree){
+		printerr_null_param(avl_height);
+		return NULL_PARAMETER_ERROR;
+	}
+	if (tree->root == NULL){
+		return -1;
+	}
+	return tree->root->height;
+}
+
 /////////////////////////
 // Auxiliar structure to use in the traversal methods
 struct traversal_ret {

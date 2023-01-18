@@ -219,6 +219,44 @@ void* arrlist_get(ArrayList *list, void *element, void *dest){
 	return arrlist_get_at(list, index.value, dest);
 }
 
+void* arrlist_get_into_array(ArrayList *list, void *array, size_t array_length){
+	if (!list || !array){
+		printerr_null_param(arrlist_get_into_array);
+		return NULL;
+	}
+	if (array_length > list->n_elements){
+		array_length = list->n_elements;
+	}
+	for (size_t i = 0; i < array_length; i++){
+		void *src = void_offset(list->elements, i * list->data_size);
+		void *dst = void_offset(array, i * list->data_size);
+		if (!memcpy(dst, src, list->data_size)){
+			printerr_memory_op(arrlist_get_into_array);
+			return NULL;
+		}
+	}
+	return array;
+}
+
+void* arrlist_get_array(ArrayList *list, size_t array_length){
+	if (!list){
+		printerr_null_param(arrlist_get_array);
+		return NULL;
+	}
+	if (array_length > list->n_elements){
+		array_length = list->n_elements;
+	}
+	void *array = malloc(list->data_size * array_length);
+	if (!array){
+		return NULL;
+	}
+	if (!arrlist_get_into_array(list, array, array_length)){
+		free(array);
+		return NULL;
+	}
+	return array;
+}
+
 int arrlist_remove_at(ArrayList *list, size_t index){
 	if (!list){
 		printerr_null_param(arrlist_remove_at);

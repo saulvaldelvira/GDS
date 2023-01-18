@@ -37,6 +37,19 @@ int main(){
 
 	assert(ret.status);
 	assert(ret.value == (size_t) treinta);
+
+	int* get_arr = arrlist_get_array(arr, arrlist_size(arr));
+	int* get_into = malloc(n * sizeof(int));
+	assert(get_into != NULL);
+	arrlist_get_into_array(arr, get_into, arrlist_size(arr));
+	for (int i = 0; i < n; i++){
+		assert(i == get_arr[i]);
+		assert(i == get_into[i]);
+	}
+
+	free(get_arr);
+	free(get_into);
+
 	int tmp;
 	for(int i=n-1; i >= 0; i--){
 		assert(arrlist_exists(arr, &i));
@@ -83,6 +96,19 @@ int main(){
 		assert(lnkd_list_push_back(lnked, &i));
 		assert(lnkd_list_size(lnked) == (size_t) i+1);
 	}
+
+	get_arr = lnkd_list_get_array(lnked, lnkd_list_size(lnked));
+	get_into = malloc(n * sizeof(int));
+	assert(get_into != NULL);
+	lnkd_list_get_into_array(lnked, get_into, lnkd_list_size(lnked));
+	for (int i = 0; i < n; i++){
+		assert(i == get_arr[i]);
+		assert(i == get_into[i]);
+	}
+
+
+	free(get_arr);
+	free(get_into);
 
 	/*PUSH FRONT*/
 	int menos150 = -150;
