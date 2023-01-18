@@ -7,10 +7,12 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
+  test:
 
     runs-on: ubuntu-latest
 
     steps:
-    - name: make all_test
+    - name: Test
       run: make all_test
+    - name: showdir
+      run: ls -all
