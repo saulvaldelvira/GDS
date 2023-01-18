@@ -10,6 +10,8 @@ array til the end since i, and move back every element one position. In the wors
 through the list [ O(n) ]. <br>
 The biggest strength of this structure is how fast it is in the append, set and get operations, when we work with indexes.
 
+## When to use it
+The Dynamic Array is a great option when you need the memory locallity and efficiency of an array, with the advantage of now having to worry about size or memory management.
 ## Growth Factor
 In this list, the growth factor is 2. This means that when the list is full, it's size is <b>multiplied by two</b>. <br>
 This makes the list expand <b>geometrically</b>, wich is efficient since resizing an array is a very expensive operation. <br>
