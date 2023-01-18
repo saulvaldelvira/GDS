@@ -23,6 +23,8 @@
 #ifndef DEFINITIONS_H
 #define DEFINITIONS_H
 
+#define GET_ALL_ELEMENTS 0
+
 typedef unsigned char byte_t;
 #define void_offset(ptr, bytes) (void*)(((byte_t*)ptr) + (bytes))
 #define matrix_offset(arr, dim, rows, cols) (arr+((dim)*(rows) + (cols)))

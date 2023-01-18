@@ -71,6 +71,22 @@ ArrayList* arrlist_init(size_t data_size, size_t max_elements, comparator_functi
 	return list;
 }
 
+size_t arrlist_get_data_size(ArrayList *list){
+	if (!list){
+		printerr_null_param(arrlist_data_size);
+		return 0;
+	}
+	return list->data_size;
+}
+
+comparator_function_t arrlist_get_comparator(ArrayList *list){
+	if (!list){
+		printerr_null_param(arrlist_get_comparator);
+		return NULL;
+	}
+	return list->compare;
+}
+
 int arrlist_append(ArrayList *list, void *element){
 	if (!list || !element){
 		printerr_null_param(arrlist_append);
@@ -247,7 +263,7 @@ void* arrlist_get_array(ArrayList *list, size_t array_length){
 		printerr_null_param(arrlist_get_array);
 		return NULL;
 	}
-	if (array_length > list->n_elements){
+	if (array_length == GET_ALL_ELEMENTS || array_length > list->n_elements){
 		array_length = list->n_elements;
 	}
 	void *array = malloc(list->data_size * array_length);
@@ -259,6 +275,62 @@ void* arrlist_get_array(ArrayList *list, size_t array_length){
 		return NULL;
 	}
 	return array;
+}
+
+static void* get_position(ArrayList *list, size_t index){
+	return void_offset(list->elements, index * list->data_size);
+}
+
+int arrlist_swap(ArrayList *list, size_t index_1, size_t index_2){
+	if (!list){
+		printerr_null_param(arrlist_swap);
+		return NULL_PARAMETER_ERROR;
+	}
+	if (index_1 >= list->n_elements){
+		printerr_out_of_bounds(index_1, arrlist_swap);
+		return INDEX_BOUNDS_ERROR;
+	}
+	if (index_2 >= list->n_elements){
+		printerr_out_of_bounds(index_2, arrlist_swap);
+		return INDEX_BOUNDS_ERROR;
+	}
+	
+	void *tmp = malloc(list->data_size);
+	if (!tmp){
+		printerr_allocation(arrlist_swap);
+		return ALLOCATION_ERROR;
+	}
+
+	if (!arrlist_get_at(list, index_1, tmp)){
+		return ERROR;
+	}
+
+	void *e1 = get_position(list, index_1);
+	void *e2 = get_position(list, index_2);
+	if(!memcpy(e1, e2, list->data_size)){
+		printerr_memory_op(arrlist_swap);
+		return MEMORY_OP_ERROR;
+	}
+
+	if(!memcpy(e2, tmp, list->data_size)){
+		printerr_memory_op(arrlist_swap);
+		return MEMORY_OP_ERROR;
+	}
+
+	free(tmp);
+
+	return SUCCESS;
+
+}
+
+int arrlist_compare(ArrayList *list, size_t index_1, size_t index_2){
+	if (!list){
+		printerr_null_param(arrlist_swap);
+		return NULL_PARAMETER_ERROR;
+	}
+	void *e1 = get_position(list, index_1);
+	void *e2 = get_position(list, index_2);
+	return (*list->compare) (e1, e2);
 }
 
 int arrlist_remove_at(ArrayList *list, size_t index){

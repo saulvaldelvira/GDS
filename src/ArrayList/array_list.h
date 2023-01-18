@@ -47,6 +47,16 @@ ArrayList* arrlist_empty(size_t data_size, comparator_function_t cmp);
 ArrayList* arrlist_init(size_t data_size, size_t max_elements, comparator_function_t cmp);
 
 /**
+ * @return the data size of the list
+*/
+size_t arrlist_get_data_size(ArrayList *list);
+
+/**
+ * @return the comparator function used by the list
+*/
+comparator_function_t arrlist_get_comparator(ArrayList *list);
+
+/**
  * \brief
  * Adds the value inside element into the list
  * 
@@ -111,8 +121,20 @@ void* arrlist_get_into_array(ArrayList *list, void *array, size_t array_length);
 /**
  * Allocates an array of [array_length] elements and fills it with
  * the first [array_length] elements fom the list
+ * @param array_length the number of elements to get. Pass GET_ALL_ELEMENTS to get all the elements in the list
 */
 void* arrlist_get_array(ArrayList *list, size_t array_length);
+
+/**
+ * Swaps the element at index_1 and index_2
+*/
+int arrlist_swap(ArrayList *list, size_t index_1, size_t index_2);
+
+/**
+ * Compares the element at index_1 and index_2
+ * @return the result of the comparison
+*/
+int arrlist_compare(ArrayList *list, size_t index_1, size_t index_2);
 
 /**
  * Removes the element at the given index

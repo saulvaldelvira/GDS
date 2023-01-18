@@ -54,4 +54,16 @@ static inline int rand_range(int min, int max){
 
 #define LOG(x) if (!quiet){x;}
 
+void assert_array_int(int *arr, int *exp, int size){
+        for (int i = 0; i < size; i++){
+                assert(arr[i] == exp[i]);
+        }
+}
+
+void assert_array_char(char *arr, char *exp, int size){
+        for (int i = 0; i < size; i++){
+                assert(arr[i] == exp[i]);
+        }
+}
+
 #endif
