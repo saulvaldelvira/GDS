@@ -26,10 +26,6 @@
 #include "../Util/comparator.h"
 
 
-#define REPEATED_ELEMENT -1
-#define NON_EXISTING_ELEMENT -1
-#define EMPTY_TREE -1
-
 /**
  * @brief BSTree (Binary Search Tree) structure.
  */

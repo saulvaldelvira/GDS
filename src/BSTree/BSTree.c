@@ -121,7 +121,7 @@ static struct add_rec_ret add_rec(BSNode *node, void *element, comparator_functi
 		ret = add_rec(node->left, element, cmp, size);
 		node->left = ret.node; // Update the left node
 	}else { // Repeated element, return with an error status
-		return (struct add_rec_ret) {node, REPEATED_ELEMENT, false};
+		return (struct add_rec_ret) {node, REPEATED_ELEMENT_ERROR, false};
 	}
 
 	if(ret.last_op_was_add){ // If the last call returned a SUCCESSfuly created node, update this node's father reference
@@ -190,7 +190,7 @@ struct remove_rec_ret {
 */
 static struct remove_rec_ret remove_rec(BSNode *node, void *element, comparator_function_t cmp, size_t size){
 	if (node == NULL){
-		return (struct remove_rec_ret){NULL, NON_EXISTING_ELEMENT};
+		return (struct remove_rec_ret){NULL, ELEMENT_NOT_FOUND_ERROR};
 	}
 
 	int c = (*cmp) (element, node->info);
