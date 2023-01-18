@@ -45,7 +45,7 @@ int minheap_add_array(MinHeap *heap, void *array, size_t array_length);
 /**
  * Gets the min element in the array.
 */
-void* minheap_get_min(MinHeap *heap, void *dest);
+void* minheap_pop_min(MinHeap *heap, void *dest);
 
 /**
  * Allocs an array with [array_length] elements and fills it with the elements in the heap

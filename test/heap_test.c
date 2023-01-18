@@ -71,7 +71,7 @@ void filter_up(){
         assert_array_char(result, expchar, 5);
         free(result);
         char dest;
-        assert('a' == * (char*) minheap_get_min(min, &dest));
+        assert('a' == * (char*) minheap_pop_min(min, &dest));
         char expchar2[] = {'d', 'g', 'f', 'z'};
         result = minheap_get_array(min, GET_ALL_ELEMENTS);
         assert_array_char(result, expchar2, 4);
@@ -80,7 +80,7 @@ void filter_up(){
         minheap_free(min);
 }
 
-void get_min(){
+void pop_min(){
         MinHeap *min = minheap_init(sizeof(int), compare_int);
         minheap_add(min, cast_int(200));
         minheap_add(min, cast_int(105));
@@ -90,7 +90,7 @@ void get_min(){
         int index = 0;
         int tmp;
         while (!minheap_isempty(min)){
-                int value = * (int*) minheap_get_min(min, &tmp);
+                int value = * (int*) minheap_pop_min(min, &tmp);
                 assert(exp[index++] == value);
         }
 
@@ -103,7 +103,7 @@ void get_min(){
         index = 0;
         char c;
         while (!minheap_isempty(min)){
-                char value = * (char*) minheap_get_min(min, &c);
+                char value = * (char*) minheap_pop_min(min, &c);
                 assert(exp2[index++] == value);
         }
 
@@ -139,7 +139,7 @@ int main(){
 
         filter_up();
 
-        get_min();
+        pop_min();
 
 
         TIMESTAMP_STOP
