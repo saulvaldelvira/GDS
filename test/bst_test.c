@@ -30,10 +30,9 @@ int main(){
 	for(int i=0; i<n; i++){
 		bst_remove(t, &i);
 	}
-
 	// Orders test
 	printf("Traversals... \n");
-	bst_reset(t);
+	t = bst_reset(t);
 	int nums[] = {12, 9, 7, 10, 0, 8, 11, 30, 25, 32, 31, 33};
 	assert(bst_add_array(t, nums, 12UL));
 
@@ -66,7 +65,6 @@ int main(){
 	printf("\tExpected result: 0-8-7-11-10-9-25-31-33-32-30-12-\n");
 	
 	free(postord);
-
 
 	// Remove test
 	t = bst_reset(t);

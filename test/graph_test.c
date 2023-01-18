@@ -63,8 +63,7 @@ void dijkstra_test(void){
 #endif
 
 	graph_free(g);
-	free(dijkstra.D);
-	free(dijkstra.P);
+	graph_free_dijkstra_data(&dijkstra);
 }
 	
 void floyd_test(void){
@@ -234,19 +233,26 @@ int main(){
 		assert(graph_remove_vertex(g, &i));
 	}
 
+	
 
 #ifndef QUIET
 	printf("Dijkstra...\n");
 	dijkstra_test();
 
+
 	printf("\nFloyd...\n");
 	floyd_test();
 #endif
 
+	
+
 	drain_source();
+
 
 	LOG(printf("\nTraverse DF...\n"));
 	traverse_df();
+
+	
 
 	LOG(printf("\nEccentricity...\n"));
 	eccentricity_test();

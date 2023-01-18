@@ -789,6 +789,7 @@ float graph_eccentricity(Graph *graph, void *vertex){
 			max = floyd.A[i][index.value];
 		}
 	}
+	graph_free_floyd_data(&floyd);
 	return max;
 }
 

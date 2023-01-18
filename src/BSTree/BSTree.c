@@ -216,7 +216,7 @@ static struct remove_rec_ret remove_rec(BSNode *node, void *element, comparator_
 				node->left = aux->left; // Now we can safely remove aux without losing the left son of aux (the right son is NULL)
 			}
 			if(!memcpy(node->info, aux->info, size)){
-				fprintf(stderr, "ERROR: could not remove (line 174)\n");
+				printerr_memory_op(add_rec);
 				ret.status = -1;
 			}
 		}
@@ -343,7 +343,7 @@ int bst_free(BSTree *tree){
 
 BSTree* bst_reset(BSTree *tree){
 	if (!tree){
-		printerr_null_param(bst_free);
+		printerr_null_param(bst_reset);
 		return NULL;
 	}
 	free_rec(tree->root);
@@ -397,7 +397,6 @@ static struct traversal_ret traversal_rec(BSNode *node, enum Traversal order, si
 	result.elements = malloc(result.elements_size * size);
 	if(!result.elements){
 		printerr_allocation(traversal_rec);
-		free(result.elements);
 		result.status = ALLOCATION_ERROR;
 		goto free_garbage;
 	}
