@@ -4,7 +4,7 @@ It includes:
 * Lists: [ArrayList](/src/ArrayList), [LinkedList](/src/LinkedList)
 * [Stack](src/Stack)
 * [Queue](src/Queue)
-* Trees: [BSTree](src/BSTree)
+* Trees: [BSTree](src/BSTree), [AVLTree](/src/AVLTree)
 * [Graph](src/Graph)
 
 ## How it works
