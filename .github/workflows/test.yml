@@ -11,6 +11,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+    - name: install valgrind
+      run: sudo apt install valgrind
     - name: Test
       run: make all_test
-    
+    - name: Memory Leaks
+      run:  for t in ./bin/*; do valgrind --leak-check=yes --error-exitcode=1 "$t"; done 
