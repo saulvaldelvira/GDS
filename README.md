@@ -6,6 +6,7 @@ It includes:
 * [Queue](src/Queue)
 * Trees: [BSTree](src/BSTree), [AVLTree](/src/AVLTree)
 * [Graph](src/Graph)
+* [Binary Heap](src/BinaryHeap)
 
 ## How it works
 These structures are "generic" in the way that the only information they need about the data type stored is its size. <br>
