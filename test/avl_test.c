@@ -57,6 +57,11 @@ int main(){
         int nums[] = {10, 6, 15, 3, 9, 14, 20, 2, 4, 7, 12};
 
         assert(avl_add_array(t, nums, 7UL));
+        int max;
+        assert(20 == * (int*) avl_max(t, &max));
+        int min;
+        assert(3 == * (int*) avl_min(t, &min));
+
 
         int exp1 [] = {10, 6, 3, 9, 15, 14, 20};
         assert_preord(t, exp1);
@@ -71,6 +76,7 @@ int main(){
         assert(3 == avl_height(t));
 
         assert(avl_add(t, cast_int(1)));
+        assert(1 == * (int*) avl_min(t, &min));
         int exp3 [] = {10, 6, 3, 2, 1, 4, 9, 7, 15, 14, 12, 20};
         assert_preord(t, exp3);
 

@@ -112,6 +112,26 @@ void* avl_postorder(AVLTree *tree);
 AVLTree* avl_join(AVLTree *tree_1, AVLTree *tree_2);
 
 /**
+ * Copies the max value in the tree to dest
+*/
+void* avl_max(AVLTree *tree, void *dest);
+
+/**
+ * Copies the min value in the tree to dest
+*/
+void* avl_min(AVLTree *tree, void *dest);
+
+/**
+ * Copies to dest the max value in the tree, starting in [node]
+*/
+void* avl_max_from(AVLTree *tree, void *element, void *dest);
+
+/**
+ * Copies to dest the min value in the tree, starting in [node]
+*/
+void* avl_min_from(AVLTree *tree, void *element, void *dest);
+
+/**
  * Frees the memory allocated for the tree
  * @return 1 if the operation is successful
 */

@@ -58,6 +58,10 @@ int main(){
 	t = bst_reset(t);
 	int nums[] = {12, 9, 7, 10, 0, 8, 11, 30, 25, 32, 31, 33};
 	assert(bst_add_array(t, nums, 12UL));
+	int max, min;
+	assert(33 == * (int*) bst_max(t, &max));
+	assert(0 == * (int*) bst_min(t, &min));
+
 
 	void* inord = bst_inorder(t);
 	printf("\tInorder: \t");

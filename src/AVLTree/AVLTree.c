@@ -292,6 +292,16 @@ static AVLNode* get_max(AVLNode *node){
 	return node;
 }
 
+static AVLNode* get_min(AVLNode *node){
+	if (node == NULL){
+		return NULL;
+	}
+	while (node->left != NULL){
+		node = node->left;
+	}
+	return node;
+}
+
 
 // Auxiliar struct for the remove_rec function
 struct remove_rec_ret {
@@ -399,22 +409,17 @@ bool avl_exists(AVLTree *tree, void *element){
 	return exists_rec(tree->root, element, tree->compare);
 }
 
-void* get_rec(AVLNode *node, void *element, void *dest, size_t size, comparator_function_t compare){
+static AVLNode* get_rec(AVLNode *node, void *element, comparator_function_t compare){
 	if (!node) {
 		return NULL;
 	}
 	int c = compare(element, node->info);
 	if (c < 0){
-		return get_rec(node->left, dest, element, size, compare);
+		return get_rec(node->left, element, compare);
 	} else if (c > 0){
-		return get_rec(node->right, dest, element, size, compare);
+		return get_rec(node->right, element, compare);
 	} else{
-		if (!memcpy(dest, node->info, size)){
-			printerr_memory_op(get_rec);
-			return NULL;
-		} else{
-			return dest;
-		}
+		return node;
 	}
 }
 
@@ -423,7 +428,15 @@ void* avl_get(AVLTree *tree, void *element, void *dest){
 		printerr_null_param(avl_get);
 		return NULL;
 	}
-	return get_rec(tree->root, element, dest, tree->data_size, tree->compare);
+	AVLNode *node = get_rec(tree->root, element, tree->compare);
+	if (!node){
+		return NULL;
+	}
+	if(!memcpy(dest, node->info, tree->data_size)){
+		printerr_memory_op(avl_get);
+		return NULL;
+	}
+	return dest;
 }
 
 size_t avl_size(AVLTree *tree){
@@ -647,6 +660,62 @@ AVLTree* avl_join(AVLTree *tree_1, AVLTree *tree_2){
 	}
 
 	return tree_joint;
+}
+
+
+void* avl_max(AVLTree *tree, void *dest){
+	if (!tree || !dest){
+		printerr_null_param(avl_max);
+		return NULL;
+	}
+	return avl_max_from(tree, tree->root->info, dest);
+}
+
+
+void* avl_min(AVLTree *tree, void *dest){
+	if (!tree || !dest){
+		printerr_null_param(avl_min);
+		return NULL;
+	}
+	return avl_min_from(tree, tree->root->info, dest);
+}
+
+
+void* avl_max_from(AVLTree *tree, void *element, void *dest){
+	if (!tree || !element || !dest){
+		printerr_null_param(avl_max_from);
+		return NULL;
+	}
+	AVLNode *tmp = get_rec(tree->root, element, tree->compare);
+	if (!tmp){
+		return NULL;
+	}
+	tmp = get_max(tmp);
+	
+	if (!memcpy(dest, tmp->info, tree->data_size)){
+		printerr_memory_op(avl_max_from);
+		return NULL;
+	}
+	return dest;
+}
+
+
+void* avl_min_from(AVLTree *tree, void *element, void *dest){
+	if (!tree || !element || !dest){
+		printerr_null_param(avl_min_from);
+		return NULL;
+	}
+	AVLNode *tmp = get_rec(tree->root, element, tree->compare);
+	if (!tmp){
+		return NULL;
+	}
+	tmp = get_min(tmp);
+	
+	if (!memcpy(dest, tmp->info, tree->data_size)){
+		printerr_memory_op(avl_min_from);
+		return NULL;
+	}
+	return dest;
 }
 
 ////////

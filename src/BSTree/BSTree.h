@@ -65,6 +65,26 @@ int bst_remove_array(BSTree *tree, void *array, size_t array_length);
 void* bst_get(BSTree *tree, void* element, void *dest);
 
 /**
+ * Copies the max value in the tree to dest
+*/
+void* bst_max(BSTree *tree, void *dest);
+
+/**
+ * Copies the min value in the tree to dest
+*/
+void* bst_min(BSTree *tree, void *dest);
+
+/**
+ * Copies to dest the max value in the tree, starting in [node]
+*/
+void* bst_max_from(BSTree *tree, void *element, void *dest);
+
+/**
+ * Copies to dest the min value in the tree, starting in [node]
+*/
+void* bst_min_from(BSTree *tree, void *element, void *dest);
+
+/**
  * @return true if the element exists in the tree
 */
 bool bst_exists(BSTree *tree, void *element);

@@ -172,6 +172,16 @@ static BSNode* get_max(BSNode *node){
 	return node;
 }
 
+static BSNode* get_min(BSNode *node){
+	if (node == NULL){
+		return NULL;
+	}
+	while (node->left != NULL){
+		node = node->left;
+	}
+	return node;
+}
+
 // Auxiliar struct for the remove_rec function
 struct remove_rec_ret {
 	BSNode* node;
@@ -257,22 +267,17 @@ int bst_remove_array(BSTree *tree, void *array, size_t array_length){
 	return SUCCESS;
 }
 
-static void* get_rec(BSNode *node, void *element, void *dest, comparator_function_t cmp, size_t size){
+static BSNode* get_rec(BSNode *node, void *element, comparator_function_t cmp){
 	if(node == NULL){
 		return NULL;
 	}
 	int c = (*cmp) (element, node->info);
 	if(c < 0){
-		return get_rec(node->left, element, dest, cmp, size);
+		return get_rec(node->left, element, cmp);
 	}else if(c > 0){
-		return get_rec(node->right, element, dest, cmp, size);
+		return get_rec(node->right, element, cmp);
 	}else{
-		if (!memcpy(dest, node->info, size)){
-			printerr_memory_op(get_rec);
-			return NULL;
-		} else{
-			return dest;
-		}
+		return node;
 	}
 }
 
@@ -281,7 +286,15 @@ void* bst_get(BSTree *tree, void* element, void *dest){
 		printerr_null_param(bst_get);
 		return NULL;
 	}
-	return get_rec(tree->root, element, dest, tree->compare, tree->data_size);
+	BSNode *node = get_rec(tree->root, element, tree->compare);
+	if (!node){
+		return NULL;
+	}
+	if (!memcpy(dest, node->info, tree->data_size)){
+		printerr_memory_op(bst_get);
+		return NULL;
+	}
+	return dest;
 }
 
 static bool exists_rec(BSNode *node, void *element, comparator_function_t cmp){
@@ -543,4 +556,59 @@ void* bst_postorder(BSTree *tree){
 		return NULL;
 	}
 	return result.elements;
+}
+
+void* bst_max(BSTree *tree, void *dest){
+	if (!tree || !dest){
+		printerr_null_param(bst_max);
+		return NULL;
+	}
+	return bst_max_from(tree, tree->root->info, dest);
+}
+
+
+void* bst_min(BSTree *tree, void *dest){
+	if (!tree || !dest){
+		printerr_null_param(bst_min);
+		return NULL;
+	}
+	return bst_min_from(tree, tree->root->info, dest);
+}
+
+
+void* bst_max_from(BSTree *tree, void *element, void *dest){
+	if (!tree || !element || !dest){
+		printerr_null_param(bst_max_from);
+		return NULL;
+	}
+	BSNode *tmp = get_rec(tree->root, element, tree->compare);
+	if (!tmp){
+		return NULL;
+	}
+	tmp = get_max(tmp);
+	
+	if (!memcpy(dest, tmp->info, tree->data_size)){
+		printerr_memory_op(bst_max_from);
+		return NULL;
+	}
+	return dest;
+}
+
+
+void* bst_min_from(BSTree *tree, void *element, void *dest){
+	if (!tree || !element || !dest){
+		printerr_null_param(bst_min_from);
+		return NULL;
+	}
+	BSNode *tmp = get_rec(tree->root, element, tree->compare);
+	if (!tmp){
+		return NULL;
+	}
+	tmp = get_min(tmp);
+	
+	if (!memcpy(dest, tmp->info, tree->data_size)){
+		printerr_memory_op(bst_min_from);
+		return NULL;
+	}
+	return dest;
 }
