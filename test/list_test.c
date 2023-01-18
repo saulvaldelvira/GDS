@@ -139,7 +139,7 @@ int main(){
 	assert(lnkd_list_push_front_array(lnked, nums, 5UL));
 	assert(5UL == lnkd_list_size(lnked));
 
-	//lnkd_list_free(lnked);
+	lnkd_list_free(lnked);
 
 	TIMESTAMP_STOP
 	lnkd_time = timestamp;
