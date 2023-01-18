@@ -152,5 +152,5 @@ int main(){
 
 
 	END_MSG(List)
-	return 0;
+	return 1;
 }
