@@ -83,6 +83,13 @@ size_t bst_size(BSTree *tree);
 */
 bool bst_isempty(BSTree *tree);
 
+/**
+ * @return a new BSTree with the elements of the two given trees.
+ * @note No particular order of elements is guaranteed.
+ * @note ATTENTION: The trees must store the same data. At least, they must have 
+ * the same data size. Also, the comparator function of tree_1 will be taken, 
+ * because it is assumed that both trees have the same comparator functions.
+*/
 BSTree* bst_join(BSTree *tree_1, BSTree *tree_2);
 
 /**
