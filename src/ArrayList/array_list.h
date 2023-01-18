@@ -134,6 +134,15 @@ int arrlist_remove(ArrayList *list, void *element);
 int arrlist_remove_array(ArrayList *list, void *array, size_t array_length);
 
 /**
+ * @return a new ArrayList with the elements of the two given list.
+ * @note No particular order of elements is guaranteed.
+ * @note ATTENTION: The lists must store the same data. At least, they must have 
+ * the same data size. Also, the comparator function of list_1 will be taken, 
+ * because it is assumed that both list have the same comparator functions.
+*/
+ArrayList* arrlist_join(ArrayList *list_1, ArrayList *list_2);
+
+/**
  * Frees the list from memory
  * @return 1 if the operation is successful
  */

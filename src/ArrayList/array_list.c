@@ -309,6 +309,61 @@ int arrlist_remove_array(ArrayList *list, void *array, size_t array_length){
 	return SUCCESS;
 }
 
+ArrayList* arrlist_join(ArrayList *list_1, ArrayList *list_2){
+	if (!list_1 || !list_2){
+		printerr_null_param(arrlist_join);
+		return NULL;
+	}
+	if (list_1->data_size != list_2->data_size){
+		fprintf(stderr, "ERROR: the lists have different data sizes. In function arrlist_join\n");
+		return NULL;
+	}
+
+	size_t n_elements = list_1->n_elements + list_2->n_elements;
+
+	ArrayList *list_joint = arrlist_init(list_1->data_size, n_elements, list_1->compare);
+	if (!list_joint){
+		return NULL;
+	}
+
+	int status;
+
+	void *tmp = arrlist_get_array(list_1, list_1->n_elements);
+	printf("%p should be freed\n", tmp);
+	if (!tmp){
+		goto exit_err;
+	}
+
+	status = arrlist_append_array(list_joint, tmp, list_1->n_elements);
+	free(tmp);
+	printf("%p freed!\n", tmp);
+
+	if (status != SUCCESS){
+		goto exit_err;
+	}
+
+	tmp = arrlist_get_array(list_2, list_2->n_elements);
+	printf("%p should be freed\n", tmp);
+	if (!tmp){
+		goto exit_err;
+	}
+	
+	
+	status = arrlist_append_array(list_joint, tmp, list_2->n_elements);
+	
+	free(tmp);
+	printf("%p freed stat = %d\n", tmp, status);
+	
+	
+	if (status != SUCCESS){
+		exit_err:
+		free(list_joint);
+		return NULL;
+	}
+
+	return list_joint;
+}
+
 int arrlist_free(ArrayList *list){
 	if (!list){
 		printerr_null_param(arrlist_free);

@@ -13,6 +13,31 @@ struct test {
 	int b;
 	char ch[];
 };
+
+void joins_test(){
+	ArrayList *a1 = arrlist_empty(sizeof(int), compare_int);
+	ArrayList *a2 = arrlist_empty(sizeof(int), compare_int);
+
+	for (int i = 0; i < 10; i++){
+		arrlist_append(a1, &i);
+	}
+	
+	for (int i = 10; i < 20; i++){
+		arrlist_append(a2, &i);
+	}
+
+	ArrayList *joint = arrlist_join(a1, a2);
+	assert(joint != NULL);
+
+	for (int i = 0; i < 20; i++){
+		assert(arrlist_exists(joint, &i));
+	}
+
+	arrlist_free(a1);
+	arrlist_free(a2);
+	arrlist_free(joint);
+}
+
 int main(){
 	int n = 2400;
 	double arr_time, lnkd_time;
@@ -80,6 +105,8 @@ int main(){
 	assert(arrlist_remove_array(arr, nums, 5));
 	assert(arrlist_isempty(arr));
 	arrlist_free(arr);
+
+	joins_test();
 
 	TIMESTAMP_STOP
 	arr_time = timestamp;
