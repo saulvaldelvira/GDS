@@ -1,4 +1,4 @@
-#include "../src/ArrayList/array_list.h"
+#include "../src/DynamicArray/dynamic_array.h"
 #include "../src/LinkedList/linked_list.h"
 
 #define QUIET_DISABLE
@@ -15,33 +15,33 @@ struct test {
 };
 
 void joins_test(){
-	ArrayList *a1 = arrlist_empty(sizeof(int), compare_int);
-	ArrayList *a2 = arrlist_empty(sizeof(int), compare_int);
+	DynamicArray *a1 = din_arr_empty(sizeof(int), compare_int);
+	DynamicArray *a2 = din_arr_empty(sizeof(int), compare_int);
 	LinkedList *l1 = lnkd_list_init(sizeof(int), compare_int);
 	LinkedList *l2 = lnkd_list_init(sizeof(int), compare_int);
 
 	for (int i = 0; i < 10; i++){
-		arrlist_append(a1, &i);
+		din_arr_push_back(a1, &i);
 		lnkd_list_push_back(l1, &i);
 	}
 	
 	for (int i = 10; i < 20; i++){
-		arrlist_append(a2, &i);
+		din_arr_push_back(a2, &i);
 		lnkd_list_push_back(l2, &i);
 	}
 
-	ArrayList *arr_joint = arrlist_join(a1, a2);
+	DynamicArray *arr_joint = din_arr_join(a1, a2);
 	assert(arr_joint != NULL);
 	LinkedList *lnkd_joint = lnkd_list_join(l1, l2);
 	assert(lnkd_joint != NULL);
 	for (int i = 0; i < 20; i++){
-		assert(arrlist_exists(arr_joint, &i));
+		assert(din_arr_exists(arr_joint, &i));
 		assert(lnkd_list_exists(lnkd_joint, &i));
 	}
 
-	arrlist_free(a1);
-	arrlist_free(a2);
-	arrlist_free(arr_joint);
+	din_arr_free(a1);
+	din_arr_free(a2);
+	din_arr_free(arr_joint);
 	lnkd_list_free(l1);
 	lnkd_list_free(l2);
 	lnkd_list_free(lnkd_joint);
@@ -53,29 +53,29 @@ int main(){
 
 	printf("[List Test]\n");
 	
-	printf("->ArrayList...\n");
+	printf("->DynamicArray...\n");
 	TIMESTAMP_START
 	
-	ArrayList *arr = arrlist_empty(sizeof(int), compare_int);
+	DynamicArray *arr = din_arr_empty(sizeof(int), compare_int);
 
-	assert(arrlist_isempty(arr));
+	assert(din_arr_isempty(arr));
 	for(int i=0; i < n; i++){
-		assert(arrlist_append(arr, &i));
-		assert(arrlist_size(arr) == (size_t) i+1);
+		assert(din_arr_push_back(arr, &i));
+		assert(din_arr_size(arr) == (size_t) i+1);
 	}
-	assert(!arrlist_isempty(arr));
+	assert(!din_arr_isempty(arr));
 	int menosveinte = -20, treinta = 30;
-	assert(arrlist_indexof(arr, &menosveinte).status == ELEMENT_NOT_FOUND_ERROR);
+	assert(din_arr_indexof(arr, &menosveinte).status == ELEMENT_NOT_FOUND_ERROR);
 
-	index_t ret = arrlist_indexof(arr, &treinta);
+	index_t ret = din_arr_indexof(arr, &treinta);
 
 	assert(ret.status);
 	assert(ret.value == (size_t) treinta);
 
-	int* get_arr = arrlist_get_array(arr, arrlist_size(arr));
+	int* get_arr = din_arr_get_array(arr, din_arr_size(arr));
 	int* get_into = malloc(n * sizeof(int));
 	assert(get_into != NULL);
-	arrlist_get_into_array(arr, get_into, arrlist_size(arr));
+	din_arr_get_into_array(arr, get_into, din_arr_size(arr));
 	for (int i = 0; i < n; i++){
 		assert(i == get_arr[i]);
 		assert(i == get_into[i]);
@@ -86,34 +86,39 @@ int main(){
 
 	int tmp;
 	for(int i=n-1; i >= 0; i--){
-		assert(arrlist_exists(arr, &i));
-		assert(arrlist_indexof(arr, &i).value == (size_t) i);
-		assert(i == * (int*) arrlist_get_at(arr, i, &tmp));
-		assert(i == * (int*) arrlist_get(arr, &i, &tmp));
-		assert(arrlist_remove(arr, &i));
+		assert(din_arr_exists(arr, &i));
+		assert(din_arr_indexof(arr, &i).value == (size_t) i);
+		assert(i == * (int*) din_arr_get_at(arr, i, &tmp));
+		assert(i == * (int*) din_arr_get(arr, &i, &tmp));
+		assert(din_arr_remove(arr, &i));
 	}
-	assert(arrlist_size(arr) == 0);
+	assert(din_arr_size(arr) == 0);
 
 	// Set test 2
 	int one = 1;
 	int two = 2;
 	int three = 3;
 
-	assert(arrlist_append(arr, &one));
-	assert(arrlist_set_at(arr, 0, &two));
+	assert(din_arr_push_back(arr, &one));
+	assert(din_arr_set_at(arr, 0, &two));
 	
-	assert(two == * (int*) arrlist_get_at(arr, 0, &tmp));
+	assert(two == * (int*) din_arr_get_at(arr, 0, &tmp));
 	
-	assert(arrlist_set(arr, &two, &three) != ELEMENT_NOT_FOUND_ERROR);
-	assert(three == * (int*) arrlist_get_at(arr, 0, &tmp));
+	assert(din_arr_set(arr, &two, &three) != ELEMENT_NOT_FOUND_ERROR);
+	assert(three == * (int*) din_arr_get_at(arr, 0, &tmp));
 	/////////////////////////////////////////////////////
-	arr = arrlist_reset(arr);
+	arr = din_arr_reset(arr);
 	int nums[] = {1, 2, 3, 4, 5};
-	assert(arrlist_append_array(arr, nums, 5));
-	assert(5UL == arrlist_size(arr));
-	assert(arrlist_remove_array(arr, nums, 5));
-	assert(arrlist_isempty(arr));
-	arrlist_free(arr);
+	assert(din_arr_push_back_array(arr, nums, 5));
+	assert(5UL == din_arr_size(arr));
+	assert(din_arr_remove_array(arr, nums, 5));
+	assert(din_arr_isempty(arr));
+
+	din_arr_push_front(arr, cast_int(0));
+	assert(din_arr_push_front_array(arr, nums, 5));
+	assert(6UL == din_arr_size(arr));
+	assert(0 == * (int*) din_arr_get_at(arr, 5, &tmp));
+	din_arr_free(arr);
 
 	TIMESTAMP_STOP
 	arr_time = timestamp;

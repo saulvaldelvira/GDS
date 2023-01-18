@@ -1,7 +1,7 @@
 # Generic-Data-Structures
 A set of generic Data Structures implemented in C. <br>
 It includes:
-* Lists: [ArrayList](/src/ArrayList), [LinkedList](/src/LinkedList)
+* Lists: [DynamicArray](/src/DynamicArray), [LinkedList](/src/LinkedList)
 * [Stack](src/Stack)
 * [Queue](src/Queue)
 * Trees: [BSTree](src/BSTree), [AVLTree](/src/AVLTree)
@@ -16,13 +16,13 @@ It's important to note that these structures store the VALUE of the elements, no
 
 ```c
 int main(){
-    ArrayList *list = arrlist_empty(sizeof(int), compare_int);
+    DynamicArray *list = din_arr_empty(sizeof(int), compare_int);
     int tmp = 12;
-    arrlist_append(list, &tmp);
+    din_arr_append(list, &tmp);
     tmp = 3;
-    arrlist_append(list, &tmp);
+    din_arr_append(list, &tmp);
 
-    arrlist_free(list);
+    din_arr_free(list);
     return 0;
 }
 ```
