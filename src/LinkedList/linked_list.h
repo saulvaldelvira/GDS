@@ -42,12 +42,12 @@ LinkedList* lnkd_list_init(size_t data_size, comparator_function_t cmp);
  * Adds the given element to the end of the list
  * @return 1 if the operation is successful
 */
-int lnkd_list_push_back(LinkedList *list, void *element);
+int lnkd_list_append(LinkedList *list, void *element);
 
 /**
  * Pushes back in the list the first [array_length] elements in the array
 */
-int lnkd_list_push_back_array(LinkedList *list, void *array, size_t array_length);
+int lnkd_list_append_array(LinkedList *list, void *array, size_t array_length);
 
 /**
  * Adds the given element to the start of the list

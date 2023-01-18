@@ -83,9 +83,9 @@ static LLNode* lnkd_list_innit_node(void *info, size_t size){
 	return node;
 }
 
-int lnkd_list_push_back(LinkedList *list, void *element){
+int lnkd_list_append(LinkedList *list, void *element){
 	if (!list || !element){
-		printerr_null_param(lnkd_list_push_back);
+		printerr_null_param(lnkd_list_append);
 		return NULL_PARAMETER_ERROR;
 	}
 	if(list->n_elements == 0){ // We add to the head
@@ -106,16 +106,16 @@ int lnkd_list_push_back(LinkedList *list, void *element){
 	return SUCCESS;
 }
 
-int lnkd_list_push_back_array(LinkedList *list, void *array, size_t array_length){
+int lnkd_list_append_array(LinkedList *list, void *array, size_t array_length){
 	if (!list || !array){
-		printerr_null_param(lnkd_list_push_back_array);
+		printerr_null_param(lnkd_list_append_array);
 		return NULL_PARAMETER_ERROR;
 	}
 	void *tmp;
 	int status;
 	for (size_t i = 0; i < array_length; i++){
 		tmp = void_offset(array, i * list->data_size);
-		status = lnkd_list_push_back(list, tmp);
+		status = lnkd_list_append(list, tmp);
 		if (status != SUCCESS){
 			return status;
 		}
@@ -332,7 +332,7 @@ LinkedList* lnkd_list_join(LinkedList *list_1, LinkedList *list_2){
 	void *tmp = lnkd_list_get_array(list_1, list_1->n_elements);
 	if (tmp != NULL){
 		// Add the elements of the first list
-		status = lnkd_list_push_back_array(list_joint, tmp, list_1->n_elements);
+		status = lnkd_list_append_array(list_joint, tmp, list_1->n_elements);
 		free(tmp);
 		if (status != SUCCESS){
 			goto exit_err;
@@ -343,7 +343,7 @@ LinkedList* lnkd_list_join(LinkedList *list_1, LinkedList *list_2){
 	tmp = lnkd_list_get_array(list_2, list_2->n_elements);
 	if (tmp != NULL){
 		// Add the elements of the second list
-		status = lnkd_list_push_back_array(list_joint, tmp, list_2->n_elements);
+		status = lnkd_list_append_array(list_joint, tmp, list_2->n_elements);
 		free(tmp);
 		if (status != SUCCESS){
 			exit_err:

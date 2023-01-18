@@ -62,7 +62,7 @@ comparator_function_t din_arr_get_comparator(DynamicArray *list);
  * 
  * @return 1 if the operation is successful
  */
-int din_arr_push_back(DynamicArray *list, void *element);
+int din_arr_append(DynamicArray *list, void *element);
 
 /**
  * \brief
@@ -75,7 +75,7 @@ int din_arr_push_front(DynamicArray *list, void *element);
 /**
  * Appends [array_length] elements to the end of list, from the given array.
 */
-int din_arr_push_back_array(DynamicArray *list, void *array, size_t array_length);
+int din_arr_append_array(DynamicArray *list, void *array, size_t array_length);
 
 /**
  * Appends [array_length] elements to the list, from the given array.

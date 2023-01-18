@@ -21,13 +21,13 @@ void joins_test(){
 	LinkedList *l2 = lnkd_list_init(sizeof(int), compare_int);
 
 	for (int i = 0; i < 10; i++){
-		din_arr_push_back(a1, &i);
-		lnkd_list_push_back(l1, &i);
+		din_arr_append(a1, &i);
+		lnkd_list_append(l1, &i);
 	}
 	
 	for (int i = 10; i < 20; i++){
-		din_arr_push_back(a2, &i);
-		lnkd_list_push_back(l2, &i);
+		din_arr_append(a2, &i);
+		lnkd_list_append(l2, &i);
 	}
 
 	DynamicArray *arr_joint = din_arr_join(a1, a2);
@@ -60,7 +60,7 @@ int main(){
 
 	assert(din_arr_isempty(arr));
 	for(int i=0; i < n; i++){
-		assert(din_arr_push_back(arr, &i));
+		assert(din_arr_append(arr, &i));
 		assert(din_arr_size(arr) == (size_t) i+1);
 	}
 	assert(!din_arr_isempty(arr));
@@ -99,7 +99,7 @@ int main(){
 	int two = 2;
 	int three = 3;
 
-	assert(din_arr_push_back(arr, &one));
+	assert(din_arr_append(arr, &one));
 	assert(din_arr_set_at(arr, 0, &two));
 	
 	assert(two == * (int*) din_arr_get_at(arr, 0, &tmp));
@@ -109,7 +109,7 @@ int main(){
 	/////////////////////////////////////////////////////
 	arr = din_arr_reset(arr);
 	int nums[] = {1, 2, 3, 4, 5};
-	assert(din_arr_push_back_array(arr, nums, 5));
+	assert(din_arr_append_array(arr, nums, 5));
 	assert(5UL == din_arr_size(arr));
 	assert(din_arr_remove_array(arr, nums, 5));
 	assert(din_arr_isempty(arr));
@@ -132,7 +132,7 @@ int main(){
 	assert(lnkd_list_isempty(lnked));
 	
 	for(int i=0; i < n; i++){
-		assert(lnkd_list_push_back(lnked, &i));
+		assert(lnkd_list_append(lnked, &i));
 		assert(lnkd_list_size(lnked) == (size_t) i+1);
 	}
 
@@ -160,7 +160,7 @@ int main(){
 	int last = n-1;
 	assert(lnkd_list_remove(lnked, &last));
 	assert(lnkd_list_size(lnked) == (size_t) n-1);
-	assert(lnkd_list_push_back(lnked, &last));
+	assert(lnkd_list_append(lnked, &last));
 	///////////////////////////////////////////////////
 	
 	for(int i=0; i < n; i++){
@@ -171,7 +171,7 @@ int main(){
 	assert(lnkd_list_size(lnked) == 0);
 
 	lnked = lnkd_list_reset(lnked);
-	assert(lnkd_list_push_back_array(lnked, nums, 5UL));
+	assert(lnkd_list_append_array(lnked, nums, 5UL));
 	assert(5UL == lnkd_list_size(lnked));
 	assert(lnkd_list_remove_array(lnked, nums, 5UL));
 	assert(lnkd_list_isempty(lnked));

@@ -59,7 +59,7 @@ int compare_int(const void* param_1, const void* param_2){
 int main(){
     LinkedList *list = lnkd_list_init(sizeof(int), compare_int); // Pass compare_int as a parameter
     int one = 1;
-    lnkd_list_push_back(list, &one);
+    lnkd_list_append(list, &one);
     assert(lnkd_list_exists(list, &one)); // This will return true.
 }
 ```
