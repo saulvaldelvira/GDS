@@ -73,8 +73,15 @@ int lnkd_list_set(LinkedList *list, void *element, void *replacement);
 */
 void* lnkd_list_get(LinkedList *list, void *element, void *dest);
 
+/**
+ * Copies into the array the first [array_length] elements of the list
+*/
 void* lnkd_list_get_into_array(LinkedList *list, void *array, size_t array_length);
 
+/**
+ * Creates an array with the first [array_length] elements of the list.
+ * @note Remember to free the array.
+*/
 void* lnkd_list_get_array(LinkedList *list, size_t array_length);
 
 /**
