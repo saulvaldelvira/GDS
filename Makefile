@@ -1,4 +1,4 @@
-.PHONY: clean purge all_test list_test stack_test queue_test bst_test valgrind_test
+.PHONY: clean purge all_test list_test stack_test queue_test bst_test
 SRC = src/
 UTIL_DIR = $(SRC)/Util
 BIN = bin/
@@ -43,9 +43,6 @@ avl_test: $(BIN) $(BIN)/avl_test.out
 
 graph_test: $(BIN) $(BIN)/graph_test.out
 	@ $(BIN)/graph_test.out
-
-valgrind_test:
-	@ for t in ./bin/*; do valgrind --leak-check=yes --error-exitcode=1 $${t}; done
 
 $(BIN)/list_test.out: $(LIST_OBJS)
 	@ $(CC) -o $(BIN)/list_test.out $(LIST_OBJS) $(CCFLAGS)

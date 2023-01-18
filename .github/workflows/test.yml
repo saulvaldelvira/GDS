@@ -16,4 +16,6 @@ jobs:
     - name: Test
       run: make all_test
     - name: Memory Leaks
-      run:  make valgrind_test
+      run: | 
+           sudo chmod +x valgrind-test.sh
+           valgrind-test.sh
