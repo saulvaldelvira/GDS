@@ -1,6 +1,6 @@
 # Dynamic Array
 The Dynamic Array (Arraylist, Vector, etc.) is one of the simplest data structures.
-It is a <b>random access, variable-size</b> list data structure.
+It is a <b>random access, variable-size</b> list.
 
 ## Pros and Cons
 The main problem with the Dynamic Array is it's time complexity when adding, removing or inserting element at the beginning of the array.
