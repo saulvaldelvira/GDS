@@ -91,8 +91,6 @@ int arrlist_set_at(ArrayList *list, size_t index, void *element);
  */
 int arrlist_set(ArrayList *list, void *element, void *replacement);
 
-
-
 /**
  * @param dest the memory adress to copy the value into. MUST BE INITIALIZED.
  * @return The element at the given index or NULL if it the index is out of bounds
@@ -134,7 +132,7 @@ int arrlist_remove(ArrayList *list, void *element);
 int arrlist_remove_array(ArrayList *list, void *array, size_t array_length);
 
 /**
- * @return a new ArrayList with the elements of the two given list.
+ * @return a new ArrayList with the elements of the two given lists.
  * @note No particular order of elements is guaranteed.
  * @note ATTENTION: The lists must store the same data. At least, they must have 
  * the same data size. Also, the comparator function of list_1 will be taken, 

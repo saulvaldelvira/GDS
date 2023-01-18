@@ -111,6 +111,15 @@ int lnkd_list_remove(LinkedList *list, void *element);
 int lnkd_list_remove_array(LinkedList *list, void *array, size_t array_length);
 
 /**
+ * @return a new LinkedList with the elements of the two given lists.
+ * @note No particular order of elements is guaranteed.
+ * @note ATTENTION: The lists must store the same data. At least, they must have 
+ * the same data size. Also, the comparator function of list_1 will be taken, 
+ * because it is assumed that both list have the same comparator functions.
+*/
+LinkedList* lnkd_list_join(LinkedList *list_1, LinkedList *list_2);
+
+/**
  * Frees the memory allocated on the list.
 */
 int lnkd_list_free(LinkedList *list);

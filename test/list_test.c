@@ -17,25 +17,34 @@ struct test {
 void joins_test(){
 	ArrayList *a1 = arrlist_empty(sizeof(int), compare_int);
 	ArrayList *a2 = arrlist_empty(sizeof(int), compare_int);
+	LinkedList *l1 = lnkd_list_init(sizeof(int), compare_int);
+	LinkedList *l2 = lnkd_list_init(sizeof(int), compare_int);
 
 	for (int i = 0; i < 10; i++){
 		arrlist_append(a1, &i);
+		lnkd_list_push_back(l1, &i);
 	}
 	
 	for (int i = 10; i < 20; i++){
 		arrlist_append(a2, &i);
+		lnkd_list_push_back(l2, &i);
 	}
 
-	ArrayList *joint = arrlist_join(a1, a2);
-	assert(joint != NULL);
-
+	ArrayList *arr_joint = arrlist_join(a1, a2);
+	assert(arr_joint != NULL);
+	LinkedList *lnkd_joint = lnkd_list_join(l1, l2);
+	assert(lnkd_joint != NULL);
 	for (int i = 0; i < 20; i++){
-		assert(arrlist_exists(joint, &i));
+		assert(arrlist_exists(arr_joint, &i));
+		assert(lnkd_list_exists(lnkd_joint, &i));
 	}
 
 	arrlist_free(a1);
 	arrlist_free(a2);
-	arrlist_free(joint);
+	arrlist_free(arr_joint);
+	lnkd_list_free(l1);
+	lnkd_list_free(l2);
+	lnkd_list_free(lnkd_joint);
 }
 
 int main(){
@@ -106,8 +115,6 @@ int main(){
 	assert(arrlist_isempty(arr));
 	arrlist_free(arr);
 
-	joins_test();
-
 	TIMESTAMP_STOP
 	arr_time = timestamp;
 
@@ -167,6 +174,8 @@ int main(){
 	assert(5UL == lnkd_list_size(lnked));
 
 	lnkd_list_free(lnked);
+
+	joins_test();
 
 	TIMESTAMP_STOP
 	lnkd_time = timestamp;

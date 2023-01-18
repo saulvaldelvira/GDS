@@ -23,6 +23,29 @@ void assert_preord(AVLTree *tree, int exp[]){
         free(preord);
 }
 
+void join_test(){
+        AVLTree *t1 = avl_init(sizeof(int), compare_int);
+        AVLTree *t2 = avl_init(sizeof(int), compare_int);
+
+        for (int i = 0; i < 10; i++){
+                avl_add(t1, &i);
+        }
+
+        for (int i = 10; i < 20; i++){
+                avl_add(t2, &i);
+        }
+
+        AVLTree *joint = avl_join(t1, t2);
+
+        for (int i = 0; i < 20; i++){
+                assert(avl_exists(joint, &i));
+        }
+
+        avl_free(t1);
+        avl_free(t2);
+        avl_free(joint);
+}
+
 int main(){
         printf("[AVLTree Test]\n");
         TIMESTAMP_START
@@ -85,6 +108,9 @@ int main(){
 
 
         avl_free(t);
+
+        join_test();
+
         TIMESTAMP_STOP
         
         END_MSG(AVLTree);

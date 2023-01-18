@@ -207,7 +207,7 @@ void* lnkd_list_get_into_array(LinkedList *list, void *array, size_t array_lengt
 	for (size_t i = 0; i < array_length; i++){
 		void *dst = void_offset(array, i * list->data_size);
 		if (!memcpy(dst, aux->info, list->data_size)){
-			printerr_memory_op(arrlist_get_into_array);
+			printerr_memory_op(lnkd_list_get_into_array);
 			return NULL;
 		}
 		aux = aux->next;
@@ -309,6 +309,50 @@ int lnkd_list_remove_array(LinkedList *list, void *array, size_t array_length){
 		}
 	}
 	return SUCCESS;
+}
+
+LinkedList* lnkd_list_join(LinkedList *list_1, LinkedList *list_2){
+	if (!list_1 || !list_2){
+		printerr_null_param(lnkd_list_join);
+		return NULL;
+	}
+	if (list_1->data_size != list_2->data_size){
+		fprintf(stderr, "ERROR: the lists have different data sizes. In function lnkd_list_join\n");
+		return NULL;
+	}
+	
+	LinkedList *list_joint = lnkd_list_init(list_1->data_size, list_1->compare);
+	if (!list_joint){
+		return NULL;
+	}
+
+	int status;
+
+	// Get the elements of the first list
+	void *tmp = lnkd_list_get_array(list_1, list_1->n_elements);
+	if (tmp != NULL){
+		// Add the elements of the first list
+		status = lnkd_list_push_back_array(list_joint, tmp, list_1->n_elements);
+		free(tmp);
+		if (status != SUCCESS){
+			goto exit_err;
+		}
+	}
+
+	// Get the elements of the second list
+	tmp = lnkd_list_get_array(list_2, list_2->n_elements);
+	if (tmp != NULL){
+		// Add the elements of the second list
+		status = lnkd_list_push_back_array(list_joint, tmp, list_2->n_elements);
+		free(tmp);
+		if (status != SUCCESS){
+			exit_err:
+			free(list_joint);
+			return NULL;
+		}
+	}
+
+	return list_joint;
 }
 
 static void lnkd_list_free_node(LLNode *node){

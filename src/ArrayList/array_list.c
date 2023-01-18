@@ -56,7 +56,7 @@ ArrayList* arrlist_init(size_t data_size, size_t max_elements, comparator_functi
 	}
 
 	ArrayList *list = malloc(sizeof(*list));
-	void *elements = malloc(ARRAY_LIST_DEFAULT_SIZE * data_size);
+	void *elements = malloc(max_elements * data_size);
 
 	if (!list || !elements){
 		printerr_allocation(arrlist_init);
@@ -227,14 +227,18 @@ void* arrlist_get_into_array(ArrayList *list, void *array, size_t array_length){
 	if (array_length > list->n_elements){
 		array_length = list->n_elements;
 	}
-	for (size_t i = 0; i < array_length; i++){
+	if (!memcpy(array, list->elements, array_length * list->data_size)){
+		printerr_memory_op(arrlist_get_into_array);
+		return NULL;
+	}
+	/*for (size_t i = 0; i < array_length; i++){
 		void *src = void_offset(list->elements, i * list->data_size);
 		void *dst = void_offset(array, i * list->data_size);
 		if (!memcpy(dst, src, list->data_size)){
 			printerr_memory_op(arrlist_get_into_array);
 			return NULL;
 		}
-	}
+	}*/
 	return array;
 }
 
@@ -320,7 +324,9 @@ ArrayList* arrlist_join(ArrayList *list_1, ArrayList *list_2){
 	}
 
 	size_t n_elements = list_1->n_elements + list_2->n_elements;
-
+	if (n_elements < ARRAY_LIST_DEFAULT_SIZE){
+		n_elements = ARRAY_LIST_DEFAULT_SIZE;
+	}
 	ArrayList *list_joint = arrlist_init(list_1->data_size, n_elements, list_1->compare);
 	if (!list_joint){
 		return NULL;
@@ -328,37 +334,28 @@ ArrayList* arrlist_join(ArrayList *list_1, ArrayList *list_2){
 
 	int status;
 
+	// Get the elements of the first list
 	void *tmp = arrlist_get_array(list_1, list_1->n_elements);
-	printf("%p should be freed\n", tmp);
-	if (!tmp){
-		goto exit_err;
+	if (tmp != NULL){
+		// Add the elements of the first list
+		status = arrlist_append_array(list_joint, tmp, list_1->n_elements);
+		free(tmp);
+		if (status != SUCCESS){
+			goto exit_err;
+		}
 	}
 
-	status = arrlist_append_array(list_joint, tmp, list_1->n_elements);
-	free(tmp);
-	printf("%p freed!\n", tmp);
-
-	if (status != SUCCESS){
-		goto exit_err;
-	}
-
+	// Get the elements of the second list
 	tmp = arrlist_get_array(list_2, list_2->n_elements);
-	printf("%p should be freed\n", tmp);
-	if (!tmp){
-		goto exit_err;
-	}
-	
-	
-	status = arrlist_append_array(list_joint, tmp, list_2->n_elements);
-	
-	free(tmp);
-	printf("%p freed stat = %d\n", tmp, status);
-	
-	
-	if (status != SUCCESS){
-		exit_err:
-		free(list_joint);
-		return NULL;
+	if (tmp != NULL){
+		// Add the elements of the second list
+		status = arrlist_append_array(list_joint, tmp, list_2->n_elements);
+		free(tmp);
+		if (status != SUCCESS){
+			exit_err:
+			free(list_joint);
+			return NULL;
+		}
 	}
 
 	return list_joint;

@@ -611,6 +611,46 @@ void* avl_postorder(AVLTree *tree){
 }
 ////////////////
 
+AVLTree* avl_join(AVLTree *tree_1, AVLTree *tree_2){
+	if (!tree_1 || !tree_2){
+		printerr_null_param(avl_join);
+		return NULL;
+	}
+	if (tree_1->data_size != tree_2->data_size){
+		fprintf(stderr, "ERROR: the trees have different data sizes. In function avl_join\n");
+		return NULL;
+	}
+	AVLTree *tree_joint = avl_init(tree_1->data_size, tree_1->compare);
+	if (!tree_joint){
+		return NULL;
+	}
+
+	int status;
+	void *tmp = avl_preorder(tree_1);
+	if (tmp != NULL){
+		status = avl_add_array(tree_joint, tmp, tree_1->n_elements);
+		free(tmp);
+		if (status != SUCCESS){
+			goto exit_err;
+		}
+	}
+
+	tmp = avl_preorder(tree_2);
+	if (tmp != NULL){
+		status = avl_add_array(tree_joint, tmp, tree_2->n_elements);
+		free(tmp);
+		if (status != SUCCESS){
+			exit_err:
+			free(tree_joint);
+			return NULL;
+		}
+	}
+
+	return tree_joint;
+}
+
+////////
+
 static void free_node(AVLNode *node){
 	if (!node){
 		return;
