@@ -318,14 +318,7 @@ void* din_arr_get_into_array(DynamicArray *list, void *array, size_t array_lengt
 		printerr_memory_op(din_arr_get_into_array);
 		return NULL;
 	}
-	/*for (size_t i = 0; i < array_length; i++){
-		void *src = void_offset(list->elements, i * list->data_size);
-		void *dst = void_offset(array, i * list->data_size);
-		if (!memcpy(dst, src, list->data_size)){
-			printerr_memory_op(din_arr_get_into_array);
-			return NULL;
-		}
-	}*/
+	
 	return array;
 }
 
