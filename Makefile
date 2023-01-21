@@ -10,8 +10,10 @@ BST_OBJS = test/bst_test.o $(SRC)/BSTree/BSTree.o $(UTIL_OBJS)
 AVL_OBJS = test/avl_test.o $(SRC)/AVLTree/AVLTree.o $(UTIL_OBJS)
 GRAPH_OBJS = test/graph_test.o $(SRC)/Graph/graph.o $(UTIL_OBJS)
 BINHEAP_OBJS = test/heap_test.o $(SRC)/DynamicArray/dynamic_array.o $(SRC)/BinaryHeap/binary_heap_min.o $(UTIL_OBJS)
+BTREE_OBJS = test/btree_test.o $(SRC)/BTree/BTree.o $(UTIL_OBJS)
+
 CC = gcc
-CCFLAGS = -lm -Wall -Wextra -Werror -g -pedantic
+CCFLAGS = -lm -Wall -Wextra -Werror -g3 -pedantic
 
 # To set optimization level append "O=X" in make command. X is the optimiztion level. 
 ifdef O
@@ -48,6 +50,9 @@ graph_test: $(BIN) $(BIN)/graph_test.out
 binary_heap: $(BIN) $(BIN)/heap_test.out
 	@ $(BIN)/heap_test.out
 
+btree_test: $(BIN) $(BIN)/btree_test.out
+	@ $(BIN)/btree_test.out
+
 $(BIN)/list_test.out: $(LIST_OBJS)
 	@ $(CC) -o $(BIN)/list_test.out $(LIST_OBJS) $(CCFLAGS)
 
@@ -68,6 +73,9 @@ $(BIN)/graph_test.out: $(GRAPH_OBJS)
 
 $(BIN)/heap_test.out: $(BINHEAP_OBJS)
 	@ $(CC) -o $@ $(BINHEAP_OBJS) $(CCFLAGS)
+
+$(BIN)/btree_test.out: $(BTREE_OBJS)
+	@ $(CC) -o $@ $(BTREE_OBJS) $(CCFLAGS)
 
 .c.o:
 	@ $(CC) $(CCFLAGS) -c -o $@ $<
