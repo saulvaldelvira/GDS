@@ -25,15 +25,6 @@
 #include <stdbool.h>
 #include "../Util/comparator.h"
 
-// ERRORS
-#ifndef ALLOCATION_ERROR
-	#define ALLOCATION_ERROR -2
-#endif
-
-#ifndef NULL_PARAMETER
-	#define NULL_PARAMETER -3
-#endif
-
 /**
  * The Stack works in a similar way to a LinkedList. But in this case, the elements are allways added in the head.
  * This is because a Stack is a Data Structure that follows a LIFO (Last In First Out) dynamic. The last element added 

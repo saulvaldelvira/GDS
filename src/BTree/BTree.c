@@ -125,8 +125,9 @@ static BTreeNode* split_node(BTreeNode *node, void *element, BTree *tree, BTreeN
         split->n_elements = 1;
         split->n_childs = 2;
 
-        // Add the child-nodes to the sub-nodes
-        
+        // If there is "overflow" thus we are adding in a NON LEAF node,
+        // we set the n_childs to n_elements + 1. Else we are in a leaf node, 
+        // wich means it has 0 childs.
         if (has_overflow){
                 node->n_childs = node->n_elements + 1;
                 right->n_childs = right->n_elements + 1;
@@ -135,14 +136,13 @@ static BTreeNode* split_node(BTreeNode *node, void *element, BTree *tree, BTreeN
                 right->n_childs = 0;
         }
 
+        // Add the child-nodes to the sub-nodes
         for (int i=0; i <= middle; i++){
                 if (node->childs[i+middle] != NULL){
                         right->childs[i] = node->childs[i+middle];
                         node->childs[i+middle] = NULL;
-                        //right->n_elements++;
                 }
                 if (node->childs[i] != NULL){
-                        //node->n_childs++;
                 }
         }
 
@@ -162,9 +162,7 @@ static BTreeNode* split_node(BTreeNode *node, void *element, BTree *tree, BTreeN
 
                 if (has_overflow){
                         node->childs[node->n_elements] = left_overflow;
-                        //node->n_childs++;
                         right->childs[0] = right_overflow;
-                        //right->n_childs++;
                 }
 
         }else if (index < middle){
@@ -199,7 +197,6 @@ static BTreeNode* split_node(BTreeNode *node, void *element, BTree *tree, BTreeN
                 if (has_overflow){
                         node->childs[index] = left_overflow;
                         node->childs[index+1] = right_overflow;
-                        //node->n_childs++;
                 }
 
         } else {
@@ -241,7 +238,6 @@ static BTreeNode* split_node(BTreeNode *node, void *element, BTree *tree, BTreeN
                 if (has_overflow){
                         right->childs[index] = left_overflow;
                         right->childs[index+1] = right_overflow;
-                        //right->n_childs++;
                 }
         }
 

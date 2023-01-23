@@ -1,10 +1,10 @@
 # Generic-Data-Structures
-A set of generic Data Structures implemented in C. <br>
+A set of generic Data Structures, implemented in C. <br>
 It includes:
 * Lists: [DynamicArray](/src/DynamicArray), [LinkedList](/src/LinkedList)
 * [Stack](src/Stack)
 * [Queue](src/Queue)
-* Trees: [BSTree](src/BSTree), [AVLTree](/src/AVLTree)
+* Trees: [BTree](/src/BTree), [AVLTree](/src/AVLTree), [BSTree](src/BSTree)
 * [Graph](src/Graph)
 * [Binary Heap](src/BinaryHeap)
 
@@ -30,8 +30,9 @@ int main(){
 In the example above, both 12 and 3 are added into the list, since every call to the append function just copies 4 bytes (sizeof(int)) from the value stored in tmp into the list. To acess and work with the elements into the structures, pointer arithmetic and standard memory manipulation routines (memcpy, memset) are used.
 
 ## How are elements compared?
-This is an important issue. Since we store "generic" data, we must have a way to compare that data. <br>
-That's why all this structures require a function pointer to be passed, also as a parameter when they are constructed. This function must be like this <br>
+This is an important issue. Since we store "generic" data, we must have a way to compare that data.
+That's why this structures require a function pointer to be passed as a parameter when they are constructed.<br>
+That function must be like this:<br>
 ```c
 int func_name (const void* param_1, const void* param_2);
 ```
@@ -63,7 +64,7 @@ int main(){
     assert(lnkd_list_exists(list, &one)); // This will return true.
 }
 ```
-<b>NOTE:</b> The header file [comparator.h](src/Util/comparator.h) defines functions to compare the most common data types (compare_int, compare_float, etc.).
+<b>NOTE:</b> The header file [comparator.h](src/Util/comparator.h) defines functions to compare the most common data types (compare_int, compare_char, etc.)
 
 ```c
 #include "comparator.h"
