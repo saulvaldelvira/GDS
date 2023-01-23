@@ -25,12 +25,12 @@
 
 #define SUCCESS		         1
 #define ERROR                    0
-#define INDEX_BOUNDS_ERROR      -1
-#define ALLOCATION_ERROR        -2
-#define NULL_PARAMETER_ERROR    -3
-#define MEMORY_OP_ERROR         -4
-#define ELEMENT_NOT_FOUND_ERROR -5
-#define REPEATED_ELEMENT_ERROR  -6
+#define INDEX_BOUNDS_ERROR      -0xE001
+#define ALLOCATION_ERROR        -0xE002
+#define NULL_PARAMETER_ERROR    -0xE003
+#define MEMORY_OP_ERROR         -0xE004
+#define ELEMENT_NOT_FOUND_ERROR -0xE005
+#define REPEATED_ELEMENT_ERROR  -0xE006
 
 #define printerr_allocation(func) fprintf(stderr, "ERROR: Unable to allocate memory for on function " #func "\n");
 
