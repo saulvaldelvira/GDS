@@ -4,7 +4,7 @@ It includes:
 * Lists: [DynamicArray](/src/DynamicArray), [LinkedList](/src/LinkedList)
 * [Stack](src/Stack)
 * [Queue](src/Queue)
-* Trees: [BSTree](src/BSTree), [AVLTree](/src/AVLTree)
+* Trees: [BTree](/src/BTree), [AVLTree](/src/AVLTree), [BSTree](src/BSTree)
 * [Graph](src/Graph)
 * [Binary Heap](src/BinaryHeap)
 
