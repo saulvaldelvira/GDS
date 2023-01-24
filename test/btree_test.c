@@ -4,34 +4,18 @@
 
 #include "../src/BTree/BTree.h"
 
+#define ARR_SIZE(arr) (sizeof(arr)/sizeof(arr[0]))
+
 int main(){
-        /*BTree *tree2 = btree_init(sizeof(int), 4, compare_int);
-        assert(btree_add(tree2, cast_int(1)));
-        assert(btree_add(tree2, cast_int(5)));
-        assert(btree_add(tree2, cast_int(9)));
-        assert(btree_add(tree2, cast_int(12)));
+        /*BTree *tree2 = btree_init(sizeof(int), 5, compare_int);
+        int nums[] = {190, 57, 89, 90, 121, 170, 35, 48, 91, 22, 126, 132, 80};
+        for (int i=0; i < (int) ARR_SIZE(nums); i++){
+                assert(btree_add(tree2, &nums[i]));
+        }
+        for (int i=0; i < (int) ARR_SIZE(nums); i++){
+                assert(btree_exists(tree2, &nums[i]));
+        }
 
-        assert(btree_add(tree2, cast_int(19)));
-        assert(btree_add(tree2, cast_int(20)));
-
-        assert(btree_add(tree2, cast_int(27)));
-        assert(btree_add(tree2, cast_int(35)));
-        assert(btree_add(tree2, cast_int(28)));
-        assert(btree_add(tree2, cast_int(22)));
-
-
-        assert(btree_exists(tree2, cast_int(1)));
-        assert(btree_exists(tree2, cast_int(5)));
-        assert(btree_exists(tree2, cast_int(9)));
-        assert(btree_exists(tree2, cast_int(12)));
-        assert(btree_exists(tree2, cast_int(19)));
-        assert(btree_exists(tree2, cast_int(20)));
-
-        assert(btree_exists(tree2, cast_int(28)));
-        assert(btree_exists(tree2, cast_int(22)));
-        
-        assert(btree_exists(tree2, cast_int(27)));
-        assert(btree_exists(tree2, cast_int(35)));
         btree_free(tree2);
         printf("oK\n");
         return 0;*/

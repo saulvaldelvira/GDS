@@ -84,8 +84,8 @@ static int right_shift_node(BTreeNode *node, int index, BTree *tree, void *eleme
                 return NULL_PARAMETER_ERROR;
         }
         
-        for (int i=n_elements_to_move; i > 0; i--){
-                node->childs[index + i] = node->childs[index + i - 1];
+        for (int i=node->n_childs; i > index; i--){
+                node->childs[i] = node->childs[i - 1];
         }
         // node->childs[index] = NULL ??? 
         return SUCCESS;
@@ -386,6 +386,30 @@ bool btree_exists(BTree *tree, void *element){
         int tmp;
         return btree_get_node(tree->root, tree->data_size, element, tree->compare, &tmp) != NULL;
 }
+
+/*static void print_node(FILE *output, BTreeNode *node, print_function_t print_function, size_t data_size){
+        printf("[");
+        for (int i = 0; i < node->n_elements; i++){
+                void *tmp = void_offset(node->elements, i * data_size);
+                print_function(tmp);
+                printf(", ");
+        }
+        printf("] ");
+}
+
+static void print_rec(FILE *output, BTreeNode *node, print_function_t print_function, size_t data_size){
+        for (int i = 0; i < node->n_childs){
+                print_node()
+        }
+}
+
+void btree_print(FILE *output, BTree *tree, print_function_t print_function){
+        if (!output || !tree){
+                printerr_null_param(btree_print);
+                return;
+        }
+        for ()
+}*/
 
 static void btree_free_node(BTreeNode *node, int K){
         if (!node){

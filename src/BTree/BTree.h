@@ -14,6 +14,9 @@ int btree_remove(BTree *tree, void *element);
 void* btree_get(BTree *tree, void *element, void *dest);
 bool btree_exists(BTree *tree, void *element);
 
+/*typedef void (*print_function_t)(void *);
+void btree_print(FILE *output, BTree *tree, print_function_t print_function);*/
+
 int btree_free(BTree *tree);
 BTree* btree_reset(BTree *tree);
 
