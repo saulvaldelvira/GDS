@@ -19,12 +19,9 @@ struct _BTree {
         comparator_function_t compare;
 };
 
-#define MIN_N 2
-
+#define MIN_K 2
 #define MAX_ELEMENTS(k) ((k) - 1)
 #define MIN_ELEMENTS(k) (((k) - 1) / 2)
-
-#define CRITIC(m,n) ((m) == (n))
 
 
 BTree* btree_init(size_t data_size, int K, comparator_function_t cmp){
@@ -36,8 +33,8 @@ BTree* btree_init(size_t data_size, int K, comparator_function_t cmp){
                 printerr_data_size(btree_init);
                 return NULL;
         }
-        if (K < MIN_N){
-                fprintf(stderr, "ERROR: Can't build a BTree with order <= %d\n", MIN_N);
+        if (K < MIN_K){
+                fprintf(stderr, "ERROR: Can't build a BTree with order <= %d\n", MIN_K);
                 return NULL;
         }
 
@@ -95,16 +92,19 @@ static int right_shift_node(BTreeNode *node, int index, BTree *tree, void *eleme
 }
 
 static int find_position(BTreeNode *node, void *element, comparator_function_t compare, size_t data_size){
+        void *tmp;
+        int c = 0;
         for (int i = 0; i < node->n_elements; i++){
-                void *tmp = void_offset(node->elements, i * data_size);
-                int c = compare(element, tmp);
+                tmp = void_offset(node->elements, i * data_size);
+                c = compare(element, tmp);
                 if (c < 0){
                         return i;
-                } else if (c > 0){
-                        return i + 1;
-                } else {
+                } else if (c == 0){
                         return -1;
                 }
+        }
+        if (c > 0){
+                return node->n_elements;
         }
         return 0;
 }
@@ -136,16 +136,6 @@ static BTreeNode* split_node(BTreeNode *node, void *element, BTree *tree, BTreeN
                 right->n_childs = 0;
         }
 
-        // Add the child-nodes to the sub-nodes
-        for (int i=0; i <= middle; i++){
-                if (node->childs[i+middle] != NULL){
-                        right->childs[i] = node->childs[i+middle];
-                        node->childs[i+middle] = NULL;
-                }
-                if (node->childs[i] != NULL){
-                }
-        }
-
         if (index == middle){
                 // Add the element into the father node
                 if (!memcpy(split->elements, element, tree->data_size)){
@@ -158,6 +148,12 @@ static BTreeNode* split_node(BTreeNode *node, void *element, BTree *tree, BTreeN
                 if (!memcpy(right->elements, tmp, right->n_elements * tree->data_size)){
                         printerr_memory_op(split_node);
                         return NULL;
+                }
+
+                // Add the child-nodes to the sub-nodes
+                for (int i=0, m = middle+1; i < right->n_childs ; i++){
+                        right->childs[i] = node->childs[m + i];
+                        node->childs[m + i] = NULL;
                 }
 
                 if (has_overflow){
@@ -194,6 +190,17 @@ static BTreeNode* split_node(BTreeNode *node, void *element, BTree *tree, BTreeN
                         return NULL;
                 }
                 
+                // Add the child-nodes to the sub-nodes
+                for (int i=0, m = middle; i < right->n_childs ; i++){
+                        right->childs[i] = node->childs[m + i];
+                        node->childs[m + i] = NULL;
+                }
+
+
+                for (int i=node->n_childs-1; i > index; i--){
+                        node->childs[i] = node->childs[i-1];
+                }
+
                 if (has_overflow){
                         node->childs[index] = left_overflow;
                         node->childs[index+1] = right_overflow;
@@ -235,7 +242,18 @@ static BTreeNode* split_node(BTreeNode *node, void *element, BTree *tree, BTreeN
                         return NULL;
                 }
 
+                // Add the child-nodes to the sub-nodes
+                for (int i=0, m = middle+1; i < right->n_childs ; i++){
+                        right->childs[i] = node->childs[m + i];
+                        node->childs[m + i] = NULL;
+                }
+
+                for (int i=right->n_childs-1; i > index; i--){
+                        node->childs[i] = node->childs[i-1];
+                }
+
                 if (has_overflow){
+                        index = index - middle - 1;
                         right->childs[index] = left_overflow;
                         right->childs[index+1] = right_overflow;
                 }
@@ -388,4 +406,14 @@ int btree_free(BTree *tree){
         btree_free_node(tree->root, tree->K);
         free(tree);
         return SUCCESS;
+}
+
+BTree* btree_reset(BTree *tree){
+        if (!tree){
+                printerr_null_param(btree_reset);
+                return NULL;
+        }
+        btree_free_node(tree->root, tree->K);
+        tree->root = NULL;
+        return tree;
 }
