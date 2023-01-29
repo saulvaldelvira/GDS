@@ -379,7 +379,150 @@ int btree_add(BTree *tree, void *element){
         return ret.status;
 }
 
-static struct add_remove_ret btree_remove_rec(BTreeNode *node, BTree *tree, void *element){
+/**
+ * Finds the position of the element.
+*/
+static int find_element(BTreeNode *node, void *element, comparator_function_t compare, size_t data_size){
+        void *tmp;
+        for (int i = 0; i < node->n_elements; i++){
+                tmp = void_offset(node->elements, i * data_size);
+                int c = compare(element, tmp);
+                if (c == 0){
+                        return i;
+                }
+        }
+        return -1;
+}
+
+static int get_min_and_delete(BTreeNode *node, void *dest, size_t data_size){
+        if (node->n_childs == 0){
+                void *tmp = memcpy(dest, node->elements, data_size);
+                if (!tmp){
+                        printerr_memory_op(get_min_and_delete);
+                        return MEMORY_OP_ERROR;
+                }
+                node->n_elements--;
+
+                tmp = void_offset(node->elements, 1 * data_size);
+                tmp = memmove(node->elements, tmp, node->n_elements * data_size);
+                if (!tmp){
+                        printerr_memory_op(get_min_and_delete);
+                        return MEMORY_OP_ERROR;
+                }
+                
+                return SUCCESS;
+        }else {
+                return get_min_and_delete(node->childs[0], dest, data_size);
+        }
+}
+
+static int get_max_and_delete(BTreeNode *node, void *dest, size_t data_size){
+        if (node->n_childs == 0){
+                void *tmp = void_offset(node->elements, (node->n_elements - 1) * data_size);
+                tmp = memcpy(dest, tmp, data_size);
+                if (!tmp){
+                        printerr_memory_op(get_max_and_delete);
+                        return MEMORY_OP_ERROR;
+                }
+                node->n_elements--;
+                return SUCCESS;
+        }else {
+                return get_max_and_delete(node->childs[node->n_childs - 1], dest, data_size);
+        }
+}
+
+static int remove_element(BTreeNode *node, size_t data_size, int pos){
+        node->n_elements--;
+        if (pos < node->n_elements){
+                void *src = void_offset(node->elements, (pos + 1) * data_size);
+                void *dst = void_offset(node->elements, pos * data_size);
+                int n = node->n_elements - pos;
+                dst = memmove(dst, src, n * data_size);
+                if (!dst){
+                        printerr_memory_op(remove_element);
+                        return MEMORY_OP_ERROR;
+                }
+        }
+        if (node->n_childs > 0){
+                for (int i = pos; i < node->n_childs - 1; i++){
+                        node->childs[i] = node->childs[i+1];
+                }
+                node->n_childs--;
+        }
+        return SUCCESS;
+}
+
+static BTreeNode* merge_nodes(BTreeNode *left, void *mid_element, BTreeNode *right, size_t data_size){
+        void *dst = void_offset(left->elements, left->n_elements * data_size);
+        dst = memcpy(dst, mid_element, data_size);
+        if (!dst){
+                printerr_memory_op(merge_nodes);
+                return NULL;
+        }
+
+        dst = void_offset(dst, data_size);
+        dst = memcpy(dst, right->elements, right->n_elements * data_size);
+        if (!dst){
+                printerr_memory_op(merge_nodes);
+                return NULL;
+        }
+        left->n_elements += 1 + right->n_elements;
+
+        for (int i = 0, p = left->n_childs; i < right->n_childs; i++){
+                left->childs[p + i] = right->childs[i];
+        }
+        left->n_childs += right->n_childs;
+
+        free(right->childs);
+        free(right);
+        return left;
+}
+
+static struct add_remove_ret btree_remove_rec(BTreeNode *node, BTreeNode *father, BTree *tree, void *element){
+        int pos = find_element(node, element, tree->compare, tree->data_size);
+        struct add_remove_ret ret = {.status = SUCCESS};
+        if (pos < 0){
+                pos = find_position(node, element, tree->compare, tree->data_size);
+                if (pos < 0){
+                        ret.status = pos;
+                        return ret;
+                }
+                ret = btree_remove_rec(node->childs[pos], node, tree, element);
+                /// etc
+        }else {
+                if (node->n_childs > 0){
+                        BTreeNode *left_child = node->childs[pos];
+                        BTreeNode *right_child = node->childs[pos + 1];
+                        void *element_to_delete = void_offset(node->elements, pos * tree->data_size);
+
+                        if (left_child->n_elements > MIN_ELEMENTS(tree->K)){
+                                get_max_and_delete(left_child, element_to_delete, tree->data_size);
+                        }else if (right_child->n_elements > MIN_ELEMENTS(tree->K)){
+                                get_min_and_delete(right_child, element_to_delete, tree->data_size);
+                        }else {
+                                
+                        }
+                }else {
+                        if (node->n_elements > MIN_ELEMENTS(tree->K)){
+                                ret.status = leaf_remove_element(node, tree->data_size, pos);
+                        } else if (node == tree->root){
+                                if (node->n_elements == 1){
+                                        free(node->childs);
+                                        free(node);
+                                        node = NULL;
+                                } else {
+                                        ret.status = remove_element(node, tree->data_size, pos);
+                                }
+                        } else {
+                                int father_pos = find_position(father, element, tree->compare, tree->data_size);
+                                BTreeNode *left_sibling = father_pos > 0 ? father->childs[father_pos - 1] : NULL;
+                                BTreeNode *right_sibling = father_pos < (father->n_childs - 1) ? father->childs[father_pos + 1] : NULL;
+
+                        }
+                }
+        }
+        ret.node = node;
+        return ret;
         // NO LEAF
                 // Left element from right subchild
 
@@ -402,10 +545,8 @@ int btree_remove(BTree *tree, void *element){
                 printerr_null_param(btree_remove);
                 return NULL_PARAMETER_ERROR;
         }
-        struct add_remove_ret ret = btree_remove_rec(tree->root, tree, element);
-        if (ret.node != NULL){
-                tree->root = ret.node;
-        }
+        struct add_remove_ret ret = btree_remove_rec(tree->root, NULL, tree, element);
+        tree->root = ret.node;
         return ret.status;
 }
 
