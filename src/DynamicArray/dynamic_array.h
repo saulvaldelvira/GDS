@@ -110,6 +110,16 @@ size_t din_arr_size(DynamicArray *list);
 int din_arr_set_at(DynamicArray *list, size_t index, void *element);
 
 /**
+ * Inserts in the position of element the value [insert]
+*/
+int din_arr_insert(DynamicArray *list, void *element, void *insert);
+
+/**
+ * Inserts element in the position [index]
+*/
+int din_arr_insert_at(DynamicArray *list, size_t index, void *element);
+
+/**
  * Replaces element with replacement in the list.
  * @return 1 if the operation is successful
  */

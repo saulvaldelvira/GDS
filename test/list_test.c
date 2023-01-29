@@ -111,6 +111,17 @@ int main(){
 	int nums[] = {1, 2, 3, 4, 5};
 	assert(din_arr_append_array(arr, nums, 5));
 	assert(5UL == din_arr_size(arr));
+
+	assert(din_arr_insert_at(arr, 1, cast_int(120)));
+	assert(din_arr_exists(arr, cast_int(120)));
+	assert(1UL == din_arr_indexof(arr, cast_int(120)).value);
+	din_arr_remove_at(arr, 1);
+
+	assert(din_arr_insert(arr, &nums[3], cast_int(-89)));
+	assert(din_arr_exists(arr, cast_int(-89)));
+	assert(3UL == din_arr_indexof(arr, cast_int(-89)).value);
+	din_arr_remove_at(arr, 3);
+
 	assert(din_arr_remove_array(arr, nums, 5));
 	assert(din_arr_isempty(arr));
 
