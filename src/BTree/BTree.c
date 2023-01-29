@@ -1,3 +1,22 @@
+/**
+ *  Copyright (C) 2022-2023  Saúl Valdelvira Iglesias
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ *
+ *  Email: saulvaldelvira@gmail.com
+ *  Version: 29-01-2023
+ */
 #include "BTree.h"
 #include "../Util/error.h"
 #include "../Util/definitions.h"
@@ -287,13 +306,13 @@ static BTreeNode* split_node(BTreeNode *node, void *element, BTree *tree, BTreeN
         return split;
 }
 
-struct add_rec {
+struct add_remove_ret {
         int status;
         BTreeNode *node;
 };
 
-static struct add_rec btree_add_rec(BTreeNode *node, BTree *tree, void *element){
-        struct add_rec ret;
+static struct add_remove_ret btree_add_rec(BTreeNode *node, BTree *tree, void *element){
+        struct add_remove_ret ret;
 
         // Find position to insert element
         int pos = find_position(node, element, tree->compare, tree->data_size);
@@ -353,14 +372,42 @@ int btree_add(BTree *tree, void *element){
                         return ALLOCATION_ERROR;
                 }
         }
-        struct add_rec ret = btree_add_rec(tree->root, tree, element);
+        struct add_remove_ret ret = btree_add_rec(tree->root, tree, element);
         if (ret.node != NULL){
                 tree->root = ret.node;
         }
         return ret.status;
 }
 
-int btree_remove(BTree *tree, void *element);
+static struct add_remove_ret btree_remove_rec(BTreeNode *node, BTree *tree, void *element){
+        // NO LEAF
+                // Left element from right subchild
+
+                // Else right element from left subchild
+
+                // ELSE merge two childs and element
+                        // And chck if page is critic after merge
+        // Leaf
+                // not critic
+                        // remove element
+                // critic
+                        // ask right brother for element
+                        // ask left brother for element
+                        // merge with right (or left if it doesnt exists) AND
+                                // recursively remove (if needed)
+}
+
+int btree_remove(BTree *tree, void *element){
+        if (!tree || !element){
+                printerr_null_param(btree_remove);
+                return NULL_PARAMETER_ERROR;
+        }
+        struct add_remove_ret ret = btree_remove_rec(tree->root, tree, element);
+        if (ret.node != NULL){
+                tree->root = ret.node;
+        }
+        return ret.status;
+}
 
 static BTreeNode* btree_get_node(BTreeNode *node, size_t data_size, void *element, comparator_function_t cmp, int *index){
         if (node == NULL){
