@@ -67,15 +67,21 @@ static BTreeNode* btree_init_node(int K, size_t data_size){
         return node;
 }
 
+/**
+ * Tries to insert the element into the given index. 
+ * If the node is full returns INDEX_BOUNDS_ERROR.
+*/
 static int right_shift_node(BTreeNode *node, int index, BTree *tree, void *element){
         if (node->n_elements == MAX_ELEMENTS(tree->K)){
                 return INDEX_BOUNDS_ERROR;
         }
+        // Shift elements to the right
         void *src = void_offset(node->elements, index * tree->data_size);
         void *dst = void_offset(node->elements, (index+1) * tree->data_size);
         int n_elements_to_move = node->n_elements - index;
         dst = memmove(dst, src, n_elements_to_move * tree->data_size);
 
+        // Insert the element 
         src = memcpy(src, element, tree->data_size);
         node->n_elements++;
         
@@ -84,13 +90,18 @@ static int right_shift_node(BTreeNode *node, int index, BTree *tree, void *eleme
                 return NULL_PARAMETER_ERROR;
         }
         
+        // Also shift the child nodes to the right
         for (int i=node->n_childs; i > index; i--){
                 node->childs[i] = node->childs[i - 1];
         }
-        // node->childs[index] = NULL ??? 
+        node->childs[index] = NULL;
         return SUCCESS;
 }
 
+/**
+ * Finds the position in wich the element should be inserted.
+ * For non leaf nodes, this means the position of the child node to continue recursively searching in.
+*/
 static int find_position(BTreeNode *node, void *element, comparator_function_t compare, size_t data_size){
         void *tmp;
         int c = 0;
@@ -103,25 +114,34 @@ static int find_position(BTreeNode *node, void *element, comparator_function_t c
                         return -1;
                 }
         }
+        // If it's greater than the last node, return the last index
         if (c > 0){
                 return node->n_elements;
         }
         return 0;
 }
 
+/**
+ * Adds an element to a full node and splits it.
+ * 1) Adds the element into its position.
+ * 2) Splits the node into a left and right node, and appends them to an extra node, that also contains the middle element we must propagate upwards.
+ * 3) If the params left_overflow and right_overflow are NOT NULL, this means we are splitting a non leaf node, that tried to add a split node, but
+ *      was full and propagated the add process a second time. In this case, we have to add left_overflow and right_overflow to the split nodes.
+*/
 static BTreeNode* split_node(BTreeNode *node, void *element, BTree *tree, BTreeNode *left_overflow, BTreeNode *right_overflow){
-        int middle = node->n_elements / 2;
+        int middle = node->n_elements / 2; // Index of the element to propagate
         bool has_overflow = left_overflow && right_overflow;
         int index = find_position(node, element, tree->compare, tree->data_size);
         BTreeNode *right = btree_init_node(tree->K, tree->data_size);
         BTreeNode *split = btree_init_node(tree->K, tree->data_size);
+        BTreeNode *left  = node;
         if (!right || !split){
                 printerr_allocation(split_node);
                 return NULL;
         }
 
-        right->n_elements = node->n_elements - middle; // Number of elements to copy into right
-        node->n_elements = middle;
+        right->n_elements = left->n_elements - middle; // Number of elements to copy into right
+        left->n_elements = middle;
         split->n_elements = 1;
         split->n_childs = 2;
 
@@ -129,13 +149,14 @@ static BTreeNode* split_node(BTreeNode *node, void *element, BTree *tree, BTreeN
         // we set the n_childs to n_elements + 1. Else we are in a leaf node, 
         // wich means it has 0 childs.
         if (has_overflow){
-                node->n_childs = node->n_elements + 1;
+                left->n_childs = left->n_elements + 1;
                 right->n_childs = right->n_elements + 1;
         } else {
-                node->n_childs = 0;
+                left->n_childs = 0;
                 right->n_childs = 0;
         }
 
+        // The element to propagate is the element to add itself
         if (index == middle){
                 // Add the element into the father node
                 if (!memcpy(split->elements, element, tree->data_size)){
@@ -144,24 +165,24 @@ static BTreeNode* split_node(BTreeNode *node, void *element, BTree *tree, BTreeN
                 }
                 
                 // Add the elements of the right node
-                void *tmp = void_offset(node->elements, middle * tree->data_size);
+                void *tmp = void_offset(left->elements, middle * tree->data_size);
                 if (!memcpy(right->elements, tmp, right->n_elements * tree->data_size)){
                         printerr_memory_op(split_node);
                         return NULL;
                 }
 
-                // Add the child-nodes to the sub-nodes
-                for (int i=0, m = middle+1; i < right->n_childs ; i++){
-                        right->childs[i] = node->childs[m + i];
-                        node->childs[m + i] = NULL;
+                // Split the childs arrays
+                for (int i=1, m = middle; i < right->n_childs ; i++){
+                        right->childs[i] = left->childs[m + i];
+                        left->childs[m + i] = NULL;
                 }
 
                 if (has_overflow){
-                        node->childs[node->n_elements] = left_overflow;
+                        left->childs[left->n_elements] = left_overflow;
                         right->childs[0] = right_overflow;
                 }
 
-        }else if (index < middle){
+        }else if (index < middle){ // Add the element into the left node
                 // Add the element into the father node.
                 void *tmp = void_offset(node->elements, (middle-1) * tree->data_size);
                 tmp = memcpy(split->elements, tmp, tree->data_size);
@@ -171,7 +192,7 @@ static BTreeNode* split_node(BTreeNode *node, void *element, BTree *tree, BTreeN
                 }
 
                 // Add second half of element into right node
-                tmp = void_offset(node->elements, middle * tree->data_size);
+                tmp = void_offset(left->elements, middle * tree->data_size);
                 tmp = memcpy(right->elements, tmp, right->n_elements * tree->data_size);
                 if (!tmp){
                         printerr_memory_op(split_node);
@@ -179,8 +200,8 @@ static BTreeNode* split_node(BTreeNode *node, void *element, BTree *tree, BTreeN
                 }
 
                 // Make space for the extra element
-                void *src = void_offset(node->elements, index * tree->data_size);
-                void *dst = void_offset(node->elements, (index+1) * tree->data_size);
+                void *src = void_offset(left->elements, index * tree->data_size);
+                void *dst = void_offset(left->elements, (index+1) * tree->data_size);
                 dst = memmove(dst, src, (middle - index) * tree->data_size); // Move elements to the right
                 
                 // Insert the element into index
@@ -190,25 +211,25 @@ static BTreeNode* split_node(BTreeNode *node, void *element, BTree *tree, BTreeN
                         return NULL;
                 }
                 
-                // Add the child-nodes to the sub-nodes
+                // Split the childs arrays
                 for (int i=0, m = middle; i < right->n_childs ; i++){
-                        right->childs[i] = node->childs[m + i];
-                        node->childs[m + i] = NULL;
+                        right->childs[i] = left->childs[m + i];
+                        left->childs[m + i] = NULL;
                 }
 
 
-                for (int i=node->n_childs-1; i > index; i--){
-                        node->childs[i] = node->childs[i-1];
+                for (int i=left->n_childs-1; i > index; i--){
+                        left->childs[i] = left->childs[i-1];
                 }
 
                 if (has_overflow){
-                        node->childs[index] = left_overflow;
-                        node->childs[index+1] = right_overflow;
+                        left->childs[index] = left_overflow;
+                        left->childs[index+1] = right_overflow;
                 }
 
-        } else {
-                // Add element to father
-                void *tmp = void_offset(node->elements, middle * tree->data_size);
+        } else {// Add the element into the right node
+                // Add the middle to father
+                void *tmp = void_offset(left->elements, middle * tree->data_size);
                 if (!memcpy(split->elements, tmp, tree->data_size)){
                         printerr_memory_op(split_node);
                         return NULL;
@@ -217,7 +238,7 @@ static BTreeNode* split_node(BTreeNode *node, void *element, BTree *tree, BTreeN
                 int n; // To keep track of how many element we already added to right
 
                 // Add everithing from [middle + 1 ] to [inserting point]
-                void *src = void_offset(node->elements, (middle+1) * tree->data_size);
+                void *src = void_offset(left->elements, (middle+1) * tree->data_size);
                 int first_chunk = index - (middle+1);
                 src = memcpy(right->elements, src, first_chunk * tree->data_size);
                 n = first_chunk;
@@ -234,7 +255,7 @@ static BTreeNode* split_node(BTreeNode *node, void *element, BTree *tree, BTreeN
                 }
 
                 // Add the rest of the elements
-                src = void_offset(node->elements, index * tree->data_size);
+                src = void_offset(left->elements, index * tree->data_size);
                 dst = void_offset(right->elements, n * tree->data_size);
                 dst = memcpy(dst, src, (right->n_elements - n) * tree->data_size);
                 if (!dst){
@@ -242,14 +263,15 @@ static BTreeNode* split_node(BTreeNode *node, void *element, BTree *tree, BTreeN
                         return NULL;
                 }
 
-                // Add the child-nodes to the sub-nodes
-                for (int i=0, m = middle+1; i < right->n_childs ; i++){
-                        right->childs[i] = node->childs[m + i];
-                        node->childs[m + i] = NULL;
+                // Split the childs arrays
+                for (int i=1, m = middle; i < right->n_childs ; i++){
+                        right->childs[i] = left->childs[m + i];
+                        left->childs[m + i] = NULL;
                 }
 
+                // Shift right childs to the right
                 for (int i=right->n_childs-1; i > index; i--){
-                        node->childs[i] = node->childs[i-1];
+                        right->childs[i] = right->childs[i-1];
                 }
 
                 if (has_overflow){
@@ -259,10 +281,8 @@ static BTreeNode* split_node(BTreeNode *node, void *element, BTree *tree, BTreeN
                 }
         }
 
-        
-
-        // Append left (node) and right to the father (split)
-        split->childs[0] = node;
+        // Append left and right nodes to the father (split)
+        split->childs[0] = left;
         split->childs[1] = right;
         return split;
 }
@@ -386,30 +406,6 @@ bool btree_exists(BTree *tree, void *element){
         int tmp;
         return btree_get_node(tree->root, tree->data_size, element, tree->compare, &tmp) != NULL;
 }
-
-/*static void print_node(FILE *output, BTreeNode *node, print_function_t print_function, size_t data_size){
-        printf("[");
-        for (int i = 0; i < node->n_elements; i++){
-                void *tmp = void_offset(node->elements, i * data_size);
-                print_function(tmp);
-                printf(", ");
-        }
-        printf("] ");
-}
-
-static void print_rec(FILE *output, BTreeNode *node, print_function_t print_function, size_t data_size){
-        for (int i = 0; i < node->n_childs){
-                print_node()
-        }
-}
-
-void btree_print(FILE *output, BTree *tree, print_function_t print_function){
-        if (!output || !tree){
-                printerr_null_param(btree_print);
-                return;
-        }
-        for ()
-}*/
 
 static void btree_free_node(BTreeNode *node, int K){
         if (!node){
