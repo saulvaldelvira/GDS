@@ -172,6 +172,7 @@ int main(){
 	assert(lnkd_list_remove(lnked, &last));
 	assert(lnkd_list_size(lnked) == (size_t) n-1);
 	assert(lnkd_list_append(lnked, &last));
+	assert(lnkd_list_size(lnked) == (size_t) n);
 	///////////////////////////////////////////////////
 	
 	for(int i=0; i < n; i++){
