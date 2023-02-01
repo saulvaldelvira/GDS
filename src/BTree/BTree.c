@@ -42,6 +42,7 @@ struct _BTree {
 #define MAX_ELEMENTS(k) ((k) - 1)
 #define MIN_ELEMENTS(k) (((k) - 1) / 2)
 
+#define LEAF(node) ((node)->n_childs == 0)
 
 BTree* btree_init(size_t data_size, int K, comparator_function_t cmp){
         if (!cmp){
@@ -360,6 +361,11 @@ static struct add_remove_ret btree_add_rec(BTreeNode *node, BTree *tree, void *e
         return ret;
 }
 
+static int add_to_node(BTreeNode *node, BTree *tree, void *element){
+        int pos = find_position(node, element, tree->compare, tree->data_size);
+        return right_shift_node(node, pos, tree, element);
+}
+
 int btree_add(BTree *tree, void *element){
         if (!tree || !element){
                 printerr_null_param(btree_add);
@@ -380,7 +386,8 @@ int btree_add(BTree *tree, void *element){
 }
 
 /**
- * Finds the position of the element.
+ * @return the position of the element, or -1 if it's not in this node.
+ * 
 */
 static int find_element(BTreeNode *node, void *element, comparator_function_t compare, size_t data_size){
         void *tmp;
@@ -395,7 +402,7 @@ static int find_element(BTreeNode *node, void *element, comparator_function_t co
 }
 
 static int get_min_and_delete(BTreeNode *node, void *dest, size_t data_size){
-        if (node->n_childs == 0){
+        if (LEAF(node)){
                 void *tmp = memcpy(dest, node->elements, data_size);
                 if (!tmp){
                         printerr_memory_op(get_min_and_delete);
@@ -454,21 +461,27 @@ static int remove_element(BTreeNode *node, size_t data_size, int pos){
 
 static BTreeNode* merge_nodes(BTreeNode *left, void *mid_element, BTreeNode *right, size_t data_size){
         void *dst = void_offset(left->elements, left->n_elements * data_size);
-        dst = memcpy(dst, mid_element, data_size);
-        if (!dst){
-                printerr_memory_op(merge_nodes);
-                return NULL;
+        if (mid_element){
+                dst = memcpy(dst, mid_element, data_size);
+                if (!dst){
+                        printerr_memory_op(merge_nodes);
+                        return NULL;
+                }
+                left->n_elements++;
+                dst = void_offset(dst, data_size);
         }
 
-        dst = void_offset(dst, data_size);
         dst = memcpy(dst, right->elements, right->n_elements * data_size);
         if (!dst){
                 printerr_memory_op(merge_nodes);
                 return NULL;
         }
-        left->n_elements += 1 + right->n_elements;
+        left->n_elements += right->n_elements;
 
-        for (int i = 0, p = left->n_childs; i < right->n_childs; i++){
+        // TODO : Fix this 
+        int p;     // = //mid_element ? left->n_childs : left->n_childs - 1;
+
+        for (int i = 0; i < right->n_childs; i++){
                 left->childs[p + i] = right->childs[i];
         }
         left->n_childs += right->n_childs;
@@ -477,6 +490,63 @@ static BTreeNode* merge_nodes(BTreeNode *left, void *mid_element, BTreeNode *rig
         free(right);
         return left;
 }
+
+static BTreeNode* borrow_max(BTreeNode *node, int K) {
+        if (LEAF(node)){
+                if (node->n_elements <= MIN_ELEMENTS(K)){
+                        return NULL;
+                }else {
+                        return node;
+                }
+        }else {
+                return borrow_max(node->childs[node->n_childs-1], K);
+        }
+}
+
+
+static BTreeNode* borrow_min(BTreeNode *node, int K) {
+        if (LEAF(node)){
+                if (node->n_elements <= MIN_ELEMENTS(K)){
+                        return NULL;
+                }else {
+                        return node;
+                }
+        }else {
+                return borrow_max(node->childs[0], K);
+        }
+}
+
+static void request_or_merge(BTreeNode *node, BTreeNode *father, BTree *tree, void *element){
+        int father_pos = find_position(father, element, tree->compare, tree->data_size);
+        BTreeNode **left_sibling = father_pos > 0 ? &father->childs[father_pos - 1] : NULL;
+        BTreeNode **right_sibling = father_pos < (father->n_childs - 1) ? &father->childs[father_pos + 1] : NULL;
+
+        BTreeNode *max_left = borrow_max(*left_sibling, tree->K);
+        BTreeNode *min_right;
+        void *element_down = void_offset(father->elements, (father_pos - 1) * tree->data_size);
+        // Ask brothers for an element
+        if (left_sibling && max_left){
+                add_to_node(node, tree, element_down);
+                get_max_and_delete(max_left, element_down, tree->data_size);
+
+        } else if (right_sibling && (min_right = borrow_min(*right_sibling, tree->K))){
+                element_down = void_offset(element_down, tree->data_size); // Fetch the next element (the father of the right child)
+                add_to_node(node, tree, element_down);
+                get_min_and_delete(min_right, element_down, tree->data_size);
+
+        } else { // Merge
+                if (left_sibling) {
+                        *left_sibling = merge_nodes(*left_sibling, element_down, node, tree->data_size);
+                        remove_element(father, tree->data_size, father_pos-1);
+                }else if (right_sibling) {
+                        element_down = void_offset(element_down, tree->data_size); // Fetch the next element (the father of the right child)
+                        *right_sibling = merge_nodes(node, element_down, *right_sibling, tree->data_size);
+                        remove_element(father, tree->data_size, father_pos);
+                }
+        }
+}
+
+
 
 static struct add_remove_ret btree_remove_rec(BTreeNode *node, BTreeNode *father, BTree *tree, void *element){
         int pos = find_element(node, element, tree->compare, tree->data_size);
@@ -488,21 +558,11 @@ static struct add_remove_ret btree_remove_rec(BTreeNode *node, BTreeNode *father
                         return ret;
                 }
                 ret = btree_remove_rec(node->childs[pos], node, tree, element);
-                /// etc
+                if (node->n_elements < MIN_ELEMENTS(tree->K)){
+                        request_or_merge(node, father, tree, element);
+                }
         }else {
-                if (node->n_childs > 0){
-                        BTreeNode *left_child = node->childs[pos];
-                        BTreeNode *right_child = node->childs[pos + 1];
-                        void *element_to_delete = void_offset(node->elements, pos * tree->data_size);
-
-                        if (left_child->n_elements > MIN_ELEMENTS(tree->K)){
-                                get_max_and_delete(left_child, element_to_delete, tree->data_size);
-                        }else if (right_child->n_elements > MIN_ELEMENTS(tree->K)){
-                                get_min_and_delete(right_child, element_to_delete, tree->data_size);
-                        }else {
-                                
-                        }
-                }else {
+                if (LEAF(node)){
                         if (node->n_elements > MIN_ELEMENTS(tree->K)){
                                 ret.status = remove_element(node, tree->data_size, pos);
                         } else if (node == tree->root){
@@ -514,10 +574,21 @@ static struct add_remove_ret btree_remove_rec(BTreeNode *node, BTreeNode *father
                                         ret.status = remove_element(node, tree->data_size, pos);
                                 }
                         } else {
-                                int father_pos = find_position(father, element, tree->compare, tree->data_size);
-                                BTreeNode *left_sibling = father_pos > 0 ? father->childs[father_pos - 1] : NULL;
-                                BTreeNode *right_sibling = father_pos < (father->n_childs - 1) ? father->childs[father_pos + 1] : NULL;
+                                remove_element(node, tree->data_size, pos);
+                                request_or_merge(node, father, tree, element);
+                        }
+                }else {
+                        BTreeNode **left_child = &node->childs[pos];
+                        BTreeNode **right_child = &node->childs[pos + 1];
+                        void *element_to_delete = void_offset(node->elements, pos * tree->data_size);
 
+                        if ((*left_child)->n_elements > MIN_ELEMENTS(tree->K)){
+                                get_max_and_delete(*left_child, element_to_delete, tree->data_size);
+                        }else if ((*right_child)->n_elements > MIN_ELEMENTS(tree->K)){
+                                get_min_and_delete(*right_child, element_to_delete, tree->data_size);
+                        }else {
+                                *left_child = merge_nodes(*left_child, NULL, *right_child, tree->data_size);
+                                remove_element(node, tree->data_size, pos);
                         }
                 }
         }
