@@ -83,7 +83,7 @@ $(BIN)/btree_test.out: $(BTREE_OBJS)
 $(BIN):
 	@ mkdir $(BIN)
 
-all_test: list_test stack_test queue_test bst_test graph_test
+all_test: list_test stack_test queue_test bst_test graph_test btree_test
 
 clean:
 	find . -type f -name '*.o' -delete
@@ -92,3 +92,4 @@ clean:
 purge: clean
 	find . -type f -name '*.out' -delete
 	find . -type f -name '*.exe' -delete
+	rm -rf bin/

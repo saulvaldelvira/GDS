@@ -504,7 +504,7 @@ static struct add_remove_ret btree_remove_rec(BTreeNode *node, BTreeNode *father
                         }
                 }else {
                         if (node->n_elements > MIN_ELEMENTS(tree->K)){
-                                ret.status = leaf_remove_element(node, tree->data_size, pos);
+                                ret.status = remove_element(node, tree->data_size, pos);
                         } else if (node == tree->root){
                                 if (node->n_elements == 1){
                                         free(node->childs);
