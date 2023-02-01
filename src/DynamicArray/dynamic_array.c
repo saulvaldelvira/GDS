@@ -154,7 +154,7 @@ int din_arr_append_array(DynamicArray *list, void *array, size_t array_length){
 	}
 
 	if (list->n_elements + array_length > list->max_elements){
-		list->max_elements = list->max_elements + array_length;
+		list->max_elements = (list->max_elements + array_length) * 2;
 		list->elements = realloc(list->elements, list->max_elements * list->data_size);
 		if(!list->elements){
 			printerr_allocation(din_arr_append_array);
@@ -178,7 +178,7 @@ int din_arr_push_front_array(DynamicArray *list, void *array, size_t array_lengt
 		return NULL_PARAMETER_ERROR;
 	}
 	if (list->n_elements + array_length > list->max_elements){
-		list->max_elements = list->max_elements + array_length;
+		list->max_elements = (list->max_elements + array_length) * 2;
 		list->elements = realloc(list->elements, list->max_elements * list->data_size);
 		if(!list->elements){
 			printerr_allocation(din_arr_push_front_array);
@@ -278,6 +278,44 @@ int din_arr_set(DynamicArray *list, void *element, void *replacement){
 		}
 	}
 	return ELEMENT_NOT_FOUND_ERROR;
+}
+
+int din_arr_insert(DynamicArray *list, void *element, void *insert){
+	if (!list || !element || !insert){
+		printerr_null_param(din_arr_insert_at);
+		return NULL_PARAMETER_ERROR;
+	}
+	index_t index = din_arr_indexof(list, element);
+	if (index.status != SUCCESS){
+		return index.status;
+	}
+	return din_arr_insert_at(list, index.value, insert);
+}
+
+int din_arr_insert_at(DynamicArray *list, size_t index, void *element){
+	if (!list || !element){
+		printerr_null_param(din_arr_insert_at);
+		return NULL_PARAMETER_ERROR;
+	}
+	if (list->n_elements == list->max_elements){
+		list->max_elements = list->max_elements * 2;
+		list->elements = realloc(list->elements, list->max_elements * list->data_size);
+		if(!list->elements){
+			printerr_allocation(din_arr_insert_at);
+			return ALLOCATION_ERROR;
+		}
+	}
+	void *src = void_offset(list->elements, index * list->data_size);
+	void *dst = void_offset(list->elements, (index + 1) * list->data_size);
+	int n = list->n_elements - index; // number of elements to shift
+	dst = memmove(dst, src, n * list->data_size); // Shift elements to the right
+	src = memcpy(src, element, list->data_size); // Insert the element
+	if (!dst || !src){
+		printerr_memory_op(din_arr_insert_at);
+		return MEMORY_OP_ERROR;
+	}
+	list->n_elements++;
+	return SUCCESS;
 }
 
 void* din_arr_get_at(DynamicArray *list, size_t index, void *dest){

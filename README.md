@@ -58,18 +58,16 @@ int compare_int(const void* param_1, const void* param_2){
 }
 
 int main(){
-    LinkedList *list = lnkd_list_init(sizeof(int), compare_int); // Pass compare_int as a parameter
-    int one = 1;
-    lnkd_list_append(list, &one);
-    assert(lnkd_list_exists(list, &one)); // This will return true.
+    int a = 1;
+    int b = 2;
+    void *aptr = &a;
+    void *bptr = &b;
+    assert(compare_int(aptr, bptr) < 0);
+    return 0;
 }
 ```
-<b>NOTE:</b> The header file [comparator.h](src/Util/comparator.h) defines functions to compare the most common data types (compare_int, compare_char, etc.)
+The header file [comparator.h](src/Util/comparator.h) defines functions to compare the most common data types (int, char, long, etc.)
 
 ```c
-#include "comparator.h"
-
-int main(){
-    LinkedList *list = lnkd_list_init(sizeof(char), compare_char); // To compare chars
-}
+LinkedList *list = lnkd_list_init(sizeof(char), compare_char); // This list stores chars
 ```

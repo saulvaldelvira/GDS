@@ -30,7 +30,7 @@
 */
 typedef struct LLNode {
 	struct LLNode *next; // Pointer to the next node
-	struct LLNode *previous; // Pointer to the previous node
+	struct LLNode *prev; // Pointer to the previous node
 	byte_t info[];
 }LLNode;
 
@@ -75,7 +75,7 @@ static LLNode* lnkd_list_innit_node(void *info, size_t size){
 		return NULL;
 	}
 	node->next = NULL;
-	node->previous = NULL;
+	node->prev = NULL;
 	if(!memcpy(node->info, info, size)){
 		printerr_memory_op(lnkd_list_innit_node);
 		return NULL;
@@ -88,20 +88,16 @@ int lnkd_list_append(LinkedList *list, void *element){
 		printerr_null_param(lnkd_list_append);
 		return NULL_PARAMETER_ERROR;
 	}
-	if(list->n_elements == 0){ // We add to the head
-		list->head = lnkd_list_innit_node(element, list->data_size);
-		if(!list->head){
-			return ALLOCATION_ERROR;
-		}
-		list->tail = list->head;
-	}else{ // We add to the tail
-		list->tail->next = lnkd_list_innit_node(element, list->data_size);
-		if(!list->tail->next){
-			return ALLOCATION_ERROR;
-		}
-		list->tail->next->previous = list->tail; // Create the "previous" reference in this new element
-		list->tail = list->tail->next; // Update the tail to this new element
+	LLNode **ref = list->head == NULL ? // If head NULL
+			&list->head 	  : // Add to head
+			&list->tail->next;  // Else add to the tail
+	*ref = lnkd_list_innit_node(element, list->data_size);
+	if (!*ref){
+		printerr_allocation(lnkd_list_append);
+		return ALLOCATION_ERROR;
 	}
+	(*ref)->prev = list->tail;
+	list->tail = *ref;
 	list->n_elements++;
 	return SUCCESS;
 }
@@ -140,7 +136,7 @@ int lnkd_list_push_front(LinkedList *list, void *element){
 			return ALLOCATION_ERROR;
 		}
 		aux->next = list->head;
-		list->head->previous = aux;
+		list->head->prev = aux;
 		list->head = aux;
 	}
 	list->n_elements++;
@@ -271,23 +267,21 @@ int lnkd_list_remove(LinkedList *list, void *element){
 		printerr_null_param(lnkd_list_remove);
 		return NULL_PARAMETER_ERROR;
 	}
-	LLNode *aux = list->head;
-	while(aux != NULL && (*list->compare) (aux->info, element) != 0){
-		aux = aux->next;
+	LLNode **tmp = &list->head;
+	while((*tmp) != NULL && list->compare ((*tmp)->info, element) != 0){
+		tmp = &(*tmp)->next;
 	}
-	if(aux != NULL){
-		if (aux == list->head){ // If the element to delete is the head
-			list->head = list->head->next;
-		}else{
-			if (aux->next == NULL){// We're in the last node, have to change the tail pointer
-			list->tail = aux->previous;
-			} else { // If there's a node after next, change it's "previous" pointer
-			aux->next->previous = aux->previous;
-			}
-			aux->previous->next = aux->next;
-		}
+	if((*tmp) != NULL){
+		LLNode *del = *tmp;
 
-		free(aux);
+		if (list->tail == *tmp){
+			list->tail = (*tmp)->prev;
+		}else {
+			(*tmp)->next->prev = (*tmp)->prev;
+		}
+		*tmp = (*tmp)->next;
+
+		free(del);
 		list->n_elements--;
 		return SUCCESS;
 	}
