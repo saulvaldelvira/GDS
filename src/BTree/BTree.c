@@ -452,7 +452,7 @@ static int remove_element(BTreeNode *node, size_t data_size, int pos){
         return SUCCESS;
 }
 
-/*static BTreeNode* merge_nodes(BTreeNode *left, void *mid_element, BTreeNode *right, size_t data_size){
+static BTreeNode* merge_nodes(BTreeNode *left, void *mid_element, BTreeNode *right, size_t data_size){
         void *dst = void_offset(left->elements, left->n_elements * data_size);
         dst = memcpy(dst, mid_element, data_size);
         if (!dst){
@@ -476,7 +476,7 @@ static int remove_element(BTreeNode *node, size_t data_size, int pos){
         free(right->childs);
         free(right);
         return left;
-}*/
+}
 
 static struct add_remove_ret btree_remove_rec(BTreeNode *node, BTreeNode *father, BTree *tree, void *element){
         int pos = find_element(node, element, tree->compare, tree->data_size);
@@ -514,10 +514,9 @@ static struct add_remove_ret btree_remove_rec(BTreeNode *node, BTreeNode *father
                                         ret.status = remove_element(node, tree->data_size, pos);
                                 }
                         } else {
-                                (void) father;
-                                // int father_pos = find_position(father, element, tree->compare, tree->data_size);
-                                // BTreeNode *left_sibling = father_pos > 0 ? father->childs[father_pos - 1] : NULL;
-                                // BTreeNode *right_sibling = father_pos < (father->n_childs - 1) ? father->childs[father_pos + 1] : NULL;
+                                int father_pos = find_position(father, element, tree->compare, tree->data_size);
+                                BTreeNode *left_sibling = father_pos > 0 ? father->childs[father_pos - 1] : NULL;
+                                BTreeNode *right_sibling = father_pos < (father->n_childs - 1) ? father->childs[father_pos + 1] : NULL;
 
                         }
                 }
