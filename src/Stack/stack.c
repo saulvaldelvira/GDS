@@ -183,6 +183,23 @@ bool stack_search(Stack *stack, void *element){
 	return false;
 }
 
+int stack_remove(Stack *stack, void *element){
+	if(!stack || !element){
+		printerr_null_param(stack_remove);
+		return NULL_PARAMETER_ERROR;
+	}
+	StackNode** aux = &stack->head;
+	while (*aux != NULL && stack->compare((*aux)->info, element) != 0){
+		aux = &(*aux)->next;
+	}
+	if (!*aux){
+		return ELEMENT_NOT_FOUND_ERROR;
+	}
+	*aux = (*aux)->next;
+	stack->n_elements--;
+	return SUCCESS;
+}
+
 size_t stack_size(Stack *queue){
 	if (!queue){
 		printerr_null_param(stack_size);

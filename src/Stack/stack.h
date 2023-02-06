@@ -72,6 +72,11 @@ void* stack_peek(Stack *stack, void *dest);
 bool stack_search(Stack *stack, void *element);
 
 /**
+ * @return 1 if the element is successfuly deleted
+*/
+int stack_remove(Stack *stack, void *element);
+
+/**
  * @return the number of elements in the Stack
 */
 size_t stack_size(Stack *queue);
