@@ -195,7 +195,9 @@ int stack_remove(Stack *stack, void *element){
 	if (!*aux){
 		return ELEMENT_NOT_FOUND_ERROR;
 	}
+	StackNode *del = *aux;
 	*aux = (*aux)->next;
+	free(del);
 	stack->n_elements--;
 	return SUCCESS;
 }
