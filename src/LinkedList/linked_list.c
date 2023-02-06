@@ -124,20 +124,19 @@ int lnkd_list_push_front(LinkedList *list, void *element){
 		printerr_null_param(lnkd_list_push_front);
 		return NULL_PARAMETER_ERROR;
 	}
-	if(list->n_elements == 0){ // We add to the head
+	if (list->head == NULL){
 		list->head = lnkd_list_innit_node(element, list->data_size);
 		if(!list->head){
 			return ALLOCATION_ERROR;
 		}
 		list->tail = list->head;
-	}else{ // We add to the head
-		LLNode* aux = lnkd_list_innit_node(element, list->data_size);
-		if (!aux){
+	}else {
+		list->head->prev = lnkd_list_innit_node(element, list->data_size);
+		if(!list->head->prev){
 			return ALLOCATION_ERROR;
 		}
-		aux->next = list->head;
-		list->head->prev = aux;
-		list->head = aux;
+		list->head->prev->next = list->head;
+		list->head = list->head->prev;
 	}
 	list->n_elements++;
 	return SUCCESS;
