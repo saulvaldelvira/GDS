@@ -310,6 +310,48 @@ int lnkd_list_remove(LinkedList *list, void *element){
 	return ELEMENT_NOT_FOUND_ERROR;
 }
 
+void* lnkd_list_pop_front(LinkedList *list, void *dest){
+	if (!list || !dest){
+		printerr_null_param(lnkd_list_pop_front);
+		return NULL;
+	}
+	if (list->head == NULL){
+		return NULL;
+	}
+	dest = memcpy(dest, list->head->info, list->data_size);
+	if (!dest){
+		printerr_memory_op(lnkd_list_pop_front);
+		return NULL;
+	}
+
+	LLNode *del = list->head;
+	list->head = list->head->next;
+	free(del);
+	list->n_elements--;
+	return dest;
+}
+
+void* lnkd_list_pop_back(LinkedList *list, void *dest){
+	if (!list || !dest){
+		printerr_null_param(lnkd_list_pop_back);
+		return NULL;
+	}
+	if (list->tail == NULL){
+		return NULL;
+	}
+	dest = memcpy(dest, list->tail->info, list->data_size);
+	if (!dest){
+		printerr_memory_op(lnkd_list_pop_back);
+		return NULL;
+	}
+	
+	LLNode *del = list->tail;
+	list->tail = list->tail->prev;
+	free(del);
+	list->n_elements--;
+	return dest;
+}
+
 int lnkd_list_remove_array(LinkedList *list, void *array, size_t array_length){
 	if (!list || !array){
 		printerr_null_param(lnkd_list_push_remove_array);

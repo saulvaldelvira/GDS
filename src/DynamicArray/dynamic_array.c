@@ -477,6 +477,42 @@ int din_arr_remove(DynamicArray *list, void *element){
 	return din_arr_remove_at(list, i.value);
 }
 
+
+void* din_arr_pop_front(DynamicArray *list, void *dest){
+	if (!list || !dest){
+		printerr_null_param(din_arr_pop_front);
+		return NULL;
+	}
+	if (list->n_elements == 0){
+		return NULL;
+	}
+	dest = memcpy(dest, list->elements, list->data_size);
+	if (!dest){
+		printerr_memory_op(din_arr_pop_front);
+		return NULL;
+	}
+	din_arr_remove_at(list, 0);
+	return dest;
+}
+
+void* din_arr_pop_back(DynamicArray *list, void *dest){
+	if (!list || !dest){
+		printerr_null_param(din_arr_pop_back);
+		return NULL;
+	}
+	if (list->n_elements == 0){
+		return NULL;
+	}
+	void *src = void_offset(list->elements, (list->n_elements - 1) * list->data_size);
+	dest = memcpy(dest, src, list->data_size);
+	if (!dest){
+		printerr_memory_op(din_arr_pop_front);
+		return NULL;
+	}
+	din_arr_remove_at(list, list->n_elements - 1);
+	return dest;
+}
+
 int din_arr_remove_array(DynamicArray *list, void *array, size_t array_length){
 	if (!list || !array){
 		printerr_null_param(din_arr_remove_array);

@@ -183,6 +183,18 @@ int din_arr_remove_at(DynamicArray *list, size_t index);
 int din_arr_remove(DynamicArray *list, void *element);
 
 /**
+ * Removes the first element in the list and copies it into dest
+ * @return the pointer dest, or NULL if error
+*/
+void* din_arr_pop_front(DynamicArray *list, void *dest);
+
+/**
+ * Removes the last element in the list and copies it into dest
+ * @return the pointer dest, or NULL if error
+*/
+void* din_arr_pop_back(DynamicArray *list, void *dest);
+
+/**
  * Removes from the first [array_length] elements of the array.
 */
 int din_arr_remove_array(DynamicArray *list, void *array, size_t array_length);

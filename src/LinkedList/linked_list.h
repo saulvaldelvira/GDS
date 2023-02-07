@@ -117,6 +117,18 @@ bool lnkd_list_isempty(LinkedList *list);
 int lnkd_list_remove(LinkedList *list, void *element);
 
 /**
+ * Removes the first element in the list and copies it into dest
+ * @return the pointer dest, or NULL if error
+*/
+void* lnkd_list_pop_front(LinkedList *list, void *dest);
+
+/**
+ * Removes the last element in the list and copies it into dest
+ * @return the pointer dest, or NULL if error
+*/
+void* lnkd_list_pop_back(LinkedList *list, void *dest);
+
+/**
  * Removes from the list the first [array_length] elements of the array
 */
 int lnkd_list_remove_array(LinkedList *list, void *array, size_t array_length);

@@ -84,6 +84,17 @@ int main(){
 		assert(i == get_into[i]);
 	}
 
+
+	// Push Pop 
+	size_t size = din_arr_size(arr); 
+	assert(din_arr_push_front(arr, cast_int(123)));
+	assert(din_arr_append(arr, cast_int(456)));
+	assert(123 == * (int*) din_arr_pop_front(arr, &tmp));
+	assert(456 == * (int*) din_arr_pop_back(arr, &tmp));
+	assert(size == din_arr_size(arr));
+
+	/////////////////
+
 	free(get_arr);
 	free(get_into);
 
@@ -95,6 +106,9 @@ int main(){
 		assert(din_arr_remove(arr, &i));
 	}
 	assert(din_arr_size(arr) == 0);
+
+	
+
 
 	// Set test 2
 	int one = 1;
@@ -167,7 +181,11 @@ int main(){
 	assert(lnkd_list_push_front(lnked, &menos150));
 	assert(lnkd_list_size(lnked) == 1UL + n);
 	assert(-150 == * (int*) lnkd_list_get_front(lnked, &tmp));
-	assert(lnkd_list_remove(lnked, &menos150));
+	assert(-150 == * (int*) lnkd_list_pop_front(lnked, &tmp));
+	assert(!lnkd_list_exists(lnked, &menos150));
+
+	assert(lnkd_list_append(lnked, cast_int(4525)));
+	assert(4525 == * (int*) lnkd_list_pop_back(lnked, &tmp));
 
 	// Remove the last element
 	assert(!lnkd_list_isempty(lnked));
