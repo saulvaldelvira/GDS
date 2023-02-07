@@ -344,6 +344,22 @@ void* din_arr_get(DynamicArray *list, void *element, void *dest){
 	return din_arr_get_at(list, index.value, dest);
 }
 
+void* din_arr_get_front(DynamicArray *list, void *dest){
+	if (!list || !dest){
+		printerr_null_param(din_arr_get_front);
+		return NULL;
+	}
+	return din_arr_get_at(list, 0, dest);
+}
+
+void* din_arr_get_back(DynamicArray *list, void *dest){
+	if (!list || !dest){
+		printerr_null_param(din_arr_get_back);
+		return NULL;
+	}
+	return din_arr_get_at(list, list->n_elements - 1, dest);
+}
+
 void* din_arr_get_into_array(DynamicArray *list, void *array, size_t array_length){
 	if (!list || !array){
 		printerr_null_param(din_arr_get_into_array);
