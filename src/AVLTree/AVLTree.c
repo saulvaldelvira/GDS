@@ -73,25 +73,13 @@ static void node_update_height(AVLNode *node){
         }
 }
 
-/**
- * 
-*/
 static int node_bf(AVLNode *node){
         int l_height = node->left  != NULL ? node->left->height  : -1;
         int r_height = node->right != NULL ? node->right->height : -1;
         return r_height - l_height;
 }
 
-/*inline int node_bf(AVLNode *node){
-        return (node->left  != NULL ? node->left->height  : -1) 
-		- 
-		(node->right != NULL ? node->right->height : -1);
-}*/
-
 static AVLNode* single_right_rotation(AVLNode *node){
-#if DEBUG
-	printf("Single right rotation on %d\n", * (int*) node->info);
-#endif
         AVLNode *aux = node->right;
         node->right = aux->left;
         aux->left = node;
@@ -100,9 +88,6 @@ static AVLNode* single_right_rotation(AVLNode *node){
 }
 
 static AVLNode* single_left_rotation(AVLNode *node){
-#if DEBUG
-	printf("Single left rotation on %d\n", * (int*) node->info);
-#endif
         AVLNode *aux = node->left;
         node->left = aux->right;
         aux->right = node;
@@ -111,9 +96,6 @@ static AVLNode* single_left_rotation(AVLNode *node){
 }
 
 static AVLNode* double_right_rotation(AVLNode *node){
-#if DEBUG
-	printf("Double right rotation on %d\n", * (int*) node->info);
-#endif
         AVLNode *aux_1 = node->right;
         AVLNode *aux_2 = aux_1->left;
         node->right = aux_2->left;
@@ -126,9 +108,6 @@ static AVLNode* double_right_rotation(AVLNode *node){
 }
 
 static AVLNode* double_left_rotation(AVLNode *node){
-#if DEBUG
-	printf("Double left rotation on %d\n", * (int*) node->info);
-#endif
         AVLNode *aux_1 = node->left;
         AVLNode *aux_2 = aux_1->right;
         node->left = aux_2->right;
