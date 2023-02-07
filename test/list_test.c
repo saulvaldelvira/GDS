@@ -49,6 +49,7 @@ void joins_test(){
 
 int main(){
 	int n = 2400;
+	int tmp;
 	double arr_time, lnkd_time;
 
 	printf("[List Test]\n");
@@ -64,6 +65,8 @@ int main(){
 		assert(din_arr_size(arr) == (size_t) i+1);
 	}
 	assert(!din_arr_isempty(arr));
+	assert(n-1 == * (int*) din_arr_get_back(arr, &tmp));
+	assert(0 == * (int*) din_arr_get_front(arr, &tmp));
 	int menosveinte = -20, treinta = 30;
 	assert(din_arr_indexof(arr, &menosveinte).status == ELEMENT_NOT_FOUND_ERROR);
 
@@ -84,7 +87,6 @@ int main(){
 	free(get_arr);
 	free(get_into);
 
-	int tmp;
 	for(int i=n-1; i >= 0; i--){
 		assert(din_arr_exists(arr, &i));
 		assert(din_arr_indexof(arr, &i).value == (size_t) i);
@@ -146,7 +148,7 @@ int main(){
 		assert(lnkd_list_append(lnked, &i));
 		assert(lnkd_list_size(lnked) == (size_t) i+1);
 	}
-
+	assert(n-1 == * (int*) lnkd_list_get_back(lnked, &tmp));
 	get_arr = lnkd_list_get_array(lnked, lnkd_list_size(lnked));
 	get_into = malloc(n * sizeof(int));
 	assert(get_into != NULL);
@@ -164,6 +166,7 @@ int main(){
 	int menos150 = -150;
 	assert(lnkd_list_push_front(lnked, &menos150));
 	assert(lnkd_list_size(lnked) == 1UL + n);
+	assert(-150 == * (int*) lnkd_list_get_front(lnked, &tmp));
 	assert(lnkd_list_remove(lnked, &menos150));
 
 	// Remove the last element

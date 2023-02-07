@@ -138,6 +138,16 @@ void* din_arr_get_at(DynamicArray *list, size_t index, void *dest);
 void* din_arr_get(DynamicArray *list, void *element, void *dest);
 
 /**
+ * @return The first element in the list, or NULL if it does not exists
+*/
+void* din_arr_get_front(DynamicArray *list, void *dest);
+
+/**
+ * @return The last element in the list, or NULL if it does not exists
+*/
+void* din_arr_get_back(DynamicArray *list, void *dest);
+
+/**
  * Gets the first [array_length] elements from the list into the array
 */
 void* din_arr_get_into_array(DynamicArray *list, void *array, size_t array_length);

@@ -190,6 +190,29 @@ void* lnkd_list_get(LinkedList *list, void *element, void *dest){
 	return aux == NULL ? NULL : memcpy(dest, aux->info, list->data_size);
 }
 
+void* lnkd_list_get_front(LinkedList *list, void *dest){
+	if (!list || !dest){
+		printerr_null_param(lnkd_list_get_front);
+		return NULL;
+	}
+	if (list->head == NULL){
+		return NULL;
+	}
+	return memcpy(dest, list->head->info, list->data_size);
+}
+
+void* lnkd_list_get_back(LinkedList *list, void *dest){
+	if (!list || !dest){
+		printerr_null_param(lnkd_list_get_back);
+		return NULL;
+	}
+	if (list->tail == NULL){
+		return NULL;
+	}
+	return memcpy(dest, list->tail->info, list->data_size);
+}
+
+
 void* lnkd_list_get_into_array(LinkedList *list, void *array, size_t array_length){
 	if (!list || !array){
 		printerr_null_param(lnkd_list_get_into_array);

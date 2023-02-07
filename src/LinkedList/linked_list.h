@@ -74,6 +74,16 @@ int lnkd_list_set(LinkedList *list, void *element, void *replacement);
 void* lnkd_list_get(LinkedList *list, void *element, void *dest);
 
 /**
+ * @return The first element in the list, or NULL if it does not exists
+*/
+void* lnkd_list_get_front(LinkedList *list, void *dest);
+
+/**
+ * @return The last element in the list, or NULL if it does not exists
+*/
+void* lnkd_list_get_back(LinkedList *list, void *dest);
+
+/**
  * Copies into the array the first [array_length] elements of the list
 */
 void* lnkd_list_get_into_array(LinkedList *list, void *array, size_t array_length);
