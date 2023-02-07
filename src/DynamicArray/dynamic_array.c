@@ -126,22 +126,13 @@ int din_arr_push_front(DynamicArray *list, void *element){
 		}
 	}
 
-	void *tmp;
-	for (size_t i = list->n_elements; i > 1; i--){
-		void *dst = void_offset(list->elements, i * list->data_size);
-		void *src = void_offset(list->elements, (i-1) * list->data_size);
-		tmp = memmove(dst, src, list->data_size);
-		if (!tmp){
-			printerr_memory_op(din_arr_push_front);
-			return MEMORY_OP_ERROR;
-		}
-	}
-	tmp = memmove(list->elements , element, list->data_size);
-	if (!tmp){
+	void *tmp = void_offset(list->elements, list->data_size);
+	tmp = memmove(tmp, list->elements, list->n_elements * list->data_size);
+	void *dst = memcpy(list->elements, element, list->data_size);
+	if (!tmp || !dst){
 		printerr_memory_op(din_arr_push_front);
 		return MEMORY_OP_ERROR;
 	}
-
 	list->n_elements++;
 	return SUCCESS;
 }
