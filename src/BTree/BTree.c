@@ -487,7 +487,7 @@ static BTreeNode* merge_nodes(BTreeNode *left, void *mid_element, BTreeNode *rig
         left->n_elements += right->n_elements;
 
         // TODO : Fix this 
-        int p;     // = //mid_element ? left->n_childs : left->n_childs - 1;
+        int p = 0;     // = //mid_element ? left->n_childs : left->n_childs - 1;
 
         for (int i = 0; i < right->n_childs; i++){
                 left->childs[p + i] = right->childs[i];
@@ -674,12 +674,12 @@ bool btree_exists(BTree *tree, void *element){
         return btree_get_node(tree->root, tree->data_size, element, tree->compare, &tmp) != NULL;
 }
 
-static void btree_free_node(BTreeNode *node, int K){
+static void btree_free_node(BTreeNode *node){
         if (!node){
                 return;
         }
-        for (int i = 0; i < K; i++){
-                btree_free_node(node->childs[i], K);
+        for (int i = 0; i < node->n_childs; i++){
+                btree_free_node(node->childs[i]);
         }
         free(node->childs);
         free(node);
@@ -690,7 +690,7 @@ int btree_free(BTree *tree){
                 printerr_null_param(btree_free);
                 return NULL_PARAMETER_ERROR;
         }
-        btree_free_node(tree->root, tree->K);
+        btree_free_node(tree->root);
         free(tree);
         return SUCCESS;
 }
@@ -700,7 +700,7 @@ BTree* btree_reset(BTree *tree){
                 printerr_null_param(btree_reset);
                 return NULL;
         }
-        btree_free_node(tree->root, tree->K);
+        btree_free_node(tree->root);
         tree->root = NULL;
         return tree;
 }
