@@ -27,7 +27,7 @@ int main(){
 
 	/// Config test
 	stack_configure(stack, compare_allways_true);
-	assert(stack_search(stack, cast_int(-64546)));
+	assert(stack_exists(stack, cast_int(-64546)));
 	stack_configure(stack, compare_char);
 	////////////////
 

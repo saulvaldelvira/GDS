@@ -22,7 +22,7 @@ int main(){
 
 	/// config test
 	queue_configure(q, compare_allways_true);
-	assert(queue_search(q, cast_int(-854654)));
+	assert(queue_exists(q, cast_int(-854654)));
 	queue_configure(q, compare_int);
 	//////////
 

@@ -60,7 +60,7 @@ int queue_enqueue_array(Queue *queue, void *array, size_t array_length);
 */
 void* queue_dequeue(Queue *queue, void *dest);
 
-/**
+/**compare_allways_true
  * Dequeues [array_length] elements into dest_array
 */
 int queue_dequeue_array(Queue *queue, void *dest_array, size_t dest_length);
@@ -73,7 +73,7 @@ void* queue_peek(Queue *queue, void *dest);
 /**
  * @return true if the element is in the queue
 */
-bool queue_search(Queue *queue, void *element);
+bool queue_exists(Queue *queue, void *element);
 
 /**
  * @return the number of elements in the Queue

@@ -176,9 +176,9 @@ void* stack_peek(Stack *stack, void *dest){
 	}
 }
 
-bool stack_search(Stack *stack, void *element){
+bool stack_exists(Stack *stack, void *element){
 	if(!stack || !element){
-		printerr_null_param(stack_search);
+		printerr_null_param(stack_exists);
 		return false;
 	}
 	StackNode *aux = stack->head;

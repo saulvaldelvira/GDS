@@ -74,7 +74,7 @@ void* stack_peek(Stack *stack, void *dest);
 /**
  * @return true if the element exists in the stack 
 */
-bool stack_search(Stack *stack, void *element);
+bool stack_exists(Stack *stack, void *element);
 
 /**
  * @return 1 if the element is successfuly deleted

@@ -170,9 +170,9 @@ void* queue_peek(Queue *queue, void *dest){
 	}
 }
 
-bool queue_search(Queue *queue, void *element){
+bool queue_exists(Queue *queue, void *element){
 	if (!queue || !element){
-		printerr_null_param(queue_search);
+		printerr_null_param(queue_exists);
 		return false;
 	}
 	QueueNode *aux = queue->head;
