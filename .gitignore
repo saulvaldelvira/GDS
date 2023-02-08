@@ -1,6 +1,13 @@
 # VIM FILES
 *.*.swp
 
+# Melder Files
+*.orig
+*_BACKUP_*
+*_BASE_*
+*_LOCAL_*
+*_REMOTE_*
+
 # Cachegrind
 cachegrind.out.*
 
