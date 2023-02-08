@@ -64,6 +64,13 @@ int main(){
 		assert(din_arr_append(arr, &i));
 		assert(din_arr_size(arr) == (size_t) i+1);
 	}
+
+	/// Configure test
+	din_arr_configure(arr, compare_allways_true);
+	assert(din_arr_exists(arr, cast_int(-8574654)));
+	din_arr_configure(arr, compare_int);
+	/////////
+
 	assert(!din_arr_isempty(arr));
 	assert(n-1 == * (int*) din_arr_get_back(arr, &tmp));
 	assert(0 == * (int*) din_arr_get_front(arr, &tmp));
@@ -186,6 +193,12 @@ int main(){
 
 	assert(lnkd_list_append(lnked, cast_int(4525)));
 	assert(4525 == * (int*) lnkd_list_pop_back(lnked, &tmp));
+
+	/// confign tests
+	lnkd_list_configure(lnked, compare_allways_true);
+	assert(lnkd_list_exists(lnked, cast_int(-684765)));
+	lnkd_list_configure(lnked, compare_int);
+	///////////////
 
 	// Remove the last element
 	assert(!lnkd_list_isempty(lnked));

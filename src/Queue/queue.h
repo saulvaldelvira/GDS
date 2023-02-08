@@ -39,6 +39,12 @@ typedef struct _Queue Queue;
 Queue* queue_init(size_t data_size, comparator_function_t cmp);
 
 /**
+ * Changes the comparator function of the queue
+ * @param cmp the new comparator function
+*/
+void queue_configure(Queue *queue, comparator_function_t cmp);
+
+/**
  * Adds the element to the queue
  * @return 1 if the operation is successful
 */

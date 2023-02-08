@@ -33,6 +33,12 @@ typedef struct _MinHeap MinHeap;
 MinHeap* minheap_init(size_t data_size, comparator_function_t cmp);
 
 /**
+ * Changes the comparator function of the heap
+ * @param cmp the new comparator function
+*/
+void minheap_configure(MinHeap *heap, comparator_function_t cmp);
+
+/**
  * Adds the element into de heap
 */
 int minheap_add(MinHeap *heap, void *element);

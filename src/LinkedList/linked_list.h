@@ -39,6 +39,12 @@ typedef struct _LinkedList LinkedList;
 LinkedList* lnkd_list_init(size_t data_size, comparator_function_t cmp);
 
 /**
+ * Changes the comparator function of the list
+ * @param cmp the new comparator function
+*/
+void lnkd_list_configure(LinkedList *list, comparator_function_t cmp);
+
+/**
  * Adds the given element to the end of the list
  * @return 1 if the operation is successful
 */

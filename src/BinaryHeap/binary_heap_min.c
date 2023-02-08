@@ -47,6 +47,15 @@ MinHeap* minheap_init(size_t data_size, comparator_function_t cmp){
         return heap;
 }
 
+
+void minheap_configure(MinHeap *heap, comparator_function_t cmp){
+        if (!heap || !cmp){
+                printerr_null_param(minheap_configure);
+                return;
+        }
+        din_arr_configure(heap->elements, cmp);
+}
+
 /**
  * Performs a filter up.
  * The filter is made recursively from the given position, going "up"

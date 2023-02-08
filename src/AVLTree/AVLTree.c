@@ -34,6 +34,13 @@ typedef struct AVLNode {
         byte_t info[];
 } AVLNode;
 
+struct _AVLTree {
+        AVLNode *root;
+        size_t data_size;
+        size_t n_elements;
+        comparator_function_t compare;
+};
+
 static AVLNode* init_node(void *element, size_t data_size){
         AVLNode *node = malloc(sizeof(*node));
         if (!node){
@@ -50,6 +57,14 @@ static AVLNode* init_node(void *element, size_t data_size){
                 return NULL;
         }
         return node;
+}
+
+void avl_configure(AVLTree *tree, comparator_function_t cmp) {
+	if (!tree || !cmp){
+		printerr_null_param(avl_configure);
+		return;
+	}
+	tree->compare = cmp;
 }
 
 /**
@@ -119,13 +134,6 @@ static AVLNode* double_left_rotation(AVLNode *node){
         return aux_2;
 
 }
-
-struct _AVLTree {
-        AVLNode *root;
-        size_t data_size;
-        size_t n_elements;
-        comparator_function_t compare;
-};
 
 AVLTree* avl_init(size_t data_size, comparator_function_t cmp){
         if (!cmp){

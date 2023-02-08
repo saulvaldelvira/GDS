@@ -190,6 +190,14 @@ Graph* graph_init(size_t data_size, size_t n_elements, comparator_function_t cmp
 	return graph;
 }
 
+void graph_configure(Graph *graph, comparator_function_t cmp){
+	if (!graph || !cmp){
+		printerr_null_param(graph_configure);
+		return;
+	}
+	graph->compare = cmp;
+}
+
 int graph_fill(Graph *graph, void *array_vertices, void *array_sources, void *array_targets, float *array_weights, size_t vertices_length, size_t edges_length){
 	if (!graph || !array_vertices || !array_sources || !array_targets || !array_weights){
 		printerr_null_param(graph_fill);

@@ -28,6 +28,12 @@ typedef struct _BTree BTree;
 
 BTree* btree_init(size_t data_size, int K, comparator_function_t cmp);
 
+/**
+ * Changes the comparator function of the tree
+ * @param cmp the new comparator function
+*/
+void btree_configure(BTree *tree, comparator_function_t cmp);
+
 int btree_add(BTree *tree, void *element);
 int btree_remove(BTree *tree, void *element);
 void* btree_get(BTree *tree, void *element, void *dest);

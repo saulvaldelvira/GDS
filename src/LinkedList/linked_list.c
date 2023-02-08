@@ -65,6 +65,14 @@ LinkedList* lnkd_list_init(size_t data_size, comparator_function_t cmp){
 	return list;
 }
 
+void lnkd_list_configure(LinkedList *list, comparator_function_t cmp){
+	if (!list || !cmp){
+		printerr_null_param(lnkd_list_configure);
+		return;
+	}
+	list->compare = cmp;
+}
+
 /**
  * Initializes a new LLNode with the given info
 */

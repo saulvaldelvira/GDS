@@ -71,6 +71,14 @@ DynamicArray* din_arr_init(size_t data_size, size_t max_elements, comparator_fun
 	return list;
 }
 
+void din_arr_configure(DynamicArray *list, comparator_function_t cmp){
+	if (!list || !cmp){
+		printerr_null_param(din_arr_configure);
+		return;
+	}
+	list->compare = cmp;
+}
+
 size_t din_arr_get_data_size(DynamicArray *list){
 	if (!list){
 		printerr_null_param(din_arr_data_size);

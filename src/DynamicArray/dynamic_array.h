@@ -47,6 +47,12 @@ DynamicArray* din_arr_empty(size_t data_size, comparator_function_t cmp);
 DynamicArray* din_arr_init(size_t data_size, size_t max_elements, comparator_function_t cmp);
 
 /**
+ * Changes the comparator function of the list
+ * @param cmp the new comparator function
+*/
+void din_arr_configure(DynamicArray *list, comparator_function_t cmp);
+
+/**
  * @return the data size of the list
 */
 size_t din_arr_get_data_size(DynamicArray *list);

@@ -62,6 +62,14 @@ Queue* queue_init(size_t data_size, comparator_function_t cmp){
 	return queue;
 }
 
+void queue_configure(Queue *queue, comparator_function_t cmp){
+	if (!queue || !cmp){
+		printerr_null_param(queue_configure);
+		return;
+	}
+	queue->compare = cmp;
+}
+
 /**
  * Initializes a new QueueNode with the element
 */

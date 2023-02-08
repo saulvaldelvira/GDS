@@ -60,6 +60,14 @@ BSTree* bst_init(size_t data_size, comparator_function_t cmp){
 	return tree;
 }
 
+void bst_configure(BSTree *tree, comparator_function_t cmp){
+	if (!tree || !cmp){
+		printerr_null_param(bst_configure);
+		return;
+	}
+	tree->compare = cmp;
+}
+
 static BSNode* init_node(void *info, size_t size){
 	BSNode *node = malloc(offsetof(BSNode, info) + size);
 	if (!node){

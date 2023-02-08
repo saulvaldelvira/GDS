@@ -12,6 +12,12 @@ void filter_up(){
         minheap_add(min, cast_int(9));
         minheap_add(min, cast_int(8));
 
+        /// Config test
+        minheap_configure(min, compare_allways_true);
+        assert(minheap_exists(min, cast_int(-15454)));
+        minheap_configure(min, compare_int);
+        ////////////
+
         int exp1[] = {8, 10, 9};
         int *res = minheap_get_array(min, 3);
         assert_array_int(res, exp1, 3);

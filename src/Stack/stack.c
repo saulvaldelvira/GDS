@@ -60,6 +60,14 @@ Stack* stack_init(size_t data_size, comparator_function_t cmp){
 	return stack;
 }
 
+void stack_configure(Stack *stack, comparator_function_t cmp){
+	if (!stack || !cmp){
+		printerr_null_param(stack_configure);
+		return;
+	}
+	stack->compare = cmp;
+}
+
 /**
  * Initializes a new StackNode with the given info
 */

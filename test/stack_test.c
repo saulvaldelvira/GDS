@@ -24,6 +24,13 @@ int main(){
 		assert(stack_size(stack) == (size_t) i + 1);
 	}
 	assert(!stack_isempty(stack));
+
+	/// Config test
+	stack_configure(stack, compare_allways_true);
+	assert(stack_search(stack, cast_int(-64546)));
+	stack_configure(stack, compare_char);
+	////////////////
+
 	for(int i=n-1; i>=0; i--){
 		assert(i == * (int*) stack_peek(stack, &temp));
 		assert(i == * (int*) stack_pop(stack, &temp));

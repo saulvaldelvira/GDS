@@ -20,6 +20,13 @@ int main(){
         for (int i=0; i < (int) ARR_SIZE(nums); i++){
                 assert(btree_exists(tree, &nums[i]));
         }
+
+        /// Config test
+        btree_configure(tree, compare_allways_true);
+        assert(btree_exists(tree, cast_int(-897987)));
+        btree_configure(tree, compare_int);
+        /////////////////////////////////
+
         btree_free(tree);
 
         // Test case 2
