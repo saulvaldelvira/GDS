@@ -39,6 +39,11 @@ typedef struct _Stack Stack;
 */
 Stack* stack_init(size_t data_size, comparator_function_t cmp);
 
+/**
+ * Changes the comparator function of the stack
+ * @param cmp the new comparator function
+*/
+void stack_configure(Stack *stack, comparator_function_t cmp);
 
 /**
  * Pushes the given element to the top of the stack
@@ -69,7 +74,12 @@ void* stack_peek(Stack *stack, void *dest);
 /**
  * @return true if the element exists in the stack 
 */
-bool stack_search(Stack *stack, void *element);
+bool stack_exists(Stack *stack, void *element);
+
+/**
+ * @return 1 if the element is successfuly deleted
+*/
+int stack_remove(Stack *stack, void *element);
 
 /**
  * @return the number of elements in the Stack

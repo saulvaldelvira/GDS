@@ -70,6 +70,14 @@ BTree* btree_init(size_t data_size, int K, comparator_function_t cmp){
         return tree;
 }
 
+void btree_configure(BTree *tree, comparator_function_t cmp){
+        if (!tree || !cmp){
+		printerr_null_param(btree_configure);
+		return;
+	}
+	tree->compare = cmp;
+}
+
 static BTreeNode* btree_init_node(int K, size_t data_size){
         BTreeNode *node = malloc(offsetof(BTreeNode, elements) + (data_size * MAX_ELEMENTS(K)));
         if (!node){

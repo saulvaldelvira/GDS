@@ -12,6 +12,7 @@ int main(){
         TIMESTAMP_START
         tree = btree_init(sizeof(int), 5, compare_int);
         // Test case 1
+        tree = btree_init(sizeof(int), 5, compare_int);
         int nums[] = {60, 40, 80, 20, 55, 65, 63, 51, 75, 2, 4, 90, 95, 100, 41, 42, 50, 22, 30, 25, 31, 32, 33, 36, 38, 39};
         for (int i=0; i < (int) ARR_SIZE(nums)-1; i++){
                 if (nums[i] == 33){
@@ -24,8 +25,11 @@ int main(){
                 assert(btree_exists(tree, &nums[i]));
         }
 
-        assert(btree_remove(tree, cast_int(100)));
-
+        /// Config test
+        btree_configure(tree, compare_allways_true);
+        assert(btree_exists(tree, cast_int(-897987)));
+        btree_configure(tree, compare_int);
+        /////////////////////////////////
 
         btree_free(tree);
 

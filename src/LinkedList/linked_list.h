@@ -39,6 +39,12 @@ typedef struct _LinkedList LinkedList;
 LinkedList* lnkd_list_init(size_t data_size, comparator_function_t cmp);
 
 /**
+ * Changes the comparator function of the list
+ * @param cmp the new comparator function
+*/
+void lnkd_list_configure(LinkedList *list, comparator_function_t cmp);
+
+/**
  * Adds the given element to the end of the list
  * @return 1 if the operation is successful
 */
@@ -74,6 +80,16 @@ int lnkd_list_set(LinkedList *list, void *element, void *replacement);
 void* lnkd_list_get(LinkedList *list, void *element, void *dest);
 
 /**
+ * @return The first element in the list, or NULL if it does not exists
+*/
+void* lnkd_list_get_front(LinkedList *list, void *dest);
+
+/**
+ * @return The last element in the list, or NULL if it does not exists
+*/
+void* lnkd_list_get_back(LinkedList *list, void *dest);
+
+/**
  * Copies into the array the first [array_length] elements of the list
 */
 void* lnkd_list_get_into_array(LinkedList *list, void *array, size_t array_length);
@@ -105,6 +121,18 @@ bool lnkd_list_isempty(LinkedList *list);
  * @return 1 if the operation is successful
 */
 int lnkd_list_remove(LinkedList *list, void *element);
+
+/**
+ * Removes the first element in the list and copies it into dest
+ * @return the pointer dest, or NULL if error
+*/
+void* lnkd_list_pop_front(LinkedList *list, void *dest);
+
+/**
+ * Removes the last element in the list and copies it into dest
+ * @return the pointer dest, or NULL if error
+*/
+void* lnkd_list_pop_back(LinkedList *list, void *dest);
 
 /**
  * Removes from the list the first [array_length] elements of the array

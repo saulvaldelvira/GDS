@@ -62,6 +62,11 @@ int main(){
         int min;
         assert(3 == * (int*) avl_min(t, &min));
 
+        // configure test
+        avl_configure(t, compare_allways_true);
+        assert(avl_exists(t, cast_int(125)));
+        avl_configure(t, compare_int);
+        ///////////////////////////////////
 
         int exp1 [] = {10, 6, 3, 9, 15, 14, 20};
         assert_preord(t, exp1);

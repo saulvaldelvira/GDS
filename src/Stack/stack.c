@@ -60,6 +60,14 @@ Stack* stack_init(size_t data_size, comparator_function_t cmp){
 	return stack;
 }
 
+void stack_configure(Stack *stack, comparator_function_t cmp){
+	if (!stack || !cmp){
+		printerr_null_param(stack_configure);
+		return;
+	}
+	stack->compare = cmp;
+}
+
 /**
  * Initializes a new StackNode with the given info
 */
@@ -168,9 +176,9 @@ void* stack_peek(Stack *stack, void *dest){
 	}
 }
 
-bool stack_search(Stack *stack, void *element){
+bool stack_exists(Stack *stack, void *element){
 	if(!stack || !element){
-		printerr_null_param(stack_search);
+		printerr_null_param(stack_exists);
 		return false;
 	}
 	StackNode *aux = stack->head;
@@ -181,6 +189,25 @@ bool stack_search(Stack *stack, void *element){
 		aux = aux->next;
 	} 
 	return false;
+}
+
+int stack_remove(Stack *stack, void *element){
+	if(!stack || !element){
+		printerr_null_param(stack_remove);
+		return NULL_PARAMETER_ERROR;
+	}
+	StackNode** aux = &stack->head;
+	while (*aux != NULL && stack->compare((*aux)->info, element) != 0){
+		aux = &(*aux)->next;
+	}
+	if (!*aux){
+		return ELEMENT_NOT_FOUND_ERROR;
+	}
+	StackNode *del = *aux;
+	*aux = (*aux)->next;
+	free(del);
+	stack->n_elements--;
+	return SUCCESS;
 }
 
 size_t stack_size(Stack *queue){

@@ -35,6 +35,12 @@ typedef struct _AVLTree AVLTree;
 AVLTree* avl_init(size_t data_size, comparator_function_t cmp);
 
 /**
+ * Changes the comparator function of the tree
+ * @param cmp the new comparator function
+*/
+void avl_configure(AVLTree *tree, comparator_function_t cmp);
+
+/**
  * Adds the elements to the tree
  * @return 1 if the operation is successful
 */

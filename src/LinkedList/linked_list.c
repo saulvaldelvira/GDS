@@ -65,6 +65,14 @@ LinkedList* lnkd_list_init(size_t data_size, comparator_function_t cmp){
 	return list;
 }
 
+void lnkd_list_configure(LinkedList *list, comparator_function_t cmp){
+	if (!list || !cmp){
+		printerr_null_param(lnkd_list_configure);
+		return;
+	}
+	list->compare = cmp;
+}
+
 /**
  * Initializes a new LLNode with the given info
 */
@@ -124,20 +132,19 @@ int lnkd_list_push_front(LinkedList *list, void *element){
 		printerr_null_param(lnkd_list_push_front);
 		return NULL_PARAMETER_ERROR;
 	}
-	if(list->n_elements == 0){ // We add to the head
+	if (list->head == NULL){
 		list->head = lnkd_list_innit_node(element, list->data_size);
 		if(!list->head){
 			return ALLOCATION_ERROR;
 		}
 		list->tail = list->head;
-	}else{ // We add to the head
-		LLNode* aux = lnkd_list_innit_node(element, list->data_size);
-		if (!aux){
+	}else {
+		list->head->prev = lnkd_list_innit_node(element, list->data_size);
+		if(!list->head->prev){
 			return ALLOCATION_ERROR;
 		}
-		aux->next = list->head;
-		list->head->prev = aux;
-		list->head = aux;
+		list->head->prev->next = list->head;
+		list->head = list->head->prev;
 	}
 	list->n_elements++;
 	return SUCCESS;
@@ -190,6 +197,29 @@ void* lnkd_list_get(LinkedList *list, void *element, void *dest){
 	}
 	return aux == NULL ? NULL : memcpy(dest, aux->info, list->data_size);
 }
+
+void* lnkd_list_get_front(LinkedList *list, void *dest){
+	if (!list || !dest){
+		printerr_null_param(lnkd_list_get_front);
+		return NULL;
+	}
+	if (list->head == NULL){
+		return NULL;
+	}
+	return memcpy(dest, list->head->info, list->data_size);
+}
+
+void* lnkd_list_get_back(LinkedList *list, void *dest){
+	if (!list || !dest){
+		printerr_null_param(lnkd_list_get_back);
+		return NULL;
+	}
+	if (list->tail == NULL){
+		return NULL;
+	}
+	return memcpy(dest, list->tail->info, list->data_size);
+}
+
 
 void* lnkd_list_get_into_array(LinkedList *list, void *array, size_t array_length){
 	if (!list || !array){
@@ -286,6 +316,48 @@ int lnkd_list_remove(LinkedList *list, void *element){
 		return SUCCESS;
 	}
 	return ELEMENT_NOT_FOUND_ERROR;
+}
+
+void* lnkd_list_pop_front(LinkedList *list, void *dest){
+	if (!list || !dest){
+		printerr_null_param(lnkd_list_pop_front);
+		return NULL;
+	}
+	if (list->head == NULL){
+		return NULL;
+	}
+	dest = memcpy(dest, list->head->info, list->data_size);
+	if (!dest){
+		printerr_memory_op(lnkd_list_pop_front);
+		return NULL;
+	}
+
+	LLNode *del = list->head;
+	list->head = list->head->next;
+	free(del);
+	list->n_elements--;
+	return dest;
+}
+
+void* lnkd_list_pop_back(LinkedList *list, void *dest){
+	if (!list || !dest){
+		printerr_null_param(lnkd_list_pop_back);
+		return NULL;
+	}
+	if (list->tail == NULL){
+		return NULL;
+	}
+	dest = memcpy(dest, list->tail->info, list->data_size);
+	if (!dest){
+		printerr_memory_op(lnkd_list_pop_back);
+		return NULL;
+	}
+	
+	LLNode *del = list->tail;
+	list->tail = list->tail->prev;
+	free(del);
+	list->n_elements--;
+	return dest;
 }
 
 int lnkd_list_remove_array(LinkedList *list, void *array, size_t array_length){

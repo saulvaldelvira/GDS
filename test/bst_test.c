@@ -49,6 +49,12 @@ int main(){
 		assert(temp == i);
 	}
 	
+	/// config test 
+	bst_configure(t, compare_allways_true);
+	assert(bst_exists(t, cast_int(-24163435)));
+	bst_configure(t, compare_int);
+	/////////
+
 	printf("Remove...\n");
 	for(int i=0; i<n; i++){
 		bst_remove(t, &i);

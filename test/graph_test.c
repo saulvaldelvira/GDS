@@ -25,6 +25,12 @@ void dijkstra_test(void){
 
 	assert(graph_add_edge(g, &c, &e, 1.0f));
 
+	/// config test
+	graph_configure(g, compare_allways_true);
+	assert(graph_exists_vertex(g, cast_int(-54654)));
+	graph_configure(g, compare_char);
+	/////////////////
+
 	DijkstraData_t dijkstra = graph_dijkstra(g, &a);
 	graph_print_dijkstra_data(stdout, dijkstra);
 	graph_free_dijkstra_data(&dijkstra);

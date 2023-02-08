@@ -66,4 +66,9 @@ void assert_array_char(char *arr, char *exp, int size){
         }
 }
 
+int compare_allways_true(const void* e1, const void *e2){
+	(void) e1; (void) e2; 
+	return 0;
+}
+
 #endif

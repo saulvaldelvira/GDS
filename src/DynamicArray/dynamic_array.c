@@ -71,6 +71,14 @@ DynamicArray* din_arr_init(size_t data_size, size_t max_elements, comparator_fun
 	return list;
 }
 
+void din_arr_configure(DynamicArray *list, comparator_function_t cmp){
+	if (!list || !cmp){
+		printerr_null_param(din_arr_configure);
+		return;
+	}
+	list->compare = cmp;
+}
+
 size_t din_arr_get_data_size(DynamicArray *list){
 	if (!list){
 		printerr_null_param(din_arr_data_size);
@@ -126,22 +134,13 @@ int din_arr_push_front(DynamicArray *list, void *element){
 		}
 	}
 
-	void *tmp;
-	for (size_t i = list->n_elements; i > 1; i--){
-		void *dst = void_offset(list->elements, i * list->data_size);
-		void *src = void_offset(list->elements, (i-1) * list->data_size);
-		tmp = memmove(dst, src, list->data_size);
-		if (!tmp){
-			printerr_memory_op(din_arr_push_front);
-			return MEMORY_OP_ERROR;
-		}
-	}
-	tmp = memmove(list->elements , element, list->data_size);
-	if (!tmp){
+	void *tmp = void_offset(list->elements, list->data_size);
+	tmp = memmove(tmp, list->elements, list->n_elements * list->data_size);
+	void *dst = memcpy(list->elements, element, list->data_size);
+	if (!tmp || !dst){
 		printerr_memory_op(din_arr_push_front);
 		return MEMORY_OP_ERROR;
 	}
-
 	list->n_elements++;
 	return SUCCESS;
 }
@@ -344,6 +343,22 @@ void* din_arr_get(DynamicArray *list, void *element, void *dest){
 	return din_arr_get_at(list, index.value, dest);
 }
 
+void* din_arr_get_front(DynamicArray *list, void *dest){
+	if (!list || !dest){
+		printerr_null_param(din_arr_get_front);
+		return NULL;
+	}
+	return din_arr_get_at(list, 0, dest);
+}
+
+void* din_arr_get_back(DynamicArray *list, void *dest){
+	if (!list || !dest){
+		printerr_null_param(din_arr_get_back);
+		return NULL;
+	}
+	return din_arr_get_at(list, list->n_elements - 1, dest);
+}
+
 void* din_arr_get_into_array(DynamicArray *list, void *array, size_t array_length){
 	if (!list || !array){
 		printerr_null_param(din_arr_get_into_array);
@@ -468,6 +483,42 @@ int din_arr_remove(DynamicArray *list, void *element){
 		return i.status;
 	}
 	return din_arr_remove_at(list, i.value);
+}
+
+
+void* din_arr_pop_front(DynamicArray *list, void *dest){
+	if (!list || !dest){
+		printerr_null_param(din_arr_pop_front);
+		return NULL;
+	}
+	if (list->n_elements == 0){
+		return NULL;
+	}
+	dest = memcpy(dest, list->elements, list->data_size);
+	if (!dest){
+		printerr_memory_op(din_arr_pop_front);
+		return NULL;
+	}
+	din_arr_remove_at(list, 0);
+	return dest;
+}
+
+void* din_arr_pop_back(DynamicArray *list, void *dest){
+	if (!list || !dest){
+		printerr_null_param(din_arr_pop_back);
+		return NULL;
+	}
+	if (list->n_elements == 0){
+		return NULL;
+	}
+	void *src = void_offset(list->elements, (list->n_elements - 1) * list->data_size);
+	dest = memcpy(dest, src, list->data_size);
+	if (!dest){
+		printerr_memory_op(din_arr_pop_front);
+		return NULL;
+	}
+	din_arr_remove_at(list, list->n_elements - 1);
+	return dest;
 }
 
 int din_arr_remove_array(DynamicArray *list, void *array, size_t array_length){

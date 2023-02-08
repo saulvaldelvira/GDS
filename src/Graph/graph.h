@@ -47,6 +47,12 @@ Graph* graph_empty(size_t data_size, comparator_function_t cmp);
 Graph* graph_init(size_t data_size, size_t n_elements, comparator_function_t cmp);
 
 /**
+ * Changes the comparator function of the graph
+ * @param cmp the new comparator function
+*/
+void graph_configure(Graph *graph, comparator_function_t cmp);
+
+/**
  * Fills the graph given arrays for vertices, edge sources, edge targets, and weights.
  * @param vertices_length the length of the vetrices array
  * @param edges the length of the sources, targets and weights array

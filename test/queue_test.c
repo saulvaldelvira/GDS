@@ -19,6 +19,13 @@ int main(){
 	}
 	assert(!queue_isempty(q));
 	assert(queue_size(q) == (size_t) n);
+
+	/// config test
+	queue_configure(q, compare_allways_true);
+	assert(queue_exists(q, cast_int(-854654)));
+	queue_configure(q, compare_int);
+	//////////
+
 	for(int i=0; i<n; i++){
 		assert(queue_size(q) == (size_t) n - i);
 		assert(i == * (int*) queue_peek(q, &tmp));
