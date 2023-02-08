@@ -88,6 +88,11 @@ all_test: list_test stack_test queue_test bst_test graph_test btree_test
 clean:
 	find . -type f -name '*.o' -delete
 	find . -type f -name 'cachegrind.out.*' -delete
+	find . -type f -name '*.orig' -delete
+	find . -type f -name '*_BACKUP_*' -delete
+	find . -type f -name '*_BASE_*' -delete
+	find . -type f -name '*_LOCAL_*' -delete
+	find . -type f -name '*_REMOTE_*' -delete
 
 purge: clean
 	find . -type f -name '*.out' -delete
