@@ -1,4 +1,4 @@
-.PHONY: clean purge all_test list_test stack_test queue_test bst_test binary_heap
+.PHONY: default clean purge all_test list_test stack_test queue_test bst_test binary_heap
 SRC = src/
 UTIL_DIR = $(SRC)/Util
 BIN = bin/
@@ -28,6 +28,8 @@ endif
 ifdef DEBUG
 CCFLAGS += -DDEBUG
 endif
+
+default: all_test
 
 list_test: $(BIN) $(BIN)/list_test.out
 	@ $(BIN)/list_test.out 
