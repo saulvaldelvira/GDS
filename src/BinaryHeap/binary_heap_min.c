@@ -19,13 +19,13 @@
  */
 #include "binary_heap_min.h"
 #include "../Util/error.h"
-#include "../DynamicArray/dynamic_array.h"
+#include "../Vector/vector.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <memory.h>
 
 struct _MinHeap {
-        DynamicArray *elements;
+        Vector *elements;
 };
 
 MinHeap* minheap_init(size_t data_size, comparator_function_t cmp){
@@ -38,7 +38,7 @@ MinHeap* minheap_init(size_t data_size, comparator_function_t cmp){
                 printerr_allocation(minheap_init);
                 return NULL;
         }
-        heap->elements = din_arr_empty(data_size, cmp);
+        heap->elements = vector_empty(data_size, cmp);
         if (!heap->elements){
                 printerr_allocation(minheap_init);
                 free(heap);
@@ -53,7 +53,7 @@ void minheap_configure(MinHeap *heap, comparator_function_t cmp){
                 printerr_null_param(minheap_configure);
                 return;
         }
-        din_arr_configure(heap->elements, cmp);
+        vector_configure(heap->elements, cmp);
 }
 
 /**
@@ -61,12 +61,12 @@ void minheap_configure(MinHeap *heap, comparator_function_t cmp){
  * The filter is made recursively from the given position, going "up"
  * every iteration until we find the "root".
 */
-static void filter_up(DynamicArray *list, size_t pos){
+static void filter_up(Vector *list, size_t pos){
         size_t father = (pos-1) / 2;
-        if (pos == 0 || din_arr_compare(list, pos, father) >= 0){
+        if (pos == 0 || vector_compare(list, pos, father) >= 0){
                 return;
         }
-        din_arr_swap(list, pos, father);
+        vector_swap(list, pos, father);
         filter_up(list, father);
 }
 
@@ -74,10 +74,10 @@ static void filter_up(DynamicArray *list, size_t pos){
  * Returns an index_t with the lowest of the childs of a given
  * position (or with a status of -1 if thre is no valid childs)
 */
-static index_t lowest_child(DynamicArray *list, size_t pos){
+static index_t lowest_child(Vector *list, size_t pos){
         size_t l_child = pos * 2 + 1;
         size_t r_child = pos * 2 + 2;
-        size_t size = din_arr_size(list);
+        size_t size = vector_size(list);
 
         index_t lowest  = {0,SUCCESS};
 
@@ -91,14 +91,14 @@ static index_t lowest_child(DynamicArray *list, size_t pos){
         }else if (r_child >= size){
                 lowest.value = l_child;
         }else{
-                if (din_arr_compare(list, l_child, r_child) < 0){
+                if (vector_compare(list, l_child, r_child) < 0){
                         lowest.value = l_child;
                 }else{
                         lowest.value = r_child;
                 }
         }
 
-        if (din_arr_compare(list, lowest.value, pos) >= 0){
+        if (vector_compare(list, lowest.value, pos) >= 0){
                 lowest.status = -1;
                 return lowest;
         }
@@ -110,15 +110,15 @@ static index_t lowest_child(DynamicArray *list, size_t pos){
  * The filter is made recursively from the given position, going "down"
  * every iteration until we find the last element.
 */
-static void filter_down(DynamicArray *list, size_t pos){
-        if (pos >= din_arr_size(list)){
+static void filter_down(Vector *list, size_t pos){
+        if (pos >= vector_size(list)){
                 return;
         }
         index_t lowest = lowest_child(list, pos);
         if (lowest.status != SUCCESS){
                 return;
         }
-        din_arr_swap(list, pos, lowest.value);
+        vector_swap(list, pos, lowest.value);
         filter_down(list, lowest.value);
 }
 
@@ -127,11 +127,11 @@ int minheap_add(MinHeap *heap, void *element){
                 printerr_null_param(minheap_add);
                 return NULL_PARAMETER_ERROR;
         }
-        int status = din_arr_append(heap->elements, element);
+        int status = vector_append(heap->elements, element);
         if (status != SUCCESS){
                 return status;
         }
-        filter_up(heap->elements, din_arr_size(heap->elements)-1);
+        filter_up(heap->elements, vector_size(heap->elements)-1);
         return SUCCESS;
 }
 
@@ -142,8 +142,8 @@ int minheap_add_array(MinHeap *heap, void *array, size_t array_length){
         }
         // If the heap is empty, we use this piece of code because it 
         // uses half as much "filter_down" calls than the other one
-        if (din_arr_size(heap->elements) == 0){
-                din_arr_append_array(heap->elements, array, array_length);
+        if (vector_size(heap->elements) == 0){
+                vector_append_array(heap->elements, array, array_length);
                 size_t father;
                 for (size_t i = array_length-1; i > 0; ){
                         father = (i-1) / 2;
@@ -158,7 +158,7 @@ int minheap_add_array(MinHeap *heap, void *array, size_t array_length){
                         }
                 }
         } else {
-                size_t data_size = din_arr_get_data_size(heap->elements);
+                size_t data_size = vector_get_data_size(heap->elements);
                 void *tmp;
                 int status;
                 for (size_t i = 0; i < array_length; i++){
@@ -177,15 +177,15 @@ void* minheap_pop_min(MinHeap *heap, void *dest){
                 printerr_null_param(minheap_pop_min);
                 return NULL;
         }
-        dest = din_arr_get_at(heap->elements, 0, dest);
+        dest = vector_get_at(heap->elements, 0, dest);
         
         if (dest != NULL){
-                size_t n_elements = din_arr_size(heap->elements) - 1;
-                int status = din_arr_swap(heap->elements, 0, n_elements);
+                size_t n_elements = vector_size(heap->elements) - 1;
+                int status = vector_swap(heap->elements, 0, n_elements);
                 if (status != SUCCESS){
                         return NULL;
                 }
-                din_arr_remove_at(heap->elements, n_elements);
+                vector_remove_at(heap->elements, n_elements);
 
                 filter_down(heap->elements, 0);
         }
@@ -197,7 +197,7 @@ void* minheap_get_array(MinHeap *heap, size_t array_length){
                 printerr_null_param(minheap_get_array);
                 return NULL;
         }
-        return din_arr_get_array(heap->elements, array_length);
+        return vector_get_array(heap->elements, array_length);
 }
 
 void* minheap_get_into_array(MinHeap *heap, void *array, size_t array_length){
@@ -205,7 +205,7 @@ void* minheap_get_into_array(MinHeap *heap, void *array, size_t array_length){
                 printerr_null_param(minheap_get_array);
                 return NULL;
         }
-        return din_arr_get_into_array(heap->elements, array, array_length);
+        return vector_get_into_array(heap->elements, array, array_length);
 }
 
 void* minheap_peek(MinHeap *heap, void *dest){
@@ -213,7 +213,7 @@ void* minheap_peek(MinHeap *heap, void *dest){
                 printerr_null_param(minheap_peek);
                 return NULL;
         }
-        return din_arr_get_at(heap->elements, 0, dest);
+        return vector_get_at(heap->elements, 0, dest);
 }
 
 int minheap_remove(MinHeap *heap, void *element){
@@ -221,16 +221,16 @@ int minheap_remove(MinHeap *heap, void *element){
                 printerr_null_param(minheap_remove);
                 return NULL_PARAMETER_ERROR;
         }
-        index_t index = din_arr_indexof(heap->elements, element);
+        index_t index = vector_indexof(heap->elements, element);
         if (index.status != SUCCESS){
                 return index.status;
         }
-        size_t n_elements = din_arr_size(heap->elements) - 1;
-        int status = din_arr_swap(heap->elements, index.value, n_elements);
+        size_t n_elements = vector_size(heap->elements) - 1;
+        int status = vector_swap(heap->elements, index.value, n_elements);
         if (status != SUCCESS){
                 return status;
         }
-        din_arr_remove_at(heap->elements, n_elements);
+        vector_remove_at(heap->elements, n_elements);
 
         filter_down(heap->elements, index.value);
         return SUCCESS;
@@ -241,7 +241,7 @@ bool minheap_exists(MinHeap *heap, void *element){
                 printerr_null_param(minheap_exists);
                 return false;
         }
-        return din_arr_exists(heap->elements, element);
+        return vector_exists(heap->elements, element);
 }
 
 size_t minheap_size(MinHeap *heap){
@@ -249,7 +249,7 @@ size_t minheap_size(MinHeap *heap){
                 printerr_null_param(minheap_size);
                 return 0; /// ?? change ???
         }
-        return din_arr_size(heap->elements);
+        return vector_size(heap->elements);
 }
 
 bool minheap_isempty(MinHeap *heap){
@@ -257,7 +257,7 @@ bool minheap_isempty(MinHeap *heap){
                 printerr_null_param(minheap_isempty);
                 return false;
         }
-        return din_arr_isempty(heap->elements);
+        return vector_isempty(heap->elements);
 }
 
 int minheap_free(MinHeap *heap){
@@ -265,7 +265,7 @@ int minheap_free(MinHeap *heap){
                 printerr_null_param(minheap_free);
                 return NULL_PARAMETER_ERROR;
         }
-        int status = din_arr_free(heap->elements);
+        int status = vector_free(heap->elements);
         if (status != SUCCESS){
                 free(heap);
                 return status;
@@ -279,7 +279,7 @@ MinHeap* minheap_reset(MinHeap *heap){
                 printerr_null_param(minheap_reset);
                 return NULL;
         }
-        heap->elements = din_arr_reset(heap->elements);
+        heap->elements = vector_reset(heap->elements);
         if (!heap->elements){
                 free(heap);
                 return ERROR;

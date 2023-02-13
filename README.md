@@ -1,7 +1,7 @@
 # Generic-Data-Structures
 A set of generic Data Structures, implemented in C. <br>
 It includes:
-* Lists: [DynamicArray](/src/DynamicArray), [LinkedList](/src/LinkedList)
+* Lists: [Vector](/src/Vector), [LinkedList](/src/LinkedList)
 * [Stack](src/Stack)
 * [Queue](src/Queue)
 * Trees: [BTree](/src/BTree), [AVLTree](/src/AVLTree), [BSTree](src/BSTree)
@@ -16,18 +16,18 @@ It's important to note that these structures store the VALUE of the elements, no
 
 ```c
 int main(){
-    DynamicArray *list = din_arr_empty(sizeof(int), compare_int);
+    Vector *vec = vector_empty(sizeof(int), compare_int);
     int tmp = 12;
-    din_arr_append(list, &tmp);
+    vector_append(vec, &tmp);
     tmp = 3;
-    din_arr_append(list, &tmp);
+    vector_append(vec, &tmp);
 
-    din_arr_free(list);
+    vector_free(vec);
     return 0;
 }
 ```
 
-In the example above, both 12 and 3 are added into the list, since every call to the append function just copies 4 bytes (sizeof(int)) from the value stored in tmp into the list. To acess and work with the elements into the structures, pointer arithmetic and standard memory manipulation routines (memcpy, memset) are used.
+In the example above, both 12 and 3 are added into the vector, since every call to the append function just copies 4 bytes (sizeof(int)) from the value stored in tmp into vec. To acess and work with the elements into the structures, pointer arithmetic and standard memory manipulation routines (memcpy, memset) are used.
 
 ## How are elements compared?
 This is an important issue. Since we store "generic" data, we must have a way to compare that data.
