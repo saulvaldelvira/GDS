@@ -25,9 +25,10 @@
 #include "../Util/definitions.h"
 #include <memory.h>
 
-#include "dynamic_array.h"
+#include "vector.h"
+#define VECTOR_DEFAULT_SIZE 12
 
-struct _DynamicArray {
+struct _Vector {
 	size_t n_elements;
 	size_t max_elements;
 	size_t data_size;
@@ -37,29 +38,29 @@ struct _DynamicArray {
 };
 
 
-DynamicArray* din_arr_empty(size_t data_size, comparator_function_t cmp){
+Vector* vector_empty(size_t data_size, comparator_function_t cmp){
 	if (data_size <= 0){
-		printerr_data_size(din_arr_empty);
+		printerr_data_size(vector_empty);
 		return NULL;
 	}
-	return din_arr_init(data_size, ARRAY_LIST_DEFAULT_SIZE, cmp);
+	return vector_init(data_size, VECTOR_DEFAULT_SIZE, cmp);
 }
 
-DynamicArray* din_arr_init(size_t data_size, size_t max_elements, comparator_function_t cmp){
+Vector* vector_init(size_t data_size, size_t max_elements, comparator_function_t cmp){
 	if (data_size <= 0){
-		printerr_data_size(din_arr_init);
+		printerr_data_size(vector_init);
 		return NULL;
 	}
 	if (!cmp){
-		printerr_null_param(din_arr_init);
+		printerr_null_param(vector_init);
 		return NULL;
 	}
 
-	DynamicArray *list = malloc(sizeof(*list));
+	Vector *list = malloc(sizeof(*list));
 	void *elements = malloc(max_elements * data_size);
 
 	if (!list || !elements){
-		printerr_allocation(din_arr_init);
+		printerr_allocation(vector_init);
 		return NULL;
 	}
 
@@ -71,40 +72,40 @@ DynamicArray* din_arr_init(size_t data_size, size_t max_elements, comparator_fun
 	return list;
 }
 
-void din_arr_configure(DynamicArray *list, comparator_function_t cmp){
+void vector_configure(Vector *list, comparator_function_t cmp){
 	if (!list || !cmp){
-		printerr_null_param(din_arr_configure);
+		printerr_null_param(vector_configure);
 		return;
 	}
 	list->compare = cmp;
 }
 
-size_t din_arr_get_data_size(DynamicArray *list){
+size_t vector_get_data_size(Vector *list){
 	if (!list){
-		printerr_null_param(din_arr_data_size);
+		printerr_null_param(vector_data_size);
 		return 0;
 	}
 	return list->data_size;
 }
 
-comparator_function_t din_arr_get_comparator(DynamicArray *list){
+comparator_function_t vector_get_comparator(Vector *list){
 	if (!list){
-		printerr_null_param(din_arr_get_comparator);
+		printerr_null_param(vector_get_comparator);
 		return NULL;
 	}
 	return list->compare;
 }
 
-int din_arr_append(DynamicArray *list, void *element){
+int vector_append(Vector *list, void *element){
 	if (!list || !element){
-		printerr_null_param(din_arr_append);
+		printerr_null_param(vector_append);
 		return NULL_PARAMETER_ERROR;
 	}
 	if(list->n_elements >= list->max_elements){ // If the list is empty, double the array size
 		list->max_elements *= 2;
 		list->elements = realloc(list->elements, list->max_elements * list->data_size);
 		if(!list->elements){
-			printerr_allocation(din_arr_append);
+			printerr_allocation(vector_append);
 			return ALLOCATION_ERROR;
 		}
 	}
@@ -112,7 +113,7 @@ int din_arr_append(DynamicArray *list, void *element){
 	void *tmp = void_offset(list->elements, list->n_elements * list->data_size);
 	tmp = memmove(tmp , element, list->data_size);
 	if (!tmp){
-		printerr_memory_op(din_arr_append);
+		printerr_memory_op(vector_append);
 		return MEMORY_OP_ERROR;
 	}
 
@@ -120,16 +121,16 @@ int din_arr_append(DynamicArray *list, void *element){
 	return SUCCESS;
 }
 
-int din_arr_push_front(DynamicArray *list, void *element){
+int vector_push_front(Vector *list, void *element){
 	if (!list || !element){
-		printerr_null_param(din_arr_push_front);
+		printerr_null_param(vector_push_front);
 		return NULL_PARAMETER_ERROR;
 	}
 	if(list->n_elements >= list->max_elements){ // If the list is empty, double the array size
 		list->max_elements *= 2;
 		list->elements = realloc(list->elements, list->max_elements * list->data_size);
 		if(!list->elements){
-			printerr_allocation(din_arr_push_front);
+			printerr_allocation(vector_push_front);
 			return ALLOCATION_ERROR;
 		}
 	}
@@ -138,7 +139,7 @@ int din_arr_push_front(DynamicArray *list, void *element){
 	tmp = memmove(tmp, list->elements, list->n_elements * list->data_size);
 	void *dst = memcpy(list->elements, element, list->data_size);
 	if (!tmp || !dst){
-		printerr_memory_op(din_arr_push_front);
+		printerr_memory_op(vector_push_front);
 		return MEMORY_OP_ERROR;
 	}
 	list->n_elements++;
@@ -146,9 +147,9 @@ int din_arr_push_front(DynamicArray *list, void *element){
 }
 
 
-int din_arr_append_array(DynamicArray *list, void *array, size_t array_length){
+int vector_append_array(Vector *list, void *array, size_t array_length){
 	if (!list || !array){
-		printerr_null_param(din_arr_append_array);
+		printerr_null_param(vector_append_array);
 		return NULL_PARAMETER_ERROR;
 	}
 
@@ -156,14 +157,14 @@ int din_arr_append_array(DynamicArray *list, void *array, size_t array_length){
 		list->max_elements = (list->max_elements + array_length) * 2;
 		list->elements = realloc(list->elements, list->max_elements * list->data_size);
 		if(!list->elements){
-			printerr_allocation(din_arr_append_array);
+			printerr_allocation(vector_append_array);
 			return ALLOCATION_ERROR;
 		}
 	}
 	void *tmp = void_offset(list->elements, list->n_elements * list->data_size);
 	tmp = memcpy(tmp, array, array_length * list->data_size);
 	if (!tmp){
-		printerr_memory_op(din_arr_append_array);
+		printerr_memory_op(vector_append_array);
 		return MEMORY_OP_ERROR;
 	}
 	list->n_elements += array_length;
@@ -171,37 +172,37 @@ int din_arr_append_array(DynamicArray *list, void *array, size_t array_length){
 	return SUCCESS;
 }
 
-int din_arr_push_front_array(DynamicArray *list, void *array, size_t array_length){
+int vector_push_front_array(Vector *list, void *array, size_t array_length){
 	if (!list || !array){
-		printerr_null_param(din_arr_push_front_array);
+		printerr_null_param(vector_push_front_array);
 		return NULL_PARAMETER_ERROR;
 	}
 	if (list->n_elements + array_length > list->max_elements){
 		list->max_elements = (list->max_elements + array_length) * 2;
 		list->elements = realloc(list->elements, list->max_elements * list->data_size);
 		if(!list->elements){
-			printerr_allocation(din_arr_push_front_array);
+			printerr_allocation(vector_push_front_array);
 			return ALLOCATION_ERROR;
 		}
 	}
 	void *tmp = void_offset(list->elements, array_length * list->data_size);
 	tmp = memmove(tmp, list->elements, list->n_elements * list->data_size);
 	if (!tmp){
-		printerr_memory_op(din_arr_push_front_array);
+		printerr_memory_op(vector_push_front_array);
 		return MEMORY_OP_ERROR;
 	}
 	tmp = memmove(list->elements, array, array_length * list->data_size);
 	if (!tmp){
-		printerr_memory_op(din_arr_push_front_array);
+		printerr_memory_op(vector_push_front_array);
 		return MEMORY_OP_ERROR;
 	}
 	list->n_elements += array_length;
 	return SUCCESS;
 }
 
-index_t din_arr_indexof(DynamicArray *list, void *element){
+index_t vector_indexof(Vector *list, void *element){
 	if (!list || !element){
-		printerr_null_param(din_arr_indexof);
+		printerr_null_param(vector_indexof);
 		return index_t(0,NULL_PARAMETER_ERROR);
 	}
 
@@ -215,52 +216,52 @@ index_t din_arr_indexof(DynamicArray *list, void *element){
 	return index_t(0,ELEMENT_NOT_FOUND_ERROR);
 }
 
-bool din_arr_exists(DynamicArray *list, void *element){
+bool vector_exists(Vector *list, void *element){
 	if (!list){
-		printerr_null_param(din_arr_exists);
+		printerr_null_param(vector_exists);
 		return false;
 	}
-	return din_arr_indexof(list, element).status == SUCCESS;
+	return vector_indexof(list, element).status == SUCCESS;
 }
 
-bool din_arr_isempty(DynamicArray *list){
+bool vector_isempty(Vector *list){
 	if (!list){
-		printerr_null_param(din_arr_isempty);
+		printerr_null_param(vector_isempty);
 		return false;
 	}
 	return list->n_elements == 0;
 }
 
-size_t din_arr_size(DynamicArray *list){
+size_t vector_size(Vector *list){
 	if (!list){
-		printerr_null_param(din_arr_size);
+		printerr_null_param(vector_size);
 		return false;
 	}
 	return list->n_elements;
 }
 
-int din_arr_set_at(DynamicArray *list, size_t index, void *element){
+int vector_set_at(Vector *list, size_t index, void *element){
 	if (!list || !element){
-		printerr_null_param(din_arr_set_at);
+		printerr_null_param(vector_set_at);
 		return NULL_PARAMETER_ERROR;
 	}
 	if (index >= list->n_elements){
-		printerr_out_of_bounds(index, din_arr_set_at);
+		printerr_out_of_bounds(index, vector_set_at);
 		return INDEX_BOUNDS_ERROR;
 	}
 
 	void *tmp = void_offset(list->elements, index * list->data_size);
 	tmp = memmove(tmp, element , list->data_size);
 	if(!tmp){
-		printerr_memory_op(din_arr_set_at);
+		printerr_memory_op(vector_set_at);
 		return MEMORY_OP_ERROR;
 	}
 	return SUCCESS;
 }
 
-int din_arr_set(DynamicArray *list, void *element, void *replacement){
+int vector_set(Vector *list, void *element, void *replacement){
 	if (!list || !element || !replacement){
-		printerr_null_param(din_arr_set);
+		printerr_null_param(vector_set);
 		return NULL_PARAMETER_ERROR;
 	}
 	void *ptr;
@@ -271,7 +272,7 @@ int din_arr_set(DynamicArray *list, void *element, void *replacement){
 			if(ptr){
 				return SUCCESS;
 			}else{
-				printerr_memory_op(din_arr_set);
+				printerr_memory_op(vector_set);
 				return MEMORY_OP_ERROR;
 			}
 		}
@@ -279,28 +280,28 @@ int din_arr_set(DynamicArray *list, void *element, void *replacement){
 	return ELEMENT_NOT_FOUND_ERROR;
 }
 
-int din_arr_insert(DynamicArray *list, void *element, void *insert){
+int vector_insert(Vector *list, void *element, void *insert){
 	if (!list || !element || !insert){
-		printerr_null_param(din_arr_insert_at);
+		printerr_null_param(vector_insert_at);
 		return NULL_PARAMETER_ERROR;
 	}
-	index_t index = din_arr_indexof(list, element);
+	index_t index = vector_indexof(list, element);
 	if (index.status != SUCCESS){
 		return index.status;
 	}
-	return din_arr_insert_at(list, index.value, insert);
+	return vector_insert_at(list, index.value, insert);
 }
 
-int din_arr_insert_at(DynamicArray *list, size_t index, void *element){
+int vector_insert_at(Vector *list, size_t index, void *element){
 	if (!list || !element){
-		printerr_null_param(din_arr_insert_at);
+		printerr_null_param(vector_insert_at);
 		return NULL_PARAMETER_ERROR;
 	}
 	if (list->n_elements == list->max_elements){
 		list->max_elements = list->max_elements * 2;
 		list->elements = realloc(list->elements, list->max_elements * list->data_size);
 		if(!list->elements){
-			printerr_allocation(din_arr_insert_at);
+			printerr_allocation(vector_insert_at);
 			return ALLOCATION_ERROR;
 		}
 	}
@@ -310,20 +311,20 @@ int din_arr_insert_at(DynamicArray *list, size_t index, void *element){
 	dst = memmove(dst, src, n * list->data_size); // Shift elements to the right
 	src = memcpy(src, element, list->data_size); // Insert the element
 	if (!dst || !src){
-		printerr_memory_op(din_arr_insert_at);
+		printerr_memory_op(vector_insert_at);
 		return MEMORY_OP_ERROR;
 	}
 	list->n_elements++;
 	return SUCCESS;
 }
 
-void* din_arr_get_at(DynamicArray *list, size_t index, void *dest){
+void* vector_get_at(Vector *list, size_t index, void *dest){
 	if (!list || !dest){
-		printerr_null_param(din_arr_get_at);
+		printerr_null_param(vector_get_at);
 		return NULL;
 	}
 	if (index >= list->n_elements){
-		printerr_out_of_bounds(index, din_arr_get_at);
+		printerr_out_of_bounds(index, vector_get_at);
 		return NULL;
 	}
 	void *tmp = void_offset(list->elements, index * list->data_size);
@@ -331,53 +332,53 @@ void* din_arr_get_at(DynamicArray *list, size_t index, void *dest){
 	return tmp;
 }
 
-void* din_arr_get(DynamicArray *list, void *element, void *dest){
+void* vector_get(Vector *list, void *element, void *dest){
 	if (!list || !element || !dest){
-		printerr_null_param(din_arr_get);
+		printerr_null_param(vector_get);
 		return NULL;
 	}
-	index_t index = din_arr_indexof(list, element);
+	index_t index = vector_indexof(list, element);
 	if (!index.status){
 		return NULL;
 	}
-	return din_arr_get_at(list, index.value, dest);
+	return vector_get_at(list, index.value, dest);
 }
 
-void* din_arr_get_front(DynamicArray *list, void *dest){
+void* vector_get_front(Vector *list, void *dest){
 	if (!list || !dest){
-		printerr_null_param(din_arr_get_front);
+		printerr_null_param(vector_get_front);
 		return NULL;
 	}
-	return din_arr_get_at(list, 0, dest);
+	return vector_get_at(list, 0, dest);
 }
 
-void* din_arr_get_back(DynamicArray *list, void *dest){
+void* vector_get_back(Vector *list, void *dest){
 	if (!list || !dest){
-		printerr_null_param(din_arr_get_back);
+		printerr_null_param(vector_get_back);
 		return NULL;
 	}
-	return din_arr_get_at(list, list->n_elements - 1, dest);
+	return vector_get_at(list, list->n_elements - 1, dest);
 }
 
-void* din_arr_get_into_array(DynamicArray *list, void *array, size_t array_length){
+void* vector_get_into_array(Vector *list, void *array, size_t array_length){
 	if (!list || !array){
-		printerr_null_param(din_arr_get_into_array);
+		printerr_null_param(vector_get_into_array);
 		return NULL;
 	}
 	if (array_length > list->n_elements){
 		array_length = list->n_elements;
 	}
 	if (!memcpy(array, list->elements, array_length * list->data_size)){
-		printerr_memory_op(din_arr_get_into_array);
+		printerr_memory_op(vector_get_into_array);
 		return NULL;
 	}
 	
 	return array;
 }
 
-void* din_arr_get_array(DynamicArray *list, size_t array_length){
+void* vector_get_array(Vector *list, size_t array_length){
 	if (!list){
-		printerr_null_param(din_arr_get_array);
+		printerr_null_param(vector_get_array);
 		return NULL;
 	}
 	if (array_length == GET_ALL_ELEMENTS || array_length > list->n_elements){
@@ -387,50 +388,50 @@ void* din_arr_get_array(DynamicArray *list, size_t array_length){
 	if (!array){
 		return NULL;
 	}
-	if (!din_arr_get_into_array(list, array, array_length)){
+	if (!vector_get_into_array(list, array, array_length)){
 		free(array);
 		return NULL;
 	}
 	return array;
 }
 
-static void* get_position(DynamicArray *list, size_t index){
+static void* get_position(Vector *list, size_t index){
 	return void_offset(list->elements, index * list->data_size);
 }
 
-int din_arr_swap(DynamicArray *list, size_t index_1, size_t index_2){
+int vector_swap(Vector *list, size_t index_1, size_t index_2){
 	if (!list){
-		printerr_null_param(din_arr_swap);
+		printerr_null_param(vector_swap);
 		return NULL_PARAMETER_ERROR;
 	}
 	if (index_1 >= list->n_elements){
-		printerr_out_of_bounds(index_1, din_arr_swap);
+		printerr_out_of_bounds(index_1, vector_swap);
 		return INDEX_BOUNDS_ERROR;
 	}
 	if (index_2 >= list->n_elements){
-		printerr_out_of_bounds(index_2, din_arr_swap);
+		printerr_out_of_bounds(index_2, vector_swap);
 		return INDEX_BOUNDS_ERROR;
 	}
 	
 	void *tmp = malloc(list->data_size);
 	if (!tmp){
-		printerr_allocation(din_arr_swap);
+		printerr_allocation(vector_swap);
 		return ALLOCATION_ERROR;
 	}
 
-	if (!din_arr_get_at(list, index_1, tmp)){
+	if (!vector_get_at(list, index_1, tmp)){
 		return ERROR;
 	}
 
 	void *e1 = get_position(list, index_1);
 	void *e2 = get_position(list, index_2);
 	if(!memcpy(e1, e2, list->data_size)){
-		printerr_memory_op(din_arr_swap);
+		printerr_memory_op(vector_swap);
 		return MEMORY_OP_ERROR;
 	}
 
 	if(!memcpy(e2, tmp, list->data_size)){
-		printerr_memory_op(din_arr_swap);
+		printerr_memory_op(vector_swap);
 		return MEMORY_OP_ERROR;
 	}
 
@@ -440,9 +441,9 @@ int din_arr_swap(DynamicArray *list, size_t index_1, size_t index_2){
 
 }
 
-int din_arr_compare(DynamicArray *list, size_t index_1, size_t index_2){
+int vector_compare(Vector *list, size_t index_1, size_t index_2){
 	if (!list){
-		printerr_null_param(din_arr_swap);
+		printerr_null_param(vector_swap);
 		return NULL_PARAMETER_ERROR;
 	}
 	void *e1 = get_position(list, index_1);
@@ -450,13 +451,13 @@ int din_arr_compare(DynamicArray *list, size_t index_1, size_t index_2){
 	return (*list->compare) (e1, e2);
 }
 
-int din_arr_remove_at(DynamicArray *list, size_t index){
+int vector_remove_at(Vector *list, size_t index){
 	if (!list){
-		printerr_null_param(din_arr_remove_at);
+		printerr_null_param(vector_remove_at);
 		return NULL_PARAMETER_ERROR;
 	}
 	if (index >= list->n_elements){
-		printerr_out_of_bounds(index, din_arr_remove_at);
+		printerr_out_of_bounds(index, vector_remove_at);
 		return INDEX_BOUNDS_ERROR;
 	}
 
@@ -465,7 +466,7 @@ int din_arr_remove_at(DynamicArray *list, size_t index){
 		void *dst = void_offset(list->elements, index * list->data_size);
 		void *src = void_offset(list->elements, (index+1) * list->data_size);
 		if(!memmove(dst, src, leftover)){
-			printerr_memory_op(din_arr_remove_at);
+			printerr_memory_op(vector_remove_at);
 			return MEMORY_OP_ERROR;
 		}
 	}
@@ -473,22 +474,22 @@ int din_arr_remove_at(DynamicArray *list, size_t index){
 	return SUCCESS;
 }
 
-int din_arr_remove(DynamicArray *list, void *element){
+int vector_remove(Vector *list, void *element){
 	if (!list || !element){
-		printerr_null_param(din_arr_remove);
+		printerr_null_param(vector_remove);
 		return NULL_PARAMETER_ERROR;
 	}
-	index_t i = din_arr_indexof(list, element);
+	index_t i = vector_indexof(list, element);
 	if (!i.status){
 		return i.status;
 	}
-	return din_arr_remove_at(list, i.value);
+	return vector_remove_at(list, i.value);
 }
 
 
-void* din_arr_pop_front(DynamicArray *list, void *dest){
+void* vector_pop_front(Vector *list, void *dest){
 	if (!list || !dest){
-		printerr_null_param(din_arr_pop_front);
+		printerr_null_param(vector_pop_front);
 		return NULL;
 	}
 	if (list->n_elements == 0){
@@ -496,16 +497,16 @@ void* din_arr_pop_front(DynamicArray *list, void *dest){
 	}
 	dest = memcpy(dest, list->elements, list->data_size);
 	if (!dest){
-		printerr_memory_op(din_arr_pop_front);
+		printerr_memory_op(vector_pop_front);
 		return NULL;
 	}
-	din_arr_remove_at(list, 0);
+	vector_remove_at(list, 0);
 	return dest;
 }
 
-void* din_arr_pop_back(DynamicArray *list, void *dest){
+void* vector_pop_back(Vector *list, void *dest){
 	if (!list || !dest){
-		printerr_null_param(din_arr_pop_back);
+		printerr_null_param(vector_pop_back);
 		return NULL;
 	}
 	if (list->n_elements == 0){
@@ -514,23 +515,23 @@ void* din_arr_pop_back(DynamicArray *list, void *dest){
 	void *src = void_offset(list->elements, (list->n_elements - 1) * list->data_size);
 	dest = memcpy(dest, src, list->data_size);
 	if (!dest){
-		printerr_memory_op(din_arr_pop_front);
+		printerr_memory_op(vector_pop_front);
 		return NULL;
 	}
-	din_arr_remove_at(list, list->n_elements - 1);
+	vector_remove_at(list, list->n_elements - 1);
 	return dest;
 }
 
-int din_arr_remove_array(DynamicArray *list, void *array, size_t array_length){
+int vector_remove_array(Vector *list, void *array, size_t array_length){
 	if (!list || !array){
-		printerr_null_param(din_arr_remove_array);
+		printerr_null_param(vector_remove_array);
 		return NULL_PARAMETER_ERROR;
 	}
 	void *tmp;
 	int status;
 	for (size_t i = 0; i < array_length; i++){
 		tmp = void_offset(array, i * list->data_size);
-		status = din_arr_remove(list, tmp);
+		status = vector_remove(list, tmp);
 		if (status != SUCCESS){
 			return status;
 		}
@@ -538,21 +539,21 @@ int din_arr_remove_array(DynamicArray *list, void *array, size_t array_length){
 	return SUCCESS;
 }
 
-DynamicArray* din_arr_join(DynamicArray *list_1, DynamicArray *list_2){
+Vector* vector_join(Vector *list_1, Vector *list_2){
 	if (!list_1 || !list_2){
-		printerr_null_param(din_arr_join);
+		printerr_null_param(vector_join);
 		return NULL;
 	}
 	if (list_1->data_size != list_2->data_size){
-		fprintf(stderr, "ERROR: the lists have different data sizes. In function din_arr_join\n");
+		fprintf(stderr, "ERROR: the lists have different data sizes. In function vector_join\n");
 		return NULL;
 	}
 
 	size_t n_elements = list_1->n_elements + list_2->n_elements;
-	if (n_elements < ARRAY_LIST_DEFAULT_SIZE){
-		n_elements = ARRAY_LIST_DEFAULT_SIZE;
+	if (n_elements < VECTOR_DEFAULT_SIZE){
+		n_elements = VECTOR_DEFAULT_SIZE;
 	}
-	DynamicArray *list_joint = din_arr_init(list_1->data_size, n_elements, list_1->compare);
+	Vector *list_joint = vector_init(list_1->data_size, n_elements, list_1->compare);
 	if (!list_joint){
 		return NULL;
 	}
@@ -560,10 +561,10 @@ DynamicArray* din_arr_join(DynamicArray *list_1, DynamicArray *list_2){
 	int status;
 
 	// Get the elements of the first list
-	void *tmp = din_arr_get_array(list_1, list_1->n_elements);
+	void *tmp = vector_get_array(list_1, list_1->n_elements);
 	if (tmp != NULL){
 		// Add the elements of the first list
-		status = din_arr_append_array(list_joint, tmp, list_1->n_elements);
+		status = vector_append_array(list_joint, tmp, list_1->n_elements);
 		free(tmp);
 		if (status != SUCCESS){
 			goto exit_err;
@@ -571,10 +572,10 @@ DynamicArray* din_arr_join(DynamicArray *list_1, DynamicArray *list_2){
 	}
 
 	// Get the elements of the second list
-	tmp = din_arr_get_array(list_2, list_2->n_elements);
+	tmp = vector_get_array(list_2, list_2->n_elements);
 	if (tmp != NULL){
 		// Add the elements of the second list
-		status = din_arr_append_array(list_joint, tmp, list_2->n_elements);
+		status = vector_append_array(list_joint, tmp, list_2->n_elements);
 		free(tmp);
 		if (status != SUCCESS){
 			exit_err:
@@ -586,9 +587,9 @@ DynamicArray* din_arr_join(DynamicArray *list_1, DynamicArray *list_2){
 	return list_joint;
 }
 
-int din_arr_free(DynamicArray *list){
+int vector_free(Vector *list){
 	if (!list){
-		printerr_null_param(din_arr_free);
+		printerr_null_param(vector_free);
 		return NULL_PARAMETER_ERROR;
 	}
 	free(list->elements);
@@ -596,21 +597,21 @@ int din_arr_free(DynamicArray *list){
 	return SUCCESS;
 }
 
-DynamicArray* din_arr_reset(DynamicArray *list){
+Vector* vector_reset(Vector *list){
 	if (!list){
-		printerr_null_param(din_arr_reset);
+		printerr_null_param(vector_reset);
 		return NULL;
 	}
 	free(list->elements);
 	list->elements = NULL;
-	list->elements = malloc(ARRAY_LIST_DEFAULT_SIZE * list->data_size);
+	list->elements = malloc(VECTOR_DEFAULT_SIZE * list->data_size);
 
 	if (!list->elements){
-		printerr_allocation(din_arr_reset);
+		printerr_allocation(vector_reset);
 		return NULL;
 	}
 
 	list->n_elements = 0;
-	list->max_elements = ARRAY_LIST_DEFAULT_SIZE;
+	list->max_elements = VECTOR_DEFAULT_SIZE;
 	return list;
 }
