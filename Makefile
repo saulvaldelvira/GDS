@@ -32,13 +32,13 @@ endif
 default: all_test
 
 list_test: $(BIN) $(BIN)/list_test.out
-	@ $(BIN)/list_test.out 
+	@ $(BIN)/list_test.out
 
 stack_test: $(BIN) $(BIN)/stack_test.out
-	@ $(BIN)/stack_test.out 
+	@ $(BIN)/stack_test.out
 
 queue_test: $(BIN) $(BIN)/queue_test.out
-	@ $(BIN)/queue_test.out 
+	@ $(BIN)/queue_test.out
 
 bst_test: $(BIN) $(BIN)/bst_test.out
 	@ $(BIN)/bst_test.out
