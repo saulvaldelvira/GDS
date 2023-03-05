@@ -4,7 +4,7 @@ In an AVL tree, the heights of the two child subtrees of any node differ by at m
 
 If an inbalance apprears, a "rotation" is performed to fix it. This guarantees a O(log n) time complexity for all basic operations, and solves one of the main inconveniences of Binary Search Trees, as it avoids the appearence of degenerate Trees.
 
-![AVLTree gif](../../img/AVLTree/AVLTree1.gif)
+![AVLTree gif](img/AVLTree/AVLTree1.gif)
 
 ## Time complexity
 

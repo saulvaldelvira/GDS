@@ -14,7 +14,7 @@ Given an index i, we can calculate the father of i as <br>
 We can calculate the two child nodes as `child_1 = i * 2 + 1` and `child_2 = i * 2 + 2` <br>
 
 ### Representation of a Binary Heap as an array
-![Binary Heap representation as an array](../../img/BinaryHeap/BinaryHeap1.png)
+![Binary Heap representation as an array](img/BinaryHeap/BinaryHeap1.png)
 
 ## Time complexity
 

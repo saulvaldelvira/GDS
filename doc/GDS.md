@@ -2,11 +2,11 @@
 A set of generic Data Structures, implemented in C. <br>
 It includes:
 * Lists: [Vector](/src/Vector), [LinkedList](/src/LinkedList)
-* [Stack](src/Stack)
-* [Queue](src/Queue)
-* Trees: [BTree](/src/BTree), [AVLTree](/src/AVLTree), [BSTree](src/BSTree)
-* [Graph](src/Graph)
-* [Binary Heap](src/BinaryHeap)
+* [Stack](/src/Stack)
+* [Queue](/src/Queue)
+* Trees: [BTree](/src/BTree), [AVLTree](/src/AVLTree), [BSTree](/src/BSTree)
+* [Graph](/src/Graph)
+* [Binary Heap](/src/BinaryHeap)
 
 ## How it works
 These structures are "generic" in the way that the only information they need about the data type stored is its size. <br>
