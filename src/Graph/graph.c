@@ -38,7 +38,7 @@ struct _Graph {
 /// CONSTRUCTORS //////////////////////////////////////////////////////////////
 
 /**
- * Expands the graph's number of elements to new_size. This means
+ * Expands the graph's number of elements to new_size. This means:
  * 1) Allocates new spaces for vertices, weights and edges.
  * 2) Copies old values into these new, bigger spaces.
  * 3) Fills rest of the new spaces with the default values (0 for edges and INFINITY for weights)
@@ -49,21 +49,14 @@ struct _Graph {
 static int expand_memory(Graph *graph, size_t new_size){
 	// Allocate vertices
 	void *vertices = malloc(new_size * graph->data_size);
-	if (!vertices){
-		printerr_allocation(expand_memory);
-		return ALLOCATION_ERROR;
-	}
-
+	
 	// Allocate weights
 	float **weights = malloc(new_size * sizeof(*weights));
-	if (!weights){
-		printerr_allocation(expand_memory);
-		return ALLOCATION_ERROR;
-	}
-
+	
 	// Allocate edges
 	int8_t **edges = malloc(new_size * sizeof(*edges));
-	if (!edges){
+
+	if (!edges || !weights || !edges){
 		printerr_allocation(expand_memory);
 		return ALLOCATION_ERROR;
 	}
