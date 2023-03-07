@@ -111,8 +111,8 @@ void* avl_postorder(AVLTree *tree);
 /**
  * @return a new AVLTree with the elements of the two given trees.
  * @note No particular order of elements is guaranteed.
- * @note ATTENTION: The trees must store the same data. At least, they must have 
- * the same data size. Also, the comparator function of tree_1 will be taken, 
+ * @note ATTENTION: The trees must store the same data. At least, they must have
+ * the same data size. Also, the comparator function of tree_1 will be taken,
  * because it is assumed that both trees have the same comparator functions.
 */
 AVLTree* avl_join(AVLTree *tree_1, AVLTree *tree_2);

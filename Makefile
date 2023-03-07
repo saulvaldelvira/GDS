@@ -15,7 +15,7 @@ BTREE_OBJS = test/btree_test.o $(SRC)/BTree/BTree.o $(UTIL_OBJS)
 CC = gcc
 CCFLAGS = -lm -Wall -Wextra -Werror -g3 -pedantic
 
-# To set optimization level append "O=X" in make command. X is the optimiztion level. 
+# To set optimization level append "O=X" in make command. X is the optimiztion level.
 ifdef O
 CCFLAGS += -O$(O)
 endif

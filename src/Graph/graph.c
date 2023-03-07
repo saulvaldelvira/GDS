@@ -49,10 +49,10 @@ struct _Graph {
 static int expand_memory(Graph *graph, size_t new_size){
 	// Allocate vertices
 	void *vertices = malloc(new_size * graph->data_size);
-	
+
 	// Allocate weights
 	float **weights = malloc(new_size * sizeof(*weights));
-	
+
 	// Allocate edges
 	int8_t **edges = malloc(new_size * sizeof(*edges));
 
@@ -71,7 +71,7 @@ static int expand_memory(Graph *graph, size_t new_size){
 
 	// Initialize the columns for edges and weights.
 	// We divide the loop in two ranges [0 - oldSize) and [oldSize - newSize)
-	// In the first one, we allocate the new memmory and copy the old values. 
+	// In the first one, we allocate the new memmory and copy the old values.
 	for (size_t i = 0; i < graph->max_elements; i++){
 		// Allocate weights[i] and copy old values
 		weights[i] = malloc(new_size * sizeof(*weights[i]));
@@ -109,7 +109,7 @@ static int expand_memory(Graph *graph, size_t new_size){
 		free(graph->edges[i]);
 	}
 
-	// In the second one [oldSize, newSize), we also allocate memory 
+	// In the second one [oldSize, newSize), we also allocate memory
 	// but, since there are no old values to copy, we just set the default values
 	for (size_t i = graph->max_elements; i < new_size; i++){
 		weights[i] = malloc(new_size * sizeof(*weights[i]));
@@ -174,7 +174,7 @@ Graph* graph_init(size_t data_size, size_t n_elements, comparator_function_t cmp
 	graph->vertices = NULL;
 	graph->data_size = data_size;
 
-	// "Expanding" from 0 to n_elements turns into just initializing 
+	// "Expanding" from 0 to n_elements turns into just initializing
 	// weights, edges and vertices to their default size and state.
 	if (expand_memory(graph, n_elements) != SUCCESS){
 		return NULL;
@@ -216,7 +216,7 @@ int graph_add_vertex(Graph *graph, void *vertex){
 		return NULL_PARAMETER_ERROR;
 	}
 	if (graph->n_elements == graph->max_elements){
-		if (expand_memory(graph, graph->max_elements * 2) != SUCCESS) {
+		if (expand_memory(graph, graph->max_elements * 2) != SUCCESS){
 			return ALLOCATION_ERROR;
 		}
 	}
@@ -273,7 +273,7 @@ int graph_remove_vertex(Graph *graph, void *vertex){
 			return MEMORY_OP_ERROR;
 		}
 
-		// Swap the weights columns of the vertex to be removed and the last one 
+		// Swap the weights columns of the vertex to be removed and the last one
 		target = (void*) (graph->weights[index.value]);
 		source = (void*) (graph->weights[graph->n_elements-1]);
 
@@ -283,7 +283,7 @@ int graph_remove_vertex(Graph *graph, void *vertex){
 			return MEMORY_OP_ERROR;
 		}
 
-		// Swap the edges columns of the vertex to be removed and the last one 
+		// Swap the edges columns of the vertex to be removed and the last one
 		target = (void*) (graph->edges[index.value]);
 		source = (void*) (graph->edges[graph->n_elements-1]);
 
@@ -293,7 +293,7 @@ int graph_remove_vertex(Graph *graph, void *vertex){
 			return MEMORY_OP_ERROR;
 		}
 
-		// Swap rows of the vertex to be removed and the last one 
+		// Swap rows of the vertex to be removed and the last one
 		for (size_t i = 0; i < graph->max_elements; i++){
 			graph->edges[i][index.value] = graph->edges[i][graph->n_elements-1];
 			graph->weights[i][index.value] = graph->weights[i][graph->n_elements-1];
@@ -304,11 +304,11 @@ int graph_remove_vertex(Graph *graph, void *vertex){
 			graph->weights[i][graph->n_elements-1] = INFINITY;
 			graph->weights[graph->n_elements-1][i] = INFINITY;
 		}
-	// If the vertex to remove is the last, we still have to clear the values. 
+	// If the vertex to remove is the last, we still have to clear the values.
 	// The reason i didn't just put this loop outside the if-else
-	// Statement is because if so, in the case we remove a non-last vertex (most) we should iteratre twice. 
+	// Statement is because if so, in the case we remove a non-last vertex (most) we should iteratre twice.
 	// This way, we have longer code, but At runtime, the loop will only run once. (Hope I wrote this clear enough :p)
-	}else{ 
+	}else{
 		for (size_t i = 0; i < graph->max_elements; i++){
 			graph->edges[i][graph->n_elements-1] = 0;
 			graph->edges[graph->n_elements-1][i] = 0;
@@ -354,7 +354,6 @@ bool graph_exists_vertex(Graph *graph, void *vertex){
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-
 
 ///// EDGES ///////////////////////////////////////////////////////////////////
 
@@ -515,7 +514,7 @@ static void graph_init_dijkstra(DijkstraData_t *dijkstra, Graph *graph, size_t s
 		} else{
 			dijkstra->P[i].status = -1; // Mark as an index in wich there is no pivot
 		}
-		
+
 	}
 	// The source vertex's cheapest path is allways itself with weight 0
 	dijkstra->D[source] = 0.0f;
@@ -527,7 +526,7 @@ static void graph_init_dijkstra(DijkstraData_t *dijkstra, Graph *graph, size_t s
 }
 
 /**
- * Returns the next pivot for the algorithm. 
+ * Returns the next pivot for the algorithm.
  * The next pivot is the vertex with the lowest cost that has not been visited yet
  * @param S an array of visited vertices. 1 if visited, 0 if not visited
  * @param D an array of weights
@@ -565,7 +564,7 @@ DijkstraData_t graph_dijkstra(Graph *graph, void *source){
 
 	// Initialize the visited array
 	u_int8_t *S = calloc(graph->n_elements, sizeof(*S));
-	if (!S) {
+	if (!S){
 		printerr_allocation(graph_dijkstra);
 		free(dijkstra.D);
 		free(dijkstra.P);
@@ -599,13 +598,13 @@ DijkstraData_t graph_dijkstra(Graph *graph, void *source){
 		S[p] = 1;
 		pivot = graph_get_pivot(S, dijkstra.D, graph->n_elements);
 	}
-	
+
 	free(S); // Free the visited array
 	dijkstra.status = SUCCESS;
 	return dijkstra;
 }
 
-void graph_print_dijkstra_data(FILE *output, DijkstraData_t data) {
+void graph_print_dijkstra_data(FILE *output, DijkstraData_t data){
 	fprintf(output, "[DIJKSTRA]\n");
 	fprintf(output, "i\tD\tP\n");
 	for (size_t i = 0; i < data.n_elements; i++){
@@ -641,7 +640,7 @@ static void graph_init_floyd(FloydData_t *floyd, Graph *graph){
 		free(floyd->P);
 		return;
 	}
-	
+
 	for (size_t i = 0; i < graph->n_elements; i++){
 		floyd->A[i] = malloc(sizeof(*floyd->A[i]) * graph->n_elements);
 		floyd->P[i] = malloc(sizeof(*floyd->P[i]) * graph->n_elements);
@@ -686,7 +685,7 @@ FloydData_t graph_floyd(Graph *graph){
 		}
 	}
 	return floyd;
-	
+
 }
 
 void graph_print_floyd_data(FILE *output, FloydData_t data){
@@ -814,7 +813,7 @@ static int traverse_df_rec(traverse_df_data_t *data, size_t index, u_int8_t *vis
 			s = traverse_df_rec(data, i, visited, graph);
 			if (s != SUCCESS){
 				return s;
-			} 
+			}
 		}
 	}
 	return SUCCESS;

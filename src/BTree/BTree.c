@@ -96,7 +96,7 @@ static BTreeNode* btree_init_node(int K, size_t data_size){
 }
 
 /**
- * Tries to insert the element into the given index. 
+ * Tries to insert the element into the given index.
  * If the node is full returns INDEX_BOUNDS_ERROR.
 */
 static int right_shift_node(BTreeNode *node, int index, BTree *tree, void *element){
@@ -109,15 +109,15 @@ static int right_shift_node(BTreeNode *node, int index, BTree *tree, void *eleme
         int n_elements_to_move = node->n_elements - index;
         dst = memmove(dst, src, n_elements_to_move * tree->data_size);
 
-        // Insert the element 
+        // Insert the element
         src = memcpy(src, element, tree->data_size);
         node->n_elements++;
-        
+
         if (!dst || !src){
                 printerr_memory_op(right_shift_node);
                 return NULL_PARAMETER_ERROR;
         }
-        
+
         // Also shift the child nodes to the right
         for (int i=node->n_childs; i > index; i--){
                 node->childs[i] = node->childs[i - 1];
@@ -174,7 +174,7 @@ static BTreeNode* split_node(BTreeNode *node, void *element, BTree *tree, BTreeN
         split->n_childs = 2;
 
         // If there is "overflow" thus we are adding in a NON LEAF node,
-        // we set the n_childs to n_elements + 1. Else we are in a leaf node, 
+        // we set the n_childs to n_elements + 1. Else we are in a leaf node,
         // wich means it has 0 childs.
         if (has_overflow){
                 left->n_childs = left->n_elements + 1;
@@ -191,7 +191,7 @@ static BTreeNode* split_node(BTreeNode *node, void *element, BTree *tree, BTreeN
                         printerr_memory_op(split_node);
                         return NULL;
                 }
-                
+
                 // Add the elements of the right node
                 void *tmp = void_offset(left->elements, middle * tree->data_size);
                 if (!memcpy(right->elements, tmp, right->n_elements * tree->data_size)){
@@ -231,20 +231,19 @@ static BTreeNode* split_node(BTreeNode *node, void *element, BTree *tree, BTreeN
                 void *src = void_offset(left->elements, index * tree->data_size);
                 void *dst = void_offset(left->elements, (index+1) * tree->data_size);
                 dst = memmove(dst, src, (middle - index) * tree->data_size); // Move elements to the right
-                
+
                 // Insert the element into index
                 src = memcpy(src, element, tree->data_size); // Add in the element in the spot
                 if (!dst || !src){
                         printerr_memory_op(split_node);
                         return NULL;
                 }
-                
+
                 // Split the childs arrays
                 for (int i=0, m = middle; i < right->n_childs ; i++){
                         right->childs[i] = left->childs[m + i];
                         left->childs[m + i] = NULL;
                 }
-
 
                 for (int i=left->n_childs-1; i > index; i--){
                         left->childs[i] = left->childs[i-1];
@@ -270,7 +269,6 @@ static BTreeNode* split_node(BTreeNode *node, void *element, BTree *tree, BTreeN
                 int first_chunk = index - (middle+1);
                 src = memcpy(right->elements, src, first_chunk * tree->data_size);
                 n = first_chunk;
-
 
                 // Insert the element in the index
                 void *dst = void_offset(right->elements, first_chunk * tree->data_size);
@@ -329,7 +327,7 @@ static struct add_remove_ret btree_add_rec(BTreeNode *node, BTree *tree, void *e
                 ret.status = REPEATED_ELEMENT_ERROR;
                 return ret;
         }
-        
+
         // If we are NOT in a leaf node
         if (node->n_childs > 0){
                 // Add recursively
@@ -395,7 +393,7 @@ int btree_add(BTree *tree, void *element){
 
 /**
  * @return the position of the element, or -1 if it's not in this node.
- * 
+ *
 */
 static int find_element(BTreeNode *node, void *element, comparator_function_t compare, size_t data_size){
         void *tmp;
@@ -424,7 +422,7 @@ static int get_min_and_delete(BTreeNode *node, void *dest, size_t data_size){
                         printerr_memory_op(get_min_and_delete);
                         return MEMORY_OP_ERROR;
                 }
-                
+
                 return SUCCESS;
         }else {
                 return get_min_and_delete(node->childs[0], dest, data_size);
@@ -486,7 +484,7 @@ static BTreeNode* merge_nodes(BTreeNode *left, void *mid_element, BTreeNode *rig
         }
         left->n_elements += right->n_elements;
 
-        // TODO : Fix this 
+        // TODO : Fix this
         int p = 0;     // = //mid_element ? left->n_childs : left->n_childs - 1;
 
         for (int i = 0; i < right->n_childs; i++){
@@ -510,7 +508,6 @@ static BTreeNode* borrow_max(BTreeNode *node, int K) {
                 return borrow_max(node->childs[node->n_childs-1], K);
         }
 }
-
 
 static BTreeNode* borrow_min(BTreeNode *node, int K) {
         if (LEAF(node)){
@@ -543,18 +540,16 @@ static void request_or_merge(BTreeNode *node, BTreeNode *father, BTree *tree, vo
                 get_min_and_delete(min_right, element_down, tree->data_size);
 
         } else { // Merge
-                if (left_sibling) {
+                if (left_sibling){
                         *left_sibling = merge_nodes(*left_sibling, element_down, node, tree->data_size);
                         remove_element(father, tree->data_size, father_pos-1);
-                }else if (right_sibling) {
+                }else if (right_sibling){
                         element_down = void_offset(element_down, tree->data_size); // Fetch the next element (the father of the right child)
                         *right_sibling = merge_nodes(node, element_down, *right_sibling, tree->data_size);
                         remove_element(father, tree->data_size, father_pos);
                 }
         }
 }
-
-
 
 static struct add_remove_ret btree_remove_rec(BTreeNode *node, BTreeNode *father, BTree *tree, void *element){
         int pos = find_element(node, element, tree->compare, tree->data_size);
@@ -640,7 +635,7 @@ static BTreeNode* btree_get_node(BTreeNode *node, size_t data_size, void *elemen
                         return node;
                 }else if(c < 0){
                         return btree_get_node(node->childs[(*index)], data_size, element, cmp, index);
-                }else if (c > 0 && (*index) == node->n_elements-1) {
+                }else if (c > 0 && (*index) == node->n_elements-1){
                         return btree_get_node(node->childs[node->n_elements], data_size, element, cmp, index);
                 }
         }

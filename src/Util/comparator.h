@@ -1,7 +1,7 @@
 /**
  *  Comparator header.
  *  Defines functions to compare different data types.
- * 
+ *
  *  Copyright (C) 2022-2023  Saúl Valdelvira Iglesias
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -39,5 +39,4 @@
 	#define DEFAULT_FLOAT_PRECISION 0.00000001f
 	#define DEFAULT_DOUBLE_PRECISION 100000000000000000
 
-	
 #endif

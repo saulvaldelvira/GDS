@@ -1,6 +1,6 @@
 /**
  *  Defines the index_t struct, to represent an index.
- * 
+ *
  *  Copyright (C) 2022-2023  Saúl Valdelvira Iglesias
  *
  *  This program is free software: you can redistribute it and/or modify
@@ -25,8 +25,8 @@
 
 /**
  * Represents a position.
- * This structure is used when an index must be returned by a function. Since these strcutures use 
- * size_t (long unsigned int) we must wrap this index along an integer that represent if the value 
+ * This structure is used when an index must be returned by a function. Since these strcutures use
+ * size_t (long unsigned int) we must wrap this index along an integer that represent if the value
  * is actually useful or else the operation has failed.
  * If status inidcates success, the value is valid. Else, it is just garbage.
 */

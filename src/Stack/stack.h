@@ -27,7 +27,7 @@
 
 /**
  * The Stack works in a similar way to a LinkedList. But in this case, the elements are allways added in the head.
- * This is because a Stack is a Data Structure that follows a LIFO (Last In First Out) dynamic. The last element added 
+ * This is because a Stack is a Data Structure that follows a LIFO (Last In First Out) dynamic. The last element added
  * is the first one that goes out.
 */
 typedef struct _Stack Stack;
@@ -72,7 +72,7 @@ int stack_pop_array(Stack *stack, void *array_dest, size_t dest_length);
 void* stack_peek(Stack *stack, void *dest);
 
 /**
- * @return true if the element exists in the stack 
+ * @return true if the element exists in the stack
 */
 bool stack_exists(Stack *stack, void *element);
 

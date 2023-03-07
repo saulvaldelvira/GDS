@@ -25,7 +25,6 @@
 #include <stddef.h>
 #include "../Util/comparator.h"
 
-
 /**
  * @brief BSTree (Binary Search Tree) structure.
  */
@@ -34,7 +33,7 @@ typedef struct _BSTree BSTree;
 /**
  * Returns an empty new BSTree
  * @param data_size size of the data stored.
- * @param comparator function to compare two elements of the tree. 
+ * @param comparator function to compare two elements of the tree.
  *  Must return -1 if element1 < element2, 1 if element1 > element2 and 0 if element1 == element2
 */
 BSTree* bst_init(size_t data_size, comparator_function_t cmp);
@@ -108,8 +107,8 @@ bool bst_isempty(BSTree *tree);
 /**
  * @return a new BSTree with the elements of the two given trees.
  * @note No particular order of elements is guaranteed.
- * @note ATTENTION: The trees must store the same data. At least, they must have 
- * the same data size. Also, the comparator function of tree_1 will be taken, 
+ * @note ATTENTION: The trees must store the same data. At least, they must have
+ * the same data size. Also, the comparator function of tree_1 will be taken,
  * because it is assumed that both trees have the same comparator functions.
 */
 BSTree* bst_join(BSTree *tree_1, BSTree *tree_2);
@@ -143,6 +142,5 @@ void* bst_inorder(BSTree *tree);
  * @note the size of the array will naturally be the number of elements in the tree, so there is no need to return it.
 */
 void* bst_postorder(BSTree *tree);
-
 
 #endif

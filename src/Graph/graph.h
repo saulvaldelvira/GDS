@@ -147,8 +147,8 @@ typedef struct DijkstraData {
 } DijkstraData_t;
 
 /**
- * Performs Dijkstra's Algorithms to compute the cheapest path from source to the 
- * rest of vertices in the graph. 
+ * Performs Dijkstra's Algorithms to compute the cheapest path from source to the
+ * rest of vertices in the graph.
  * Returns a DijkstraData_t struct with the following elements.
  *      D (float*) an array of weights
  *      P (struct index_t) the pivot vertices (NOTE this is a struct, if the status is not SUCESS (1), this means there's no pivot)
@@ -208,7 +208,7 @@ typedef struct vertexDegree {
 } vertexDegree_t;
 
 /**
- * @note Returns a vertexDegree_t struct with the above information. 
+ * @note Returns a vertexDegree_t struct with the above information.
  * @param     status:  if 1, this means the operation was successful and the rest of the elements are valid
  * @param     deg_out: the out degree of the vertex. This means, number of edges going into the vertex.
  * @param     deg_in:  the in degree of the vertex. This means, number of edges starting from the vertex.
@@ -217,14 +217,14 @@ typedef struct vertexDegree {
 vertexDegree_t graph_get_degree(Graph *graph, void *vertex);
 
 /**
- * @return true if the given vertex is a source vertex. 
+ * @return true if the given vertex is a source vertex.
  * @note A vertex is source if the in degree (number of edges entering the vertex) is 0
  *      and the out degree is > 0 (at least an edge is born from the vertex)
 */
 bool graph_is_source_vertex(Graph *graph, void *vertex);
 
 /**
- * @return true if the given vertex is a drain vertex. 
+ * @return true if the given vertex is a drain vertex.
  * @note A vertex is source if the out degree (number of edges exiting the vertex) is 0
  *      and the in degree is > 0 (at least an edge eneters the vertex)
 */
@@ -232,7 +232,7 @@ bool graph_is_drain_vertex(Graph *graph, void *vertex);
 
 /**
  * @return true if the given vertex is isolated.
- * @note A vertex is isolated if its degree is 0, wich means no 
+ * @note A vertex is isolated if its degree is 0, wich means no
  * edges go into the vertex, and no edges start from the vertex.
 */
 bool graph_is_isolated_vertex(Graph *graph, void *vertex);
@@ -240,7 +240,7 @@ bool graph_is_isolated_vertex(Graph *graph, void *vertex);
 /**
  * @return The eccentricity of the vertex. This means, the highest of
  * the min cost paths between the vertex and the rest of vertices.
-*/ 
+*/
 float graph_eccentricity(Graph *graph, void *vertex);
 
 /////////////////////////////////////////////////////////
@@ -256,8 +256,8 @@ typedef struct traverse_df_data {
  * Traverses the graph using the Deep First algorithm.
  * This means that it visits the "sons" of a graph first, and then the "brothers".
  * @param vertex to start the search in
- * @return A struct that contains an array with all the objects in the graph, traversed Deep First. This 
- * struct also contains a size_t variable "elements_size" that indicates the number of elements in the array. 
+ * @return A struct that contains an array with all the objects in the graph, traversed Deep First. This
+ * struct also contains a size_t variable "elements_size" that indicates the number of elements in the array.
  * This is because, as there might be unreachable vertices, it's posible that the length of the array is < than the number of elements in the graph.
  * @note Remember to free the returned array when you finish working with it.
 */

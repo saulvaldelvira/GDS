@@ -142,11 +142,10 @@ void* stack_pop(Stack *stack, void *dest){
 		}
 		free(aux);                       // Free the old head
 		stack->n_elements--;
-		return dest;  
+		return dest;
 	}
 	return NULL;
 }
-
 
 int stack_pop_array(Stack *stack, void *array_dest, size_t dest_length){
 	if(!stack || !array_dest){
@@ -187,7 +186,7 @@ bool stack_exists(Stack *stack, void *element){
 			return true;
 		}
 		aux = aux->next;
-	} 
+	}
 	return false;
 }
 
@@ -227,7 +226,7 @@ bool stack_isempty(Stack *stack){
 }
 
 static void free_node(StackNode *node){
-	if (node == NULL) {
+	if (node == NULL){
 		return;
 	}
 	free_node(node->next);

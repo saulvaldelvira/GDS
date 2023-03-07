@@ -1,10 +1,10 @@
 status=0
-for t in ./bin/* 
-do 
-valgrind --leak-check=yes --error-exitcode=1 "$t" 
+for t in ./bin/*
+do
+valgrind --leak-check=yes --error-exitcode=1 "$t"
 status=$?
 if [ $status -ne 0 ] ;
-then 
+then
 exit $status
 fi
 done

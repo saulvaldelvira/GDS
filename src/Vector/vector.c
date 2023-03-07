@@ -37,7 +37,6 @@ struct _Vector {
 	void *elements;
 };
 
-
 Vector* vector_empty(size_t data_size, comparator_function_t cmp){
 	if (data_size <= 0){
 		printerr_data_size(vector_empty);
@@ -145,7 +144,6 @@ int vector_push_front(Vector *list, void *element){
 	list->n_elements++;
 	return SUCCESS;
 }
-
 
 int vector_append_array(Vector *list, void *array, size_t array_length){
 	if (!list || !array){
@@ -372,7 +370,7 @@ void* vector_get_into_array(Vector *list, void *array, size_t array_length){
 		printerr_memory_op(vector_get_into_array);
 		return NULL;
 	}
-	
+
 	return array;
 }
 
@@ -412,7 +410,7 @@ int vector_swap(Vector *list, size_t index_1, size_t index_2){
 		printerr_out_of_bounds(index_2, vector_swap);
 		return INDEX_BOUNDS_ERROR;
 	}
-	
+
 	void *tmp = malloc(list->data_size);
 	if (!tmp){
 		printerr_allocation(vector_swap);
@@ -485,7 +483,6 @@ int vector_remove(Vector *list, void *element){
 	}
 	return vector_remove_at(list, i.value);
 }
-
 
 void* vector_pop_front(Vector *list, void *dest){
 	if (!list || !dest){

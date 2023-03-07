@@ -1,6 +1,6 @@
 /**
  *  Defines macros to be use by the modules.
- * 
+ *
  *  Copyright (C) 2022-2023  Saúl Valdelvira Iglesias
  *
  *  This program is free software: you can redistribute it and/or modify

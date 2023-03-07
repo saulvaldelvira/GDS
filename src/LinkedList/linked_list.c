@@ -173,7 +173,7 @@ int lnkd_list_set(LinkedList *list, void *element, void *replacement){
 		return NULL_PARAMETER_ERROR;
 	}
 	LLNode *aux = list->head;
-	while ((*list->compare) (aux->info, element) != 0) {
+	while ((*list->compare) (aux->info, element) != 0){
 		aux = aux->next;
 		if(aux == NULL){
 			return ELEMENT_NOT_FOUND_ERROR;
@@ -192,7 +192,7 @@ void* lnkd_list_get(LinkedList *list, void *element, void *dest){
 		return NULL;
 	}
 	LLNode *aux = list->head;
-	while (aux != NULL && (*list->compare) (aux->info, element) != 0) {
+	while (aux != NULL && (*list->compare) (aux->info, element) != 0){
 		aux = aux->next;
 	}
 	return aux == NULL ? NULL : memcpy(dest, aux->info, list->data_size);
@@ -219,7 +219,6 @@ void* lnkd_list_get_back(LinkedList *list, void *dest){
 	}
 	return memcpy(dest, list->tail->info, list->data_size);
 }
-
 
 void* lnkd_list_get_into_array(LinkedList *list, void *array, size_t array_length){
 	if (!list || !array){
@@ -267,7 +266,7 @@ bool lnkd_list_exists(LinkedList *list, void *element){
 		return false;
 	}
 	LLNode *aux = list->head;
-	while (aux != NULL) {
+	while (aux != NULL){
 		if ((*list->compare) (aux->info, element) == 0){
 			return true;
 		}
@@ -352,7 +351,7 @@ void* lnkd_list_pop_back(LinkedList *list, void *dest){
 		printerr_memory_op(lnkd_list_pop_back);
 		return NULL;
 	}
-	
+
 	LLNode *del = list->tail;
 	list->tail = list->tail->prev;
 	free(del);
@@ -386,7 +385,7 @@ LinkedList* lnkd_list_join(LinkedList *list_1, LinkedList *list_2){
 		fprintf(stderr, "ERROR: the lists have different data sizes. In function lnkd_list_join\n");
 		return NULL;
 	}
-	
+
 	LinkedList *list_joint = lnkd_list_init(list_1->data_size, list_1->compare);
 	if (!list_joint){
 		return NULL;
@@ -422,7 +421,7 @@ LinkedList* lnkd_list_join(LinkedList *list_1, LinkedList *list_2){
 }
 
 static void lnkd_list_free_node(LLNode *node){
-	if (node == NULL) {
+	if (node == NULL){
 		return;
 	}
 	lnkd_list_free_node(node->next);

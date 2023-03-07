@@ -10,12 +10,9 @@ It includes: <br>
 &nbsp;&nbsp;&nbsp;&nbsp; - **Graph** <br>
 &nbsp;&nbsp;&nbsp;&nbsp; - **Binary Heap** <br>
 
-
-
-
 ## How it works
 These structures are "generic" in the way that the only information they need about the data type stored is its size. <br>
-When creating one of these structures, you'll have to pass a parameter specifying the size in bytes of the data type to be stored. <br> 
+When creating one of these structures, you'll have to pass a parameter specifying the size in bytes of the data type to be stored. <br>
 To operate with these structures, for example when adding an element, you just have to pass a pointer to that element. <br>
 It's important to note that these structures store the **VALUE** of the elements, not their references, so even if you pass a pointer to an element, these structures will COPY the value stored in that adress. <b> They do not store the adress into an array of pointers </b>. This makes the structures more memory safe and efficient.
 
@@ -45,7 +42,7 @@ And it must return: <br>
 &nbsp;&nbsp;&nbsp;&nbsp; - **1**  if param_1 is > than param_2 <br>
 &nbsp;&nbsp;&nbsp;&nbsp; - **-1** if param_1 is < than param_2 <br>
 &nbsp;&nbsp;&nbsp;&nbsp; - **0**  if param_1 is == than param_2 <br>
-  
+
 For example:<br>
 ```c
 int compare_int(const void* param_1, const void* param_2){

@@ -88,36 +88,36 @@ static BSNode* init_node(void *info, size_t size){
 struct add_rec_ret {
 	BSNode* node;
 	int status;
-	bool last_op_was_add;
 };
-	/**
-	 * This method is a little bit tricky, specially for the weird struct that it returns.
-	 * It works recursivelly.
-	 * When it's called with a node, it starts searching for a place to put the element in. Since this is a Binary Search Tree,
-	 * when comparing the element with the current node's info we can know if we have to continue searching on the left or the right branch.
-	 * If the comparison returns < 0, it means that the element we are trying to store is lower than the current element in the node, so we launch
-	 * the search in the left son of the node. The oposite with comparison > 0, but in the right side.
-	 * The struct add_rec_ret this call returns, contains a node, a status and a bool flag.
-	 * We update the node we just called the search upon (left or right depending on the previous comparison). Most of the time, this will do
-	 * nothing, since the only time this will change anything is when we find a NULL node in this method.
-	 * When we reach a NULL node, this means we can stop searching and put there the node, so we return one of this struct add_rec_ret element, containing this
-	 * new node, and a SUCCESS status flag.
-	 *
-	 * As said before in this last case, the "node->right = ret.node;" and "node->left = ret.node;" will update this null references to target this newly created node.
-	 *
-	 * Also after that, the method checks if the last operation was a succesfull addition of a node. In this case, the node contained in this struct add_rec_ret called ret,
-	 * a node added in the previous call, so we update this node's father reference to the current node.
-	 *
-	 * The use  of struct add_rec_ret is to be able to check the struct add_rec_ret.status when this chain of recursive calls ends and returns to bst_add. This way, we can
-	 * check if the operation was a SUCCESS and increment the n_elements acordingly, or else we have to return an error status.
-	*/
+
+/**
+ * This method is a little bit tricky, specially because of the weird struct that it returns.
+ * It works recursivelly.
+ * When it's called with a node, it starts searching for a place to put the element in. Since this is a Binary Search Tree,
+ * when comparing the element with the current node's info we can know if we have to continue searching on the left or the right branch.
+ * If the comparison returns < 0, it means that the element we are trying to store is lower than the current element in the node, so we recurse
+ * the search in the left son of the node. The oposite with comparison > 0, but in the right side.
+ *
+ * After a recursive call returns, the struct add_rec_ret that this call returns contains a reference to the child node we recursed into, and a status flag.
+ * We also update the node we just called the search upon (left or right depending on the previous comparison). Most of the time, this will do
+ * nothing, since the only time this will change anything is when we find a NULL node in this method.
+ * When we reach a NULL node, this means we can stop searching and put there the node, so we return one of this struct add_rec_ret element, containing this
+ * new node, and a SUCCESS status flag.
+ *
+ * As said before in this last case, the "node->right = ret.node" and "node->left = ret.node" will update this null references to target this newly created node.
+ *
+ * Also after that, the method updates the father reference inside the struct to the current node.
+ *
+ * The use  of struct add_rec_ret is to be able to check the struct add_rec_ret.status when this chain of recursive calls ends and returns to bst_add. This way, we can
+ * check if the operation was a SUCCESS and increment the n_elements acordingly, or else we have to return an error status.
+*/
 static struct add_rec_ret add_rec(BSNode *node, void *element, comparator_function_t cmp, size_t size){
 	if (node == NULL){ // The element does not exist in the tree
 		BSNode *aux = init_node(element, size); // Create the node
 		if (!aux){ // If memory could not be allocated, return with an error status
-			return (struct add_rec_ret) {aux, ALLOCATION_ERROR, false};
+			return (struct add_rec_ret) {aux, ALLOCATION_ERROR};
 		} else { // Return the new node with a SUCCESS status
-			return (struct add_rec_ret) {aux, 1, true};
+			return (struct add_rec_ret) {aux, 1};
 		}
 	}
 	struct add_rec_ret ret;
@@ -129,13 +129,10 @@ static struct add_rec_ret add_rec(BSNode *node, void *element, comparator_functi
 		ret = add_rec(node->left, element, cmp, size);
 		node->left = ret.node; // Update the left node
 	}else { // Repeated element, return with an error status
-		return (struct add_rec_ret) {node, REPEATED_ELEMENT_ERROR, false};
+		return (struct add_rec_ret) {node, REPEATED_ELEMENT_ERROR};
 	}
 
-	if(ret.last_op_was_add){ // If the last call returned a SUCCESSfuly created node, update this node's father reference
-		ret.node->father = node;
-		ret.last_op_was_add = false; // Set this value to false to avoid doing unecesary updates
-	}
+	ret.node->father = node;
 	ret.node = node; // Change the node in ret to the actual one before returning
 	return ret;
 }
@@ -256,7 +253,6 @@ int bst_remove(BSTree *tree, void *element){
 	}
 	return ret.status;
 }
-
 
 int bst_remove_array(BSTree *tree, void *array, size_t array_length){
 	if (!tree || !array){
@@ -574,7 +570,6 @@ void* bst_max(BSTree *tree, void *dest){
 	return bst_max_from(tree, tree->root->info, dest);
 }
 
-
 void* bst_min(BSTree *tree, void *dest){
 	if (!tree || !dest){
 		printerr_null_param(bst_min);
@@ -582,7 +577,6 @@ void* bst_min(BSTree *tree, void *dest){
 	}
 	return bst_min_from(tree, tree->root->info, dest);
 }
-
 
 void* bst_max_from(BSTree *tree, void *element, void *dest){
 	if (!tree || !element || !dest){
@@ -594,14 +588,13 @@ void* bst_max_from(BSTree *tree, void *element, void *dest){
 		return NULL;
 	}
 	tmp = get_max(tmp);
-	
+
 	if (!memcpy(dest, tmp->info, tree->data_size)){
 		printerr_memory_op(bst_max_from);
 		return NULL;
 	}
 	return dest;
 }
-
 
 void* bst_min_from(BSTree *tree, void *element, void *dest){
 	if (!tree || !element || !dest){
@@ -613,7 +606,7 @@ void* bst_min_from(BSTree *tree, void *element, void *dest){
 		return NULL;
 	}
 	tmp = get_min(tmp);
-	
+
 	if (!memcpy(dest, tmp->info, tree->data_size)){
 		printerr_memory_op(bst_min_from);
 		return NULL;

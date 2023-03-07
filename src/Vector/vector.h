@@ -27,11 +27,11 @@
 #include "../Util/comparator.h"
 
 typedef struct _Vector Vector;
-	
+
 /**
  * Creates an empty Vector.
  * @param data_size the size (in bytes of the data stored)
- * @param comp pointer to a function that receives two void pointers and returns 1 if the first one is greater than the 
+ * @param comp pointer to a function that receives two void pointers and returns 1 if the first one is greater than the
  *              second, 0 if they are equal and -1 if the first one is smaller than the second one
  */
 Vector* vector_empty(size_t data_size, comparator_function_t cmp);
@@ -40,7 +40,7 @@ Vector* vector_empty(size_t data_size, comparator_function_t cmp);
  * Innitializes an Vector with a custom max number of elements
  * @param max_elements the initial number of elements in the list
  * @param data_size the size (in bytes of the data stored)
- * @param comp pointer to a function that receives two void pointers and returns 1 if the first one is greater than the 
+ * @param comp pointer to a function that receives two void pointers and returns 1 if the first one is greater than the
  *              second, 0 if they are equal and -1 if the first one is smaller than the second one
  */
 Vector* vector_init(size_t data_size, size_t max_elements, comparator_function_t cmp);
@@ -64,7 +64,7 @@ comparator_function_t vector_get_comparator(Vector *list);
 /**
  * \brief
  * Adds the value inside element to the end of the list
- * 
+ *
  * @return 1 if the operation is successful
  */
 int vector_append(Vector *list, void *element);
@@ -72,7 +72,7 @@ int vector_append(Vector *list, void *element);
 /**
  * \brief
  * Adds the value inside element into the list
- * 
+ *
  * @return 1 if the operation is successful
  */
 int vector_push_front(Vector *list, void *element);
@@ -86,7 +86,6 @@ int vector_append_array(Vector *list, void *array, size_t array_length);
  * Appends [array_length] elements to the list, from the given array.
 */
 int vector_push_front_array(Vector *list, void *array, size_t array_length);
-
 
 /**
  * Returns the index of the given element in the array of the list
@@ -207,8 +206,8 @@ int vector_remove_array(Vector *list, void *array, size_t array_length);
 /**
  * @return a new Vector with the elements of the two given lists.
  * @note No particular order of elements is guaranteed.
- * @note ATTENTION: The lists must store the same data. At least, they must have 
- * the same data size. Also, the comparator function of list_1 will be taken, 
+ * @note ATTENTION: The lists must store the same data. At least, they must have
+ * the same data size. Also, the comparator function of list_1 will be taken,
  * because it is assumed that both list have the same comparator functions.
 */
 Vector* vector_join(Vector *list_1, Vector *list_2);

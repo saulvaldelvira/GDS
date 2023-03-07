@@ -1,7 +1,7 @@
 /**
- *  Comparator module. 
+ *  Comparator module.
  *  Implements functions to compare different data types.
- * 
+ *
  *  Copyright (C) 2022-2023  Saúl Valdelvira Iglesias
  *
  *  This program is free software: you can redistribute it and/or modify

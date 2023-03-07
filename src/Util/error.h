@@ -1,6 +1,6 @@
 /**
  *  Defines error codes and macros to print error mesages.
- * 
+ *
  *  Copyright (C) 2022-2023  Saúl Valdelvira Iglesias
  *
  *  This program is free software: you can redistribute it and/or modify

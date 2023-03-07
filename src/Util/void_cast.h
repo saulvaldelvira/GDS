@@ -1,8 +1,8 @@
 /**
- *  Defines functions to return void pointers, given the most 
+ *  Defines functions to return void pointers, given the most
  *  common data types. Used to avoid declaring temporary variables
  *  in order to add infomation to the structures.
- * 
+ *
  *  Copyright (C) 2022-2023  Saúl Valdelvira Iglesias
  *
  *  This program is free software: you can redistribute it and/or modify

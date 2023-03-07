@@ -59,7 +59,7 @@ static AVLNode* init_node(void *element, size_t data_size){
         return node;
 }
 
-void avl_configure(AVLTree *tree, comparator_function_t cmp) {
+void avl_configure(AVLTree *tree, comparator_function_t cmp){
 	if (!tree || !cmp){
 		printerr_null_param(avl_configure);
 		return;
@@ -212,9 +212,9 @@ static struct add_rec_ret add_rec(AVLNode *node, void *element, comparator_funct
 	if (node == NULL){ // The element does not exist in the tree
 		AVLNode *aux = init_node(element, size); // Create the node
 		if (!aux){ // If memory could not be allocated, return with an error status
-			return (struct add_rec_ret) {aux, ALLOCATION_ERROR, false};
+			return (struct add_rec_ret){aux, ALLOCATION_ERROR, false};
 		} else { // Return the new node with a SUCCESS status
-			return (struct add_rec_ret) {aux, SUCCESS, true};
+			return (struct add_rec_ret){aux, SUCCESS, true};
 		}
 	}
 	struct add_rec_ret ret;
@@ -226,7 +226,7 @@ static struct add_rec_ret add_rec(AVLNode *node, void *element, comparator_funct
 		ret = add_rec(node->left, element, cmp, size);
 		node->left = ret.node; // Update the left node
 	}else { // Repeated element, return with an error status
-		return (struct add_rec_ret) {node, REPEATED_ELEMENT_ERROR, false};
+		return (struct add_rec_ret){node, REPEATED_ELEMENT_ERROR, false};
 	}
 
 	if(ret.last_op_was_add){ // If the last call returned a SUCCESSfuly created node, update this node's father reference
@@ -289,7 +289,6 @@ static AVLNode* get_min(AVLNode *node){
 	return node;
 }
 
-
 // Auxiliar struct for the remove_rec function
 struct remove_rec_ret {
 	AVLNode* node;
@@ -304,7 +303,7 @@ struct remove_rec_ret {
  * 2) The right son is NULL -> we return the left son
  *  NOTE: if both nodes are null the previous conditions will return NULL
  * 3) If there are left and right son, we set the current node's info to the BIGGEST element starting from the left son.
- *      
+ *
 */
 static struct remove_rec_ret remove_rec(AVLNode *node, void *element, comparator_function_t cmp, size_t size){
 	if (node == NULL){
@@ -325,7 +324,7 @@ static struct remove_rec_ret remove_rec(AVLNode *node, void *element, comparator
 		if (node->left == NULL){
 			node = node->right;
 			free(aux);
-		} else if(node->right == NULL) {
+		} else if(node->right == NULL){
 			node = node->left;
 			free(aux);
 		}else { // Case 3
@@ -397,7 +396,7 @@ bool avl_exists(AVLTree *tree, void *element){
 }
 
 static AVLNode* get_rec(AVLNode *node, void *element, comparator_function_t compare){
-	if (!node) {
+	if (!node){
 		return NULL;
 	}
 	int c = compare(element, node->info);
@@ -477,7 +476,7 @@ enum Traversal {
 static struct traversal_ret traversal_rec(AVLNode *node, enum Traversal order, size_t size){
 	// If the node is null, return and empty array
 	if(node == NULL){
-		return (struct traversal_ret) {
+		return (struct traversal_ret){
 			.elements = NULL,
 			.elements_size = 0,
 			.status = SUCCESS
@@ -649,7 +648,6 @@ AVLTree* avl_join(AVLTree *tree_1, AVLTree *tree_2){
 	return tree_joint;
 }
 
-
 void* avl_max(AVLTree *tree, void *dest){
 	if (!tree || !dest){
 		printerr_null_param(avl_max);
@@ -658,7 +656,6 @@ void* avl_max(AVLTree *tree, void *dest){
 	return avl_max_from(tree, tree->root->info, dest);
 }
 
-
 void* avl_min(AVLTree *tree, void *dest){
 	if (!tree || !dest){
 		printerr_null_param(avl_min);
@@ -666,7 +663,6 @@ void* avl_min(AVLTree *tree, void *dest){
 	}
 	return avl_min_from(tree, tree->root->info, dest);
 }
-
 
 void* avl_max_from(AVLTree *tree, void *element, void *dest){
 	if (!tree || !element || !dest){
@@ -678,14 +674,13 @@ void* avl_max_from(AVLTree *tree, void *element, void *dest){
 		return NULL;
 	}
 	tmp = get_max(tmp);
-	
+
 	if (!memcpy(dest, tmp->info, tree->data_size)){
 		printerr_memory_op(avl_max_from);
 		return NULL;
 	}
 	return dest;
 }
-
 
 void* avl_min_from(AVLTree *tree, void *element, void *dest){
 	if (!tree || !element || !dest){
@@ -697,7 +692,7 @@ void* avl_min_from(AVLTree *tree, void *element, void *dest){
 		return NULL;
 	}
 	tmp = get_min(tmp);
-	
+
 	if (!memcpy(dest, tmp->info, tree->data_size)){
 		printerr_memory_op(avl_min_from);
 		return NULL;

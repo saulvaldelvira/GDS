@@ -47,7 +47,6 @@ MinHeap* minheap_init(size_t data_size, comparator_function_t cmp){
         return heap;
 }
 
-
 void minheap_configure(MinHeap *heap, comparator_function_t cmp){
         if (!heap || !cmp){
                 printerr_null_param(minheap_configure);
@@ -140,7 +139,7 @@ int minheap_add_array(MinHeap *heap, void *array, size_t array_length){
                 printerr_null_param(minheap_add_array);
                 return NULL_PARAMETER_ERROR;
         }
-        // If the heap is empty, we use this piece of code because it 
+        // If the heap is empty, we use this piece of code because it
         // uses half as much "filter_down" calls than the other one
         if (vector_size(heap->elements) == 0){
                 vector_append_array(heap->elements, array, array_length);
@@ -149,7 +148,7 @@ int minheap_add_array(MinHeap *heap, void *array, size_t array_length){
                         father = (i-1) / 2;
                         filter_down(heap->elements, father);
 
-                        // This is because if i is 1 and we substract 2, we get 
+                        // This is because if i is 1 and we substract 2, we get
                         // the max size_t value (since it is unsigned)
                         if (i > 1){
                                 i -=2;
@@ -178,7 +177,7 @@ void* minheap_pop_min(MinHeap *heap, void *dest){
                 return NULL;
         }
         dest = vector_get_at(heap->elements, 0, dest);
-        
+
         if (dest != NULL){
                 size_t n_elements = vector_size(heap->elements) - 1;
                 int status = vector_swap(heap->elements, 0, n_elements);

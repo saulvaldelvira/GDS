@@ -31,9 +31,9 @@
 typedef struct _LinkedList LinkedList;
 
 /**
- * Initializes the linked list 
+ * Initializes the linked list
  * @param data_size size of the data stored.
- * @param cmp pointer to a function that receives two void pointers and returns 1 if the first one is greater than the 
+ * @param cmp pointer to a function that receives two void pointers and returns 1 if the first one is greater than the
  *              second, 0 if they are equal and -1 if the first one is smaller than the second one
 */
 LinkedList* lnkd_list_init(size_t data_size, comparator_function_t cmp);
@@ -68,7 +68,7 @@ int lnkd_list_push_front_array(LinkedList *list, void *array, size_t array_lengt
 
 /**
  * Changes the given element in the list with the replacement, if it exists.
- * 
+ *
  * @return 1 if the operation is successful
 */
 int lnkd_list_set(LinkedList *list, void *element, void *replacement);
@@ -115,7 +115,7 @@ size_t lnkd_list_size(LinkedList *list);
 * @return true if the list is empty
 */
 bool lnkd_list_isempty(LinkedList *list);
-	
+
 /**
  * Removes the element from the list
  * @return 1 if the operation is successful
@@ -142,8 +142,8 @@ int lnkd_list_remove_array(LinkedList *list, void *array, size_t array_length);
 /**
  * @return a new LinkedList with the elements of the two given lists.
  * @note No particular order of elements is guaranteed.
- * @note ATTENTION: The lists must store the same data. At least, they must have 
- * the same data size. Also, the comparator function of list_1 will be taken, 
+ * @note ATTENTION: The lists must store the same data. At least, they must have
+ * the same data size. Also, the comparator function of list_1 will be taken,
  * because it is assumed that both list have the same comparator functions.
 */
 LinkedList* lnkd_list_join(LinkedList *list_1, LinkedList *list_2);
@@ -157,6 +157,6 @@ int lnkd_list_free(LinkedList *list);
  * Frees the memory allocated on the list, and resets it to it's initial state
  * @return the same pointer if sucess, NULL if the operation fails
 */
-LinkedList* lnkd_list_reset(LinkedList *list);    
+LinkedList* lnkd_list_reset(LinkedList *list);
 
 #endif

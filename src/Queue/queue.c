@@ -88,7 +88,7 @@ int queue_enqueue(Queue *queue, void *element){
 		printerr_null_param(queue_enqueue);
 		return NULL_PARAMETER_ERROR;
 	}
-	if (queue->head == NULL) {
+	if (queue->head == NULL){
 		queue->head = queue_init_node(element, queue->data_size);
 		if (!queue->head){
 			return ALLOCATION_ERROR;
