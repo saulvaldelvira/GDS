@@ -97,6 +97,4 @@ clean:
 	find . -type f -name '*_REMOTE_*' -delete
 
 purge: clean
-	find . -type f -name '*.out' -delete
-	find . -type f -name '*.exe' -delete
 	rm -rf bin/
