@@ -25,10 +25,4 @@
 	int compare_double(const void *e_1, const void *e_2);
 	int compare_long_long(const void *e_1, const void *e_2);
 
-	void set_float_precision(int num_decimals);
-	void set_double_precision(int num_decimals);
-
-	#define DEFAULT_FLOAT_PRECISION 0.00000001f
-	#define DEFAULT_DOUBLE_PRECISION 100000000000000000
-
 #endif
