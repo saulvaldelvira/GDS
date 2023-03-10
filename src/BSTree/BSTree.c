@@ -14,7 +14,7 @@
 #include "../Util/definitions.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include <memory.h>
+#include <string.h>
 
 typedef struct BSNode {
 	struct BSNode *right;

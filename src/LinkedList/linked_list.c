@@ -15,7 +15,7 @@
 #include <math.h>
 #include "../Util/error.h"
 #include "../Util/definitions.h"
-#include <memory.h>
+#include <string.h>
 
 /**
  * Node of a Linked List

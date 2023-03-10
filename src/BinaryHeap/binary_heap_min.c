@@ -14,7 +14,7 @@
 #include "../Vector/vector.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include <memory.h>
+#include <string.h>
 
 struct _MinHeap {
         Vector *elements;

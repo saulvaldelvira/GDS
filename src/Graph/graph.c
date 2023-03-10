@@ -14,7 +14,7 @@
 #include "../Util/definitions.h"
 #include <stdlib.h>
 #include <math.h>
-#include <memory.h>
+#include <string.h>
 #include "../Util/index_t.h"
 
 struct _Graph {

@@ -14,7 +14,7 @@
 #include <stdio.h>
 #include "../Util/error.h"
 #include "../Util/definitions.h"
-#include <memory.h>
+#include <string.h>
 
 typedef struct StackNode {
 	struct StackNode *next;

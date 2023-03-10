@@ -15,7 +15,7 @@
 #include <stdlib.h>
 #include "../Util/error.h"
 #include "../Util/definitions.h"
-#include <memory.h>
+#include <string.h>
 
 #include "vector.h"
 #define VECTOR_DEFAULT_SIZE 12

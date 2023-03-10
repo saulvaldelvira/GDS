@@ -13,7 +13,7 @@
 #include "../Util/error.h"
 #include "../Util/definitions.h" // void_offset macro and byte_t typedef
 #include <stdlib.h> // malloc
-#include <memory.h> // memcpy
+#include <string.h> // memcpy
 #include <stdio.h> // fprintf
 
 #define MAX_DISBALANCE 2
