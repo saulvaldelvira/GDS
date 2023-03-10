@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
+#include <stdint.h>
 #include "../Util/index_t.h"
 
 struct _Graph {
@@ -524,7 +525,7 @@ static void graph_init_dijkstra(DijkstraData_t *dijkstra, Graph *graph, size_t s
  * @param D an array of weights
  * @param n_elements the number of elements in the arrays
 */
-static index_t graph_get_pivot(u_int8_t *S, float *D, size_t n_elements){
+static index_t graph_get_pivot(uint8_t *S, float *D, size_t n_elements){
 	index_t pivot = {.value = 0, .status=-1};
 	float min = INFINITY;
 	for (size_t i = 0; i < n_elements; i++){
@@ -555,7 +556,7 @@ DijkstraData_t graph_dijkstra(Graph *graph, void *source){
 	}
 
 	// Initialize the visited array
-	u_int8_t *S = calloc(graph->n_elements, sizeof(*S));
+	uint8_t *S = calloc(graph->n_elements, sizeof(*S));
 	if (!S){
 		printerr_allocation(graph_dijkstra);
 		free(dijkstra.D);
@@ -788,7 +789,7 @@ float graph_eccentricity(Graph *graph, void *vertex){
 ///////////////////////////////////////////////////////////////////////////////
 
 ////// Deep First Traverse ////////////////////////////////////////////////////
-static int traverse_df_rec(traverse_df_data_t *data, size_t index, u_int8_t *visited, Graph *graph){
+static int traverse_df_rec(traverse_df_data_t *data, size_t index, uint8_t *visited, Graph *graph){
 	visited[index] = 1;
 	void *dst = void_offset(data->elements, data->elements_size * graph->data_size);
 	void *src = void_offset(graph->vertices, index * graph->data_size);
@@ -826,7 +827,7 @@ traverse_df_data_t graph_traverse_DF(Graph *graph, void *vertex){
 	df.elements_size = 0;
 	df.elements = calloc(graph->n_elements , graph->data_size);
 
-	u_int8_t *visited = calloc(graph->n_elements, sizeof(*visited));
+	uint8_t *visited = calloc(graph->n_elements, sizeof(*visited));
 	if (!df.elements || !visited){
 		printerr_allocation(graph_traverse_DF);
 		df.status = ALLOCATION_ERROR;
