@@ -8,7 +8,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  Test:
+  Test-Ubuntu:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
@@ -17,6 +17,15 @@ jobs:
     - name: Test
       run: make all_test
     - name: Memory Leaks
-      run: | 
+      run: |
            sudo chmod +x ./valgrind-test.sh
            ./valgrind-test.sh
+
+  Test-Windows:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Install make
+      run:  choco install make
+    - name: Run tests
+      run: make all_test
