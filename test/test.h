@@ -14,35 +14,29 @@
 #include "../src/Util/void_cast.h"
 #include "../src/Util/definitions.h"
 
-#ifndef __linux__ // Needed for use of CLOCK_REALTIME outside Linux
-	#define _GNU_SOURCE
-	#define _POSIX_C_SOURCE 1999309L
+#ifndef TIMESTAMP_DISABLE
+	static long timestamp;
+
+	#define TIMESTAMP_START timestamp = get_time_millis();
+
+	#define TIMESTAMP_STOP timestamp = get_time_millis() - timestamp;
 #endif
 
-#ifndef TIMESTAMP_DISABLE 
-	static double timestamp;
-
-	#define TIMESTAMP_START timestamp = get_time();
-
-	#define TIMESTAMP_STOP timestamp = get_time() - timestamp;
-#endif
-
-static inline double get_time(){
-	struct timespec now;
-	clock_gettime(CLOCK_REALTIME, &now);
-	return now.tv_sec + now.tv_nsec*1e-9;
+/**
+ * Returns a timestamp of the current time in milliseconds.
+*/
+static inline long get_time_millis(){
+	return clock() * 1000.0 / CLOCKS_PER_SEC;
 }
 
 /**
- * @return a random number between min and max
+ * Returns a random number between min and max
 */
 static inline int rand_range(int min, int max){
 	return rand()%((max+1)-min) + min;
 }
 
-#define END_MSG(name) printf("[" #name " test finished in "); \
-		      if(timestamp>=1.0) printf("%.3f seconds]\n\n", timestamp); \
-		      else printf("%.2f miliseconds]\n\n", timestamp * 1000);
+#define END_MSG(name) printf("[" #name " test finished in %ld miliseconds]\n\n", timestamp);
 
 #ifndef QUIET_DISABLE
 	#ifdef QUIET
@@ -67,7 +61,7 @@ void assert_array_char(char *arr, char *exp, int size){
 }
 
 int compare_allways_true(const void* e1, const void *e2){
-	(void) e1; (void) e2; 
+	(void) e1; (void) e2;
 	return 0;
 }
 
