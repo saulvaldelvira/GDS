@@ -123,7 +123,7 @@ int main(){
         join_test();
 
         TIMESTAMP_STOP
-        
+
         END_MSG(AVLTree);
 
         return 0;

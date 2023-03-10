@@ -28,7 +28,7 @@
 
 #define printerr_null_param(func) fprintf(stderr, "ERROR: NULL parameter(s) in function " #func "\n");
 
-#define printerr_out_of_bounds(index, func) fprintf(stderr, "ERROR: Index %lu out of bounds. At function " #func "\n", index);
+#define printerr_out_of_bounds(index, func) fprintf(stderr, "ERROR: Index %llu out of bounds. At function " #func "\n", (unsigned long long) index);
 
 #define printerr_memory_op(func) fprintf(stderr, "ERROR: At memory operation in function " #func "\n");
 
