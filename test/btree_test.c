@@ -20,6 +20,21 @@ int main(){
                 assert(btree_add(tree, &nums[i]));
         }
         assert(btree_add(tree, &nums[25]));
+
+        assert(btree_remove(tree, cast_int(100)));
+        assert(btree_remove(tree, cast_int(60)));
+        assert(btree_remove(tree, cast_int(65)));
+        //assert(btree_remove(tree, cast_int(63)));
+
+        assert(!btree_exists(tree, cast_int(100)));
+        assert(!btree_exists(tree, cast_int(60)));
+        assert(!btree_exists(tree, cast_int(65)));
+        //assert(!btree_exists(tree, cast_int(63)));
+
+        assert(btree_add(tree, cast_int(100)));
+        assert(btree_add(tree, cast_int(60)));
+        assert(btree_add(tree, cast_int(65)));
+        //assert(btree_add(tree, cast_int(63)));
         for (int i=0; i < (int) ARR_SIZE(nums); i++){
                 assert(btree_exists(tree, &nums[i]));
         }
@@ -76,6 +91,13 @@ int main(){
         for (int i=1; i < 1020; i++){
                 assert(btree_add(tree, &i));
                 assert(btree_exists(tree, &i));
+        }
+
+
+        // Test case 3
+        for (int i=1; i < 1020; i++){
+                assert(btree_remove(tree, &i));
+                assert(!btree_exists(tree, &i));
         }
 
         btree_free(tree);
