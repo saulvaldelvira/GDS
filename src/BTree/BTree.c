@@ -15,7 +15,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <assert.h>
 
 typedef struct BTreeNode {
 	int n_elements;
@@ -34,7 +33,6 @@ struct _BTree {
 #define MIN_K 2
 #define MAX_ELEMENTS(k) ((k) - 1)
 #define MIN_ELEMENTS(k) (((k) - 1) / 2)
-
 #define LEAF(node) ((node)->n_childs == 0)
 
 BTree* btree_init(size_t data_size, int K, comparator_function_t cmp){
@@ -385,7 +383,7 @@ int btree_add(BTree *tree, void *element){
 }
 
 /**
- * @return the position of the element, or -1 if it's not in this node.
+ * Returns the position of the element, or -1 if it's not in this node.
  *
 */
 static int find_element(BTreeNode *node, void *element, comparator_function_t compare, size_t data_size){
@@ -400,6 +398,10 @@ static int find_element(BTreeNode *node, void *element, comparator_function_t co
 	return -1;
 }
 
+/**
+ * Copies into dest the smallest element in
+ * the leftmos leaf node and deletes it from there.
+*/
 static int get_min_and_delete(BTreeNode *node, void *dest, size_t data_size){
 	if (node == NULL){
 		return NULL_PARAMETER_ERROR;
@@ -425,6 +427,10 @@ static int get_min_and_delete(BTreeNode *node, void *dest, size_t data_size){
 	}
 }
 
+/**
+ * Copies into dest the biggest element in
+ * the rightmos leaf node and deletes it from there.
+*/
 static int get_max_and_delete(BTreeNode *node, void *dest, size_t data_size){
 	if (node == NULL){
 		return NULL_PARAMETER_ERROR;
@@ -443,11 +449,14 @@ static int get_max_and_delete(BTreeNode *node, void *dest, size_t data_size){
 	}
 }
 
+/**
+ * Removes the element at index pos from the node.
+*/
 static int remove_element(BTreeNode *node, size_t data_size, int pos){
 	if (pos < node->n_elements - 1){
 		void *src = void_offset(node->elements, (pos + 1) * data_size);
 		void *dst = void_offset(node->elements, pos * data_size);
-		int n = node->n_elements - pos;
+		int n = node->n_elements - pos - 1;
 		dst = memmove(dst, src, n * data_size);
 		if (!dst){
 			printerr_memory_op(remove_element);
@@ -456,7 +465,7 @@ static int remove_element(BTreeNode *node, size_t data_size, int pos){
 	}
 	if (node->n_childs > 0){
 
-		for (int i = pos+1; i < node->n_childs; i++){
+		for (int i = pos+1; i < node->n_childs - 1; i++){
 			node->childs[i] = node->childs[i+1];
 		}
 		node->n_childs--;
@@ -465,7 +474,14 @@ static int remove_element(BTreeNode *node, size_t data_size, int pos){
 	return SUCCESS;
 }
 
+/**
+ * Merges the left and right nodes.
+ * mid_element in the father's element which is going down, and
+ * it's inserted in between left's own elements and right's.
+ * The merge is done INTO the left node.
+*/
 static void merge_nodes(BTreeNode **left, void *mid_element, BTreeNode **right, size_t data_size){
+	// Copy the mid element into left
 	void *dst = void_offset((*left)->elements, (*left)->n_elements * data_size);
 	dst = memcpy(dst, mid_element, data_size);
 	if (!dst){
@@ -473,8 +489,11 @@ static void merge_nodes(BTreeNode **left, void *mid_element, BTreeNode **right, 
 		return;
 	}
 	(*left)->n_elements++;
+
+	// Move dst one position
 	dst = void_offset(dst, data_size);
 
+	// Copy right's elements to the node.
 	dst = memcpy(dst, (*right)->elements, (*right)->n_elements * data_size);
 	if (!dst){
 		printerr_memory_op(merge_nodes);
@@ -482,8 +501,8 @@ static void merge_nodes(BTreeNode **left, void *mid_element, BTreeNode **right, 
 	}
 	(*left)->n_elements += (*right)->n_elements;
 
+	// Copy right's childs to the node
 	int p = (*left)->n_childs;
-
 	for (int i = 0; i < (*right)->n_childs; i++){
 		(*left)->childs[p + i] = (*right)->childs[i];
 	}
@@ -494,8 +513,13 @@ static void merge_nodes(BTreeNode **left, void *mid_element, BTreeNode **right, 
 	*right = NULL;
 }
 
+/**
+ * Returns a pointer to the rightmos leaf node,
+ * only IF that node is NOT in a critical situation.
+ * This means if the node can transfer elements
+ * to a brother.
+*/
 static BTreeNode* borrow_max_node(BTreeNode *node, int K){
-	assert(node != NULL);
 	if (LEAF(node)){
 		if (node->n_elements <= MIN_ELEMENTS(K)){
 			return NULL;
@@ -507,8 +531,13 @@ static BTreeNode* borrow_max_node(BTreeNode *node, int K){
 	}
 }
 
+/**
+ * Returns a pointer to the leftmos leaf node,
+ * only IF that node is NOT in a critical situation.
+ * This means if the node can transfer elements
+ * to a brother.
+*/
 static BTreeNode* borrow_min_node(BTreeNode *node, int K){
-	assert(node != NULL);
 	if (LEAF(node)){
 		if (node->n_elements <= MIN_ELEMENTS(K)){
 			return NULL;
@@ -520,8 +549,10 @@ static BTreeNode* borrow_min_node(BTreeNode *node, int K){
 	}
 }
 
+/**
+ * Copies the maximun element from the rightmos leaf node into dest.
+*/
 static void* copy_max_element(BTreeNode *node, int K, size_t data_size, void *dest){
-	assert(node != NULL);
 	if (LEAF(node)){
 		void *max = void_offset(node->elements, (node->n_elements - 1) * data_size);
 		dest = memcpy(dest, max, data_size);
@@ -535,13 +566,26 @@ static void* copy_max_element(BTreeNode *node, int K, size_t data_size, void *de
 	}
 }
 
-static BTreeNode* request_or_merge(BTreeNode *node, BTreeNode *father, BTree *tree, void *element){
-	int father_pos = find_position(father, element, tree->compare, tree->data_size);
+/**
+ * Request to the father node to borrow an element to node from it's brothers.
+ * If no brother node is in a situation to do so, it merges the node with one
+ * of it's brothers.
+*/
+static BTreeNode* request_or_merge(BTreeNode *node, BTreeNode *father, BTree *tree){
+	// Find the position of node in the father's childs array
+	int father_pos = -1;
+	for (int i = 0; i < father->n_childs; ++i){
+		if (father->childs[i] == node){
+			father_pos = i;
+		}
+	}
+
 	BTreeNode **left_sibling = father_pos > 0 ? &father->childs[father_pos - 1] : NULL;
 	BTreeNode **right_sibling = father_pos < (father->n_childs - 1) ? &father->childs[father_pos + 1] : NULL;
 
 	BTreeNode *max_left;
 	BTreeNode *min_right;
+	// Element to move down to the merged node if necessary.
 	void *element_down = father_pos > 0
 					    ? void_offset(father->elements, (father_pos - 1) * tree->data_size)
 					    : father->elements;
@@ -574,6 +618,7 @@ static BTreeNode* request_or_merge(BTreeNode *node, BTreeNode *father, BTree *tr
 static struct add_remove_ret btree_remove_rec(BTreeNode *node, BTreeNode *father, BTree *tree, void *element){
 	int pos = find_element(node, element, tree->compare, tree->data_size);
 	struct add_remove_ret ret = {.status = SUCCESS};
+	// If the element is NOT on this node, recurse into the corresponding child.
 	if (pos < 0){
 		pos = find_position(node, element, tree->compare, tree->data_size);
 		if (pos < 0){
@@ -586,14 +631,17 @@ static struct add_remove_ret btree_remove_rec(BTreeNode *node, BTreeNode *father
 			free(node);
 			node = ret.node;
 		} else if (node != tree->root && node->n_elements < MIN_ELEMENTS(tree->K)){
-			node = request_or_merge(node, father, tree, element);
+			node = request_or_merge(node, father, tree);
 		}
 	}else {
-		if (LEAF(node)){
+		if (LEAF(node)){ // If we're in a leaf node
+			// And is NOT in a critical situation, simply delete the element
 			if (node->n_elements > MIN_ELEMENTS(tree->K)){
 				ret.status = remove_element(node, tree->data_size, pos);
-			} else if (node == tree->root){
+			}else if (node == tree->root){
+				// The same if it's the root, regardless of the number of elements
 				if (node->n_elements == 1){
+					// If removing the only element in the tree
 					free(node->childs);
 					free(node);
 					node = NULL;
@@ -602,9 +650,9 @@ static struct add_remove_ret btree_remove_rec(BTreeNode *node, BTreeNode *father
 				}
 			} else {
 				ret.status = remove_element(node, tree->data_size, pos);
-				node = request_or_merge(node, father, tree, element);
+				node = request_or_merge(node, father, tree);
 			}
-		}else {
+		}else { // Get an element from it's childs into the position of the element to delete
 			BTreeNode *left_child = borrow_max_node(node->childs[pos], tree->K);
 			BTreeNode *right_child;
 			void *element_to_delete = void_offset(node->elements, pos * tree->data_size);
@@ -614,13 +662,14 @@ static struct add_remove_ret btree_remove_rec(BTreeNode *node, BTreeNode *father
 			}else if ((right_child = borrow_min_node(node->childs[pos + 1], tree->K))){
 				get_min_and_delete(right_child, element_to_delete, tree->data_size);
 			}else {
-				void *tmp = copy_max_element(left_child, tree->K, tree->data_size, element_to_delete);
+				// If both childs are in a critic situation, get an element from the left
+				// child and start a recursive remove call to reorganize the branch.
+				void *tmp = copy_max_element(node->childs[pos], tree->K, tree->data_size, element_to_delete);
 				if (!tmp){
 					ret.status = MEMORY_OP_ERROR;
 				} else {
 					ret.status = btree_remove_rec(node->childs[pos], node, tree, tmp).status;
 				}
-
 			}
 		}
 	}
