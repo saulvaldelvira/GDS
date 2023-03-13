@@ -33,10 +33,10 @@ static inline long get_time_millis(){
  * Returns a random number between min and max
 */
 static inline int rand_range(int min, int max){
-	return rand()%((max+1)-min) + min;
+	return rand() % ((max + 1) - min) + min;
 }
 
-#define END_MSG(name) printf("[" #name " test finished in %ld miliseconds]\n\n", timestamp);
+#define END_MSG(name) printf("[" #name " test finished in %ld milliseconds]\n\n", timestamp);
 
 #ifndef QUIET_DISABLE
 	#ifdef QUIET

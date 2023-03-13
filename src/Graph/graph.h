@@ -132,10 +132,10 @@ bool graph_isempty(Graph *graph);
 
 // Structure to return in the graph_dijkstra method. Holds the result of the algorithm.
 typedef struct DijkstraData {
-        float  *D;
-        index_t *P;
-        size_t n_elements;
-        int status; // Flag to indicate the return status of the operation
+	float  *D;
+	index_t *P;
+	size_t n_elements;
+	int status; // Flag to indicate the return status of the operation
 } DijkstraData_t;
 
 /**
@@ -166,10 +166,10 @@ void graph_free_dijkstra_data(DijkstraData_t *data);
 
 // Struct to return the result of floyd's algorithm
 typedef struct FloydData {
-        float **A; //  A matrix of weights
-        index_t **P; // P matrixt of pivots
-        size_t n_elements;
-        int status; // represents the result status of the operation (1 if success)
+	float **A; //  A matrix of weights
+	index_t **P; // P matrixt of pivots
+	size_t n_elements;
+	int status; // represents the result status of the operation (1 if success)
 } FloydData_t;
 
 /**
@@ -193,10 +193,10 @@ void graph_free_floyd_data(FloydData_t *data);
 
 // Represents the Degree of a vertex
 typedef struct vertexDegree {
-        size_t deg_in;
-        size_t deg_out;
-        size_t deg;
-        int status;
+	size_t deg_in;
+	size_t deg_out;
+	size_t deg;
+	int status;
 } vertexDegree_t;
 
 /**
@@ -241,7 +241,7 @@ float graph_eccentricity(Graph *graph, void *vertex);
 typedef struct traverse_df_data {
 	void *elements;
 	size_t elements_size;
-        int status;
+	int status;
 }traverse_df_data_t;
 
 /**
