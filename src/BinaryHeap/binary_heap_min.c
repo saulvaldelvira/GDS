@@ -20,6 +20,8 @@ struct _MinHeap {
 	Vector *elements;
 };
 
+/// INITIALIZE ////////////////////////////////////////////////////////////////
+
 MinHeap* minheap_init(size_t data_size, comparator_function_t cmp){
 	if (!cmp){
 		printerr_null_param(minheap_init);
@@ -46,6 +48,10 @@ void minheap_configure(MinHeap *heap, comparator_function_t cmp){
 	}
 	vector_configure(heap->elements, cmp);
 }
+
+///////////////////////////////////////////////////////////////////////////////
+
+/// FILTERING /////////////////////////////////////////////////////////////////
 
 /**
  * Performs a filter up.
@@ -112,6 +118,10 @@ static void filter_down(Vector *list, size_t pos){
 	vector_swap(list, pos, lowest.value);
 	filter_down(list, lowest.value);
 }
+
+///////////////////////////////////////////////////////////////////////////////
+
+//// ADD-REMOVE ///////////////////////////////////////////////////////////////
 
 int minheap_add(MinHeap *heap, void *element){
 	if (!heap || !element){
@@ -183,6 +193,10 @@ void* minheap_pop_min(MinHeap *heap, void *dest){
 	return dest;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
+/// GET-EXISTS-SIZE ///////////////////////////////////////////////////////////
+
 void* minheap_get_array(MinHeap *heap, size_t array_length){
 	if (!heap){
 		printerr_null_param(minheap_get_array);
@@ -250,6 +264,10 @@ bool minheap_isempty(MinHeap *heap){
 	}
 	return vector_isempty(heap->elements);
 }
+
+///////////////////////////////////////////////////////////////////////////////
+
+//// FREE /////////////////////////////////////////////////////////////////////
 
 int minheap_free(MinHeap *heap){
 	if (!heap){

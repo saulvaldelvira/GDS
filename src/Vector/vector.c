@@ -29,6 +29,8 @@ struct _Vector {
 	void *elements;
 };
 
+/// INITIALIZE ////////////////////////////////////////////////////////////////
+
 Vector* vector_empty(size_t data_size, comparator_function_t cmp){
 	if (data_size <= 0){
 		printerr_data_size(vector_empty);
@@ -86,6 +88,10 @@ comparator_function_t vector_get_comparator(Vector *list){
 	}
 	return list->compare;
 }
+
+///////////////////////////////////////////////////////////////////////////////
+
+/// ADD-SET ///////////////////////////////////////////////////////////////////////
 
 int vector_append(Vector *list, void *element){
 	if (!list || !element){
@@ -190,46 +196,6 @@ int vector_push_front_array(Vector *list, void *array, size_t array_length){
 	return SUCCESS;
 }
 
-index_t vector_indexof(Vector *list, void *element){
-	if (!list || !element){
-		printerr_null_param(vector_indexof);
-		return index_t(0,NULL_PARAMETER_ERROR);
-	}
-
-	void *ptr; // Current element in the iteration
-	for (size_t i=0; i < list->n_elements; i++){
-		ptr = void_offset(list->elements, i * list->data_size);
-		if ((*list->compare) (ptr, element) == 0){
-			return index_t(i,SUCCESS);
-		}
-	}
-	return index_t(0,ELEMENT_NOT_FOUND_ERROR);
-}
-
-bool vector_exists(Vector *list, void *element){
-	if (!list){
-		printerr_null_param(vector_exists);
-		return false;
-	}
-	return vector_indexof(list, element).status == SUCCESS;
-}
-
-bool vector_isempty(Vector *list){
-	if (!list){
-		printerr_null_param(vector_isempty);
-		return false;
-	}
-	return list->n_elements == 0;
-}
-
-size_t vector_size(Vector *list){
-	if (!list){
-		printerr_null_param(vector_size);
-		return false;
-	}
-	return list->n_elements;
-}
-
 int vector_set_at(Vector *list, size_t index, void *element){
 	if (!list || !element){
 		printerr_null_param(vector_set_at);
@@ -308,138 +274,9 @@ int vector_insert_at(Vector *list, size_t index, void *element){
 	return SUCCESS;
 }
 
-void* vector_get_at(Vector *list, size_t index, void *dest){
-	if (!list || !dest){
-		printerr_null_param(vector_get_at);
-		return NULL;
-	}
-	if (index >= list->n_elements){
-		printerr_out_of_bounds(index, vector_get_at);
-		return NULL;
-	}
-	void *tmp = void_offset(list->elements, index * list->data_size);
-	tmp = memcpy(dest, tmp, list->data_size);
-	return tmp;
-}
+///////////////////////////////////////////////////////////////////////////////
 
-void* vector_get(Vector *list, void *element, void *dest){
-	if (!list || !element || !dest){
-		printerr_null_param(vector_get);
-		return NULL;
-	}
-	index_t index = vector_indexof(list, element);
-	if (!index.status){
-		return NULL;
-	}
-	return vector_get_at(list, index.value, dest);
-}
-
-void* vector_get_front(Vector *list, void *dest){
-	if (!list || !dest){
-		printerr_null_param(vector_get_front);
-		return NULL;
-	}
-	return vector_get_at(list, 0, dest);
-}
-
-void* vector_get_back(Vector *list, void *dest){
-	if (!list || !dest){
-		printerr_null_param(vector_get_back);
-		return NULL;
-	}
-	return vector_get_at(list, list->n_elements - 1, dest);
-}
-
-void* vector_get_into_array(Vector *list, void *array, size_t array_length){
-	if (!list || !array){
-		printerr_null_param(vector_get_into_array);
-		return NULL;
-	}
-	if (array_length > list->n_elements){
-		array_length = list->n_elements;
-	}
-	if (!memcpy(array, list->elements, array_length * list->data_size)){
-		printerr_memory_op(vector_get_into_array);
-		return NULL;
-	}
-
-	return array;
-}
-
-void* vector_get_array(Vector *list, size_t array_length){
-	if (!list){
-		printerr_null_param(vector_get_array);
-		return NULL;
-	}
-	if (array_length == GET_ALL_ELEMENTS || array_length > list->n_elements){
-		array_length = list->n_elements;
-	}
-	void *array = malloc(list->data_size * array_length);
-	if (!array){
-		return NULL;
-	}
-	if (!vector_get_into_array(list, array, array_length)){
-		free(array);
-		return NULL;
-	}
-	return array;
-}
-
-static void* get_position(Vector *list, size_t index){
-	return void_offset(list->elements, index * list->data_size);
-}
-
-int vector_swap(Vector *list, size_t index_1, size_t index_2){
-	if (!list){
-		printerr_null_param(vector_swap);
-		return NULL_PARAMETER_ERROR;
-	}
-	if (index_1 >= list->n_elements){
-		printerr_out_of_bounds(index_1, vector_swap);
-		return INDEX_BOUNDS_ERROR;
-	}
-	if (index_2 >= list->n_elements){
-		printerr_out_of_bounds(index_2, vector_swap);
-		return INDEX_BOUNDS_ERROR;
-	}
-
-	void *tmp = malloc(list->data_size);
-	if (!tmp){
-		printerr_allocation(vector_swap);
-		return ALLOCATION_ERROR;
-	}
-
-	if (!vector_get_at(list, index_1, tmp)){
-		return ERROR;
-	}
-
-	void *e1 = get_position(list, index_1);
-	void *e2 = get_position(list, index_2);
-	if(!memcpy(e1, e2, list->data_size)){
-		printerr_memory_op(vector_swap);
-		return MEMORY_OP_ERROR;
-	}
-
-	if(!memcpy(e2, tmp, list->data_size)){
-		printerr_memory_op(vector_swap);
-		return MEMORY_OP_ERROR;
-	}
-
-	free(tmp);
-
-	return SUCCESS;
-
-}
-
-int vector_compare(Vector *list, size_t index_1, size_t index_2){
-	if (!list){
-		printerr_null_param(vector_swap);
-		return NULL_PARAMETER_ERROR;
-	}
-	void *e1 = get_position(list, index_1);
-	void *e2 = get_position(list, index_2);
-	return (*list->compare) (e1, e2);
-}
+/// REMOVE ////////////////////////////////////////////////////////////////////
 
 int vector_remove_at(Vector *list, size_t index){
 	if (!list){
@@ -528,6 +365,187 @@ int vector_remove_array(Vector *list, void *array, size_t array_length){
 	return SUCCESS;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
+/// SEARCH-GET ////////////////////////////////////////////////////////////////
+
+index_t vector_indexof(Vector *list, void *element){
+	if (!list || !element){
+		printerr_null_param(vector_indexof);
+		return index_t(0,NULL_PARAMETER_ERROR);
+	}
+
+	void *ptr; // Current element in the iteration
+	for (size_t i=0; i < list->n_elements; i++){
+		ptr = void_offset(list->elements, i * list->data_size);
+		if ((*list->compare) (ptr, element) == 0){
+			return index_t(i,SUCCESS);
+		}
+	}
+	return index_t(0,ELEMENT_NOT_FOUND_ERROR);
+}
+
+bool vector_exists(Vector *list, void *element){
+	if (!list){
+		printerr_null_param(vector_exists);
+		return false;
+	}
+	return vector_indexof(list, element).status == SUCCESS;
+}
+
+bool vector_isempty(Vector *list){
+	if (!list){
+		printerr_null_param(vector_isempty);
+		return false;
+	}
+	return list->n_elements == 0;
+}
+
+void* vector_get_at(Vector *list, size_t index, void *dest){
+	if (!list || !dest){
+		printerr_null_param(vector_get_at);
+		return NULL;
+	}
+	if (index >= list->n_elements){
+		printerr_out_of_bounds(index, vector_get_at);
+		return NULL;
+	}
+	void *tmp = void_offset(list->elements, index * list->data_size);
+	tmp = memcpy(dest, tmp, list->data_size);
+	return tmp;
+}
+
+void* vector_get(Vector *list, void *element, void *dest){
+	if (!list || !element || !dest){
+		printerr_null_param(vector_get);
+		return NULL;
+	}
+	index_t index = vector_indexof(list, element);
+	if (!index.status){
+		return NULL;
+	}
+	return vector_get_at(list, index.value, dest);
+}
+
+void* vector_get_front(Vector *list, void *dest){
+	if (!list || !dest){
+		printerr_null_param(vector_get_front);
+		return NULL;
+	}
+	return vector_get_at(list, 0, dest);
+}
+
+void* vector_get_back(Vector *list, void *dest){
+	if (!list || !dest){
+		printerr_null_param(vector_get_back);
+		return NULL;
+	}
+	return vector_get_at(list, list->n_elements - 1, dest);
+}
+
+void* vector_get_into_array(Vector *list, void *array, size_t array_length){
+	if (!list || !array){
+		printerr_null_param(vector_get_into_array);
+		return NULL;
+	}
+	if (array_length > list->n_elements){
+		array_length = list->n_elements;
+	}
+	if (!memcpy(array, list->elements, array_length * list->data_size)){
+		printerr_memory_op(vector_get_into_array);
+		return NULL;
+	}
+
+	return array;
+}
+
+void* vector_get_array(Vector *list, size_t array_length){
+	if (!list){
+		printerr_null_param(vector_get_array);
+		return NULL;
+	}
+	if (array_length == GET_ALL_ELEMENTS || array_length > list->n_elements){
+		array_length = list->n_elements;
+	}
+	void *array = malloc(list->data_size * array_length);
+	if (!array){
+		return NULL;
+	}
+	if (!vector_get_into_array(list, array, array_length)){
+		free(array);
+		return NULL;
+	}
+	return array;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+/// OTHER /////////////////////////////////////////////////////////////////////
+
+static void* get_position(Vector *list, size_t index){
+	return void_offset(list->elements, index * list->data_size);
+}
+
+int vector_swap(Vector *list, size_t index_1, size_t index_2){
+	if (!list){
+		printerr_null_param(vector_swap);
+		return NULL_PARAMETER_ERROR;
+	}
+	if (index_1 >= list->n_elements){
+		printerr_out_of_bounds(index_1, vector_swap);
+		return INDEX_BOUNDS_ERROR;
+	}
+	if (index_2 >= list->n_elements){
+		printerr_out_of_bounds(index_2, vector_swap);
+		return INDEX_BOUNDS_ERROR;
+	}
+
+	void *tmp = malloc(list->data_size);
+	if (!tmp){
+		printerr_allocation(vector_swap);
+		return ALLOCATION_ERROR;
+	}
+
+	if (!vector_get_at(list, index_1, tmp)){
+		return ERROR;
+	}
+
+	void *e1 = get_position(list, index_1);
+	void *e2 = get_position(list, index_2);
+	if(!memcpy(e1, e2, list->data_size)){
+		printerr_memory_op(vector_swap);
+		return MEMORY_OP_ERROR;
+	}
+
+	if(!memcpy(e2, tmp, list->data_size)){
+		printerr_memory_op(vector_swap);
+		return MEMORY_OP_ERROR;
+	}
+
+	free(tmp);
+
+	return SUCCESS;
+
+}
+
+int vector_compare(Vector *list, size_t index_1, size_t index_2){
+	if (!list){
+		printerr_null_param(vector_swap);
+		return NULL_PARAMETER_ERROR;
+	}
+	void *e1 = get_position(list, index_1);
+	void *e2 = get_position(list, index_2);
+	return (*list->compare) (e1, e2);
+}
+
+size_t vector_size(Vector *list){
+	if (!list){
+		printerr_null_param(vector_size);
+		return false;
+	}
+	return list->n_elements;
+}
+
 Vector* vector_join(Vector *list_1, Vector *list_2){
 	if (!list_1 || !list_2){
 		printerr_null_param(vector_join);
@@ -575,6 +593,10 @@ Vector* vector_join(Vector *list_1, Vector *list_2){
 
 	return list_joint;
 }
+
+///////////////////////////////////////////////////////////////////////////////
+
+/// FREE //////////////////////////////////////////////////////////////////////
 
 int vector_free(Vector *list){
 	if (!list){

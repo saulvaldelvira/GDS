@@ -35,6 +35,8 @@ struct _BTree {
 #define MIN_ELEMENTS(k) (((k) - 1) / 2)
 #define LEAF(node) ((node)->n_childs == 0)
 
+/// INITIALIZE ////////////////////////////////////////////////////////////////
+
 BTree* btree_init(size_t data_size, int K, comparator_function_t cmp){
 	if (!cmp){
 		printerr_null_param(btree_init);
@@ -85,6 +87,18 @@ static BTreeNode* btree_init_node(int K, size_t data_size){
 	node->n_elements = 0;
 	return node;
 }
+
+////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Auxiliar struct for the add and remove functions.
+*/
+struct add_remove_ret {
+	int status;
+	BTreeNode *node;
+};
+
+/// ADD ///////////////////////////////////////////////////////////////////////
 
 /**
  * Tries to insert the element into the given index.
@@ -304,11 +318,6 @@ static BTreeNode* split_node(BTreeNode *node, void *element, BTree *tree, BTreeN
 	return split;
 }
 
-struct add_remove_ret {
-	int status;
-	BTreeNode *node;
-};
-
 static struct add_remove_ret btree_add_rec(BTreeNode *node, BTree *tree, void *element){
 	struct add_remove_ret ret;
 
@@ -382,9 +391,12 @@ int btree_add(BTree *tree, void *element){
 	return ret.status;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
+/// REMOVE ////////////////////////////////////////////////////////////////////
+
 /**
  * Returns the position of the element, or -1 if it's not in this node.
- *
 */
 static int find_element(BTreeNode *node, void *element, comparator_function_t compare, size_t data_size){
 	void *tmp;
@@ -687,6 +699,10 @@ int btree_remove(BTree *tree, void *element){
 	return ret.status;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
+/// GET-EXISTS ////////////////////////////////////////////////////////////////
+
 static BTreeNode* btree_get_node(BTreeNode *node, size_t data_size, void *element, comparator_function_t cmp, int *index){
 	if (node == NULL){
 		return NULL;
@@ -731,6 +747,8 @@ bool btree_exists(BTree *tree, void *element){
 	int tmp;
 	return btree_get_node(tree->root, tree->data_size, element, tree->compare, &tmp) != NULL;
 }
+
+/// FREE //////////////////////////////////////////////////////////////////////
 
 static void btree_free_node(BTreeNode *node){
 	if (!node){

@@ -30,6 +30,8 @@ struct _Queue {
 	comparator_function_t compare;
 };
 
+/// INITIALIZE ////////////////////////////////////////////////////////////////
+
 Queue* queue_init(size_t data_size, comparator_function_t cmp){
 	if (data_size <= 0){
 		printerr_data_size(queue_init);
@@ -75,6 +77,10 @@ static QueueNode* queue_init_node(void *element, size_t size){
 	return node;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
+/// ENQUEUE ///////////////////////////////////////////////////////////////////
+
 int queue_enqueue(Queue *queue, void *element){
 	if (!queue || !element){
 		printerr_null_param(queue_enqueue);
@@ -114,6 +120,10 @@ int queue_enqueue_array(Queue *queue, void *array, size_t array_length){
 	return SUCCESS;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
+/// DEQUEUE ///////////////////////////////////////////////////////////////////
+
 void* queue_dequeue(Queue *queue, void *dest){
 	if (!queue || !dest){
 		printerr_null_param(queue_dequeue);
@@ -148,6 +158,10 @@ int queue_dequeue_array(Queue *queue, void *dest_array, size_t dest_length){
 	}
 	return SUCCESS;
 }
+
+///////////////////////////////////////////////////////////////////////////////
+
+/// PEEK-EXISTS-SIZE //////////////////////////////////////////////////////////
 
 void* queue_peek(Queue *queue, void *dest){
 	if (!queue || !dest){
@@ -192,6 +206,10 @@ bool queue_isempty(Queue *queue){
 	}
 	return queue->head == NULL;
 }
+
+///////////////////////////////////////////////////////////////////////////////
+
+/// FREE //////////////////////////////////////////////////////////////////////
 
 static void queue_free_node(QueueNode *node){
 	if (node == NULL){

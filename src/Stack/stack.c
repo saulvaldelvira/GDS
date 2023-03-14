@@ -29,6 +29,8 @@ struct _Stack {
 	size_t n_elements;
 };
 
+/// INITIALIZE ////////////////////////////////////////////////////////////////
+
 Stack* stack_init(size_t data_size, comparator_function_t cmp){
 	if (data_size <= 0){
 		printerr_data_size(stack_init);
@@ -77,6 +79,10 @@ static StackNode* init_node(void *element, size_t size){
 	node->next = NULL;
 	return node;
 }
+
+///////////////////////////////////////////////////////////////////////////////
+
+/// PUSH-POP //////////////////////////////////////////////////////////////////////
 
 int stack_push(Stack *stack, void *element){
 	if(!stack || !element){
@@ -155,6 +161,10 @@ int stack_pop_array(Stack *stack, void *array_dest, size_t dest_length){
 	return SUCCESS;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
+/// PEEK //////////////////////////////////////////////////////////////////////
+
 void* stack_peek(Stack *stack, void *dest){
 	if(!stack || !dest){
 		printerr_null_param(stack_peek);
@@ -216,6 +226,10 @@ bool stack_isempty(Stack *stack){
 	}
 	return stack->head == NULL;
 }
+
+///////////////////////////////////////////////////////////////////////////////
+
+/// FREE //////////////////////////////////////////////////////////////////////
 
 static void free_node(StackNode *node){
 	if (node == NULL){

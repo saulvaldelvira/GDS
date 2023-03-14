@@ -31,6 +31,8 @@ struct _BSTree {
 	size_t data_size;
 };
 
+///// INITIALIZE //////////////////////////////////////////////////////////////
+
 BSTree* bst_init(size_t data_size, comparator_function_t cmp){
 	if (data_size <= 0){
 		printerr_data_size(bst_init);
@@ -76,56 +78,73 @@ static BSNode* init_node(void *info, size_t size){
 	return node;
 }
 
-// Auxiliar struct for the add_rec function
+///////////////////////////////////////////////////////////////////////////////
+
+//////// ADD-REMOVE //////////////////////////////////////////////////////////////////
+
+// Auxiliar struct for the add function
 struct add_rec_ret {
 	BSNode* node;
 	int status;
 };
 
+
+static BSNode* get_max(BSNode *node){
+	if (node == NULL){
+		return NULL;
+	}
+	while (node->right != NULL){
+		node = node->right;
+	}
+	return node;
+}
+
+static BSNode* get_min(BSNode *node){
+	if (node == NULL){
+		return NULL;
+	}
+	while (node->left != NULL){
+		node = node->left;
+	}
+	return node;
+}
+
+
 /**
- * This method is a little bit tricky, specially because of the weird struct that it returns.
- * It works recursivelly.
- * When it's called with a node, it starts searching for a place to put the element in. Since this is a Binary Search Tree,
- * when comparing the element with the current node's info we can know if we have to continue searching on the left or the right branch.
- * If the comparison returns < 0, it means that the element we are trying to store is lower than the current element in the node, so we recurse
- * the search in the left son of the node. The oposite with comparison > 0, but in the right side.
- *
- * After a recursive call returns, the struct add_rec_ret that this call returns contains a reference to the child node we recursed into, and a status flag.
- * We also update the node we just called the search upon (left or right depending on the previous comparison). Most of the time, this will do
- * nothing, since the only time this will change anything is when we find a NULL node in this method.
- * When we reach a NULL node, this means we can stop searching and put there the node, so we return one of this struct add_rec_ret element, containing this
- * new node, and a SUCCESS status flag.
- *
- * As said before in this last case, the "node->right = ret.node" and "node->left = ret.node" will update this null references to target this newly created node.
- *
- * Also after that, the method updates the father reference inside the struct to the current node.
- *
- * The use  of struct add_rec_ret is to be able to check the struct add_rec_ret.status when this chain of recursive calls ends and returns to bst_add. This way, we can
- * check if the operation was a SUCCESS and increment the n_elements acordingly, or else we have to return an error status.
+ * Adds the element to the node.
+ * 1) Compares the element with the node's info.
+ * 	If higher: continue with the right son
+ * 	If lower: continue with the left son
+ * 	Else: repeated element!
+ * 2) If the node is null, we reached a leaf node, create a new node
+ *    to store the element and return it.
+ * 3) When the recursive call returns, update the son (left or right) to
+ *    point to the returned node. After case 2 happens, this means updating
+ *    a NULL pointer to now point to the newly created node.
 */
 static struct add_rec_ret add_rec(BSNode *node, void *element, comparator_function_t cmp, size_t size){
-	if (node == NULL){ // The element does not exist in the tree
-		BSNode *aux = init_node(element, size); // Create the node
-		if (!aux){ // If memory could not be allocated, return with an error status
+	if (node == NULL){
+		BSNode *aux = init_node(element, size);
+		if (!aux){
 			return (struct add_rec_ret) {aux, ALLOCATION_ERROR};
-		} else { // Return the new node with a SUCCESS status
+		} else {
 			return (struct add_rec_ret) {aux, 1};
 		}
 	}
 	struct add_rec_ret ret;
 	int c = (*cmp) (element, node->info);
-	if (c > 0){ // The element is higher than the node's info. Search right
+	if (c > 0){
 		ret = add_rec(node->right, element, cmp, size);
-		node->right = ret.node; // Update the right node
-	}else if (c < 0){ // The element is lower than the node's info. Search left
+		node->right = ret.node;
+	}else if (c < 0){
 		ret = add_rec(node->left, element, cmp, size);
-		node->left = ret.node; // Update the left node
-	}else { // Repeated element, return with an error status
+		node->left = ret.node;
+	}else {
 		return (struct add_rec_ret) {node, REPEATED_ELEMENT_ERROR};
 	}
 
 	ret.node->father = node;
-	ret.node = node; // Change the node in ret to the actual one before returning
+	ret.node = node;
 	return ret;
 }
 
@@ -159,41 +178,23 @@ int bst_add_array(BSTree *tree, void *array, size_t array_length){
 	return SUCCESS;
 }
 
-static BSNode* get_max(BSNode *node){
-	if (node == NULL){
-		return NULL;
-	}
-	while (node->right != NULL){
-		node = node->right;
-	}
-	return node;
-}
-
-static BSNode* get_min(BSNode *node){
-	if (node == NULL){
-		return NULL;
-	}
-	while (node->left != NULL){
-		node = node->left;
-	}
-	return node;
-}
-
 // Auxiliar struct for the remove_rec function
 struct remove_rec_ret {
 	BSNode* node;
 	int status;
 };
+
 /**
- * This function behaves similarly to the add_rec. It starts searching through the tree->
- * After every call, we update the current node's references to left or right (depending on the result of the comparison).
- * If we find the node to delete, we have to free this node, and return another one.
- * We have three cases
- * 1) The left son is NULL -> we return the right son
- * 2) The right son is NULL -> we return the left son
- *  NOTE: if both nodes are null the previous conditions will return NULL
- * 3) If there are left and right son, we set the current node's info to the BIGGEST element starting from the left son.
- *      After that, there are two nodes with the same info, so we delete the node that previosly stored this info, since it will now be stored in this node
+ * This fucntion works like the add.
+ * 1) Compares the element with the node's info.
+ * 	If higher: continue with the right son
+ * 	If lower: continue with the left son
+ * 	Else: We found the element to delete.
+ * 	   If left son exists: substitute this node with left son.
+ *         If right son exists: substitute this node with right son.
+ *         Else: substitute this node with the max element from the
+ *               left node AND remove it from there.
+ * 2) If the node is null, this means the element does not exist.
 */
 static struct remove_rec_ret remove_rec(BSNode *node, void *element, comparator_function_t cmp, size_t size){
 	if (node == NULL){
@@ -202,7 +203,7 @@ static struct remove_rec_ret remove_rec(BSNode *node, void *element, comparator_
 
 	int c = (*cmp) (element, node->info);
 	struct remove_rec_ret ret;
-	if (c > 0){ // The element is higher than the node's info
+	if (c > 0){
 		ret = remove_rec(node->right, element, cmp, size);
 		node->right = ret.node;
 	}else if (c < 0){
@@ -215,19 +216,19 @@ static struct remove_rec_ret remove_rec(BSNode *node, void *element, comparator_
 			node = node->right;
 		} else if(node->right == NULL) {
 			node = node->left;
-		}else { // Case 3
-			aux = get_max(node->left); // Get the biggest son starting in the left node
-			if(aux != node->left){ // This means the left node have at least one right son
-				aux->father->right = NULL; // We simply clear that reference
-			}else{ // If aux node is the left node itself (The biggest element from the left is theleft itself.)
-				node->left = aux->left; // Now we can safely remove aux without losing the left son of aux (the right son is NULL)
+		}else {
+			aux = get_max(node->left);
+			if(aux != node->left){
+				aux->father->right = NULL;
+			}else{
+				node->left = aux->left;
 			}
 			if(!memcpy(node->info, aux->info, size)){
 				printerr_memory_op(add_rec);
 				ret.status = -1;
 			}
 		}
-		free(aux); // Free aux
+		free(aux);
 	}
 	ret.node = node;
 	return ret;
@@ -263,6 +264,10 @@ int bst_remove_array(BSTree *tree, void *array, size_t array_length){
 	return SUCCESS;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
+/// GET ///////////////////////////////////////////////////////////////////
+
 static BSNode* get_rec(BSNode *node, void *element, comparator_function_t cmp){
 	if(node == NULL){
 		return NULL;
@@ -292,6 +297,62 @@ void* bst_get(BSTree *tree, void* element, void *dest){
 	}
 	return dest;
 }
+
+void* bst_max(BSTree *tree, void *dest){
+	if (!tree || !dest){
+		printerr_null_param(bst_max);
+		return NULL;
+	}
+	return bst_max_from(tree, tree->root->info, dest);
+}
+
+void* bst_min(BSTree *tree, void *dest){
+	if (!tree || !dest){
+		printerr_null_param(bst_min);
+		return NULL;
+	}
+	return bst_min_from(tree, tree->root->info, dest);
+}
+
+void* bst_max_from(BSTree *tree, void *element, void *dest){
+	if (!tree || !element || !dest){
+		printerr_null_param(bst_max_from);
+		return NULL;
+	}
+	BSNode *tmp = get_rec(tree->root, element, tree->compare);
+	if (!tmp){
+		return NULL;
+	}
+	tmp = get_max(tmp);
+
+	if (!memcpy(dest, tmp->info, tree->data_size)){
+		printerr_memory_op(bst_max_from);
+		return NULL;
+	}
+	return dest;
+}
+
+void* bst_min_from(BSTree *tree, void *element, void *dest){
+	if (!tree || !element || !dest){
+		printerr_null_param(bst_min_from);
+		return NULL;
+	}
+	BSNode *tmp = get_rec(tree->root, element, tree->compare);
+	if (!tmp){
+		return NULL;
+	}
+	tmp = get_min(tmp);
+
+	if (!memcpy(dest, tmp->info, tree->data_size)){
+		printerr_memory_op(bst_min_from);
+		return NULL;
+	}
+	return dest;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+/// OTHER FUNCTIONS ///////////////////////////////////////////////////////////
 
 static bool exists_rec(BSNode *node, void *element, comparator_function_t cmp){
 	if(node == NULL){
@@ -369,35 +430,9 @@ BSTree* bst_join(BSTree *tree_1, BSTree *tree_2){
 	return tree_joint;
 }
 
-static void free_rec(BSNode *node){
-	if(node == NULL){
-		return;
-	}
-	free_rec(node->left);
-	free_rec(node->right);
-	free(node);
-}
+///////////////////////////////////////////////////////////////////////////////
 
-int bst_free(BSTree *tree){
-	if (!tree){
-		printerr_null_param(bst_free);
-		return NULL_PARAMETER_ERROR;
-	}
-	free_rec(tree->root);
-	free(tree);
-	return 1;
-}
-
-BSTree* bst_reset(BSTree *tree){
-	if (!tree){
-		printerr_null_param(bst_reset);
-		return NULL;
-	}
-	free_rec(tree->root);
-	tree->root = NULL;
-	tree->n_elements = 0;
-	return tree;
-}
+/// TRAVERSE //////////////////////////////////////////////////////////////////
 
 // Auxiliar structure to use in the traversal methods
 struct traversal_ret {
@@ -412,12 +447,13 @@ enum Traversal {
 };
 
 /**
- * This method is used to traverse the tree->
+ * This method is used to traverse the tree.
  * It can be done in 3 ways: in order, pre order or post order.
- * It's recursive, wich means it calls recursivelly itself with the left and right branch.
- * When it reaches a point where both left and right sons are NULL, it will return an array of elements with size 1.
- * After that, it just takes those arrays and start building bigger arrays out of them, with the specified order.
- * In the last call, it will return an array with all the elements in the array.
+ * It's recursive, wich means it calls itself again with the left and right branches.
+ * When it reaches a point where both left and right sons are NULL, it will return an
+ * array of elements with size 1 (the element in the node).
+ * After that, it just takes those arrays and start building bigger arrays out of them.
+ * At the end, it returns an array with all the elements in the tree.
 */
 static struct traversal_ret traversal_rec(BSNode *node, enum Traversal order, size_t size){
 	// If the node is null, return and empty array
@@ -554,54 +590,36 @@ void* bst_postorder(BSTree *tree){
 	return result.elements;
 }
 
-void* bst_max(BSTree *tree, void *dest){
-	if (!tree || !dest){
-		printerr_null_param(bst_max);
-		return NULL;
+///////////////////////////////////////////////////////////////////////////////
+
+/// FREE //////////////////////////////////////////////////////////////////////
+
+static void free_rec(BSNode *node){
+	if(node == NULL){
+		return;
 	}
-	return bst_max_from(tree, tree->root->info, dest);
+	free_rec(node->left);
+	free_rec(node->right);
+	free(node);
 }
 
-void* bst_min(BSTree *tree, void *dest){
-	if (!tree || !dest){
-		printerr_null_param(bst_min);
-		return NULL;
+int bst_free(BSTree *tree){
+	if (!tree){
+		printerr_null_param(bst_free);
+		return NULL_PARAMETER_ERROR;
 	}
-	return bst_min_from(tree, tree->root->info, dest);
+	free_rec(tree->root);
+	free(tree);
+	return 1;
 }
 
-void* bst_max_from(BSTree *tree, void *element, void *dest){
-	if (!tree || !element || !dest){
-		printerr_null_param(bst_max_from);
+BSTree* bst_reset(BSTree *tree){
+	if (!tree){
+		printerr_null_param(bst_reset);
 		return NULL;
 	}
-	BSNode *tmp = get_rec(tree->root, element, tree->compare);
-	if (!tmp){
-		return NULL;
-	}
-	tmp = get_max(tmp);
-
-	if (!memcpy(dest, tmp->info, tree->data_size)){
-		printerr_memory_op(bst_max_from);
-		return NULL;
-	}
-	return dest;
-}
-
-void* bst_min_from(BSTree *tree, void *element, void *dest){
-	if (!tree || !element || !dest){
-		printerr_null_param(bst_min_from);
-		return NULL;
-	}
-	BSNode *tmp = get_rec(tree->root, element, tree->compare);
-	if (!tmp){
-		return NULL;
-	}
-	tmp = get_min(tmp);
-
-	if (!memcpy(dest, tmp->info, tree->data_size)){
-		printerr_memory_op(bst_min_from);
-		return NULL;
-	}
-	return dest;
+	free_rec(tree->root);
+	tree->root = NULL;
+	tree->n_elements = 0;
+	return tree;
 }

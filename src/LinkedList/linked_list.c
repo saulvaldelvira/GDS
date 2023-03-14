@@ -35,6 +35,8 @@ struct _LinkedList {
 	comparator_function_t compare;
 };
 
+/// INITIALIZE ////////////////////////////////////////////////////////////////
+
 LinkedList* lnkd_list_init(size_t data_size, comparator_function_t cmp){
 	if (data_size <= 0){
 		printerr_data_size(lnkd_list_init);
@@ -82,6 +84,10 @@ static LLNode* lnkd_list_innit_node(void *info, size_t size){
 	}
 	return node;
 }
+
+///////////////////////////////////////////////////////////////////////////////
+
+/// ADD-SET ///////////////////////////////////////////////////////////////////////
 
 int lnkd_list_append(LinkedList *list, void *element){
 	if (!list || !element){
@@ -178,6 +184,10 @@ int lnkd_list_set(LinkedList *list, void *element, void *replacement){
 	return SUCCESS;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
+/// GET ///////////////////////////////////////////////////////////////////////
+
 void* lnkd_list_get(LinkedList *list, void *element, void *dest){
 	if (!list || !element || !dest){
 		printerr_null_param(lnkd_list_get);
@@ -252,36 +262,9 @@ void* lnkd_list_get_array(LinkedList *list, size_t array_length){
 	return array;
 }
 
-bool lnkd_list_exists(LinkedList *list, void *element){
-	if (!list || !element){
-		printerr_null_param(lnkd_list_exists);
-		return false;
-	}
-	LLNode *aux = list->head;
-	while (aux != NULL){
-		if ((*list->compare) (aux->info, element) == 0){
-			return true;
-		}
-		aux = aux->next;
-	}
-	return false;
-}
+///////////////////////////////////////////////////////////////////////////////
 
-size_t lnkd_list_size(LinkedList *list){
-	if (!list){
-		printerr_null_param(lnkd_list_size);
-		return 0;
-	}
-	return list->n_elements;
-}
-
-bool lnkd_list_isempty(LinkedList *list){
-	if (!list){
-		printerr_null_param(lnkd_list_isempty);
-		return false;
-	}
-	return list->n_elements == 0;
-}
+/// REMOVE ////////////////////////////////////////////////////////////////////
 
 int lnkd_list_remove(LinkedList *list, void *element){
 	if (!list || !element){
@@ -368,6 +351,41 @@ int lnkd_list_remove_array(LinkedList *list, void *array, size_t array_length){
 	return SUCCESS;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
+/// OTHER /////////////////////////////////////////////////////////////////////
+
+bool lnkd_list_exists(LinkedList *list, void *element){
+	if (!list || !element){
+		printerr_null_param(lnkd_list_exists);
+		return false;
+	}
+	LLNode *aux = list->head;
+	while (aux != NULL){
+		if ((*list->compare) (aux->info, element) == 0){
+			return true;
+		}
+		aux = aux->next;
+	}
+	return false;
+}
+
+size_t lnkd_list_size(LinkedList *list){
+	if (!list){
+		printerr_null_param(lnkd_list_size);
+		return 0;
+	}
+	return list->n_elements;
+}
+
+bool lnkd_list_isempty(LinkedList *list){
+	if (!list){
+		printerr_null_param(lnkd_list_isempty);
+		return false;
+	}
+	return list->n_elements == 0;
+}
+
 LinkedList* lnkd_list_join(LinkedList *list_1, LinkedList *list_2){
 	if (!list_1 || !list_2){
 		printerr_null_param(lnkd_list_join);
@@ -411,6 +429,10 @@ LinkedList* lnkd_list_join(LinkedList *list_1, LinkedList *list_2){
 
 	return list_joint;
 }
+
+///////////////////////////////////////////////////////////////////////////////
+
+/// FREE //////////////////////////////////////////////////////////////////////
 
 static void lnkd_list_free_node(LLNode *node){
 	if (node == NULL){

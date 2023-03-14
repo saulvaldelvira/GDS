@@ -33,6 +33,8 @@ struct _AVLTree {
         comparator_function_t compare;
 };
 
+/// INITIALIZE ////////////////////////////////////////////////////////////////
+
 static AVLNode* init_node(void *element, size_t data_size){
         AVLNode *node = malloc(sizeof(*node));
         if (!node){
@@ -59,9 +61,30 @@ void avl_configure(AVLTree *tree, comparator_function_t cmp){
 	tree->compare = cmp;
 }
 
+AVLTree* avl_init(size_t data_size, comparator_function_t cmp){
+        if (!cmp){
+                printerr_null_param(avl_init);
+                return NULL;
+        }
+        AVLTree *tree = malloc(sizeof(*tree));
+        if (!tree){
+                printerr_allocation(avl_init);
+                return NULL;
+        }
+        tree->compare = cmp;
+        tree->data_size = data_size;
+        tree->n_elements = 0;
+        tree->root = NULL;
+	return tree;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+
+/// NODE UPDATE FUNCTIONS /////////////////////////////////////////////////////
+
 /**
  * Updates the node's height.
- * An AVL Node's height is the highest of it's son's heights plus one.
+ * An AVL Node's heigth is the highest of it's son's heights plus one.
  * If a son is NULL, the other son's height is used.
  * If both are NULL this means the current node is a leaf of the three, thus it's height is set to 0.
 */
@@ -127,23 +150,6 @@ static AVLNode* double_left_rotation(AVLNode *node){
 
 }
 
-AVLTree* avl_init(size_t data_size, comparator_function_t cmp){
-        if (!cmp){
-                printerr_null_param(avl_init);
-                return NULL;
-        }
-        AVLTree *tree = malloc(sizeof(*tree));
-        if (!tree){
-                printerr_allocation(avl_init);
-                return NULL;
-        }
-        tree->compare = cmp;
-        tree->data_size = data_size;
-        tree->n_elements = 0;
-        tree->root = NULL;
-	return tree;
-}
-
 static AVLNode* update_bf(AVLNode *node){
 	if (!node){
 		return NULL;
@@ -171,62 +177,52 @@ static AVLNode* update_bf(AVLNode *node){
         return node;
 }
 
-// Auxiliar struct for the add_rec function
+///////////////////////////////////////////////////////////////////////////////
+
+/// ADD ///////////////////////////////////////////////////////////////////////
+
+// Auxiliar struct for the add function
 struct add_rec_ret
 {
 	AVLNode* node;
 	int status;
-	bool last_op_was_add;
 };
 
 /**
- * This method is a little bit tricky, specially for the weird struct that it returns.
- * It works recursivelly.
- * When it's called with a node, it starts searching for a place to put the element in. Since this is a Binary Search Tree,
- * when comparing the element with the current node's info we can know if we have to continue searching on the left or the right branch.
- * If the comparison returns < 0, it means that the element we are trying to store is lower than the current element in the node, so we launch
- * the search in the left son of the node. The oposite with comparison > 0, but in the right side.
- * The struct add_rec_ret this call returns, contains a node, a status and a bool flag.
- * We update the node we just called the search upon (left or right depending on the previous comparison). Most of the time, this will do
- * nothing, since the only time this will change anything is when we find a NULL node in this method.
- * When we reach a NULL node, this means we can stop searching and put there the node, so we return one of this struct add_rec_ret element, containing this
- * new node, and a SUCCESS status flag.
- *
- * As said before in this last case, the "node->right = ret.node;" and "node->left = ret.node;" will update this null references to target this newly created node.
- *
- * Also after that, the method checks if the last operation was a succesfull addition of a node. In this case, the node contained in this struct add_rec_ret called ret,
- * a node added in the previous call, so we update this node's father reference to the current node.
- *
- * The use  of struct add_rec_ret is to be able to check the struct add_rec_ret.status when this chain of recursive calls ends and returns to avl_add. This way, we can
- * check if the operation was a SUCCESS and increment the n_elements acordingly, or else we have to return an error status.
+ * Adds the element to the node.
+ * 1) Compares the element with the node's info.
+ * 	If higher: continue with the right son
+ * 	If lower: continue with the left son
+ * 	Else: repeated element!
+ * 2) If the node is null, we reached a leaf node, create a new node
+ *    to store the element and return it.
+ * 3) When the recursive call returns, update the son (left or right) to
+ *    point to the returned node. After case 2 happens, this means updating
+ *    a NULL pointer to now point to the newly created node.
 */
 static struct add_rec_ret add_rec(AVLNode *node, void *element, comparator_function_t cmp, size_t size){
-	if (node == NULL){ // The element does not exist in the tree
-		AVLNode *aux = init_node(element, size); // Create the node
-		if (!aux){ // If memory could not be allocated, return with an error status
-			return (struct add_rec_ret){aux, ALLOCATION_ERROR, false};
-		} else { // Return the new node with a SUCCESS status
-			return (struct add_rec_ret){aux, SUCCESS, true};
+	if (node == NULL){
+		AVLNode *aux = init_node(element, size);
+		if (!aux){
+			return (struct add_rec_ret){aux, ALLOCATION_ERROR};
+		} else {
+			return (struct add_rec_ret){aux, SUCCESS};
 		}
 	}
 	struct add_rec_ret ret;
 	int c = (*cmp) (element, node->info);
-	if (c > 0){ // The element is higher than the node's info. Search right
+	if (c > 0){
 		ret = add_rec(node->right, element, cmp, size);
-		node->right = ret.node; // Update the right node
-	}else if (c < 0){ // The element is lower than the node's info. Search left
+		node->right = ret.node;
+	}else if (c < 0){
 		ret = add_rec(node->left, element, cmp, size);
-		node->left = ret.node; // Update the left node
-	}else { // Repeated element, return with an error status
-		return (struct add_rec_ret){node, REPEATED_ELEMENT_ERROR, false};
+		node->left = ret.node;
+	}else {
+		return (struct add_rec_ret){node, REPEATED_ELEMENT_ERROR};
 	}
-
-	if(ret.last_op_was_add){ // If the last call returned a SUCCESSfuly created node, update this node's father reference
-		ret.node->father = node;
-		ret.last_op_was_add = false; // Set this value to false to avoid doing unecesary updates
-	}
+	ret.node->father = node;
 	node = update_bf(node);
-	ret.node = node; // Change the node in ret to the actual one before returning
+	ret.node = node;
 	return ret;
 }
 
@@ -261,6 +257,10 @@ int avl_add_array(AVLTree *tree, void *array, size_t array_length){
 	return SUCCESS;
 }
 
+///////////////////////////////////////////////////////////////////////////////
+
+/// MAX-MIN ///////////////////////////////////////////////////////////////////
+
 static AVLNode* get_max(AVLNode *node){
 	if (node == NULL){
 		return NULL;
@@ -281,21 +281,27 @@ static AVLNode* get_min(AVLNode *node){
 	return node;
 }
 
-// Auxiliar struct for the remove_rec function
+///////////////////////////////////////////////////////////////////////////////
+
+/// REMOVE ////////////////////////////////////////////////////////////////////
+
+// Auxiliar struct for the remove function
 struct remove_rec_ret {
 	AVLNode* node;
 	int status;
 };
+
 /**
- * This function behaves similarly to the add_rec. It starts searching through the tree->
- * After every call, we update the current node's references to left or right (depending on the result of the comparison).
- * If we find the node to delete, we have to free this node, and return another one.
- * We have three cases
- * 1) The left son is NULL -> we return the right son
- * 2) The right son is NULL -> we return the left son
- *  NOTE: if both nodes are null the previous conditions will return NULL
- * 3) If there are left and right son, we set the current node's info to the BIGGEST element starting from the left son.
- *
+ * This fucntion works like the add.
+ * 1) Compares the element with the node's info.
+ * 	If higher: continue with the right son
+ * 	If lower: continue with the left son
+ * 	Else: We found the element to delete.
+ * 	   If left son exists: substitute this node with left son.
+ *         If right son exists: substitute this node with right son.
+ *         Else: substitute this node with the max element from the
+ *               left node AND remove it from there.
+ * 2) If the node is null, this means the element does not exist.
 */
 static struct remove_rec_ret remove_rec(AVLNode *node, void *element, comparator_function_t cmp, size_t size){
 	if (node == NULL){
@@ -304,7 +310,7 @@ static struct remove_rec_ret remove_rec(AVLNode *node, void *element, comparator
 
 	int c = (*cmp) (element, node->info);
 	struct remove_rec_ret ret;
-	if (c > 0){ // The element is higher than the node's info
+	if (c > 0){
 		ret = remove_rec(node->right, element, cmp, size);
 		node->right = ret.node;
 	}else if (c < 0){
@@ -319,8 +325,8 @@ static struct remove_rec_ret remove_rec(AVLNode *node, void *element, comparator
 		} else if(node->right == NULL){
 			node = node->left;
 			free(aux);
-		}else { // Case 3
-			aux = get_max(node->left); // Get the biggest son starting in the left node
+		}else {
+			aux = get_max(node->left);
 			if(!memcpy(node->info, aux->info, size)){
 				printerr_memory_op(remove_rec);
 				ret.status = MEMORY_OP_ERROR;
@@ -364,6 +370,10 @@ int avl_remove_array(AVLTree *tree, void *array, size_t array_length){
 	}
 	return SUCCESS;
 }
+
+///////////////////////////////////////////////////////////////////////////////
+
+/// OTHER FUNCTIONS ///////////////////////////////////////////////////////////
 
 bool exists_rec(AVLNode *node, void *element, comparator_function_t compare){
 	if (!node){
@@ -444,7 +454,8 @@ int avl_height(AVLTree *tree){
 	return tree->root->height;
 }
 
-/////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+
 // Auxiliar structure to use in the traversal methods
 struct traversal_ret {
 	void* elements;
@@ -452,18 +463,21 @@ struct traversal_ret {
 	int status;
 };
 
-// Auxliar enum to specify the type of traversal to "traversal_rec" function
+// Auxliar enum to specify the type of traversal for "traversal_rec" function
 enum Traversal {
 	IN_ORDER, PRE_ORDER, POST_ORDER
 };
 
+/// TRAVERSALS ////////////////////////////////////////////////////////////////
+
 /**
- * This method is used to traverse the tree->
+ * This method is used to traverse the tree.
  * It can be done in 3 ways: in order, pre order or post order.
- * It's recursive, wich means it calls recursivelly itself with the left and right branch.
- * When it reaches a point where both left and right sons are NULL, it will return an array of elements with size 1.
- * After that, it just takes those arrays and start building bigger arrays out of them, with the specified order.
- * In the last call, it will return an array with all the elements in the array.
+ * It's recursive, wich means it calls itself again with the left and right branches.
+ * When it reaches a point where both left and right sons are NULL, it will return an
+ * array of elements with size 1 (the element in the node).
+ * After that, it just takes those arrays and start building bigger arrays out of them.
+ * At the end, it returns an array with all the elements in the tree.
 */
 static struct traversal_ret traversal_rec(AVLNode *node, enum Traversal order, size_t size){
 	// If the node is null, return and empty array
@@ -558,7 +572,8 @@ static struct traversal_ret traversal_rec(AVLNode *node, enum Traversal order, s
 		}
 	}
 
-	// Free the left and right arrays because our result.data already stores the elements thus this two arrays are useless now
+	// Free the left and right arrays. Our result.data already
+	// stores the elements, so this two arrays are useless now.
 	free_garbage:
 		free(left.elements);
 		free(right.elements);
@@ -600,7 +615,8 @@ void* avl_postorder(AVLTree *tree){
 	}
 	return result.elements;
 }
-////////////////
+
+///////////////////////////////////////////////////////////////////////////////
 
 AVLTree* avl_join(AVLTree *tree_1, AVLTree *tree_2){
 	if (!tree_1 || !tree_2){
@@ -639,6 +655,8 @@ AVLTree* avl_join(AVLTree *tree_1, AVLTree *tree_2){
 
 	return tree_joint;
 }
+
+///// MAX-MIN /////////////////////////////////////////////////////////////////
 
 void* avl_max(AVLTree *tree, void *dest){
 	if (!tree || !dest){
@@ -692,7 +710,9 @@ void* avl_min_from(AVLTree *tree, void *element, void *dest){
 	return dest;
 }
 
-////////
+///////////////////////////////////////////////////////////////////////////////
+
+//// FREE /////////////////////////////////////////////////////////////////////
 
 static void free_node(AVLNode *node){
 	if (!node){
