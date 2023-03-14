@@ -13,20 +13,11 @@ BINHEAP_OBJS = test/heap_test.o $(SRC)/Vector/vector.o $(SRC)/BinaryHeap/binary_
 BTREE_OBJS = test/btree_test.o $(SRC)/BTree/BTree.o $(UTIL_OBJS)
 
 CC = gcc
-CCFLAGS = -lm -Wall -Wextra -Werror -g3 -pedantic
+CCFLAGS = -Wall -Wextra -Werror -g3 -pedantic
 
-# To set optimization level append "O=X" in make command. X is the optimiztion level.
-ifdef O
-CCFLAGS += -O$(O)
-endif
-
-# To make the test NOT print full status in console
-ifdef QUIET
-CCFLAGS += -DQUIET
-endif
-
-ifdef DEBUG
-CCFLAGS += -DDEBUG
+# User's custom flags
+ifdef FLAGS
+CCFLAGS += $(FLAGS)
 endif
 
 default: all_test
