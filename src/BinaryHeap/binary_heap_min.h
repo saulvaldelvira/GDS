@@ -12,6 +12,11 @@
 #pragma once
 #ifndef BINARY_HEAP_MIN_H
 #define BINARY_HEAP_MIN_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stddef.h>
 #include <stdbool.h>
 #include "../Util/definitions.h"
@@ -95,5 +100,9 @@ int minheap_free(MinHeap *heap);
  * @return heap, or NULL if error.
 */
 MinHeap* minheap_reset(MinHeap *heap);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

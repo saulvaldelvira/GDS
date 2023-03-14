@@ -13,6 +13,10 @@
 #ifndef BSTREE_H
 #define BSTREE_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdbool.h>
 #include <stddef.h>
 #include "../Util/comparator.h"
@@ -134,5 +138,9 @@ void* bst_inorder(BSTree *tree);
  * @note the size of the array will naturally be the number of elements in the tree, so there is no need to return it.
 */
 void* bst_postorder(BSTree *tree);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

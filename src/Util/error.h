@@ -15,6 +15,10 @@
 #ifndef CHECKS_H
 #define CHECKS_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define SUCCESS		         1
 #define ERROR                    0
 #define INDEX_BOUNDS_ERROR      -0xE001
@@ -33,5 +37,9 @@
 #define printerr_memory_op(func) fprintf(stderr, "ERROR: At memory operation in function " #func "\n");
 
 #define printerr_data_size(func) fprintf(stderr, "ERROR: Data size must be >= 0. In function " #func "\n");
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

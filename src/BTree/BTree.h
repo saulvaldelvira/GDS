@@ -12,6 +12,10 @@
 #ifndef BTREE_H
 #define BTREE_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stddef.h>
 #include <stdbool.h>
 #include "../Util/comparator.h"
@@ -36,5 +40,9 @@ void btree_print(FILE *output, BTree *tree, print_function_t print_function);*/
 
 int btree_free(BTree *tree);
 BTree* btree_reset(BTree *tree);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

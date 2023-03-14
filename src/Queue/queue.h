@@ -13,6 +13,10 @@
 #ifndef QUEUE_H
 #define QUEUE_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdbool.h>
 #include <stddef.h>
 #include "../Util/comparator.h"
@@ -88,5 +92,9 @@ int queue_free(Queue *queue);
  * @return the same pointer if sucess, NULL if the operation fails
 */
 Queue* queue_reset(Queue *queue);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

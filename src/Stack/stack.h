@@ -13,6 +13,10 @@
 #ifndef STACK_H
 #define STACK_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stddef.h>
 #include <stdbool.h>
 #include "../Util/comparator.h"
@@ -94,5 +98,9 @@ int stack_free(Stack *stack);
  * @return the same pointer if sucess, NULL if the operation fails
 */
 Stack* stack_reset(Stack *stack);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

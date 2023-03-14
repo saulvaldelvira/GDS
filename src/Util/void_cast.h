@@ -17,6 +17,10 @@
 #ifndef ALLOCATE_H
 #define ALLOCATE_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 static inline void* cast_int(int n){
 	static int _int;
 	_int = n;
@@ -52,5 +56,9 @@ static inline void* cast_long_long(long long l){
 	_longlong = l;
 	return (void*) &_longlong;
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -13,6 +13,10 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stddef.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -268,5 +272,9 @@ int graph_free(Graph *graph);
  * @return the given graph, or NULL if something goes wrong
 */
 Graph* graph_reset(Graph *graph);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

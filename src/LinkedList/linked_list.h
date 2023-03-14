@@ -10,8 +10,12 @@
  *  Version: 17-01-2023
  */
 #pragma once
-#ifndef LINKED_LINKED_LIST_H
-#define LINKED_LINKED_LIST_H
+#ifndef LINKED_LIST_H
+#define LINKED_LIST_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #include <stddef.h>
 #include <stdbool.h>
@@ -150,5 +154,9 @@ int lnkd_list_free(LinkedList *list);
  * @return the same pointer if sucess, NULL if the operation fails
 */
 LinkedList* lnkd_list_reset(LinkedList *list);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

@@ -15,11 +15,19 @@
 #ifndef DEFINITIONS_H
 #define DEFINITIONS_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #define GET_ALL_ELEMENTS 0
 
 typedef unsigned char byte_t;
 #define void_offset(ptr, bytes) (void*)(((byte_t*)ptr) + (bytes))
 #define matrix_offset(arr, dim, rows, cols) (arr+((dim)*(rows) + (cols)))
 #define MAX(x,y) ((x) > (y) ? (x) : (y))
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

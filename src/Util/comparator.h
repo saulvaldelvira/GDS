@@ -16,13 +16,21 @@
 #ifndef COMPARATOR_H
 #define COMPARATOR_H
 
-	typedef int (*comparator_function_t) (const void*,const void*);
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-	// COMMON COMPARATOR FUNCTIONS
-	int compare_int(const void *e_1, const void *e_2);
-	int compare_char(const void *e_1, const void *e_2);
-	int compare_float(const void *e_1, const void *e_2);
-	int compare_double(const void *e_1, const void *e_2);
-	int compare_long_long(const void *e_1, const void *e_2);
+typedef int (*comparator_function_t) (const void*,const void*);
+
+// COMMON COMPARATOR FUNCTIONS
+int compare_int(const void *e_1, const void *e_2);
+int compare_char(const void *e_1, const void *e_2);
+int compare_float(const void *e_1, const void *e_2);
+int compare_double(const void *e_1, const void *e_2);
+int compare_long_long(const void *e_1, const void *e_2);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

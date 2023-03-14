@@ -13,6 +13,10 @@
 #ifndef AVLTREE_H
 #define AVLTREE_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stddef.h>
 #include <stdbool.h>
 #include "../Util/comparator.h"
@@ -141,4 +145,8 @@ int avl_free(AVLTree *tree);
 */
 AVLTree* avl_reset(AVLTree *tree);
 
+#ifdef __cplusplus
+}
 #endif
+
+#endif // AVLTREE_H

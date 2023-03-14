@@ -15,6 +15,10 @@
 #ifndef INDEX_T_H
 #define INDEX_T_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * Represents a position.
  * This structure is used when an index must be returned by a function. Since these strcutures use
@@ -28,5 +32,9 @@ typedef struct index{
 } index_t;
 
 #define index_t(i,s)    (index_t) {.value = i, .status = s}
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

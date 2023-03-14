@@ -1,6 +1,10 @@
 #ifndef TEST_H
 #define TEST_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -64,5 +68,9 @@ int compare_allways_true(const void* e1, const void *e2){
 	(void) e1; (void) e2;
 	return 0;
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

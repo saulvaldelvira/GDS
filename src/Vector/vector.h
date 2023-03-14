@@ -12,6 +12,11 @@
 #pragma once
 #ifndef VECTOR_H
 #define VECTOR_H
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stddef.h>
 #include <stdbool.h>
 
@@ -215,5 +220,9 @@ int vector_free(Vector *list);
  * @return the same pointer if sucess, NULL if the operation fails
  */
 Vector* vector_reset(Vector *list);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
