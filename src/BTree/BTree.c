@@ -324,6 +324,7 @@ static struct add_remove_ret btree_add_rec(BTreeNode *node, BTree *tree, void *e
 	// Find position to insert element
 	int pos = find_position(node, element, tree->compare, tree->data_size);
 	if (pos < 0){
+		printerr(btree_add, "The element %p already exists\n",, element);
 		ret.status = REPEATED_ELEMENT_ERROR;
 		return ret;
 	}

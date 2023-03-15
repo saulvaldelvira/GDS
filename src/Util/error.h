@@ -19,6 +19,7 @@
 extern "C" {
 #endif
 
+// Error codes
 #define SUCCESS		         1
 #define ERROR                    0
 #define INDEX_BOUNDS_ERROR      -0xE001
@@ -28,15 +29,18 @@ extern "C" {
 #define ELEMENT_NOT_FOUND_ERROR -0xE005
 #define REPEATED_ELEMENT_ERROR  -0xE006
 
-#define printerr_allocation(func) fprintf(stderr, "ERROR: Unable to allocate memory for on function " #func "\n");
+// Print error macros
+#define printerr(func, msg, ...) fprintf(stderr, "ERROR: " msg  ". Function: " #func "\n" __VA_ARGS__)  // C23 will add __VA_OPT__(,)
 
-#define printerr_null_param(func) fprintf(stderr, "ERROR: NULL parameter(s) in function " #func "\n");
+#define printerr_allocation(func) fprintf(stderr, "ERROR: Unable to allocate memory. Function: " #func "\n");
 
-#define printerr_out_of_bounds(index, func) fprintf(stderr, "ERROR: Index %llu out of bounds. At function " #func "\n", (unsigned long long) index);
+#define printerr_null_param(func) fprintf(stderr, "ERROR: NULL parameter(s). Function: " #func "\n");
 
-#define printerr_memory_op(func) fprintf(stderr, "ERROR: At memory operation in function " #func "\n");
+#define printerr_out_of_bounds(index, func) fprintf(stderr, "ERROR: Index %llu out of bounds. Function: " #func "\n", (unsigned long long) index);
 
-#define printerr_data_size(func) fprintf(stderr, "ERROR: Data size must be >= 0. In function " #func "\n");
+#define printerr_memory_op(func) fprintf(stderr, "ERROR: In memory operation. Function: " #func "\n");
+
+#define printerr_data_size(func) fprintf(stderr, "ERROR: Data size must be >= 0. Function: " #func "\n");
 
 #ifdef __cplusplus
 }

@@ -382,6 +382,7 @@ index_t vector_indexof(Vector *list, void *element){
 			return index_t(i,SUCCESS);
 		}
 	}
+	printerr(vector_indexof, "The element %p does not exists",, element);
 	return index_t(0,ELEMENT_NOT_FOUND_ERROR);
 }
 
