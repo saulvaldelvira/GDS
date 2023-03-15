@@ -13,18 +13,10 @@ int main(){
 	tree = btree_init(sizeof(int), 5, compare_int);
 	// Test case 1
 	int nums[] = {60, 40, 80, 20, 55, 65, 63, 51, 75, 2, 4, 90, 95, 100, 41, 42, 50, 22, 30, 25, 31, 32, 33, 36, 38, 39};
-	for (int i=0; i < (int) ARR_SIZE(nums)-1; i++){
-		if (nums[i] == 33){
-			nums[i] += 0;
-		}
-		assert(btree_add(tree, &nums[i]));
-	}
-	assert(btree_add(tree, &nums[25]));
+	assert(btree_add_array(tree, nums, 26) == SUCCESS);
 
-	assert(btree_remove(tree, cast_int(100)));
-	assert(btree_remove(tree, cast_int(60)));
-	assert(btree_remove(tree, cast_int(65)));
-	assert(btree_remove(tree, cast_int(63)));
+	int rem[] = {100, 60, 65, 63};
+	assert(btree_remove_array(tree, rem, 4));
 
 	assert(!btree_exists(tree, cast_int(100)));
 	assert(!btree_exists(tree, cast_int(60)));

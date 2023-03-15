@@ -319,7 +319,7 @@ static BTreeNode* split_node(BTreeNode *node, void *element, BTree *tree, BTreeN
 }
 
 static struct add_remove_ret btree_add_rec(BTreeNode *node, BTree *tree, void *element){
-	struct add_remove_ret ret;
+	struct add_remove_ret ret = {.status = SUCCESS};
 
 	// Find position to insert element
 	int pos = find_position(node, element, tree->compare, tree->data_size);
@@ -327,13 +327,12 @@ static struct add_remove_ret btree_add_rec(BTreeNode *node, BTree *tree, void *e
 		ret.status = REPEATED_ELEMENT_ERROR;
 		return ret;
 	}
-
 	// If we are NOT in a leaf node
 	if (node->n_childs > 0){
 		// Add recursively
 		ret = btree_add_rec(node->childs[pos], tree, element);
 		// If there was "overflow" and we need to add it
-		if (ret.node != NULL){
+		if (ret.status == SUCCESS && ret.node != NULL){
 			pos = find_position(node, ret.node->elements, tree->compare, tree->data_size);
 			ret.status = right_shift_node(node, pos, tree, ret.node->elements);
 
@@ -344,8 +343,8 @@ static struct add_remove_ret btree_add_rec(BTreeNode *node, BTree *tree, void *e
 				free(ret.node->childs);
 				free(ret.node);
 				ret.node = aux;
-
-			}else{
+				ret.status = SUCCESS;
+			}else if (ret.status == SUCCESS){
 				node->n_childs++;
 				node->childs[pos] = ret.node->childs[0];
 				node->childs[pos+1] = ret.node->childs[1];
@@ -360,6 +359,7 @@ static struct add_remove_ret btree_add_rec(BTreeNode *node, BTree *tree, void *e
 		// If no size, split the node
 		if (ret.status == INDEX_BOUNDS_ERROR){
 			ret.node = split_node(node, element, tree, NULL, NULL);
+			ret.status = SUCCESS;
 		}else{
 			ret.node = NULL;
 		}
@@ -389,6 +389,21 @@ int btree_add(BTree *tree, void *element){
 		tree->root = ret.node;
 	}
 	return ret.status;
+}
+
+int btree_add_array(BTree *tree, void *array, size_t array_size){
+	if (!tree || !array){
+		printerr_null_param(btree_add_array);
+		return NULL_PARAMETER_ERROR;
+	}
+	for (size_t i = 0; i < array_size; ++i){
+		void *tmp = void_offset(array, i * tree->data_size);
+		int ret = btree_add(tree, tmp);
+		if (ret != SUCCESS){
+			return ret;
+		}
+	}
+	return SUCCESS;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -697,6 +712,21 @@ int btree_remove(BTree *tree, void *element){
 	struct add_remove_ret ret = btree_remove_rec(tree->root, NULL, tree, element);
 	tree->root = ret.node;
 	return ret.status;
+}
+
+int btree_remove_array(BTree *tree, void *array, size_t array_size){
+	if (!tree || !array){
+		printerr_null_param(btree_remove_array);
+		return NULL_PARAMETER_ERROR;
+	}
+	for (size_t i = 0; i < array_size; ++i){
+		void *tmp = void_offset(array, i * tree->data_size);
+		int ret = btree_remove(tree, tmp);
+		if (ret != SUCCESS){
+			return ret;
+		}
+	}
+	return SUCCESS;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
