@@ -193,6 +193,32 @@ void* minheap_pop_min(MinHeap *heap, void *dest){
 	return dest;
 }
 
+int minheap_change_priority(MinHeap *heap, void *element, void *replacement){
+	if (!heap || !element || !replacement){
+		printerr_null_param(minheap_change_priority);
+		return NULL_PARAMETER_ERROR;
+	}
+	// Get pos of the element
+	index_t pos = vector_indexof(heap->elements, element);
+	if (pos.status != SUCCESS){
+		return pos.status;
+	}
+	// Replace with new priority
+	int status = vector_set_at(heap->elements, pos.value, replacement);
+	if (status != SUCCESS){
+		return status;
+	}
+	// Filter (if necessary)
+	comparator_function_t comp_func = vector_get_comparator(heap->elements);
+	int c = comp_func(element, replacement);
+	if (c > 0){
+		filter_up(heap->elements, pos.value);
+	}else if (c < 0){
+		filter_down(heap->elements, pos.value);
+	}
+	return SUCCESS;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 /// GET-EXISTS-SIZE ///////////////////////////////////////////////////////////

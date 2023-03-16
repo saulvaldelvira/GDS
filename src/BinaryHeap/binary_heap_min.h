@@ -75,6 +75,11 @@ void* minheap_peek(MinHeap *heap, void *dest);
 int minheap_remove(MinHeap *heap, void *element);
 
 /**
+ * Changes the priority of element to replacement
+*/
+int minheap_change_priority(MinHeap *heap, void *element, void *replacement);
+
+/**
  * @return true if the element exists in the heap
 */
 bool minheap_exists(MinHeap *heap, void *element);

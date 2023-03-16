@@ -4,7 +4,35 @@
 
 #include "../src/BinaryHeap/binary_heap_min.h"
 
+void change_priority(){
+	MinHeap *min = minheap_init(sizeof(int), compare_int);
+	fprintf(stderr, "--- 4 ERRORS expected bellow ---\n");
+	fprintf(stderr, "Error 1: ");
+	assert(minheap_change_priority(min, cast_int(12), cast_int(16)) != SUCCESS);
+	int elements[] = {12 ,14, 15, 20, 16, 17, 19, 24, 30};
+	minheap_add_array(min, elements, 9);
+	fprintf(stderr, "Error 2: ");
+	assert(minheap_change_priority(min, cast_int(-78), cast_int(16)) != SUCCESS);
+	fprintf(stderr, "Error 3: ");
+	assert(minheap_change_priority(min, NULL, NULL) != SUCCESS);
+	fprintf(stderr, "Error 4: ");
+	assert(minheap_change_priority(min, &elements[0], NULL) != SUCCESS);
+	fprintf(stderr, "---------------------------------------\n");
 
+	// Change priority of 20 to 5
+	assert(minheap_change_priority(min, &elements[3], cast_int(5)));
+	int res[9];
+	minheap_get_into_array(min, res, 9);
+	int expected[] = {5, 12 ,15, 14, 16, 17, 19, 24, 30};
+	assert_array_int(res, expected, 9);
+
+	// Change priority of 12 to 21
+	assert(minheap_change_priority(min, &res[1], cast_int(21)));
+	minheap_get_into_array(min, res, 9);
+	int expected2[] = {5, 14 ,15, 21, 16, 17, 19, 24, 30};
+	assert_array_int(res, expected2, 9);
+	minheap_free(min);
+}
 
 void filter_up(){
 	MinHeap *min = minheap_init(sizeof(int), compare_int);
@@ -147,6 +175,7 @@ int main(){
 
 	pop_min();
 
+	change_priority();
 
 	TIMESTAMP_STOP
 	END_MSG(BinaryHeap)
