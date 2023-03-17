@@ -46,17 +46,17 @@ Vector* vector_init(size_t data_size, size_t max_elements, comparator_function_t
  * Changes the comparator function of the list
  * @param cmp the new comparator function
 */
-void vector_configure(Vector *list, comparator_function_t cmp);
+void vector_configure(Vector *vector, comparator_function_t cmp);
 
 /**
  * @return the data size of the list
 */
-size_t vector_get_data_size(Vector *list);
+size_t vector_get_data_size(Vector *vector);
 
 /**
  * @return the comparator function used by the list
 */
-comparator_function_t vector_get_comparator(Vector *list);
+comparator_function_t vector_get_comparator(Vector *vector);
 
 /**
  * \brief
@@ -64,7 +64,7 @@ comparator_function_t vector_get_comparator(Vector *list);
  *
  * @return 1 if the operation is successful
  */
-int vector_append(Vector *list, void *element);
+int vector_append(Vector *vector, void *element);
 
 /**
  * \brief
@@ -72,133 +72,133 @@ int vector_append(Vector *list, void *element);
  *
  * @return 1 if the operation is successful
  */
-int vector_push_front(Vector *list, void *element);
+int vector_push_front(Vector *vector, void *element);
 
 /**
  * Appends [array_length] elements to the end of list, from the given array.
 */
-int vector_append_array(Vector *list, void *array, size_t array_length);
+int vector_append_array(Vector *vector, void *array, size_t array_length);
 
 /**
  * Appends [array_length] elements to the list, from the given array.
 */
-int vector_push_front_array(Vector *list, void *array, size_t array_length);
+int vector_push_front_array(Vector *vector, void *array, size_t array_length);
 
 /**
  * Returns the index of the given element in the array of the list
  * @return index_t index, wich contains the index, and a status variable that determines if the index is valid or not.
  */
-index_t vector_indexof(Vector *list, void *element);
+index_t vector_indexof(Vector *vector, void *element);
 
 /**
  * @return true if the element exists. Null if it doesn't or if the parameter is NULL
  */
-bool vector_exists(Vector *list, void *element);
+bool vector_exists(Vector *vector, void *element);
 
 /**
  * @return true if the list is empty
  */
-bool vector_isempty(Vector *list);
+bool vector_isempty(Vector *vector);
 
 /**
  * @return the number of elements in the list
  */
-size_t vector_size(Vector *list);
+size_t vector_size(Vector *vector);
 
 /**
  * Replaces the element at the given index with the element passed as a parameter
  */
-int vector_set_at(Vector *list, size_t index, void *element);
+int vector_set_at(Vector *vector, size_t index, void *element);
 
 /**
  * Inserts in the position of element the value [insert]
 */
-int vector_insert(Vector *list, void *element, void *insert);
+int vector_insert(Vector *vector, void *element, void *insert);
 
 /**
  * Inserts element in the position [index]
 */
-int vector_insert_at(Vector *list, size_t index, void *element);
+int vector_insert_at(Vector *vector, size_t index, void *element);
 
 /**
  * Replaces element with replacement in the list.
  * @return 1 if the operation is successful
  */
-int vector_set(Vector *list, void *element, void *replacement);
+int vector_set(Vector *vector, void *element, void *replacement);
 
 /**
  * @param dest the memory adress to copy the value into. MUST BE INITIALIZED.
  * @return The element at the given index or NULL if it the index is out of bounds
  */
-void* vector_get_at(Vector *list, size_t index, void *dest);
+void* vector_get_at(Vector *vector, size_t index, void *dest);
 
 /**
  * @param dest the memory adress to copy the value into. MUST BE INITIALIZED.
  * @return The first ocurrence of the given element or NULL if it doesn't exist in the list
  */
-void* vector_get(Vector *list, void *element, void *dest);
+void* vector_get(Vector *vector, void *element, void *dest);
 
 /**
  * @return The first element in the list, or NULL if it does not exists
 */
-void* vector_get_front(Vector *list, void *dest);
+void* vector_get_front(Vector *vector, void *dest);
 
 /**
  * @return The last element in the list, or NULL if it does not exists
 */
-void* vector_get_back(Vector *list, void *dest);
+void* vector_get_back(Vector *vector, void *dest);
 
 /**
  * Gets the first [array_length] elements from the list into the array
 */
-void* vector_get_into_array(Vector *list, void *array, size_t array_length);
+void* vector_get_into_array(Vector *vector, void *array, size_t array_length);
 
 /**
  * Allocates an array of [array_length] elements and fills it with
  * the first [array_length] elements fom the list
  * @param array_length the number of elements to get. Pass GET_ALL_ELEMENTS to get all the elements in the list
 */
-void* vector_get_array(Vector *list, size_t array_length);
+void* vector_get_array(Vector *vector, size_t array_length);
 
 /**
  * Swaps the element at index_1 and index_2
 */
-int vector_swap(Vector *list, size_t index_1, size_t index_2);
+int vector_swap(Vector *vector, size_t index_1, size_t index_2);
 
 /**
  * Compares the element at index_1 and index_2
  * @return the result of the comparison
 */
-int vector_compare(Vector *list, size_t index_1, size_t index_2);
+int vector_compare(Vector *vector, size_t index_1, size_t index_2);
 
 /**
  * Removes the element at the given index
  * @return 1 if the operation is successful.
  */
-int vector_remove_at(Vector *list, size_t index);
+int vector_remove_at(Vector *vector, size_t index);
 
 /**
  * Removes the specified element
  * @return 1 if the operation is successful.
  */
-int vector_remove(Vector *list, void *element);
+int vector_remove(Vector *vector, void *element);
 
 /**
  * Removes the first element in the list and copies it into dest
  * @return the pointer dest, or NULL if error
 */
-void* vector_pop_front(Vector *list, void *dest);
+void* vector_pop_front(Vector *vector, void *dest);
 
 /**
  * Removes the last element in the list and copies it into dest
  * @return the pointer dest, or NULL if error
 */
-void* vector_pop_back(Vector *list, void *dest);
+void* vector_pop_back(Vector *vector, void *dest);
 
 /**
  * Removes from the first [array_length] elements of the array.
 */
-int vector_remove_array(Vector *list, void *array, size_t array_length);
+int vector_remove_array(Vector *vector, void *array, size_t array_length);
 
 /**
  * @return a new Vector with the elements of the two given lists.
@@ -207,19 +207,19 @@ int vector_remove_array(Vector *list, void *array, size_t array_length);
  * the same data size. Also, the comparator function of list_1 will be taken,
  * because it is assumed that both list have the same comparator functions.
 */
-Vector* vector_join(Vector *list_1, Vector *list_2);
+Vector* vector_join(Vector *vector_1, Vector *vector_2);
 
 /**
  * Frees the list from memory
  * @return 1 if the operation is successful
  */
-int vector_free(Vector *list);
+int vector_free(Vector *vector);
 
 /**
  * Frees the list from memory and resets it to it's original state
  * @return the same pointer if sucess, NULL if the operation fails
  */
-Vector* vector_reset(Vector *list);
+Vector* vector_reset(Vector *vector);
 
 #ifdef __cplusplus
 }
