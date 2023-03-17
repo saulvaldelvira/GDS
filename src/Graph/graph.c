@@ -788,8 +788,9 @@ float graph_eccentricity(Graph *graph, void *vertex){
 
 ///////////////////////////////////////////////////////////////////////////////
 
-////// Deep First Traverse ////////////////////////////////////////////////////
-static int traverse_df_rec(traverse_df_data_t *data, size_t index, uint8_t *visited, Graph *graph){
+////// Traverse ///////////////////////////////////////////////////////////////
+
+static int traverse_df_rec(traverse_data_t *data, size_t index, uint8_t *visited, Graph *graph){
 	visited[index] = 1;
 	void *dst = void_offset(data->elements, data->elements_size * graph->data_size);
 	void *src = void_offset(graph->vertices, index * graph->data_size);
@@ -812,8 +813,8 @@ static int traverse_df_rec(traverse_df_data_t *data, size_t index, uint8_t *visi
 	return SUCCESS;
 }
 
-traverse_df_data_t graph_traverse_DF(Graph *graph, void *vertex){
-	traverse_df_data_t df = {NULL, 0, NULL_PARAMETER_ERROR};
+traverse_data_t graph_traverse_DF(Graph *graph, void *vertex){
+	traverse_data_t df = {NULL, 0, NULL_PARAMETER_ERROR};
 	if (!graph){
 		printerr_null_param(graph_traverse_DF);
 		return df;
@@ -831,6 +832,8 @@ traverse_df_data_t graph_traverse_DF(Graph *graph, void *vertex){
 	if (!df.elements || !visited){
 		printerr_allocation(graph_traverse_DF);
 		df.status = ALLOCATION_ERROR;
+		free(df.elements);
+		free(visited);
 		return df;
 	}
 
@@ -845,13 +848,81 @@ traverse_df_data_t graph_traverse_DF(Graph *graph, void *vertex){
 	free(visited);
 	return df;
 }
+
+traverse_data_t graph_traverse_BF(Graph *graph, void *vertex){
+	traverse_data_t bf = {NULL, 0, NULL_PARAMETER_ERROR};
+	if (!graph){
+		printerr_null_param(graph_traverse_BF);
+		return bf;
+	}
+	// Get index of the starting vertex
+	index_t index = graph_indexof(graph, vertex);
+	if (index.status != SUCCESS){
+		bf.status = index.status;
+		return bf;
+	}
+	// Initialize result and temporary structures.
+	bf.status = SUCCESS;
+	bf.elements_size = 0;
+	bf.elements = malloc(graph->n_elements * graph->data_size);
+	uint8_t *visited = calloc(graph->n_elements, sizeof(*visited));
+	size_t *queue = malloc(graph->n_elements * sizeof(*queue));
+
+	if (!bf.elements || !visited || !queue){
+		printerr_allocation(graph_traverse_BF);
+		bf.status = ALLOCATION_ERROR;
+		free(bf.elements);
+		free(visited);
+		free(queue);
+		return bf;
+	}
+
+	// Add starting element to queue and set it as visited
+	size_t *start = queue;
+	size_t *end = queue;
+	*end++ = index.value;
+	visited[index.value] = 1;
+
+	void *src;
+	void *dst = bf.elements;
+
+	while (start < end){
+		// Get next element from queue
+		size_t piv = *start++;
+
+		// Copy it into result array
+		src = void_offset(graph->vertices, piv * graph->data_size);
+		src = memcpy(dst, src, graph->data_size);
+		dst = void_offset(dst, graph->data_size);
+		if (!src){
+			printerr_memory_op(graph_traverse_BF);
+			free(visited);
+			free(bf.elements);
+			free(queue);
+			bf.status = MEMORY_OP_ERROR;
+			return bf;
+		}
+		bf.elements_size++;
+
+		// Add all it's sons to queue
+		for (size_t i = 0; i < graph->n_elements; ++i){
+			if (!visited[i] && graph->edges[piv][i]){
+				visited[i] = 1;
+				*end++ = i;
+			}
+		}
+	}
+	free(queue);
+	free(visited);
+	return bf;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 /// FREE //////////////////////////////////////////////////////////////////////
 
 static void free_contents(Graph *graph){
 	free(graph->vertices);
-
 	for (size_t i = 0; i < graph->max_elements; i++){
 		free(graph->edges[i]);
 		free(graph->weights[i]);

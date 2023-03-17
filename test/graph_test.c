@@ -71,7 +71,7 @@ void dijkstra_test(void){
 	graph_free(g);
 	graph_free_dijkstra_data(&dijkstra);
 }
-	
+
 void floyd_test(void){
 	Graph *g = graph_empty(sizeof(char), compare_char);
 	char a = 'A', b = 'B', c = 'C', d = 'D', e = 'E', f = 'F';
@@ -127,15 +127,43 @@ void drain_source(void){
 	graph_free(g);
 }
 
+void traverse_bf(void){
+	Graph *graph = graph_empty(sizeof(char), compare_char);
+	char a = 'A', b = 'B', c = 'C', d = 'D', e= 'E', f ='F', g = 'G';
+	graph_add_vertex(graph, &a);
+	graph_add_vertex(graph, &b);
+	graph_add_vertex(graph, &c);
+	graph_add_vertex(graph, &d);
+	graph_add_vertex(graph, &e);
+	graph_add_vertex(graph, &f);
+	graph_add_vertex(graph, &g);
+
+	graph_add_edge(graph, &a, &b, 1.0f);
+	graph_add_edge(graph, &a, &d, 1.0f);
+	graph_add_edge(graph, &a, &e, 1.0f);
+
+	graph_add_edge(graph, &e, &d, 1.0f);
+	graph_add_edge(graph, &e, &c, 1.0f);
+	graph_add_edge(graph, &d, &f, 1.0f);
+	graph_add_edge(graph, &f, &g, 1.0f);
+	traverse_data_t result = graph_traverse_BF(graph, &a);
+	assert(result.status == SUCCESS);
+
+	char expected[] = {'A', 'B', 'D', 'E', 'F', 'C', 'G'};
+	assert_array_char(result.elements, expected, result.elements_size);
+	free(result.elements);
+	graph_free(graph);
+}
+
 void traverse_df(void){
 	Graph *graph = graph_empty(sizeof(char), compare_char);
-	char a = 'A', b = 'B', c = 'C', d = 'D', 
+	char a = 'A', b = 'B', c = 'C', d = 'D',
 		e = 'E', f = 'F', g = 'G', h = 'H', i = 'I', j = 'J';
 
 	graph_add_vertex(graph, &a);
 	graph_add_vertex(graph, &b);
 	graph_add_vertex(graph, &c);
-	graph_add_vertex(graph, &d);	
+	graph_add_vertex(graph, &d);
 	graph_add_vertex(graph, &e);
 	graph_add_vertex(graph, &f);
 	graph_add_vertex(graph, &g);
@@ -164,7 +192,7 @@ void traverse_df(void){
 	graph_add_edge(graph, &i, &f, 1.0f);
 
 #ifndef QUIET
-	traverse_df_data_t df = graph_traverse_DF(graph, &a);
+	traverse_data_t df = graph_traverse_DF(graph, &a);
 	printf("DF: ");
 	for (int i=0; i < 10; i++){
 		void *tmp = void_offset(df.elements, i);
@@ -239,7 +267,7 @@ int main(){
 		assert(graph_remove_vertex(g, &i));
 	}
 
-	
+
 
 #ifndef QUIET
 	printf("Dijkstra...\n");
@@ -250,7 +278,7 @@ int main(){
 	floyd_test();
 #endif
 
-	
+	traverse_bf();
 
 	drain_source();
 
@@ -258,7 +286,7 @@ int main(){
 	LOG(printf("\nTraverse DF...\n"));
 	traverse_df();
 
-	
+
 
 	LOG(printf("\nEccentricity...\n"));
 	eccentricity_test();

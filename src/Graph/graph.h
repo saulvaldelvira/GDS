@@ -241,23 +241,35 @@ float graph_eccentricity(Graph *graph, void *vertex);
 
 /////////////////////////////////////////////////////////
 
-////// Deep First Traverse //////////////////////////////
-typedef struct traverse_df_data {
+////// Traverse /////////////////////////////////////////
+typedef struct traverse_data {
 	void *elements;
 	size_t elements_size;
 	int status;
-}traverse_df_data_t;
+}traverse_data_t;
 
 /**
  * Traverses the graph using the Deep First algorithm.
  * This means that it visits the "sons" of a graph first, and then the "brothers".
- * @param vertex to start the search in
+ * @param vertex node to start the search in
  * @return A struct that contains an array with all the objects in the graph, traversed Deep First. This
  * struct also contains a size_t variable "elements_size" that indicates the number of elements in the array.
  * This is because, as there might be unreachable vertices, it's posible that the length of the array is < than the number of elements in the graph.
  * @note Remember to free the returned array when you finish working with it.
 */
-traverse_df_data_t graph_traverse_DF(Graph *graph, void *vertex);
+traverse_data_t graph_traverse_DF(Graph *graph, void *vertex);
+
+/**
+ * Traverses the graph using the Breadth First algorithm.
+ * This means that it visits the "brothers" of every node
+ * before going one level deeper into the sons.
+ * @param vertex node to start the search in
+ * @return A struct that contains an array with all the objects in the graph, traversed Breadth First. This
+ * struct also contains a size_t variable "elements_size" that indicates the number of elements in the array.
+ * This is because, as there might be unreachable vertices, it's posible that the length of the array is < than the number of elements in the graph.
+ * @note Remember to free the returned array when you finish working with it.
+*/
+traverse_data_t graph_traverse_BF(Graph *graph, void *vertex);
 
 /////////////////////////////////////////////////////////
 
