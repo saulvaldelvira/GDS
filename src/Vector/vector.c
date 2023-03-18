@@ -206,10 +206,9 @@ int vector_set_at(Vector *vector, size_t index, void *element){
 		return NULL_PARAMETER_ERROR;
 	}
 	if (index >= vector->n_elements){
-		printerr_out_of_bounds(index, vector_set_at);
+		printerr_out_of_bounds(index, vector_set_at, vector->n_elements);
 		return INDEX_BOUNDS_ERROR;
 	}
-
 	void *tmp = void_offset(vector->elements, index * vector->data_size);
 	tmp = memmove(tmp, element , vector->data_size);
 	if(!tmp){
@@ -288,7 +287,7 @@ int vector_remove_at(Vector *vector, size_t index){
 		return NULL_PARAMETER_ERROR;
 	}
 	if (index >= vector->n_elements){
-		printerr_out_of_bounds(index, vector_remove_at);
+		printerr_out_of_bounds(index, vector_remove_at, vector->n_elements);
 		return INDEX_BOUNDS_ERROR;
 	}
 
@@ -412,7 +411,7 @@ void* vector_get_at(Vector *vector, size_t index, void *dest){
 		return NULL;
 	}
 	if (index >= vector->n_elements){
-		printerr_out_of_bounds(index, vector_get_at);
+		printerr_out_of_bounds(index, vector_get_at, vector->n_elements);
 		return NULL;
 	}
 	void *tmp = void_offset(vector->elements, index * vector->data_size);
@@ -497,11 +496,11 @@ int vector_swap(Vector *vector, size_t index_1, size_t index_2){
 		return NULL_PARAMETER_ERROR;
 	}
 	if (index_1 >= vector->n_elements){
-		printerr_out_of_bounds(index_1, vector_swap);
+		printerr_out_of_bounds(index_1, vector_swap, vector->n_elements);
 		return INDEX_BOUNDS_ERROR;
 	}
 	if (index_2 >= vector->n_elements){
-		printerr_out_of_bounds(index_2, vector_swap);
+		printerr_out_of_bounds(index_2, vector_swap, vector->n_elements);
 		return INDEX_BOUNDS_ERROR;
 	}
 
