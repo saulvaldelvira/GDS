@@ -24,7 +24,11 @@ extern "C" {
 typedef unsigned char byte_t;
 #define void_offset(ptr, bytes) (void*)(((byte_t*)ptr) + (bytes))
 #define matrix_offset(arr, dim, rows, cols) (arr+((dim)*(rows) + (cols)))
+
 #define MAX(x,y) ((x) > (y) ? (x) : (y))
+#define MIN(x,y) ((x) < (y) ? (x) : (y))
+
+#define ABS(x) ((x) < 0 ? (-1 * (x)) : (x))
 
 #ifdef __cplusplus
 }

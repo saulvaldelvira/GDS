@@ -28,6 +28,7 @@ extern "C" {
 #define MEMORY_OP_ERROR         -0xE004
 #define ELEMENT_NOT_FOUND_ERROR -0xE005
 #define REPEATED_ELEMENT_ERROR  -0xE006
+#define INVALID_PARAMETER_ERROR -0xE007
 
 // Print error macros
 #define printerr(func, msg, ...) fprintf(stderr, "ERROR: " msg  ". Function: " #func "\n" __VA_ARGS__)  // C23 will add __VA_OPT__(,)

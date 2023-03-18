@@ -11,9 +11,10 @@ AVL_OBJS = test/avl_test.o $(SRC)/AVLTree/AVLTree.o $(UTIL_OBJS)
 GRAPH_OBJS = test/graph_test.o $(SRC)/Graph/graph.o $(UTIL_OBJS)
 BINHEAP_OBJS = test/heap_test.o $(SRC)/Vector/vector.o $(SRC)/BinaryHeap/binary_heap_min.o $(UTIL_OBJS)
 BTREE_OBJS = test/btree_test.o $(SRC)/BTree/BTree.o $(UTIL_OBJS)
+DICT_OBJS = test/dict_test.o $(SRC)/Dictionary/dictionary.o $(SRC)/Vector/vector.o $(UTIL_DIR)/hash.o $(UTIL_OBJS)
 
 CC = gcc
-CCFLAGS = -Wall -Wextra -Werror -g3 -pedantic
+CCFLAGS = -Wall -Wextra -Werror -ggdb -pedantic
 
 # User's custom flags
 ifdef FLAGS
@@ -46,6 +47,9 @@ binary_heap: $(BIN) $(BIN)/heap_test.out
 btree_test: $(BIN) $(BIN)/btree_test.out
 	@ $(BIN)/btree_test.out
 
+dict_test: $(BIN) $(BIN)/dict_test.out
+	@ $(BIN)/dict_test.out
+
 $(BIN)/list_test.out: $(LIST_OBJS)
 	@ $(CC) -o $(BIN)/list_test.out $(LIST_OBJS) $(CCFLAGS)
 
@@ -70,13 +74,16 @@ $(BIN)/heap_test.out: $(BINHEAP_OBJS)
 $(BIN)/btree_test.out: $(BTREE_OBJS)
 	@ $(CC) -o $@ $(BTREE_OBJS) $(CCFLAGS)
 
+$(BIN)/dict_test.out: $(DICT_OBJS)
+	@ $(CC) -o $@ $(DICT_OBJS) $(CCFLAGS)
+
 .c.o:
 	@ $(CC) $(CCFLAGS) -c -o $@ $<
 
 $(BIN):
 	@ mkdir $(BIN)
 
-all_test: list_test stack_test queue_test bst_test graph_test btree_test avl_test binary_heap
+all_test: list_test stack_test queue_test bst_test graph_test btree_test avl_test binary_heap dict_test
 
 clean:
 	find . -type f -name '*.o' -delete

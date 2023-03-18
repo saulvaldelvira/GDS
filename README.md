@@ -8,6 +8,7 @@ It includes: <br>
 &nbsp;&nbsp;&nbsp;&nbsp; - **Queue** <br>
 &nbsp;&nbsp;&nbsp;&nbsp; - **Trees**: BTree, AVLTree, BSTree <br>
 &nbsp;&nbsp;&nbsp;&nbsp; - **Graph** <br>
+&nbsp;&nbsp;&nbsp;&nbsp; - **Dictionary** <br>
 &nbsp;&nbsp;&nbsp;&nbsp; - **Binary Heap** <br>
 
 ## How it works
