@@ -2,9 +2,9 @@
  *  Copyright (C) 2023 - Saúl Valdelvira
  *
  *  This program is free software. You can modify
- *  and/or redistribute it under the terms of the GNU
- *  General Public License version 3, or any later version.
- *  See <https://www.gnu.org/licenses/>.
+ *  and/or redistribute it under the terms of the
+ *  GNU General Public License version 2, or newer.
+ *  See <https://www.gnu.org/licenses/>
  *
  *  Email: saulvaldelvira@gmail.com
  *  Version: 17-01-2023
