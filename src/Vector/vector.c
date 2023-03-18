@@ -32,15 +32,19 @@ struct _Vector {
 /// INITIALIZE ////////////////////////////////////////////////////////////////
 
 Vector* vector_empty(size_t data_size, comparator_function_t cmp){
-	if (data_size <= 0){
+	if (data_size == 0){
 		printerr_data_size(vector_empty);
+		return NULL;
+	}
+	if (!cmp){
+		printerr_null_param(vector_empty);
 		return NULL;
 	}
 	return vector_init(data_size, VECTOR_DEFAULT_SIZE, cmp);
 }
 
 Vector* vector_init(size_t data_size, size_t max_elements, comparator_function_t cmp){
-	if (data_size <= 0){
+	if (data_size == 0){
 		printerr_data_size(vector_init);
 		return NULL;
 	}

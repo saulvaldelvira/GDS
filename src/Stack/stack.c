@@ -40,6 +40,10 @@ Stack* stack_init(size_t data_size, comparator_function_t cmp){
 		printerr_null_param(stack_init);
 		return NULL;
 	}
+	if (data_size == 0){
+		printerr_data_size(stack_init);
+		return NULL;
+	}
 	// Allocate stack
 	Stack *stack = malloc(sizeof(*stack));
 	if (!stack){

@@ -66,6 +66,10 @@ AVLTree* avl_init(size_t data_size, comparator_function_t cmp){
                 printerr_null_param(avl_init);
                 return NULL;
         }
+	if (data_size == 0){
+		printerr_data_size(avl_init);
+		return NULL;
+	}
         AVLTree *tree = malloc(sizeof(*tree));
         if (!tree){
                 printerr_allocation(avl_init);

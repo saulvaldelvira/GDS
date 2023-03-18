@@ -41,6 +41,10 @@ Queue* queue_init(size_t data_size, comparator_function_t cmp){
 		printerr_null_param(queue_init);
 		return NULL;
 	}
+	if (data_size == 0){
+		printerr_data_size(queue_init);
+		return NULL;
+	}
 	// Allocate queue
 	Queue *queue = malloc(sizeof(*queue));
 	if (!queue){

@@ -27,6 +27,10 @@ MinHeap* minheap_init(size_t data_size, comparator_function_t cmp){
 		printerr_null_param(minheap_init);
 		return NULL;
 	}
+	if (data_size == 0){
+		printerr_data_size(minheap_init);
+		return NULL;
+	}
 	MinHeap *heap = malloc(sizeof(*heap));
 	if (!heap){
 		printerr_allocation(minheap_init);

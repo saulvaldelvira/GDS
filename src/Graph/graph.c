@@ -141,6 +141,10 @@ Graph* graph_empty(size_t data_size, comparator_function_t cmp){
 		printerr_null_param(graph_empty);
 		return NULL;
 	}
+	if (data_size == 0){
+		printerr_data_size(graph_empty);
+		return NULL;
+	}
 	return graph_init(data_size, GRAPH_DEFAULT_SIZE, cmp);
 }
 
@@ -151,6 +155,10 @@ Graph* graph_init(size_t data_size, size_t n_elements, comparator_function_t cmp
 	}
 	if (!cmp){
 		printerr_null_param(graph_init);
+		return NULL;
+	}
+	if (data_size == 0){
+		printerr_data_size(graph_init);
 		return NULL;
 	}
 	Graph *graph = malloc(sizeof(*graph));

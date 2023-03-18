@@ -42,6 +42,10 @@ BSTree* bst_init(size_t data_size, comparator_function_t cmp){
 		printerr_null_param(bst_init);
 		return NULL;
 	}
+	if (data_size == 0){
+		printerr_data_size(bst_init);
+		return NULL;
+	}
 	BSTree *tree = malloc(sizeof(*tree));
 	if (!tree){
 		printerr_allocation(bst_init);
