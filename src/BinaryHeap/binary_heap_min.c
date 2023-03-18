@@ -304,11 +304,7 @@ int minheap_free(MinHeap *heap){
 		printerr_null_param(minheap_free);
 		return NULL_PARAMETER_ERROR;
 	}
-	int status = vector_free(heap->elements);
-	if (status != SUCCESS){
-		free(heap);
-		return status;
-	}
+	vector_free(heap->elements);
 	free(heap);
 	return SUCCESS;
 }
