@@ -280,6 +280,41 @@ int vector_insert_at(Vector *vector, size_t index, void *element){
 	return SUCCESS;
 }
 
+int vector_populate(Vector *vector, void *template){
+	if (!vector || !template){
+		printerr_null_param(vector_populate);
+		return NULL_PARAMETER_ERROR;
+	}
+	void *tmp = vector->elements;
+	for (size_t i = 0; i < vector->max_elements; i++){
+		tmp = memcpy(tmp, template, vector->data_size);
+		if (!tmp){
+			printerr_memory_op(vector_populate);
+			return MEMORY_OP_ERROR;
+		}
+		tmp = void_offset(tmp, vector->data_size);
+	}
+	vector->n_elements = vector->max_elements;
+	return SUCCESS;
+}
+
+int vector_process(Vector *vector, int (*func) (void *,void*), void *args){
+	if (!vector || !func){
+		printerr_null_param(vector_process);
+		return NULL_PARAMETER_ERROR;
+	}
+	void *tmp = vector->elements;
+	for (size_t i = 0; i < vector->n_elements; ++i){
+		int status = func(tmp, args);
+		if (status != SUCCESS){
+			printerr(vector_process, "Failed to process vector, at element %p",, tmp);
+			return status;
+		}
+		tmp = void_offset(tmp, vector->data_size);
+	}
+	return SUCCESS;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 /// REMOVE ////////////////////////////////////////////////////////////////////
@@ -553,6 +588,18 @@ size_t vector_size(Vector *vector){
 	return vector->n_elements;
 }
 
+int vector_reserve(Vector *vector, size_t n_elements){
+	if (!vector){
+		printerr_null_param(vector_reserve);
+		return NULL_PARAMETER_ERROR;
+	}
+	vector->n_elements = n_elements;
+	if (vector->max_elements >= n_elements){
+		return SUCCESS;
+	}
+	return vector_resize(vector, n_elements);
+}
+
 Vector* vector_join(Vector *vector_1, Vector *vector_2){
 	if (!vector_1 || !vector_2){
 		printerr_null_param(vector_join);
@@ -621,7 +668,6 @@ Vector* vector_reset(Vector *vector){
 		return NULL;
 	}
 	free(vector->elements);
-	vector->elements = NULL;
 	vector->elements = malloc(VECTOR_DEFAULT_SIZE * vector->data_size);
 
 	if (!vector->elements){

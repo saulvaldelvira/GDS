@@ -106,6 +106,22 @@ bool vector_isempty(Vector *vector);
 size_t vector_size(Vector *vector);
 
 /**
+ * Reserves space for the specified number of elements.
+ * @note It does NOT shrink the vector.
+*/
+int vector_reserve(Vector *vector, size_t n_elements);
+
+/**
+ * Fills the vector with copies of the given template element.
+*/
+int vector_populate(Vector *vector, void *template);
+
+/**
+ * Calls func for every element in the vector.
+*/
+int vector_process(Vector *vector, int (*func) (void *,void *), void *args);
+
+/**
  * Replaces the element at the given index with the element passed as a parameter
  */
 int vector_set_at(Vector *vector, size_t index, void *element);
