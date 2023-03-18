@@ -97,17 +97,28 @@ comparator_function_t vector_get_comparator(Vector *vector){
 
 /// ADD-SET ///////////////////////////////////////////////////////////////////////
 
+static int vector_resize(Vector *vector, size_t new_size){
+	vector->max_elements = new_size;
+	void *tmp = realloc(vector->elements, vector->max_elements * vector->data_size);
+	if(!tmp){
+		printerr_allocation(vector_resize);
+		free(vector->elements);
+		return ALLOCATION_ERROR;
+	}
+	vector->elements = tmp;
+	return SUCCESS;
+}
+
 int vector_append(Vector *vector, void *element){
 	if (!vector || !element){
 		printerr_null_param(vector_append);
 		return NULL_PARAMETER_ERROR;
 	}
-	if(vector->n_elements >= vector->max_elements){ // If the vector is empty, double the array size
-		vector->max_elements *= 2;
-		vector->elements = realloc(vector->elements, vector->max_elements * vector->data_size);
-		if(!vector->elements){
-			printerr_allocation(vector_append);
-			return ALLOCATION_ERROR;
+	if(vector->n_elements >= vector->max_elements){
+		// If the vector is empty, double the array size
+		int status = vector_resize(vector, vector->n_elements * 2);
+		if (status != SUCCESS){
+			return status;
 		}
 	}
 
@@ -128,11 +139,9 @@ int vector_push_front(Vector *vector, void *element){
 		return NULL_PARAMETER_ERROR;
 	}
 	if(vector->n_elements >= vector->max_elements){ // If the vector is empty, double the array size
-		vector->max_elements *= 2;
-		vector->elements = realloc(vector->elements, vector->max_elements * vector->data_size);
-		if(!vector->elements){
-			printerr_allocation(vector_push_front);
-			return ALLOCATION_ERROR;
+		int status = vector_resize(vector, vector->max_elements * 2);
+		if (status != SUCCESS){
+			return status;
 		}
 	}
 
@@ -154,11 +163,9 @@ int vector_append_array(Vector *vector, void *array, size_t array_length){
 	}
 
 	if (vector->n_elements + array_length > vector->max_elements){
-		vector->max_elements = (vector->max_elements + array_length) * 2;
-		vector->elements = realloc(vector->elements, vector->max_elements * vector->data_size);
-		if(!vector->elements){
-			printerr_allocation(vector_append_array);
-			return ALLOCATION_ERROR;
+		int status = vector_resize(vector, (vector->max_elements + array_length) * 2);
+		if (status != SUCCESS){
+			return status;
 		}
 	}
 	void *tmp = void_offset(vector->elements, vector->n_elements * vector->data_size);
@@ -178,11 +185,9 @@ int vector_push_front_array(Vector *vector, void *array, size_t array_length){
 		return NULL_PARAMETER_ERROR;
 	}
 	if (vector->n_elements + array_length > vector->max_elements){
-		vector->max_elements = (vector->max_elements + array_length) * 2;
-		vector->elements = realloc(vector->elements, vector->max_elements * vector->data_size);
-		if(!vector->elements){
-			printerr_allocation(vector_push_front_array);
-			return ALLOCATION_ERROR;
+		int status = vector_resize(vector, (vector->max_elements + array_length) * 2);
+		if (status != SUCCESS){
+			return status;
 		}
 	}
 	void *tmp = void_offset(vector->elements, array_length * vector->data_size);
@@ -257,11 +262,9 @@ int vector_insert_at(Vector *vector, size_t index, void *element){
 		return NULL_PARAMETER_ERROR;
 	}
 	if (vector->n_elements == vector->max_elements){
-		vector->max_elements = vector->max_elements * 2;
-		vector->elements = realloc(vector->elements, vector->max_elements * vector->data_size);
-		if(!vector->elements){
-			printerr_allocation(vector_insert_at);
-			return ALLOCATION_ERROR;
+		int status = vector_resize(vector, vector->max_elements * 2);
+		if (status != SUCCESS){
+			return status;
 		}
 	}
 	void *src = void_offset(vector->elements, index * vector->data_size);
