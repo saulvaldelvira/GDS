@@ -38,7 +38,7 @@ struct _Dictionary{
         hash_function_t hash;
 };
 
-#define LF(x,B) ((x) * 1.0 / B)
+#define LF(x,B) ((x) * 1.0 / (B))
 
 /// PRIME //////////////////////////////////////////////////////////////////////
 
@@ -95,7 +95,7 @@ int free_node(void *node, void *args){
 }
 
 /**
- * A useless comparator funntion.
+ * An useless comparator function.
  * This dictionary uses a Vector to store the elements, so
  * we need this function to construct one, even though we are
  * never going to compare elements inside the vector.
@@ -276,7 +276,7 @@ static int dict_redisperse(Dictionary *dict, size_t new_size){
  * Retuns an index to store the key into
  * @param n_it number of tries, to handle collisions.
 */
-static size_t dict_get_pos(Dictionary *dict, void *key, int n_it){
+static size_t dict_get_pos(Dictionary *dict, void *key, size_t n_it){
         size_t pos;
         switch (dict->redispersion){
         case LINEAR:
