@@ -6,7 +6,7 @@
 
 int main(){
 	int n = 10000, temp;
-	printf("[Starting Stack Test]\n Workload: %d\n", n);
+	print_test_start(Stack);
 	TIMESTAMP_START
 
 	Stack *stack = stack_init(sizeof(int), compare_int);
@@ -51,5 +51,5 @@ int main(){
 
 	TIMESTAMP_STOP
 
-	END_MSG(Stack)
+	print_test_end(Stack);
 }

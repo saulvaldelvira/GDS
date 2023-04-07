@@ -573,7 +573,7 @@ static BTreeNode* borrow_min_node(BTreeNode *node, int K){
 			return node;
 		}
 	}else {
-		return borrow_max_node(node->childs[0], K);
+		return borrow_min_node(node->childs[0], K);
 	}
 }
 
@@ -611,8 +611,8 @@ static BTreeNode* request_or_merge(BTreeNode *node, BTreeNode *father, BTree *tr
 	BTreeNode **left_sibling = father_pos > 0 ? &father->childs[father_pos - 1] : NULL;
 	BTreeNode **right_sibling = father_pos < (father->n_childs - 1) ? &father->childs[father_pos + 1] : NULL;
 
-	BTreeNode *max_left;
-	BTreeNode *min_right;
+	BTreeNode *max_left = NULL;
+	BTreeNode *min_right = NULL;
 	// Element to move down to the merged node if necessary.
 	void *element_down = father_pos > 0
 					    ? void_offset(father->elements, (father_pos - 1) * tree->data_size)
@@ -652,6 +652,12 @@ static struct add_remove_ret btree_remove_rec(BTreeNode *node, BTreeNode *father
 		if (pos < 0){
 			ret.status = pos;
 			return ret;
+		}
+		if (node->n_childs == 0){
+			return (struct add_remove_ret){
+				.node = node,
+				.status = ELEMENT_NOT_FOUND_ERROR
+			};
 		}
 		ret = btree_remove_rec(node->childs[pos], node, tree, element);
 		if (node == tree->root && node->n_elements == 0){
@@ -738,8 +744,8 @@ static BTreeNode* btree_get_node(BTreeNode *node, size_t data_size, void *elemen
 	if (node == NULL){
 		return NULL;
 	}
+	void *tmp = node->elements;
 	for ((*index) = 0; (*index) < node->n_elements; (*index)++){
-		void *tmp = void_offset(node->elements, (*index) * data_size);
 		int c = cmp(element, tmp);
 		if (c == 0){
 			return node;
@@ -748,6 +754,7 @@ static BTreeNode* btree_get_node(BTreeNode *node, size_t data_size, void *elemen
 		}else if (c > 0 && (*index) == node->n_elements-1){
 			return btree_get_node(node->childs[node->n_elements], data_size, element, cmp, index);
 		}
+		tmp = void_offset(tmp, data_size);
 	}
 	return NULL;
 }

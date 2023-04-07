@@ -47,7 +47,7 @@ void join_test(){
 }
 
 int main(){
-	printf("[AVLTree Test]\n");
+	print_test_start(AVL);
 	TIMESTAMP_START
 	AVLTree *t = avl_init(sizeof(int), compare_int);
 	assert(avl_size(t) == 0UL);
@@ -124,7 +124,7 @@ int main(){
 
 	TIMESTAMP_STOP
 
-	END_MSG(AVLTree);
+	print_test_end(AVLTree);
 
 	return 0;
 }

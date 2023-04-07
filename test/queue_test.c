@@ -7,7 +7,7 @@
 int main(){
 	int n = 10000, tmp;
 
-	printf("[Starting Queue test]\n Workload: %d\n", n);
+	print_test_start(Queue);
 	TIMESTAMP_START
 
 	Queue *q = queue_init(sizeof(int), compare_int);
@@ -48,5 +48,5 @@ int main(){
 	queue_free(q);
 
 	TIMESTAMP_STOP
-	END_MSG(Queue)
+	print_test_end(Queue);
 }

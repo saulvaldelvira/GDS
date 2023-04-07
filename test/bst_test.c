@@ -32,35 +32,36 @@ void join_test(){
 }
 
 int main(){
-
-
 	int n = 1000;//, min = 0, max = 10;
 	int temp;
-	printf("[BSTree Test]\n");
+	print_test_start(BSTree);
 	TIMESTAMP_START
 	BSTree *t = bst_init(sizeof(int), compare_int);
 	// Random numbers test
 	assert(!bst_exists(t, &n));
-	printf("Add...\n");
+
+	print_test_step(Add);
 	for(int i=0; i<n; i++){
 		assert(bst_add(t, &i));
 		assert(bst_exists(t, &i));
 		bst_get(t, &i, &temp);
 		assert(temp == i);
 	}
-	
-	/// config test 
+	print_test_ok();
+
+	/// config test
 	bst_configure(t, compare_allways_true);
 	assert(bst_exists(t, cast_int(-24163435)));
 	bst_configure(t, compare_int);
 	/////////
 
-	printf("Remove...\n");
+	print_test_step(Remove);
 	for(int i=0; i<n; i++){
 		bst_remove(t, &i);
 	}
+	print_test_ok();
 	// Orders test
-	printf("Traversals... \n");
+
 	t = bst_reset(t);
 	int nums[] = {12, 9, 7, 10, 0, 8, 11, 30, 25, 32, 31, 33};
 	assert(bst_add_array(t, nums, 12UL));
@@ -69,34 +70,45 @@ int main(){
 	assert(0 == * (int*) bst_min(t, &min));
 
 
+	print_test_step(Inorder);
 	void* inord = bst_inorder(t);
-	printf("\tInorder: \t");
+	print_test_ok();
+
+	#ifdef VERBOSE
 	for(size_t i=0; i < bst_size(t); i++){
 		printf("%d-", * (int*) void_offset(inord, i * sizeof(int)));
 	}
+
 	printf("\n");
 	printf("\tExpected result: 0-7-8-9-10-11-12-25-30-31-32-33-\n");
-
+	#endif
 	free(inord);
 
+	print_test_step(Preorder);
 	void* preord = bst_preorder(t);
-	printf("\n\tPreorder:  \t");
+	print_test_ok();
+
+	#ifdef VERBOSE
 	for(size_t i=0; i < bst_size(t); i++){
 		printf("%d-", * (int*) void_offset(preord, i * sizeof(int)));
 	}
 	printf("\n");
 	printf("\tExpected result: 12-9-7-0-8-10-11-30-25-32-31-33-\n");
-
+	#endif
 	free(preord);
 
+	print_test_step(Postorder);
 	void* postord = bst_postorder(t);
-	printf("\n\tPostorder: \t");
+	print_test_ok();
+
+	#ifdef VERBOSE
 	for(size_t i=0; i < bst_size(t); i++){
 		printf("%d-", * (int*) void_offset(postord, i * sizeof(int)));
 	}
 	printf("\n");
 	printf("\tExpected result: 0-8-7-11-10-9-25-31-33-32-30-12-\n");
-	
+	#endif
+
 	free(postord);
 
 	// Remove test
@@ -128,7 +140,7 @@ int main(){
 	join_test();
 
 	TIMESTAMP_STOP
-	END_MSG(BSTree);
-	
+	print_test_end(BSTree);
+
 	return 0;
 }

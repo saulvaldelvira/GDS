@@ -18,6 +18,8 @@ extern "C" {
 #include "../src/Util/void_cast.h"
 #include "../src/Util/definitions.h"
 
+#include "color.h"
+
 #ifndef TIMESTAMP_DISABLE
 	static long timestamp;
 
@@ -40,18 +42,7 @@ static inline int rand_range(int min, int max){
 	return rand() % ((max + 1) - min) + min;
 }
 
-#define END_MSG(name) printf("[" #name " test finished in %ld milliseconds]\n\n", timestamp);
-
-#ifndef QUIET_DISABLE
-	#ifdef QUIET
-	static bool quiet = true;
-	#else
-	static bool quiet = false;
-	#endif
-#endif
-
-#define LOG(x) if (!quiet){x;}
-
+// Assert whole arrays ///////////////
 void assert_array_int(int *arr, int *exp, int size){
         for (int i = 0; i < size; i++){
                 assert(arr[i] == exp[i]);
@@ -68,6 +59,32 @@ int compare_allways_true(const void* e1, const void *e2){
 	(void) e1; (void) e2;
 	return 0;
 }
+
+//////////////////////////////////////
+
+// Colored output ///////////////////
+#ifndef NO_COLOR
+	#define print_test_step(name) 	printf("* " Color_Yellow "%s" Color_Reset " ... ", #name); fflush(stdout);
+	#define print_test_ok() 	printf(Color_Green "OK\n" Color_Reset)
+	#define print_test_end(name) 	printf("[" #name " test finished in" Color_Cyan " %ld " Color_Reset "milliseconds]\n\n", timestamp);
+#else
+	#define print_test_step(name) 	printf("* %s ... ", #name); fflush(stdout);
+	#define print_test_ok() 	printf("OK\n")
+	#define print_test_end(name) 	printf("[" #name " test finished in %ld milliseconds]\n\n", timestamp);
+#endif
+
+#define print_test_start(name) 	printf("[Starting " #name " test]\n")
+
+/////////////////////////////////////
+
+#define Clear_Line	"\033[1A\033[2K\033[1A"
+#define Move_Line(n)	"\33["#n"C"
+
+#define Ignore_Error(call,n) 	fprintf(stderr, "\n");\
+				call;\
+				fprintf(stderr, Clear_Line);\
+				fprintf(stderr, Move_Line(n));\
+				fflush(stderr);
 
 #ifdef __cplusplus
 }

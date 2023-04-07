@@ -4,7 +4,10 @@
 #include "test.h"
 #undef QUIET_DISABLE
 
+#include <string.h>
+
 void test_simple(){
+
         Dictionary *dic = dict_init(sizeof(int), sizeof(char), hash_int);
         int itmp = 1;
         char ctmp = 'A';
@@ -23,6 +26,7 @@ void test_simple(){
 }
 
 void brute(){
+        print_test_step(Brute);
         int n = 1000;
         Dictionary *dic = dict_init(sizeof(int), sizeof(int), hash_int);
         assert(dic);
@@ -46,6 +50,7 @@ void brute(){
                 assert(!dict_exists(dic, &i));
         }
         dict_free(dic);
+        print_test_ok();
 }
 
 void config(){
@@ -58,6 +63,7 @@ void config(){
 }
 
 void random_test(){
+        print_test_step(Random);
         int n = 100;
         srand(time(NULL));
         Dictionary *dic = dict_init(sizeof(int), sizeof(int), hash_int);
@@ -79,9 +85,11 @@ void random_test(){
         free(exp);
         free(exp2);
         dict_free(dic);
+        print_test_ok();
 }
 
 void string_test(){
+        print_test_step(String);
         Dictionary *dic = dict_init(sizeof(char*), sizeof(int), hash_string);
         char *str[] = {"Hello world!", "this is a dictionary", ":p"};
         int strc = 3;
@@ -91,16 +99,61 @@ void string_test(){
         int tmp;
         for (int i = 0; i < strc; ++i){
                 dict_get(dic, &str[i], &tmp);
-                printf("%-22s -> %d\n", str[i], tmp);
+                assert(strcmp(str[i], str[tmp]) == 0);
                 assert(tmp == i);
         }
         dict_free(dic);
+        print_test_ok();
+}
+
+// Struct test
+
+struct key{
+        int i;
+        char c;
+        struct {
+                float f;
+                long l;
+        } s;
+};
+
+struct person{
+        char name[30];
+        int age;
+};
+
+int64_t hash_structs(const void *e_1){
+        struct key *k = (struct key*) e_1;
+        int64_t hash = k->i << sizeof(k->c);
+        hash += k->c;
+        return hash;
+}
+
+void struct_test(){
+        print_test_step(Struct);
+        struct key k = {
+                .i = 12,
+                .c = 2
+        };
+        struct person p = {
+                .age = 23
+        };
+        strcpy(p.name, "alejandro");
+
+        Dictionary *d = dict_init(sizeof(struct key), sizeof(struct person), hash_structs);
+        assert(dict_put(d, &k, &p) == SUCCESS);
+        assert(dict_exists(d, &k));
+        struct person per;
+        assert(dict_get(d, &k, &per));
+        assert(per.age == p.age);
+        assert(strcmp(per.name, p.name) == 0);
+
+        dict_free(d);
+        print_test_ok();
 }
 
 int main(){
-
-	printf("[Starting Dictionary test]\n");
-
+	print_test_start(Dictionary);
         TIMESTAMP_START
 
         test_simple();
@@ -108,8 +161,9 @@ int main(){
         config();
         random_test();
         string_test();
+        struct_test();
 
 	TIMESTAMP_STOP
-	END_MSG(Dictionary)
+	print_test_end(Dictionary);
         return 0;
 }

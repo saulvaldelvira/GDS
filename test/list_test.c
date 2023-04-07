@@ -50,11 +50,10 @@ void joins_test(){
 int main(){
 	int n = 2400;
 	int tmp;
-	double vec_time, lnkd_time;
 
-	printf("[List Test]\n");
+	print_test_start(List);
 
-	printf("->Vector...\n");
+	print_test_step(Vector)
 	TIMESTAMP_START
 
 	Vector *vec = vector_empty(sizeof(int), compare_int);
@@ -75,7 +74,13 @@ int main(){
 	assert(n-1 == * (int*) vector_get_back(vec, &tmp));
 	assert(0 == * (int*) vector_get_front(vec, &tmp));
 	int menosveinte = -20, treinta = 30;
+
+	fprintf(stderr, "\n");
 	assert(vector_indexof(vec, &menosveinte).status == ELEMENT_NOT_FOUND_ERROR);
+	fprintf(stderr, Clear_Line);
+	fprintf(stderr, Move_Line(13));
+	fflush(stderr);
+
 
 	index_t ret = vector_indexof(vec, &treinta);
 
@@ -90,7 +95,6 @@ int main(){
 		assert(i == get_arr[i]);
 		assert(i == get_into[i]);
 	}
-
 
 	// Push Pop
 	size_t size = vector_size(vec);
@@ -113,9 +117,6 @@ int main(){
 		assert(vector_remove(vec, &i));
 	}
 	assert(vector_size(vec) == 0);
-
-
-
 
 	// Set test 2
 	int one = 1;
@@ -154,12 +155,8 @@ int main(){
 	assert(0 == * (int*) vector_get_at(vec, 5, &tmp));
 	vector_free(vec);
 
-	TIMESTAMP_STOP
-	vec_time = timestamp;
-
-	printf("\tDone in %.3f seconds\n->Linked List...\n", vec_time);
-
-	TIMESTAMP_START
+	print_test_ok();
+	print_test_step(Linked List);
 
 	LinkedList *lnked = list_init(sizeof(int), compare_int);
 
@@ -229,15 +226,8 @@ int main(){
 	joins_test();
 
 	TIMESTAMP_STOP
-	lnkd_time = timestamp;
 
-	printf("\tDone in %.3f seconds\n", lnkd_time);
-
-	double total = lnkd_time + vec_time;
-
-	timestamp += total;
-
-
-	END_MSG(List)
+	print_test_ok();
+	print_test_end(List);
 	return 0;
 }

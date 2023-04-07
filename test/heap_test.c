@@ -5,19 +5,20 @@
 #include "../src/BinaryHeap/binary_heap_min.h"
 
 void change_priority(){
+	print_test_step(Change Priority);
 	MinHeap *min = minheap_init(sizeof(int), compare_int);
-	fprintf(stderr, "--- 4 ERRORS expected bellow ---\n");
-	fprintf(stderr, "Error 1: ");
-	assert(minheap_change_priority(min, cast_int(12), cast_int(16)) != SUCCESS);
+
+
+	Ignore_Error(assert(minheap_change_priority(min, cast_int(12), cast_int(16)) != SUCCESS), 0);
+
 	int elements[] = {12 ,14, 15, 20, 16, 17, 19, 24, 30};
 	minheap_add_array(min, elements, 9);
-	fprintf(stderr, "Error 2: ");
-	assert(minheap_change_priority(min, cast_int(-78), cast_int(16)) != SUCCESS);
-	fprintf(stderr, "Error 3: ");
-	assert(minheap_change_priority(min, NULL, NULL) != SUCCESS);
-	fprintf(stderr, "Error 4: ");
-	assert(minheap_change_priority(min, &elements[0], NULL) != SUCCESS);
-	fprintf(stderr, "---------------------------------------\n");
+
+	Ignore_Error(assert(minheap_change_priority(min, cast_int(-78), cast_int(16)) != SUCCESS), 0);
+
+	Ignore_Error(assert(minheap_change_priority(min, NULL, NULL) != SUCCESS), 0)
+
+	Ignore_Error(assert(minheap_change_priority(min, &elements[0], NULL) != SUCCESS), 22)
 
 	// Change priority of 20 to 5
 	assert(minheap_change_priority(min, &elements[3], cast_int(5)));
@@ -32,6 +33,7 @@ void change_priority(){
 	int expected2[] = {5, 14 ,15, 21, 16, 17, 19, 24, 30};
 	assert_array_int(res, expected2, 9);
 	minheap_free(min);
+	print_test_ok();
 }
 
 void filter_up(){
@@ -145,7 +147,7 @@ void pop_min(){
 }
 
 int main(){
-	printf("[Binary Heap Test]\n");
+	print_test_start(Binary Heap);
 	TIMESTAMP_START
 
 	MinHeap *min = minheap_init(sizeof(int), compare_int);
@@ -178,6 +180,6 @@ int main(){
 	change_priority();
 
 	TIMESTAMP_STOP
-	END_MSG(BinaryHeap)
+	print_test_end(BinaryHeap);
 	return 0;
 }
