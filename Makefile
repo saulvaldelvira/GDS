@@ -48,7 +48,7 @@ btree_test: $(BIN) $(BIN)/btree_test.out
 	@ $(BIN)/btree_test.out
 
 dict_test: $(BIN) $(BIN)/dict_test.out
-	@ $(BIN)/dict_test.out
+	@ $(BIN)/dict_test.out 
 
 $(BIN)/list_test.out: $(LIST_OBJS)
 	@ $(CC) -o $(BIN)/list_test.out $(LIST_OBJS) $(CCFLAGS)
@@ -93,6 +93,7 @@ clean:
 	find . -type f -name '*_BASE_*' -delete
 	find . -type f -name '*_LOCAL_*' -delete
 	find . -type f -name '*_REMOTE_*' -delete
+	find . -type f -name 'vgcore*' -delete
 
 purge: clean
 	rm -rf bin/
