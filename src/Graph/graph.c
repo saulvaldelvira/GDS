@@ -49,8 +49,11 @@ static int expand_memory(Graph *graph, size_t new_size){
 	// Allocate edges
 	int8_t **edges = malloc(new_size * sizeof(*edges));
 
-	if (!edges || !weights || !edges){
+	if (!edges || !weights || !vertices){
 		printerr_allocation(expand_memory);
+		free(vertices);
+		free(weights);
+		free(edges);
 		return ALLOCATION_ERROR;
 	}
 
