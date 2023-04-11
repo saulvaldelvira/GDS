@@ -152,18 +152,16 @@ int dict_configure(Dictionary *dict, enum Redispersion redispersion, double min_
                 return NULL_PARAMETER_ERROR;
         }
         float min, max;
-        if (min_lf == 0.0f){
-                min = dict->min_lf;
-        }else if (min_lf == DICT_NO_SHRINKING){
-                min = DICT_NO_SHRINKING;
-        }else{
+        if (min_lf > 0.0f || min_lf == DICT_NO_SHRINKING){
                 min = min_lf;
+        }else{
+                min = dict->min_lf;
         }
 
-        if (max_lf == 0.0f){
-                max = dict->max_lf;
-        }else{
+        if (max_lf > 0.0f){
                 max = max_lf;
+        }else{
+                max = dict->max_lf;
         }
 
         if (min >= max){
