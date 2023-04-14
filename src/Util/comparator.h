@@ -29,6 +29,14 @@ int compare_float(const void *e_1, const void *e_2);
 int compare_double(const void *e_1, const void *e_2);
 int compare_long_long(const void *e_1, const void *e_2);
 
+/**
+ * An useless comparator function.
+ * For when you don't need to compare elements
+ * inside a structure (e.g. in a stack, if you
+ * only need to push and pop)
+*/
+int compare_always_equal(const void *e_1, const void *e_2);
+
 #ifdef __cplusplus
 }
 #endif

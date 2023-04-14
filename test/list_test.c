@@ -65,7 +65,7 @@ int main(){
 	}
 
 	/// Configure test
-	vector_configure(vec, compare_allways_true);
+	vector_configure(vec, compare_always_equal);
 	assert(vector_exists(vec, cast_int(-8574654)));
 	vector_configure(vec, compare_int);
 	/////////
@@ -192,7 +192,7 @@ int main(){
 	assert(4525 == * (int*) list_pop_back(lnked, &tmp));
 
 	/// confign tests
-	list_configure(lnked, compare_allways_true);
+	list_configure(lnked, compare_always_equal);
 	assert(list_exists(lnked, cast_int(-684765)));
 	list_configure(lnked, compare_int);
 	///////////////

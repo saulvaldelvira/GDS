@@ -63,7 +63,7 @@ int main(){
 	assert(3 == * (int*) avl_min(t, &min));
 
 	// configure test
-	avl_configure(t, compare_allways_true);
+	avl_configure(t, compare_always_equal);
 	assert(avl_exists(t, cast_int(125)));
 	avl_configure(t, compare_int);
 	///////////////////////////////////

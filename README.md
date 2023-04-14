@@ -68,7 +68,8 @@ int main(){
     return 0;
 }
 ```
-The header file **comparator.h** defines functions to compare the most common data types (int, char, long, etc.)
+The header file **comparator.h** defines functions to compare the most common data types (int, char, long, etc.) <br>
+If you don't need to compare elements inside the structure (e.g. when using a stack to just push and pop) you can use the `compare_always_equal` function so the program doesn't complain.
 
 ```c
 LinkedList *list = list_init(sizeof(char), compare_char); // This list stores chars

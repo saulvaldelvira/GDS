@@ -26,7 +26,7 @@ void dijkstra_test(void){
 	assert(graph_add_edge(g, &c, &e, 1.0f));
 
 	/// config test
-	graph_configure(g, compare_allways_true);
+	graph_configure(g, compare_always_equal);
 	assert(graph_exists_vertex(g, cast_int(-54654)));
 	graph_configure(g, compare_char);
 	/////////////////

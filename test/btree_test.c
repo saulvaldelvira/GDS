@@ -32,7 +32,7 @@ int main(){
 	}
 
 	/// Config test
-	btree_configure(tree, compare_allways_true);
+	btree_configure(tree, compare_always_equal);
 	assert(btree_exists(tree, cast_int(-897987)));
 	btree_configure(tree, compare_int);
 	/////////////////////////////////

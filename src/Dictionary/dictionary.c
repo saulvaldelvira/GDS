@@ -94,18 +94,6 @@ int free_node(void *node, void *args){
         return SUCCESS;
 }
 
-/**
- * An useless comparator function.
- * This dictionary uses a Vector to store the elements, so
- * we need this function to construct one, even though we are
- * never going to compare elements inside the vector.
-*/
-int compare_allways_equal(const void *e_1, const void *e_2) {
-        (void) e_1;
-        (void) e_2;
-        return 0;
-}
-
 Dictionary* dict_init(size_t key_size, size_t value_size, hash_function_t hash_func){
         if (!hash_func){
                 printerr_null_param(dict_init);
@@ -124,7 +112,7 @@ Dictionary* dict_init(size_t key_size, size_t value_size, hash_function_t hash_f
         dict->key_size = key_size;
         dict->min_lf = DICT_DEF_MIN_LF;
         dict->max_lf = DICT_DEF_MAX_LF;
-        dict->elements = vector_init(sizeof(DictionaryNode), INITIAL_SIZE, compare_allways_equal);
+        dict->elements = vector_init(sizeof(DictionaryNode), INITIAL_SIZE, compare_always_equal);
         if (!dict->elements){
                 free(dict);
                 return NULL;
@@ -219,7 +207,7 @@ static int dict_redisperse(Dictionary *dict, size_t new_size){
         /// Reset the vector
         if (new_size < dict->vec_size) {
                 status = vector_free(dict->elements);
-                dict->elements = vector_init(sizeof(DictionaryNode), new_size, compare_allways_equal);
+                dict->elements = vector_init(sizeof(DictionaryNode), new_size, compare_always_equal);
                 if (!dict->elements || status != SUCCESS){
                         return ERROR;
                 }

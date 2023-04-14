@@ -41,11 +41,6 @@ static inline int rand_range(int min, int max){
 	return rand() % ((max + 1) - min) + min;
 }
 
-int compare_allways_true(const void* e1, const void *e2){
-	(void) e1; (void) e2;
-	return 0;
-}
-
 //////////////////////////////////////
 
 // Colored output ///////////////////

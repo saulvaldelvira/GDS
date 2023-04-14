@@ -43,7 +43,7 @@ void filter_up(){
 	minheap_add(min, cast_int(8));
 
 	/// Config test
-	minheap_configure(min, compare_allways_true);
+	minheap_configure(min, compare_always_equal);
 	assert(minheap_exists(min, cast_int(-15454)));
 	minheap_configure(min, compare_int);
 	////////////
