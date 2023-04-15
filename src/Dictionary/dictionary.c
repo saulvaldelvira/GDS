@@ -263,7 +263,7 @@ static int dict_redisperse(Dictionary *dict, size_t new_size){
  * @param n_it number of tries, to handle collisions.
 */
 static size_t dict_get_pos(Dictionary *dict, void *key, size_t n_it){
-        size_t pos;
+        size_t pos = 0;
         switch (dict->redispersion){
         case LINEAR:
                 pos = ABS(dict->hash(key)) + n_it;
@@ -285,7 +285,7 @@ int dict_put(Dictionary *dict, void *key, void *value){
                 printerr_null_param(dict_put);
                 return NULL_PARAMETER_ERROR;
         }
-        size_t pos;
+        size_t pos = 0;
         DictionaryNode node;
 
         for (size_t i = 0; i < dict->vec_size; ++i){
