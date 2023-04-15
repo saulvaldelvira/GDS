@@ -14,8 +14,9 @@ vgcore*
 
 .vscode
 
-# Bin folder
+# Bin folders
 bin
+lib
 
 # Prerequisites
 *.d

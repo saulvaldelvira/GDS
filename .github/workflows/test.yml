@@ -15,7 +15,7 @@ jobs:
     - name: Install valgrind
       run: sudo apt install valgrind
     - name: Test
-      run: make all_test
+      run: make test
     - name: Memory Leaks
       run: |
            sudo chmod +x ./valgrind-test.sh
@@ -26,4 +26,4 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Run tests
-      run: make all_test
+      run: make test
