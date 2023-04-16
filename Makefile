@@ -23,14 +23,35 @@ ARFLAGS = rcs
 
 default: libs
 
+INSTALL_PATH ?= /usr/local
+
 libs: $(OFILES) | $(LIB)/  $(INCLUDE)/ $(INCLUDE)/Util/
 	$(info Building libs...)
 	@ gcc $(CCFLAGS) -shared -o ./$(LIB)/libGDS.so $(OFILES)
 	@ $(AR) $(ARFLAGS) ./$(LIB)/libGDS-static.a $(OFILES)
-	@ $(foreach O,$(OFILES),$(AR) $(ARFLAGS) ./$(LIB)/lib$(patsubst %.o,%.a, $(notdir $(O))) $(O) ;)
-	@ cp $(SRC)/*.h $(INCLUDE)/ && cp $(SRC)/Util/*.h $(INCLUDE)/Util/
+	@ $(foreach H,$(wildcard $(SRC)/*.h), echo $(HEADER_MSG) | cat - $(H) | cat - > $(INCLUDE)/$(notdir $(H));)
+	@ $(foreach H,$(wildcard $(SRC)/Util/*.h), echo $(HEADER_MSG) | cat - $(H) | cat - > $(INCLUDE)/Util/$(notdir $(H));)
+	@ chown $(logname):$(logname) -R $(LIB)/ $(INCLUDE)/
 
-# Build and run all test programs
+install: libs
+	$(info Installing GDS in $(INSTALL_PATH)/lib ...)
+	@ install -d $(INSTALL_PATH)/lib
+	@ install -m 644 $(LIB)/libGDS.so $(INSTALL_PATH)/lib
+	@ install -m 644 $(LIB)/libGDS-static.a $(INSTALL_PATH)/lib
+	@ install -d $(INSTALL_PATH)/include/GDS
+	@ install -d $(INSTALL_PATH)/include/GDS/Util
+	@ install -m 644 $(INCLUDE)/*.h $(INSTALL_PATH)/include/GDS
+	@ install -m 644 $(INCLUDE)/Util/*.h $(INSTALL_PATH)/include/GDS/Util
+	@ ldconfig $(INSTALL_PATH)/lib
+
+uninstall:
+	$(info Uninstalling GDS ...)
+	@ rm -f $(INSTALL_PATH)/lib/libGDS.so
+	@ rm -f $(INSTALL_PATH)/lib/libGDS-static.a
+	@ rm -rf $(INSTALL_PATH)/include/GDS
+	@ ldconfig $(INSTALL_PATH)/lib
+
+# Build and run all test programs-f
 test: $(TESTFILES) $(LIB)/libGDS-static.a | $(BIN)/
 	$(info Running tests...)
 	@ $(foreach T,$(filter %.c,$(TESTFILES)), \

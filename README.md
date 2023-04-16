@@ -74,3 +74,28 @@ If you don't need to compare elements inside the structure (e.g. when using a st
 ```c
 LinkedList *list = list_init(sizeof(char), compare_char); // This list stores chars
 ```
+## Building
+You can use the Makefile to build and install the library. <br>
+- `make`: builds the library <br>
+- `make test`: builds and runs test programs <br>
+- `make install`: installs the library on the computer. Must be run as root.<br>
+          The default installation path is /usr/local/lib, but it
+          can be overriden by defining INSTALL_PATH (e.g. `make install INSTALL_PATH=/lib`) <br>
+- `make uninstall`: removes the library from the computer. Must be run as root.<br>
+          Remember to set INSTALL_PATH to the same value as in installation.
+          If you don't remember it, run `find / -name 'libGDS.so'`.
+
+To use the library, just include the header(s) and remember to compile with the **-lGDS** or **-lGDS-static** flags. <br>
+NOTE: The headers are installed in $(INSTALL_PATH)/include/GDS. <br>
+Example:
+```c
+#include <GDS/GDS.h> // or #include <GDS/Vector.h>
+
+int main(){
+        Vector *v = vector_empty(sizeof(int), compare_int);
+        // ....
+        vector_free(v);
+        return 0;
+}
+```
+Compile: `gcc main.c -lGDS` or `gcc main.c -lGDS-static`
