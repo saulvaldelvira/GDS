@@ -66,7 +66,7 @@ int get_next_prime(int n){
 
 /// INITIALIZE /////////////////////////////////////////////////////////////////
 
-#define INITIAL_SIZE 11
+#define DICT_INITIAL_SIZE 11
 
 /**
  * Initializes a node.
@@ -111,12 +111,13 @@ Dictionary* dict_init(size_t key_size, size_t value_size, hash_function_t hash_f
         dict->key_size = key_size;
         dict->min_lf = DICT_DEF_MIN_LF;
         dict->max_lf = DICT_DEF_MAX_LF;
-        dict->elements = vector_init(sizeof(DictionaryNode), INITIAL_SIZE, compare_always_equal);
+        dict->elements = vector_init(sizeof(DictionaryNode), compare_always_equal);
+        vector_reserve(dict->elements, DICT_INITIAL_SIZE);
         if (!dict->elements){
                 free(dict);
                 return NULL;
         }
-        vector_reserve(dict->elements, INITIAL_SIZE);
+        vector_reserve(dict->elements, DICT_INITIAL_SIZE);
 
         dict->n_elements = 0;
 
@@ -128,8 +129,8 @@ Dictionary* dict_init(size_t key_size, size_t value_size, hash_function_t hash_f
         }
         dict->hash = hash_func;
         dict->redispersion = DICT_DEF_REDISPERSION;
-        dict->vec_size = INITIAL_SIZE;
-        dict->prev_vec_size = get_prev_prime(INITIAL_SIZE);
+        dict->vec_size = DICT_INITIAL_SIZE;
+        dict->prev_vec_size = get_prev_prime(DICT_INITIAL_SIZE);
         return dict;
 }
 
@@ -206,10 +207,11 @@ static int dict_redisperse(Dictionary *dict, size_t new_size){
         /// Reset the vector
         if (new_size < dict->vec_size) {
                 status = vector_free(dict->elements);
-                dict->elements = vector_init(sizeof(DictionaryNode), new_size, compare_always_equal);
+                dict->elements = vector_init(sizeof(DictionaryNode), compare_always_equal);
                 if (!dict->elements || status != SUCCESS){
                         return ERROR;
                 }
+                vector_reserve(dict->elements, new_size);
         }
         status = vector_reserve(dict->elements, new_size);
         if (status != SUCCESS){
@@ -463,9 +465,9 @@ Dictionary* dict_reset(Dictionary *dict){
                 return NULL;
         }
         vector_process(dict->elements, free_node, NULL);
-        vector_reserve(dict->elements, INITIAL_SIZE);
+        vector_reserve(dict->elements, DICT_INITIAL_SIZE);
         dict->n_elements = 0;
-        dict->vec_size = INITIAL_SIZE;
-        dict->prev_vec_size = get_prev_prime(INITIAL_SIZE);
+        dict->vec_size = DICT_INITIAL_SIZE;
+        dict->prev_vec_size = get_prev_prime(DICT_INITIAL_SIZE);
         return dict;
 }

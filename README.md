@@ -18,7 +18,7 @@ It's important to note that these structures store **VALUES**, not references.
 
 ```c
 int main(){
-    Vector *vec = vector_empty(sizeof(int), compare_int);
+    Vector *vec = vector_init(sizeof(int), compare_int);
     int tmp = 12;
     vector_append(vec, &tmp);
     tmp = 3;
@@ -92,7 +92,7 @@ Example:
 #include <GDS/GDS.h> // or #include <GDS/Vector.h>
 
 int main(){
-        Vector *v = vector_empty(sizeof(int), compare_int);
+        Vector *v = vector_init(sizeof(int), compare_int);
         // ....
         vector_free(v);
         return 0;

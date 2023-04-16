@@ -15,8 +15,8 @@ struct test {
 };
 
 void joins_test(){
-	Vector *a1 = vector_empty(sizeof(int), compare_int);
-	Vector *a2 = vector_empty(sizeof(int), compare_int);
+	Vector *a1 = vector_init(sizeof(int), compare_int);
+	Vector *a2 = vector_init(sizeof(int), compare_int);
 	LinkedList *l1 = list_init(sizeof(int), compare_int);
 	LinkedList *l2 = list_init(sizeof(int), compare_int);
 
@@ -56,7 +56,7 @@ int main(){
 	print_test_step(Vector)
 	TIMESTAMP_START
 
-	Vector *vec = vector_empty(sizeof(int), compare_int);
+	Vector *vec = vector_init(sizeof(int), compare_int);
 
 	assert(vector_isempty(vec));
 	for(int i=0; i < n; i++){

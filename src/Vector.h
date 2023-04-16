@@ -25,21 +25,12 @@ extern "C" {
 typedef struct _Vector Vector;
 
 /**
- * Creates an empty Vector.
+ * Creates a Vector.
  * @param data_size the size (in bytes of the data stored)
  * @param comp pointer to a function that receives two void pointers and returns 1 if the first one is greater than the
  *              second, 0 if they are equal and -1 if the first one is smaller than the second one
  */
-Vector* vector_empty(size_t data_size, comparator_function_t cmp);
-
-/**
- * Innitializes an Vector with a custom max number of elements
- * @param max_elements the initial number of elements in the list
- * @param data_size the size (in bytes of the data stored)
- * @param comp pointer to a function that receives two void pointers and returns 1 if the first one is greater than the
- *              second, 0 if they are equal and -1 if the first one is smaller than the second one
- */
-Vector* vector_init(size_t data_size, size_t max_elements, comparator_function_t cmp);
+Vector* vector_init(size_t data_size, comparator_function_t cmp);
 
 /**
  * Changes the comparator function of the list

@@ -17,6 +17,7 @@
 #include <string.h>
 
 #include "Vector.h"
+
 #define VECTOR_DEFAULT_SIZE 12
 
 struct _Vector {
@@ -30,19 +31,7 @@ struct _Vector {
 
 /// INITIALIZE ////////////////////////////////////////////////////////////////
 
-Vector* vector_empty(size_t data_size, comparator_function_t cmp){
-	if (data_size == 0){
-		printerr_data_size(vector_empty);
-		return NULL;
-	}
-	if (!cmp){
-		printerr_null_param(vector_empty);
-		return NULL;
-	}
-	return vector_init(data_size, VECTOR_DEFAULT_SIZE, cmp);
-}
-
-Vector* vector_init(size_t data_size, size_t max_elements, comparator_function_t cmp){
+Vector* vector_init(size_t data_size, comparator_function_t cmp){
 	if (data_size == 0){
 		printerr_data_size(vector_init);
 		return NULL;
@@ -53,7 +42,7 @@ Vector* vector_init(size_t data_size, size_t max_elements, comparator_function_t
 	}
 
 	Vector *vector = malloc(sizeof(*vector));
-	void *elements = malloc(max_elements * data_size);
+	void *elements = malloc(VECTOR_DEFAULT_SIZE * data_size);
 
 	if (!vector || !elements){
 		printerr_allocation(vector_init);
@@ -63,7 +52,7 @@ Vector* vector_init(size_t data_size, size_t max_elements, comparator_function_t
 	vector->elements = elements;
 	vector->data_size = data_size;
 	vector->n_elements = 0;
-	vector->max_elements = max_elements;
+	vector->max_elements = VECTOR_DEFAULT_SIZE;
 	vector->compare = cmp;
 	return vector;
 }
@@ -613,10 +602,11 @@ Vector* vector_join(Vector *vector_1, Vector *vector_2){
 	if (n_elements < VECTOR_DEFAULT_SIZE){
 		n_elements = VECTOR_DEFAULT_SIZE;
 	}
-	Vector *vector_joint = vector_init(vector_1->data_size, n_elements, vector_1->compare);
+	Vector *vector_joint = vector_init(vector_1->data_size, vector_1->compare);
 	if (!vector_joint){
 		return NULL;
 	}
+	vector_reserve(vector_joint, n_elements);
 
 	int status;
 

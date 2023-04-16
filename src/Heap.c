@@ -35,7 +35,7 @@ Heap* heap_init(size_t data_size, comparator_function_t cmp){
 		printerr_allocation(heap_init);
 		return NULL;
 	}
-	heap->elements = vector_empty(data_size, cmp);
+	heap->elements = vector_init(data_size, cmp);
 	if (!heap->elements){
 		printerr_allocation(heap_init);
 		free(heap);
