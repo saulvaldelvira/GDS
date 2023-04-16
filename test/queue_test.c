@@ -1,4 +1,4 @@
-#include "../src/queue.h"
+#include "../src/Queue.h"
 
 #define QUIET_DISABLE
 #include "test.h"

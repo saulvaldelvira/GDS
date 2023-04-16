@@ -9,7 +9,7 @@
  *  Email: saulvaldelvira@gmail.com
  *  Version: 17-01-2023
  */
-#include "stack.h"
+#include "Stack.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include "./Util/error.h"

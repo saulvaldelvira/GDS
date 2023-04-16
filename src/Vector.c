@@ -17,7 +17,7 @@
 #include "./Util/definitions.h"
 #include <string.h>
 
-#include "vector.h"
+#include "Vector.h"
 #define VECTOR_DEFAULT_SIZE 12
 
 struct _Vector {

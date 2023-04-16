@@ -9,9 +9,9 @@
  *  Email: saulvaldelvira@gmail.com
  *  Version: 18-03-2023
  */
-#include "dictionary.h"
+#include "Dictionary.h"
 #include "./Util/error.h"
-#include "./vector.h"
+#include "./Vector.h"
 #include "./Util/definitions.h"
 #include <stdlib.h>
 #include <stdio.h>

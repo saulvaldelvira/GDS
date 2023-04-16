@@ -9,45 +9,45 @@
  *  Email: saulvaldelvira@gmail.com
  *  Version: 18-01-2023
  */
-#include "binary_heap_min.h"
+#include "Heap.h"
 #include "./Util/error.h"
-#include "./vector.h"
+#include "./Vector.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
-struct _MinHeap {
+struct _Heap {
 	Vector *elements;
 };
 
 /// INITIALIZE ////////////////////////////////////////////////////////////////
 
-MinHeap* minheap_init(size_t data_size, comparator_function_t cmp){
+Heap* heap_init(size_t data_size, comparator_function_t cmp){
 	if (!cmp){
-		printerr_null_param(minheap_init);
+		printerr_null_param(heap_init);
 		return NULL;
 	}
 	if (data_size == 0){
-		printerr_data_size(minheap_init);
+		printerr_data_size(heap_init);
 		return NULL;
 	}
-	MinHeap *heap = malloc(sizeof(*heap));
+	Heap *heap = malloc(sizeof(*heap));
 	if (!heap){
-		printerr_allocation(minheap_init);
+		printerr_allocation(heap_init);
 		return NULL;
 	}
 	heap->elements = vector_empty(data_size, cmp);
 	if (!heap->elements){
-		printerr_allocation(minheap_init);
+		printerr_allocation(heap_init);
 		free(heap);
 		return NULL;
 	}
 	return heap;
 }
 
-void minheap_configure(MinHeap *heap, comparator_function_t cmp){
+void heap_configure(Heap *heap, comparator_function_t cmp){
 	if (!heap || !cmp){
-		printerr_null_param(minheap_configure);
+		printerr_null_param(heap_configure);
 		return;
 	}
 	vector_configure(heap->elements, cmp);
@@ -127,9 +127,9 @@ static void filter_down(Vector *list, size_t pos){
 
 //// ADD-REMOVE ///////////////////////////////////////////////////////////////
 
-int minheap_add(MinHeap *heap, void *element){
+int heap_add(Heap *heap, void *element){
 	if (!heap || !element){
-		printerr_null_param(minheap_add);
+		printerr_null_param(heap_add);
 		return NULL_PARAMETER_ERROR;
 	}
 	int status = vector_append(heap->elements, element);
@@ -140,9 +140,9 @@ int minheap_add(MinHeap *heap, void *element){
 	return SUCCESS;
 }
 
-int minheap_add_array(MinHeap *heap, void *array, size_t array_length){
+int heap_add_array(Heap *heap, void *array, size_t array_length){
 	if (!heap || !array){
-		printerr_null_param(minheap_add_array);
+		printerr_null_param(heap_add_array);
 		return NULL_PARAMETER_ERROR;
 	}
 	// If the heap is empty, we use this piece of code because it
@@ -168,7 +168,7 @@ int minheap_add_array(MinHeap *heap, void *array, size_t array_length){
 		int status;
 		for (size_t i = 0; i < array_length; i++){
 			tmp = void_offset(array, i * data_size);
-			status = minheap_add(heap, tmp);
+			status = heap_add(heap, tmp);
 			if (status != SUCCESS){
 				return status;
 			}
@@ -177,9 +177,9 @@ int minheap_add_array(MinHeap *heap, void *array, size_t array_length){
 	return SUCCESS;
 }
 
-void* minheap_pop_min(MinHeap *heap, void *dest){
+void* heap_pop_min(Heap *heap, void *dest){
 	if (!heap || !dest){
-		printerr_null_param(minheap_pop_min);
+		printerr_null_param(heap_pop_min);
 		return NULL;
 	}
 	dest = vector_get_at(heap->elements, 0, dest);
@@ -197,9 +197,9 @@ void* minheap_pop_min(MinHeap *heap, void *dest){
 	return dest;
 }
 
-int minheap_change_priority(MinHeap *heap, void *element, void *replacement){
+int heap_change_priority(Heap *heap, void *element, void *replacement){
 	if (!heap || !element || !replacement){
-		printerr_null_param(minheap_change_priority);
+		printerr_null_param(heap_change_priority);
 		return NULL_PARAMETER_ERROR;
 	}
 	// Get pos of the element
@@ -227,33 +227,33 @@ int minheap_change_priority(MinHeap *heap, void *element, void *replacement){
 
 /// GET-EXISTS-SIZE ///////////////////////////////////////////////////////////
 
-void* minheap_get_array(MinHeap *heap, size_t array_length){
+void* heap_get_array(Heap *heap, size_t array_length){
 	if (!heap){
-		printerr_null_param(minheap_get_array);
+		printerr_null_param(heap_get_array);
 		return NULL;
 	}
 	return vector_get_array(heap->elements, array_length);
 }
 
-void* minheap_get_into_array(MinHeap *heap, void *array, size_t array_length){
+void* heap_get_into_array(Heap *heap, void *array, size_t array_length){
 	if (!heap){
-		printerr_null_param(minheap_get_array);
+		printerr_null_param(heap_get_array);
 		return NULL;
 	}
 	return vector_get_into_array(heap->elements, array, array_length);
 }
 
-void* minheap_peek(MinHeap *heap, void *dest){
+void* heap_peek(Heap *heap, void *dest){
 	if (!heap || !dest){
-		printerr_null_param(minheap_peek);
+		printerr_null_param(heap_peek);
 		return NULL;
 	}
 	return vector_get_at(heap->elements, 0, dest);
 }
 
-int minheap_remove(MinHeap *heap, void *element){
+int heap_remove(Heap *heap, void *element){
 	if (!heap || !element){
-		printerr_null_param(minheap_remove);
+		printerr_null_param(heap_remove);
 		return NULL_PARAMETER_ERROR;
 	}
 	index_t index = vector_indexof(heap->elements, element);
@@ -271,25 +271,25 @@ int minheap_remove(MinHeap *heap, void *element){
 	return SUCCESS;
 }
 
-bool minheap_exists(MinHeap *heap, void *element){
+bool heap_exists(Heap *heap, void *element){
 	if (!heap || !element){
-		printerr_null_param(minheap_exists);
+		printerr_null_param(heap_exists);
 		return false;
 	}
 	return vector_exists(heap->elements, element);
 }
 
-size_t minheap_size(MinHeap *heap){
+size_t heap_size(Heap *heap){
 	if (!heap){
-		printerr_null_param(minheap_size);
+		printerr_null_param(heap_size);
 		return 0; /// ?? change ???
 	}
 	return vector_size(heap->elements);
 }
 
-bool minheap_isempty(MinHeap *heap){
+bool heap_isempty(Heap *heap){
 	if (!heap){
-		printerr_null_param(minheap_isempty);
+		printerr_null_param(heap_isempty);
 		return false;
 	}
 	return vector_isempty(heap->elements);
@@ -299,9 +299,9 @@ bool minheap_isempty(MinHeap *heap){
 
 //// FREE /////////////////////////////////////////////////////////////////////
 
-int minheap_free(MinHeap *heap){
+int heap_free(Heap *heap){
 	if (!heap){
-		printerr_null_param(minheap_free);
+		printerr_null_param(heap_free);
 		return NULL_PARAMETER_ERROR;
 	}
 	vector_free(heap->elements);
@@ -309,9 +309,9 @@ int minheap_free(MinHeap *heap){
 	return SUCCESS;
 }
 
-MinHeap* minheap_reset(MinHeap *heap){
+Heap* heap_reset(Heap *heap){
 	if (!heap){
-		printerr_null_param(minheap_reset);
+		printerr_null_param(heap_reset);
 		return NULL;
 	}
 	heap->elements = vector_reset(heap->elements);

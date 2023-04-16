@@ -9,7 +9,7 @@
  *  Email: saulvaldelvira@gmail.com
  *  Version: 17-01-2023
  */
-#include "linked_list.h"
+#include "LinkedList.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>

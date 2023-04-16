@@ -1,7 +1,7 @@
 #define TIMESTAMP_ENABLE
 #include "test.h"
 #undef TIMESTAMP_ENABLE
-#include "../src/graph.h"
+#include "../src/Graph.h"
 
 void dijkstra_test(void){
 	Graph *g = graph_empty(sizeof(char) , compare_char);

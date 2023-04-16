@@ -19,15 +19,15 @@ extern "C" {
 #endif
 
 #include "AVLTree.h"
-#include "binary_heap_min.h"
+#include "PriorityQueue.h"
 #include "BSTree.h"
 #include "BTree.h"
-#include "dictionary.h"
-#include "graph.h"
-#include "linked_list.h"
-#include "queue.h"
-#include "stack.h"
-#include "vector.h"
+#include "Dictionary.h"
+#include "Graph.h"
+#include "LinkedList.h"
+#include "Queue.h"
+#include "Stack.h"
+#include "Vector.h"
 
 #include "Util/comparator.h"
 #include "Util/definitions.h"

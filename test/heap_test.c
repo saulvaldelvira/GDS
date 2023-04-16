@@ -2,176 +2,176 @@
 #include "test.h"
 #undef QUIET_DISABLE
 
-#include "../src/binary_heap_min.h"
+#include "../src/Heap.h"
 
 void change_priority(){
 	print_test_step(Change Priority);
-	MinHeap *min = minheap_init(sizeof(int), compare_int);
+	Heap *min = heap_init(sizeof(int), compare_int);
 
 
-	Ignore_Error(assert(minheap_change_priority(min, cast_int(12), cast_int(16)) != SUCCESS), 0);
+	Ignore_Error(assert(heap_change_priority(min, cast_int(12), cast_int(16)) != SUCCESS), 0);
 
 	int elements[] = {12 ,14, 15, 20, 16, 17, 19, 24, 30};
-	minheap_add_array(min, elements, 9);
+	heap_add_array(min, elements, 9);
 
-	Ignore_Error(assert(minheap_change_priority(min, cast_int(-78), cast_int(16)) != SUCCESS), 0);
+	Ignore_Error(assert(heap_change_priority(min, cast_int(-78), cast_int(16)) != SUCCESS), 0);
 
-	Ignore_Error(assert(minheap_change_priority(min, NULL, NULL) != SUCCESS), 0)
+	Ignore_Error(assert(heap_change_priority(min, NULL, NULL) != SUCCESS), 0)
 
-	Ignore_Error(assert(minheap_change_priority(min, &elements[0], NULL) != SUCCESS), 22)
+	Ignore_Error(assert(heap_change_priority(min, &elements[0], NULL) != SUCCESS), 22)
 
 	// Change priority of 20 to 5
-	assert(minheap_change_priority(min, &elements[3], cast_int(5)));
+	assert(heap_change_priority(min, &elements[3], cast_int(5)));
 	int res[9];
-	minheap_get_into_array(min, res, 9);
+	heap_get_into_array(min, res, 9);
 	int expected[] = {5, 12 ,15, 14, 16, 17, 19, 24, 30};
 	assert_array_int(res, expected, 9);
 
 	// Change priority of 12 to 21
-	assert(minheap_change_priority(min, &res[1], cast_int(21)));
-	minheap_get_into_array(min, res, 9);
+	assert(heap_change_priority(min, &res[1], cast_int(21)));
+	heap_get_into_array(min, res, 9);
 	int expected2[] = {5, 14 ,15, 21, 16, 17, 19, 24, 30};
 	assert_array_int(res, expected2, 9);
-	minheap_free(min);
+	heap_free(min);
 	print_test_ok();
 }
 
 void filter_up(){
-	MinHeap *min = minheap_init(sizeof(int), compare_int);
-	minheap_add(min, cast_int(10));
-	minheap_add(min, cast_int(9));
-	minheap_add(min, cast_int(8));
+	Heap *min = heap_init(sizeof(int), compare_int);
+	heap_add(min, cast_int(10));
+	heap_add(min, cast_int(9));
+	heap_add(min, cast_int(8));
 
 	/// Config test
-	minheap_configure(min, compare_always_equal);
-	assert(minheap_exists(min, cast_int(-15454)));
-	minheap_configure(min, compare_int);
+	heap_configure(min, compare_always_equal);
+	assert(heap_exists(min, cast_int(-15454)));
+	heap_configure(min, compare_int);
 	////////////
 
 	int exp1[] = {8, 10, 9};
-	int *res = minheap_get_array(min, 3);
+	int *res = heap_get_array(min, 3);
 	assert_array_int(res, exp1, 3);
 	free(res);
 
-	minheap_add(min, cast_int(7));
+	heap_add(min, cast_int(7));
 	int exp2[] = {7, 8, 9, 10};
-	res = minheap_get_array(min, 4);
+	res = heap_get_array(min, 4);
 	assert_array_int(res, exp2, 4);
 	free(res);
 
-	minheap_add(min, cast_int(6));
+	heap_add(min, cast_int(6));
 	int exp3[] = {6, 7, 9, 10, 8};
-	res = minheap_get_array(min, 5);
+	res = heap_get_array(min, 5);
 	assert_array_int(res, exp3, 5);
 	free(res);
 
-	minheap_add(min, cast_int(5));
+	heap_add(min, cast_int(5));
 	int exp4[] = {5, 7, 6, 10, 8, 9};
-	res = minheap_get_array(min, 6);
+	res = heap_get_array(min, 6);
 	assert_array_int(res, exp4, 6);
 	free(res);
 
-	minheap_add(min, cast_int(4));
+	heap_add(min, cast_int(4));
 	int exp5[] = {4, 7, 5, 10, 8, 9, 6};
-	res = minheap_get_array(min, 7);
+	res = heap_get_array(min, 7);
 	assert_array_int(res, exp5, 7);
 	free(res);
 
-	minheap_add(min, cast_int(3));
+	heap_add(min, cast_int(3));
 	int exp6[] = {3, 4, 5, 7, 8, 9, 6, 10};
-	res = minheap_get_array(min, 8);
+	res = heap_get_array(min, 8);
 	assert_array_int(res, exp6, 8);
 	free(res);
 
-	minheap_add(min, cast_int(2));
+	heap_add(min, cast_int(2));
 	int exp7[] = {2, 3, 5, 4, 8, 9, 6, 10, 7};
-	res = minheap_get_array(min, 9);
+	res = heap_get_array(min, 9);
 	assert_array_int(res, exp7, 9);
 	free(res);
 
-	minheap_add(min, cast_int(1));
+	heap_add(min, cast_int(1));
 	int exp8[] = {1, 2, 5, 4, 3, 9, 6, 10, 7, 8};
-	res = minheap_get_array(min, 10);
+	res = heap_get_array(min, 10);
 	assert_array_int(res, exp8, 10);
 	free(res);
 
-	minheap_free(min);
+	heap_free(min);
 
 	// CHAR TEST
-	min = minheap_init(sizeof(char), compare_char);
+	min = heap_init(sizeof(char), compare_char);
 
 	char input[] = {'f', 'g', 'a', 'z', 'd'};
-	minheap_add_array(min, input, 5);
+	heap_add_array(min, input, 5);
 	char expchar[] = {'a', 'd', 'f', 'z', 'g'};
-	char* result = minheap_get_array(min, GET_ALL_ELEMENTS);
+	char* result = heap_get_array(min, GET_ALL_ELEMENTS);
 	assert_array_char(result, expchar, 5);
 	free(result);
 	char dest;
-	assert('a' == * (char*) minheap_pop_min(min, &dest));
+	assert('a' == * (char*) heap_pop_min(min, &dest));
 	char expchar2[] = {'d', 'g', 'f', 'z'};
-	result = minheap_get_array(min, GET_ALL_ELEMENTS);
+	result = heap_get_array(min, GET_ALL_ELEMENTS);
 	assert_array_char(result, expchar2, 4);
 	free(result);
 
-	minheap_free(min);
+	heap_free(min);
 }
 
 void pop_min(){
-	MinHeap *min = minheap_init(sizeof(int), compare_int);
-	minheap_add(min, cast_int(200));
-	minheap_add(min, cast_int(105));
-	minheap_add(min, cast_int(1));
+	Heap *min = heap_init(sizeof(int), compare_int);
+	heap_add(min, cast_int(200));
+	heap_add(min, cast_int(105));
+	heap_add(min, cast_int(1));
 
 	int exp[] = {1, 105, 200};
 	int index = 0;
 	int tmp;
-	while (!minheap_isempty(min)){
-		int value = * (int*) minheap_pop_min(min, &tmp);
+	while (!heap_isempty(min)){
+		int value = * (int*) heap_pop_min(min, &tmp);
 		assert(exp[index++] == value);
 	}
 
-	minheap_free(min);
+	heap_free(min);
 
-	min = minheap_init(sizeof(char), compare_char);
+	min = heap_init(sizeof(char), compare_char);
 	char input[] = {'Z', 'X', 'R', 'P', 'O', 'G', 'E', 'D', 'B', 'A'};
-	minheap_add_array(min, input, 10);
+	heap_add_array(min, input, 10);
 	char exp2[] = {'A','B','D','E','G','O','P','R','X','Z'};
 	index = 0;
 	char c;
-	while (!minheap_isempty(min)){
-		char value = * (char*) minheap_pop_min(min, &c);
+	while (!heap_isempty(min)){
+		char value = * (char*) heap_pop_min(min, &c);
 		assert(exp2[index++] == value);
 	}
 
-	minheap_free(min);
+	heap_free(min);
 }
 
 int main(){
 	print_test_start(Binary Heap);
 	TIMESTAMP_START
 
-	MinHeap *min = minheap_init(sizeof(int), compare_int);
-	assert(minheap_isempty(min));
+	Heap *min = heap_init(sizeof(int), compare_int);
+	assert(heap_isempty(min));
 
 	int nums[] = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
-	minheap_add_array(min, nums, 10);
+	heap_add_array(min, nums, 10);
 
-	int *res = minheap_get_array(min, 10);
+	int *res = heap_get_array(min, 10);
 	int exp1[] = {1, 2, 4, 3, 6, 5, 8, 10, 7, 9};
 	assert_array_int(res, exp1, 10);
 	free(res);
 
-	min = minheap_reset(min);
+	min = heap_reset(min);
 
 	int nums2[] = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
-	minheap_add_array(min, nums2, 11);
+	heap_add_array(min, nums2, 11);
 
 	int exp2[] = {0, 1, 4, 2, 6, 5, 8, 3, 7, 9, 10};
-	res = minheap_get_array(min, 11);
+	res = heap_get_array(min, 11);
 	assert_array_int(res, exp2, 11);
 	free(res);
 
-	minheap_free(min);
+	heap_free(min);
 
 	filter_up();
 

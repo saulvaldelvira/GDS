@@ -1,4 +1,4 @@
-#include "../src/stack.h"
+#include "../src/Stack.h"
 
 #define QUIET_DISABLE
 #include "test.h"
