@@ -17,6 +17,7 @@
 #include <string.h>
 #include <stdint.h>
 #include "./Util/index_t.h"
+#include <stdio.h>
 
 struct _Graph {
 	size_t n_elements;
@@ -608,14 +609,15 @@ DijkstraData_t graph_dijkstra(Graph *graph, void *source){
 	return dijkstra;
 }
 
-void graph_print_dijkstra_data(FILE *output, DijkstraData_t data){
-	fprintf(output, "[DIJKSTRA]\n");
-	fprintf(output, "i\tD\tP\n");
+void graph_print_dijkstra_data(void *output, DijkstraData_t data){
+	FILE *_output = (FILE*) output;
+	fprintf(_output, "[DIJKSTRA]\n");
+	fprintf(_output, "i\tD\tP\n");
 	for (size_t i = 0; i < data.n_elements; i++){
 		if (data.P[i].status == 1){ // If the pivot exists, print it
-			fprintf(output, "%-3zu\t%.3f\t%zu\n", i, data.D[i], data.P[i].value);
+			fprintf(_output, "%-3zu\t%.3f\t%zu\n", i, data.D[i], data.P[i].value);
 		} else { // Print a '-' to mark represent an unexisting pivot
- 			fprintf(output, "%-3zu\t%.3f\t-\n", i, data.D[i]);
+ 			fprintf(_output, "%-3zu\t%.3f\t-\n", i, data.D[i]);
 		}
 	}
 }
@@ -692,24 +694,25 @@ FloydData_t graph_floyd(Graph *graph){
 
 }
 
-void graph_print_floyd_data(FILE *output, FloydData_t data){
-	fprintf(output, "[FLOYD]\nD:\n");
+void graph_print_floyd_data(void *output, FloydData_t data){
+	FILE *_output = (FILE*) output;
+	fprintf(_output, "[FLOYD]\nD:\n");
 	for (size_t i = 0; i < data.n_elements; i++){
 		for (size_t j = 0; j < data.n_elements; j++){
-			fprintf(output, "%.2f\t", data.A[i][j]);
+			fprintf(_output, "%.2f\t", data.A[i][j]);
 		}
-		fprintf(output, "\n");
+		fprintf(_output, "\n");
 	}
-	fprintf(output, "P:\n");
+	fprintf(_output, "P:\n");
 	for (size_t i = 0; i < data.n_elements; i++){
 		for (size_t j = 0; j < data.n_elements; j++){
 			if (data.P[i][j].status == 1){
-				fprintf(output, "%zu\t", data.P[i][j].value);
+				fprintf(_output, "%zu\t", data.P[i][j].value);
 			}else{
-				fprintf(output, "-\t");
+				fprintf(_output, "-\t");
 			}
 		}
-		fprintf(output, "\n");
+		fprintf(_output, "\n");
 	}
 }
 
