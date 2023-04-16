@@ -83,7 +83,9 @@ You can use the Makefile to build and install the library. <br>
           can be overriden by defining INSTALL_PATH (e.g. `make install INSTALL_PATH=/lib`) <br>
 - `make uninstall`: removes the library from the computer. Must be run as root.<br>
           Remember to set INSTALL_PATH to the same value as in installation.
-          If you don't remember it, run `find / -name 'libGDS.so'`.
+          If you don't remember it, run `find / -name 'libGDS.so'`. <br>
+- `make clean`: removes objects and temporary files. <br>
+- `make purge`: calls make clean, and removes all the final binaries. <br>
 
 To use the library, just include the header(s) and remember to compile with the **-lGDS** or **-lGDS-static** flags. <br>
 NOTE: The headers are installed in $(INSTALL_PATH)/include/GDS. <br>

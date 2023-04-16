@@ -26,7 +26,7 @@ default: libs
 INSTALL_PATH ?= /usr/local
 
 libs: $(OFILES) | $(LIB)/  $(INCLUDE)/ $(INCLUDE)/Util/
-	$(info Building libs...)
+	$(info Building libs ...)
 	@ gcc $(CCFLAGS) -shared -o ./$(LIB)/libGDS.so $(OFILES)
 	@ $(AR) $(ARFLAGS) ./$(LIB)/libGDS-static.a $(OFILES)
 	@ $(foreach H,$(wildcard $(SRC)/*.h), echo $(HEADER_MSG) | cat - $(H) | cat - > $(INCLUDE)/$(notdir $(H));)
@@ -53,10 +53,10 @@ uninstall:
 
 # Build and run all test programs-f
 test: $(TESTFILES) $(LIB)/libGDS-static.a | $(BIN)/
-	$(info Running tests...)
+	$(info Running tests ...)
 	@ $(foreach T,$(filter %.c,$(TESTFILES)), \
 	  $(CC) $(CCFLAGS) -o $(BIN)/$(patsubst %.c,%.out, $(notdir $(T))) $(T) -L./$(LIB)/ -lGDS-static; \
-	  $(BIN)/$(patsubst %.c,%.out, $(notdir $(T))) ;)
+	  $(BIN)/$(patsubst %.c,%.out, $(notdir $(T))) || exit 1;)
 
 $(LIB)/libGDS-static.a: libs
 
@@ -67,7 +67,7 @@ $(LIB)/libGDS-static.a: libs
 	@ mkdir $@
 
 clean:
-	$(info Cleaning...)
+	$(info Cleaning ...)
 	@ find . -type f -name '*.o' -delete
 	@ find . -type f -name 'cachegrind.out.*' -delete
 	@ find . -type f -name '*.orig' -delete
@@ -78,6 +78,7 @@ clean:
 	@ find . -type f -name 'vgcore*' -delete
 
 purge: clean
-	$(info Purging...)
+	$(info Purging ...)
 	@ rm -rf $(BIN)/
 	@ rm -rf $(LIB)/
+	@ rm -rf $(INCLUDE)/
