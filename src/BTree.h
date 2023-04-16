@@ -7,7 +7,6 @@
  *  See <https://www.gnu.org/licenses/>.
  *
  *  Email: saulvaldelvira@gmail.com
- *  Version: 29-01-2023
  */
 #ifndef BTREE_H
 #define BTREE_H

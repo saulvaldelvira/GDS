@@ -7,7 +7,6 @@
  *  See <https://www.gnu.org/licenses/>
  *
  *  Email: saulvaldelvira@gmail.com
- *  Version: 18-01-2023
  */
 #include "Heap.h"
 #include "./Util/error.h"

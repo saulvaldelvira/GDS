@@ -7,7 +7,6 @@
  *  See <https://www.gnu.org/licenses/>
  *
  *  Email: saulvaldelvira@gmail.com
- *  Version: 18-03-2023
  */
 #include "hash.h"
 

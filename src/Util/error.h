@@ -9,7 +9,6 @@
  *  See <https://www.gnu.org/licenses/>.
  *
  *  Email: saulvaldelvira@gmail.com
- *  Version: 11-01-2023
  */
 #pragma once
 #ifndef CHECKS_H

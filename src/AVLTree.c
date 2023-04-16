@@ -7,7 +7,6 @@
  *  See <https://www.gnu.org/licenses/>
  *
  *  Email: saulvaldelvira@gmail.com
- *  Version: 17-01-2023
  */
 #include "AVLTree.h"
 #include "./Util/error.h"
