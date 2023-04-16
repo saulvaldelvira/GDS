@@ -112,7 +112,6 @@ Dictionary* dict_init(size_t key_size, size_t value_size, hash_function_t hash_f
         dict->min_lf = DICT_DEF_MIN_LF;
         dict->max_lf = DICT_DEF_MAX_LF;
         dict->elements = vector_init(sizeof(DictionaryNode), compare_always_equal);
-        vector_reserve(dict->elements, DICT_INITIAL_SIZE);
         if (!dict->elements){
                 free(dict);
                 return NULL;

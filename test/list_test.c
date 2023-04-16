@@ -75,13 +75,8 @@ int main(){
 	assert(0 == * (int*) vector_get_front(vec, &tmp));
 	int menosveinte = -20, treinta = 30;
 
-	fprintf(stderr, "\n");
 	assert(vector_indexof(vec, &menosveinte).status == ELEMENT_NOT_FOUND_ERROR);
-	fprintf(stderr, Clear_Line);
-	fprintf(stderr, Move_Line(13));
-	fflush(stderr);
-
-
+	
 	index_t ret = vector_indexof(vec, &treinta);
 
 	assert(ret.status);

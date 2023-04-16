@@ -86,14 +86,19 @@ comparator_function_t vector_get_comparator(Vector *vector){
 /// ADD-SET ///////////////////////////////////////////////////////////////////////
 
 static int vector_resize(Vector *vector, size_t new_size){
-	vector->max_elements = new_size;
-	void *tmp = realloc(vector->elements, vector->max_elements * vector->data_size);
+	void *tmp = calloc(new_size, vector->data_size);
 	if(!tmp){
 		printerr_allocation(vector_resize);
-		free(vector->elements);
 		return ALLOCATION_ERROR;
 	}
+	tmp = memcpy(tmp, vector->elements, vector->n_elements * vector->data_size);
+	if(!tmp){
+		printerr_memory_op(vector_resize);
+		return MEMORY_OP_ERROR;
+	}
+	free(vector->elements);
 	vector->elements = tmp;
+	vector->max_elements = new_size;
 	return SUCCESS;
 }
 
@@ -404,14 +409,13 @@ index_t vector_indexof(Vector *vector, void *element){
 		return index_t(0,NULL_PARAMETER_ERROR);
 	}
 
-	void *ptr; // Current element in the iteration
-	for (size_t i=0; i < vector->n_elements; i++){
-		ptr = void_offset(vector->elements, i * vector->data_size);
+	void *ptr = vector->elements; // Current element in the iteration
+	for (size_t i = 0; i < vector->n_elements; i++){
 		if ((*vector->compare) (ptr, element) == 0){
 			return index_t(i,SUCCESS);
 		}
+		ptr = void_offset(ptr, vector->data_size);
 	}
-	printerr(vector_indexof, "The element %p does not exists",, element);
 	return index_t(0,ELEMENT_NOT_FOUND_ERROR);
 }
 
@@ -581,11 +585,15 @@ int vector_reserve(Vector *vector, size_t n_elements){
 		printerr_null_param(vector_reserve);
 		return NULL_PARAMETER_ERROR;
 	}
-	vector->n_elements = n_elements;
 	if (vector->max_elements >= n_elements){
+		vector->n_elements = n_elements;
 		return SUCCESS;
 	}
-	return vector_resize(vector, n_elements);
+	int status = vector_resize(vector, n_elements);
+	if (status == SUCCESS){
+		vector->n_elements = n_elements;
+	}
+	return status;
 }
 
 Vector* vector_join(Vector *vector_1, Vector *vector_2){
