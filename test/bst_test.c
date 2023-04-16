@@ -1,4 +1,4 @@
-#include "../src/BSTree/BSTree.h"
+#include "../src/BSTree.h"
 #define QUIET_DISABLE
 #include "test.h"
 #undef QUIET_DISABLE

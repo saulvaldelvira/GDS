@@ -10,8 +10,8 @@
  *  Version: 18-01-2023
  */
 #include "binary_heap_min.h"
-#include "../Util/error.h"
-#include "../Vector/vector.h"
+#include "./Util/error.h"
+#include "./vector.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

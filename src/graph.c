@@ -10,13 +10,13 @@
  *  Version: 17-01-2023
  */
 #include "graph.h"
-#include "../Util/error.h"
-#include "../Util/definitions.h"
+#include "./Util/error.h"
+#include "./Util/definitions.h"
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
 #include <stdint.h>
-#include "../Util/index_t.h"
+#include "./Util/index_t.h"
 
 struct _Graph {
 	size_t n_elements;

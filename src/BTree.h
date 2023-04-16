@@ -18,7 +18,7 @@ extern "C" {
 
 #include <stddef.h>
 #include <stdbool.h>
-#include "../Util/comparator.h"
+#include "./Util/comparator.h"
 
 typedef struct _BTree BTree;
 

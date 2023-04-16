@@ -2,7 +2,7 @@
 #include "test.h"
 #undef QUIET_DISABLE
 
-#include "../src/BinaryHeap/binary_heap_min.h"
+#include "../src/binary_heap_min.h"
 
 void change_priority(){
 	print_test_step(Change Priority);

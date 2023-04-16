@@ -19,7 +19,7 @@ extern "C" {
 
 #include <stdbool.h>
 #include <stddef.h>
-#include "../Util/comparator.h"
+#include "./Util/comparator.h"
 
 /**
  * @brief BSTree (Binary Search Tree) structure.

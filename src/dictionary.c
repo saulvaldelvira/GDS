@@ -10,9 +10,9 @@
  *  Version: 18-03-2023
  */
 #include "dictionary.h"
-#include "../Util/error.h"
-#include "../Vector/vector.h"
-#include "../Util/definitions.h"
+#include "./Util/error.h"
+#include "./vector.h"
+#include "./Util/definitions.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

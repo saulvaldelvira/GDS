@@ -17,6 +17,7 @@ vgcore*
 # Bin folders
 bin
 lib
+include
 
 # Prerequisites
 *.d

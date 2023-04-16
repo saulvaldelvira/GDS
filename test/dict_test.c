@@ -1,4 +1,4 @@
-#include "../src/Dictionary/dictionary.h"
+#include "../src/dictionary.h"
 
 #define QUIET_DISABLE
 #include "test.h"

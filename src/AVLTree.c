@@ -10,8 +10,8 @@
  *  Version: 17-01-2023
  */
 #include "AVLTree.h"
-#include "../Util/error.h"
-#include "../Util/definitions.h" // void_offset macro and byte_t typedef
+#include "./Util/error.h"
+#include "./Util/definitions.h" // void_offset macro and byte_t typedef
 #include <stdlib.h> // malloc
 #include <string.h> // memcpy
 #include <stdio.h> // fprintf

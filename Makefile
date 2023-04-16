@@ -3,8 +3,9 @@
 SRC = src
 BIN = bin
 LIB = lib
+INCLUDE = include
 
-CFILES = $(wildcard $(SRC)/**/*.c)
+CFILES = $(wildcard $(SRC)/*.c) $(wildcard $(SRC)/*/*.c)
 OFILES = $(patsubst %.c,%.o,$(CFILES))
 LIBFILES = $(addprefix $(LIB)/lib,$(notdir $(CFILES:.c=.so)))
 TESTFILES = $(wildcard test/*)
@@ -22,18 +23,21 @@ ARFLAGS = rcs
 
 default: libs
 
-libs: $(OFILES) | $(LIB)/
+libs: $(OFILES) | $(LIB)/  $(INCLUDE)/ $(INCLUDE)/Util/
 	$(info Building libs...)
 	@ gcc $(CCFLAGS) -shared -o ./$(LIB)/libGDS.so $(OFILES)
 	@ $(AR) $(ARFLAGS) ./$(LIB)/libGDS-static.a $(OFILES)
 	@ $(foreach O,$(OFILES),$(AR) $(ARFLAGS) ./$(LIB)/lib$(patsubst %.o,%.a, $(notdir $(O))) $(O) ;)
+	@ cp $(SRC)/*.h $(INCLUDE)/ && cp $(SRC)/Util/*.h $(INCLUDE)/Util/
 
 # Build and run all test programs
-test: $(TESTFILES) $(OFILES) | $(BIN)/
+test: $(TESTFILES) $(LIB)/libGDS-static.a | $(BIN)/
 	$(info Running tests...)
 	@ $(foreach T,$(filter %.c,$(TESTFILES)), \
-	  $(CC) $(CCFLAGS) -o $(BIN)/$(patsubst %.c,%.out, $(notdir $(T))) $(T) $(OFILES); \
+	  $(CC) $(CCFLAGS) -o $(BIN)/$(patsubst %.c,%.out, $(notdir $(T))) $(T) -L./$(LIB)/ -lGDS-static; \
 	  $(BIN)/$(patsubst %.c,%.out, $(notdir $(T))) ;)
+
+$(LIB)/libGDS-static.a: libs
 
 .c.o:
 	$(CC) $(CCFLAGS) -c -o $@ $<

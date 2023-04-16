@@ -20,8 +20,8 @@ extern "C" {
 #include <stddef.h>
 #include <stdbool.h>
 #include <stdio.h>
-#include "../Util/comparator.h"
-#include "../Util/index_t.h"
+#include "./Util/comparator.h"
+#include "./Util/index_t.h"
 
 #define GRAPH_DEFAULT_SIZE 8
 

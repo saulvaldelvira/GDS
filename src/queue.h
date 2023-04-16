@@ -19,7 +19,7 @@ extern "C" {
 
 #include <stdbool.h>
 #include <stddef.h>
-#include "../Util/comparator.h"
+#include "./Util/comparator.h"
 
 /**
  * The Queue works in a similar way to a LinkedList. But in this case, the elements are removed from the head.

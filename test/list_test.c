@@ -1,5 +1,5 @@
-#include "../src/Vector/vector.h"
-#include "../src/LinkedList/linked_list.h"
+#include "../src/vector.h"
+#include "../src/linked_list.h"
 
 #define QUIET_DISABLE
 #include "test.h"

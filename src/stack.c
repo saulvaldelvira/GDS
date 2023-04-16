@@ -12,8 +12,8 @@
 #include "stack.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include "../Util/error.h"
-#include "../Util/definitions.h"
+#include "./Util/error.h"
+#include "./Util/definitions.h"
 #include <string.h>
 
 typedef struct StackNode {

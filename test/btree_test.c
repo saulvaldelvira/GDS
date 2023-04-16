@@ -2,7 +2,7 @@
 #include "test.h"
 #undef QUIET_DISABLE
 
-#include "../src/BTree/BTree.h"
+#include "../src/BTree.h"
 
 #define ARR_SIZE(arr) (sizeof(arr)/sizeof(arr[0]))
 

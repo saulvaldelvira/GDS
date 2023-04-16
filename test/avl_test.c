@@ -2,7 +2,7 @@
 #include "test.h"
 #undef QUIET_DISABLE
 
-#include "../src/AVLTree/AVLTree.h"
+#include "../src/AVLTree.h"
 
 void print_preord(AVLTree *tree){
 	void *preord = avl_preorder(tree);
