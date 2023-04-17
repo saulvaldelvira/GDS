@@ -32,7 +32,6 @@ libs: $(OFILES) | $(LIB)/  $(INCLUDE)/ $(INCLUDE)/Util/
 	@ $(AR) $(ARFLAGS) ./$(LIB)/libGDS-static.a $(OFILES)
 	@ $(foreach H,$(wildcard $(SRC)/*.h), echo $(HEADER_MSG) | cat - $(H) | cat - > $(INCLUDE)/$(notdir $(H));)
 	@ $(foreach H,$(wildcard $(SRC)/Util/*.h), echo $(HEADER_MSG) | cat - $(H) | cat - > $(INCLUDE)/Util/$(notdir $(H));)
-	@ chown $(logname):$(logname) -R $(LIB)/ $(INCLUDE)/
 
 install: libs
 	$(info Installing GDS in $(INSTALL_PATH)/lib ...)

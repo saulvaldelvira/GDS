@@ -80,11 +80,7 @@ void dijkstra_test(void){
 	assert(dijkstra.status == ELEMENT_NOT_FOUND_ERROR);
 	graph_free_dijkstra_data(&dijkstra);
 
-	fprintf(stderr, "\n");
-	dijkstra = graph_dijkstra(NULL, NULL);
-	fprintf(stderr, Clear_Line);
-	fprintf(stderr, Move_Line(15));
-	fflush(stderr);
+	Ignore_Error(dijkstra = graph_dijkstra(NULL, NULL),15)
 
 	assert(dijkstra.status == NULL_PARAMETER_ERROR);
 
@@ -247,11 +243,7 @@ void eccentricity_test(void){
 	graph_add_edge(g, &c, &b, 5.0f);
 	assert(graph_eccentricity(g, &b) == 8.0f);
 
-	fprintf(stderr, "\n");
-	assert(graph_eccentricity(NULL, NULL) == NULL_PARAMETER_ERROR * 1.0f);
-	fprintf(stderr, Clear_Line);
-	fprintf(stderr, Move_Line(19));
-	fflush(stderr);
+	Ignore_Error(assert(graph_eccentricity(NULL, NULL) == NULL_PARAMETER_ERROR * 1.0f),19)
 
 	assert(graph_eccentricity(g, cast_char('J')) == ELEMENT_NOT_FOUND_ERROR * 1.0f);
 
@@ -287,9 +279,6 @@ int main(){
 		assert(graph_remove_vertex(g, &i));
 	}
 
-
-
-
 	print_test_step(Dijkstra);
 	dijkstra_test();
 	print_test_ok();
@@ -297,7 +286,6 @@ int main(){
 	print_test_step(Floyd);
 	floyd_test();
 	print_test_ok();
-
 
 	print_test_step(Traverse BF);
 	traverse_bf();

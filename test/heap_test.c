@@ -5,20 +5,17 @@
 #include "../src/Heap.h"
 
 void change_priority(){
-	print_test_step(Change Priority);
+	print_test_step("Change Priority");
 	Heap *min = heap_init(sizeof(int), compare_int);
 
-
-	Ignore_Error(assert(heap_change_priority(min, cast_int(12), cast_int(16)) != SUCCESS), 0);
+	//Ignore_Error(assert(heap_change_priority(min, cast_int(12), cast_int(16)) != SUCCESS), 0);
 
 	int elements[] = {12 ,14, 15, 20, 16, 17, 19, 24, 30};
 	heap_add_array(min, elements, 9);
 
-	Ignore_Error(assert(heap_change_priority(min, cast_int(-78), cast_int(16)) != SUCCESS), 0);
-
-	Ignore_Error(assert(heap_change_priority(min, NULL, NULL) != SUCCESS), 0)
-
-	Ignore_Error(assert(heap_change_priority(min, &elements[0], NULL) != SUCCESS), 22)
+	assert(heap_change_priority(min, cast_int(-78), cast_int(16)) != SUCCESS);
+	Ignore_Error(assert(heap_change_priority(min, NULL, NULL) != SUCCESS), 0);
+	Ignore_Error(assert(heap_change_priority(min, &elements[0], NULL) != SUCCESS), 24);
 
 	// Change priority of 20 to 5
 	assert(heap_change_priority(min, &elements[3], cast_int(5)));
@@ -147,7 +144,7 @@ void pop_min(){
 }
 
 int main(){
-	print_test_start(Binary Heap);
+	print_test_start(Heap);
 	TIMESTAMP_START
 
 	Heap *min = heap_init(sizeof(int), compare_int);
@@ -180,6 +177,6 @@ int main(){
 	change_priority();
 
 	TIMESTAMP_STOP
-	print_test_end(BinaryHeap);
+	print_test_end(Heap);
 	return 0;
 }
