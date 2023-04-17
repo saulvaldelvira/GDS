@@ -18,7 +18,7 @@ extern "C" {
 #endif
 
 #include "AVLTree.h"
-#include "PriorityQueue.h"
+#include "Heap.h"
 #include "BSTree.h"
 #include "BTree.h"
 #include "Dictionary.h"

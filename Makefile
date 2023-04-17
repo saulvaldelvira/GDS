@@ -1,4 +1,4 @@
-.PHONY: default clean purge libs test
+.PHONY: default clean purge libs test install uninstall
 
 SRC = src
 BIN = bin
@@ -11,7 +11,7 @@ LIBFILES = $(addprefix $(LIB)/lib,$(notdir $(CFILES:.c=.so)))
 TESTFILES = $(wildcard test/*)
 
 CC = gcc
-CCFLAGS = -Wall -Wextra -Werror -pedantic -g -fPIC -O3
+CCFLAGS = -Wall -Wextra -Werror -pedantic -g -fPIC -O3 -D__GDS_ENABLE_ERROR_MACROS
 
 # User's custom flags
 ifdef FLAGS
@@ -24,10 +24,11 @@ ARFLAGS = rcs
 default: libs
 
 INSTALL_PATH ?= /usr/local
+HEADER_MSG = "// Source code: https://git.saulv.es/Generic-Data-Structures"
 
 libs: $(OFILES) | $(LIB)/  $(INCLUDE)/ $(INCLUDE)/Util/
 	$(info Building libs ...)
-	@ gcc $(CCFLAGS) -shared -o ./$(LIB)/libGDS.so $(OFILES)
+	@ $(CC) $(CCFLAGS) -shared -o ./$(LIB)/libGDS.so $(OFILES)
 	@ $(AR) $(ARFLAGS) ./$(LIB)/libGDS-static.a $(OFILES)
 	@ $(foreach H,$(wildcard $(SRC)/*.h), echo $(HEADER_MSG) | cat - $(H) | cat - > $(INCLUDE)/$(notdir $(H));)
 	@ $(foreach H,$(wildcard $(SRC)/Util/*.h), echo $(HEADER_MSG) | cat - $(H) | cat - > $(INCLUDE)/Util/$(notdir $(H));)
@@ -36,8 +37,7 @@ libs: $(OFILES) | $(LIB)/  $(INCLUDE)/ $(INCLUDE)/Util/
 install: libs
 	$(info Installing GDS in $(INSTALL_PATH)/lib ...)
 	@ install -d $(INSTALL_PATH)/lib
-	@ install -m 644 $(LIB)/libGDS.so $(INSTALL_PATH)/lib
-	@ install -m 644 $(LIB)/libGDS-static.a $(INSTALL_PATH)/lib
+	@ install -m 644 $(LIB)/* $(INSTALL_PATH)/lib
 	@ install -d $(INSTALL_PATH)/include/GDS
 	@ install -d $(INSTALL_PATH)/include/GDS/Util
 	@ install -m 644 $(INCLUDE)/*.h $(INSTALL_PATH)/include/GDS
@@ -46,8 +46,7 @@ install: libs
 
 uninstall:
 	$(info Uninstalling GDS ...)
-	@ rm -f $(INSTALL_PATH)/lib/libGDS.so
-	@ rm -f $(INSTALL_PATH)/lib/libGDS-static.a
+	@ rm -f $(INSTALL_PATH)/lib/libGDS*
 	@ rm -rf $(INSTALL_PATH)/include/GDS
 	@ ldconfig $(INSTALL_PATH)/lib
 

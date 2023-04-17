@@ -30,6 +30,8 @@ extern "C" {
 #define INVALID_PARAMETER_ERROR -0xE007
 
 // Print error macros
+#ifdef __GDS_ENABLE_ERROR_MACROS
+
 #define printerr(func, msg, ...) fprintf(stderr, "ERROR: " msg  ". Function: " #func "\n" __VA_ARGS__)  // C23 will add __VA_OPT__(,)
 
 #define printerr_allocation(func) fprintf(stderr, "ERROR: Unable to allocate memory. Function: " #func "\n");
@@ -41,6 +43,8 @@ extern "C" {
 #define printerr_memory_op(func) fprintf(stderr, "ERROR: In memory operation. Function: " #func "\n");
 
 #define printerr_data_size(func) fprintf(stderr, "ERROR: Data size must be > 0. Function: " #func "\n");
+
+#endif //__GDS_ENABLE_ERROR_MACROS
 
 #ifdef __cplusplus
 }
