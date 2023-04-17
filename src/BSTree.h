@@ -115,6 +115,12 @@ BSTree* bst_join(BSTree *tree_1, BSTree *tree_2);
 int bst_free(BSTree *tree);
 
 /**
+ * Frees multiple trees at once.
+ * @n number of pointers to free.
+*/
+void bst_free_all(unsigned int n, ...);
+
+/**
  * Frees the memory allocated for this tree and resets it to it's original state
  * @return the same pointer if sucess, NULL if the operation fails
 */

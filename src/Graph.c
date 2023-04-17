@@ -17,6 +17,7 @@
 #include <stdint.h>
 #include "./Util/index_t.h"
 #include <stdio.h>
+#include <stdarg.h>
 
 struct _Graph {
 	size_t n_elements;
@@ -952,6 +953,16 @@ int graph_free(Graph *graph){
 	free_contents(graph);
 	free(graph);
 	return SUCCESS;
+}
+
+void graph_free_all(unsigned int n, ...){
+	va_list arg;
+	va_start(arg, n);
+	for (unsigned int i = 0; i < n; i++){
+		Graph *ptr = va_arg(arg, Graph*);
+		graph_free(ptr);
+	}
+	va_end(arg);
 }
 
 Graph* graph_reset(Graph *graph){

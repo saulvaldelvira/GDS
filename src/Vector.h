@@ -216,13 +216,19 @@ int vector_remove_array(Vector *vector, void *array, size_t array_length);
 Vector* vector_join(Vector *vector_1, Vector *vector_2);
 
 /**
- * Frees the list from memory
+ * Frees the vector from memory
  * @return 1 if the operation is successful
  */
 int vector_free(Vector *vector);
 
 /**
- * Frees the list from memory and resets it to it's original state
+ * Frees multiple vector at once.
+ * @n number of pointers to free.
+*/
+void vector_free_all(unsigned int n, ...);
+
+/**
+ * Frees the vector from memory and resets it to it's original state
  * @return the same pointer if sucess, NULL if the operation fails
  */
 Vector* vector_reset(Vector *vector);

@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdarg.h>
 
 typedef struct BSNode {
 	struct BSNode *right;
@@ -608,7 +609,6 @@ static void free_rec(BSNode *node){
 
 int bst_free(BSTree *tree){
 	if (!tree){
-		printerr_null_param(bst_free);
 		return NULL_PARAMETER_ERROR;
 	}
 	free_rec(tree->root);
@@ -616,9 +616,18 @@ int bst_free(BSTree *tree){
 	return 1;
 }
 
+void bst_free_all(unsigned int n, ...){
+	va_list arg;
+	va_start(arg, n);
+	for (unsigned int i = 0; i < n; i++){
+		BSTree *ptr = va_arg(arg, BSTree*);
+		bst_free(ptr);
+	}
+	va_end(arg);
+}
+
 BSTree* bst_reset(BSTree *tree){
 	if (!tree){
-		printerr_null_param(bst_reset);
 		return NULL;
 	}
 	free_rec(tree->root);

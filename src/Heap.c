@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdarg.h>
 
 struct _Heap {
 	Vector *elements;
@@ -306,6 +307,16 @@ int heap_free(Heap *heap){
 	vector_free(heap->elements);
 	free(heap);
 	return SUCCESS;
+}
+
+void heap_free_all(unsigned int n, ...){
+	va_list arg;
+	va_start(arg, n);
+	for (unsigned int i = 0; i < n; i++){
+		Heap *ptr = va_arg(arg, Heap*);
+		heap_free(ptr);
+	}
+	va_end(arg);
 }
 
 Heap* heap_reset(Heap *heap){

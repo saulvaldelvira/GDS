@@ -41,9 +41,7 @@ void join_test(){
 		assert(avl_exists(joint, &i));
 	}
 
-	avl_free(t1);
-	avl_free(t2);
-	avl_free(joint);
+	avl_free_all(3, t1, t2, joint);
 }
 
 int main(){

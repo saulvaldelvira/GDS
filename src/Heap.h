@@ -100,6 +100,12 @@ bool heap_isempty(Heap *heap);
 int heap_free(Heap *heap);
 
 /**
+ * Frees multiple heaps at once.
+ * @n number of pointers to free.
+*/
+void heap_free_all(unsigned int n, ...);
+
+/**
  * Resets the heap to its original state.
  * @return heap, or NULL if error.
 */

@@ -149,6 +149,12 @@ LinkedList* list_join(LinkedList *list_1, LinkedList *list_2);
 int list_free(LinkedList *list);
 
 /**
+ * Frees multiple lists at once.
+ * @n number of pointers to free.
+*/
+void list_free_all(unsigned int n, ...);
+
+/**
  * Frees the memory allocated on the list, and resets it to it's initial state
  * @return the same pointer if sucess, NULL if the operation fails
 */

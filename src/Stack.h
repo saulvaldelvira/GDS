@@ -93,6 +93,12 @@ bool stack_isempty(Stack *stack);
 int stack_free(Stack *stack);
 
 /**
+ * Frees multiple stacks at once.
+ * @n number of pointers to free.
+*/
+void stack_free_all(unsigned int n, ...);
+
+/**
  * Frees the memory allocated for the stack AND resets it to the initial state of a stack
  * @return the same pointer if sucess, NULL if the operation fails
 */

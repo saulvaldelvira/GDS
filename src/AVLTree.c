@@ -14,6 +14,7 @@
 #include <stdlib.h> // malloc
 #include <string.h> // memcpy
 #include <stdio.h> // fprintf
+#include <stdarg.h>
 
 #define MAX_DISBALANCE 2
 
@@ -728,7 +729,6 @@ static void free_node(AVLNode *node){
 
 int avl_free(AVLTree *tree){
 	if (!tree){
-		printerr_null_param(avl_free);
 		return NULL_PARAMETER_ERROR;
 	}
 	free_node(tree->root);
@@ -736,9 +736,18 @@ int avl_free(AVLTree *tree){
 	return SUCCESS;
 }
 
+void avl_free_all(unsigned int n, ...){
+	va_list arg;
+	va_start(arg, n);
+	for (unsigned int i = 0; i < n; i++){
+		AVLTree *ptr = va_arg(arg, AVLTree*);
+		avl_free(ptr);
+	}
+	va_end(arg);
+}
+
 AVLTree* avl_reset(AVLTree *tree){
 	if (!tree){
-		printerr_null_param(avl_reset);
 		return NULL;
 	}
 	free_node(tree->root);

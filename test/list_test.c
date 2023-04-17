@@ -39,12 +39,8 @@ void joins_test(){
 		assert(list_exists(lnkd_joint, &i));
 	}
 
-	vector_free(a1);
-	vector_free(a2);
-	vector_free(vec_joint);
-	list_free(l1);
-	list_free(l2);
-	list_free(lnkd_joint);
+	vector_free_all(3, a1, a2, vec_joint);
+	list_free_all(3, l1, l2, lnkd_joint);
 }
 
 int main(){
@@ -76,7 +72,7 @@ int main(){
 	int menosveinte = -20, treinta = 30;
 
 	assert(vector_indexof(vec, &menosveinte).status == ELEMENT_NOT_FOUND_ERROR);
-	
+
 	index_t ret = vector_indexof(vec, &treinta);
 
 	assert(ret.status);

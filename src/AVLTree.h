@@ -138,6 +138,12 @@ void* avl_min_from(AVLTree *tree, void *element, void *dest);
 */
 int avl_free(AVLTree *tree);
 
+/**
+ * Frees multiple trees at once.
+ * @n number of pointers to free.
+*/
+void avl_free_all(unsigned int n, ...);
+
 /***
  * Resets the tree to it's default state
  * @return the pointer. NULL if anything goes wrong.

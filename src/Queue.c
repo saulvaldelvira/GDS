@@ -14,6 +14,7 @@
 #include "./Util/error.h"
 #include "./Util/definitions.h"
 #include <string.h>
+#include <stdarg.h>
 
 typedef struct QueueNode {
 	struct QueueNode *next;
@@ -230,6 +231,16 @@ int queue_free(Queue *queue){
 	queue_free_node(queue->head);
 	free(queue);
 	return SUCCESS;
+}
+
+void queue_free_all(unsigned int n, ...){
+	va_list arg;
+	va_start(arg, n);
+	for (unsigned int i = 0; i < n; i++){
+		Queue *ptr = va_arg(arg, Queue*);
+		queue_free(ptr);
+	}
+	va_end(arg);
 }
 
 Queue* queue_reset(Queue *queue){

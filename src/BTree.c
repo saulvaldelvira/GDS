@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdarg.h>
 
 typedef struct BTreeNode {
 	int n_elements;
@@ -800,7 +801,6 @@ static void btree_free_node(BTreeNode *node){
 
 int btree_free(BTree *tree){
 	if (!tree){
-		printerr_null_param(btree_free);
 		return NULL_PARAMETER_ERROR;
 	}
 	btree_free_node(tree->root);
@@ -808,9 +808,18 @@ int btree_free(BTree *tree){
 	return SUCCESS;
 }
 
+void btree_free_all(unsigned int n, ...){
+	va_list arg;
+	va_start(arg, n);
+	for (unsigned int i = 0; i < n; i++){
+		BTree *ptr = va_arg(arg, BTree*);
+		btree_free(ptr);
+	}
+	va_end(arg);
+}
+
 BTree* btree_reset(BTree *tree){
 	if (!tree){
-		printerr_null_param(btree_reset);
 		return NULL;
 	}
 	btree_free_node(tree->root);

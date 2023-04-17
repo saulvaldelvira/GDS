@@ -15,6 +15,7 @@
 #include "./Util/error.h"
 #include "./Util/definitions.h"
 #include <string.h>
+#include <stdarg.h>
 
 /**
  * Node of a Linked List
@@ -453,6 +454,16 @@ int list_free(LinkedList *list){
 	list_free_node(list->head);
 	free(list);
 	return SUCCESS;
+}
+
+void list_free_all(unsigned int n, ...){
+	va_list arg;
+	va_start(arg, n);
+	for (unsigned int i = 0; i < n; i++){
+		LinkedList *ptr = va_arg(arg, LinkedList*);
+		list_free(ptr);
+	}
+	va_end(arg);
 }
 
 LinkedList* list_reset(LinkedList *list){

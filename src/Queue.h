@@ -87,6 +87,12 @@ bool queue_isempty(Queue *queue);
 int queue_free(Queue *queue);
 
 /**
+ * Frees multiple queues at once.
+ * @n number of pointers to free.
+*/
+void queue_free_all(unsigned int n, ...);
+
+/**
  * Frees the memory allocated for the queue AND resets it to the initial state of a Queue
  * @return the same pointer if sucess, NULL if the operation fails
 */

@@ -26,9 +26,7 @@ void join_test(){
                 assert(bst_exists(joint, &i));
         }
 
-        bst_free(t1);
-        bst_free(t2);
-        bst_free(joint);
+	bst_free_all(3, t1, t2, joint);
 }
 
 int main(){

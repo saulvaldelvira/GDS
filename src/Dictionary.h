@@ -80,6 +80,15 @@ int dict_remove(Dictionary *dict, void *key);
 */
 int dict_free(Dictionary *dict);
 
+/**
+ * Frees multiple dictionaries at once.
+ * @n number of pointers to free.
+*/
+void dict_free_all(unsigned int n, ...);
+
+/**
+ * Resets the dictionary
+*/
 Dictionary* dict_reset(Dictionary *dict);
 
 #ifdef __cplusplus

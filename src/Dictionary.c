@@ -15,6 +15,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdarg.h>
 
 typedef struct DictionaryNode {
         void *key;
@@ -449,7 +450,6 @@ int dict_remove(Dictionary *dict, void *key){
 
 int dict_free(Dictionary *dict){
         if (!dict){
-                printerr_null_param(dict_free);
                 return NULL_PARAMETER_ERROR;
         }
         vector_process(dict->elements, free_node, NULL);
@@ -458,9 +458,18 @@ int dict_free(Dictionary *dict){
         return SUCCESS;
 }
 
+void dict_free_all(unsigned int n, ...){
+	va_list arg;
+	va_start(arg, n);
+	for (unsigned int i = 0; i < n; i++){
+		Dictionary *ptr = va_arg(arg, Dictionary*);
+		dict_free(ptr);
+	}
+	va_end(arg);
+}
+
 Dictionary* dict_reset(Dictionary *dict){
         if (!dict){
-                printerr_null_param(dict_reset);
                 return NULL;
         }
         vector_process(dict->elements, free_node, NULL);

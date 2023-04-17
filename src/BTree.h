@@ -70,6 +70,12 @@ bool btree_exists(BTree *tree, void *element);
 int btree_free(BTree *tree);
 
 /**
+ * Frees multiple trees at once.
+ * @n number of pointers to free.
+*/
+void btree_free_all(unsigned int n, ...);
+
+/**
  * Resets the tree to it's initial state.
  * This means, it clears all the data it stores, but unlike
  * the free function, leaves it ready to store new data.

@@ -14,6 +14,7 @@
 #include "./Util/error.h"
 #include "./Util/definitions.h"
 #include <string.h>
+#include <stdarg.h>
 
 typedef struct StackNode {
 	struct StackNode *next;
@@ -249,7 +250,17 @@ int stack_free(Stack *stack){
 	}
 	free_node(stack->head);
 	free(stack);
-	return 1;
+	return SUCCESS;
+}
+
+void stack_free_all(unsigned int n, ...){
+	va_list arg;
+	va_start(arg, n);
+	for (unsigned int i = 0; i < n; i++){
+		Stack *ptr = va_arg(arg, Stack*);
+		stack_free(ptr);
+	}
+	va_end(arg);
 }
 
 Stack* stack_reset(Stack *stack){

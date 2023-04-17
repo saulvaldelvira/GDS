@@ -280,6 +280,12 @@ traverse_data_t graph_traverse_BF(Graph *graph, void *vertex);
 int graph_free(Graph *graph);
 
 /**
+ * Frees multiple graphs at once.
+ * @n number of pointers to free.
+*/
+void graph_free_all(unsigned int n, ...);
+
+/**
  * Resets the graph to it's original state.
  * @return the given graph, or NULL if something goes wrong
 */
