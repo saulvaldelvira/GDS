@@ -18,9 +18,11 @@
 extern "C" {
 #endif
 
+#include <stdint.h>
+
 #define GET_ALL_ELEMENTS 0
 
-typedef unsigned char byte_t;
+typedef int8_t byte_t;
 #define void_offset(ptr, bytes) (void*)(((byte_t*)ptr) + (bytes))
 #define matrix_offset(arr, dim, rows, cols) (arr+((dim)*(rows) + (cols)))
 
