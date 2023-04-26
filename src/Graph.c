@@ -886,6 +886,7 @@ traverse_data_t graph_traverse_BF(Graph *graph, void *vertex){
 		printerr_allocation(graph_traverse_BF);
 		bf.status = ALLOCATION_ERROR;
 		free(bf.elements);
+		bf.elements = NULL;
 		free(visited);
 		free(queue);
 		return bf;
