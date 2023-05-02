@@ -45,11 +45,7 @@ static AVLNode* init_node(void *element, size_t data_size){
         node->right = NULL;
         node->father = NULL;
         node->height = 0;
-        if (!memcpy(node->info, element, data_size)){
-                printerr_memory_op(init_node);
-                free(node);
-                return NULL;
-        }
+        memcpy(node->info, element, data_size);
         return node;
 }
 
@@ -331,10 +327,7 @@ static struct remove_rec_ret remove_rec(AVLNode *node, void *element, comparator
 			free(aux);
 		}else {
 			aux = get_max(node->left);
-			if(!memcpy(node->info, aux->info, size)){
-				printerr_memory_op(remove_rec);
-				ret.status = MEMORY_OP_ERROR;
-			}
+			memcpy(node->info, aux->info, size);
 			struct remove_rec_ret left = remove_rec(node->left, aux->info, cmp, size);
 			node->left = left.node;
 		}
@@ -424,10 +417,7 @@ void* avl_get(AVLTree *tree, void *element, void *dest){
 	if (!node){
 		return NULL;
 	}
-	if(!memcpy(dest, node->info, tree->data_size)){
-		printerr_memory_op(avl_get);
-		return NULL;
-	}
+	memcpy(dest, node->info, tree->data_size);
 	return dest;
 }
 
@@ -499,8 +489,10 @@ static struct traversal_ret traversal_rec(AVLNode *node, enum Traversal order, s
 
 	// If the tarversals from the right returned with error statuses, propagate it.
 	if(left.status != SUCCESS || right.status != SUCCESS){
-		result.status = MEMORY_OP_ERROR;
-		goto free_garbage;
+		result.status = left.status != SUCCESS ? left.status : right.status;
+		free(left.elements);
+		free(right.elements);
+		return result;
 	}
 
 	// Create a new struct traversal_ret to agregate the traversal from left and right and this current node all in one
@@ -510,78 +502,47 @@ static struct traversal_ret traversal_rec(AVLNode *node, enum Traversal order, s
 		printerr_allocation(traversal_rec);
 		free(result.elements);
 		result.status = ALLOCATION_ERROR;
-		goto free_garbage;
+		free(left.elements);
+		free(right.elements);
+		return result;
 	}
 	result.status = SUCCESS;
-
 	size_t index = 0;
 
 	// Depending on the order paranmeter, the current node will be added before (pre order) in the middle (in order) or after (post order)
-
 	void *tmp;
 
 	if(order == PRE_ORDER){
-		tmp = memcpy(result.elements, node->info, size);
-		if(!tmp){
-			printerr_memory_op(traversal_rec);
-			free(result.elements);
-			result.status = MEMORY_OP_ERROR;
-			goto free_garbage;
-		}
+		memcpy(result.elements, node->info, size);
 		index++;
 	}
 
 	// Add the elements of the left
 	tmp = void_offset(result.elements, index * size);
-	tmp = memcpy(tmp, left.elements, size * left.elements_size);
-	if(!tmp){
-		printerr_memory_op(traversal_rec);
-		free(result.elements);
-		result.status = MEMORY_OP_ERROR;
-		goto free_garbage;
-	}
+	memcpy(tmp, left.elements, size * left.elements_size);
 	index += left.elements_size;
 
 	if(order == IN_ORDER){
 		tmp = void_offset(result.elements, index * size);
-		tmp = memcpy(tmp, node->info, size);
-		if(!tmp){
-			printerr_memory_op(traversal_rec);
-			free(result.elements);
-			result.status = MEMORY_OP_ERROR;
-			goto free_garbage;
-		}
+		memcpy(tmp, node->info, size);
 		index++;
 	}
 
 	// Add the elements of the right
 	tmp = void_offset(result.elements, index * size);
-	tmp = memcpy(tmp, right.elements, size * right.elements_size);
-	if(!tmp){
-		printerr_memory_op(traversal_rec);
-		free(result.elements);
-		result.status = MEMORY_OP_ERROR;
-		goto free_garbage;
-	}
+	memcpy(tmp, right.elements, size * right.elements_size);
 	index += right.elements_size;
 
 	if(order == POST_ORDER){
 		tmp = void_offset(result.elements, index * size);
-		tmp = memcpy(tmp, node->info, size);
-		if(!tmp){
-			printerr_memory_op(traversal_rec);
-			free(result.elements);
-			result.status = MEMORY_OP_ERROR;
-			goto free_garbage;
-		}
+		memcpy(tmp, node->info, size);
 	}
 
 	// Free the left and right arrays. Our result.data already
 	// stores the elements, so this two arrays are useless now.
-	free_garbage:
-		free(left.elements);
-		free(right.elements);
-		return result;
+	free(left.elements);
+	free(right.elements);
+	return result;
 }
 
 void* avl_preorder(AVLTree *tree){
@@ -688,11 +649,7 @@ void* avl_max_from(AVLTree *tree, void *element, void *dest){
 		return NULL;
 	}
 	tmp = get_max(tmp);
-
-	if (!memcpy(dest, tmp->info, tree->data_size)){
-		printerr_memory_op(avl_max_from);
-		return NULL;
-	}
+	memcpy(dest, tmp->info, tree->data_size);
 	return dest;
 }
 
@@ -706,11 +663,7 @@ void* avl_min_from(AVLTree *tree, void *element, void *dest){
 		return NULL;
 	}
 	tmp = get_min(tmp);
-
-	if (!memcpy(dest, tmp->info, tree->data_size)){
-		printerr_memory_op(avl_min_from);
-		return NULL;
-	}
+	memcpy(dest, tmp->info, tree->data_size);
 	return dest;
 }
 

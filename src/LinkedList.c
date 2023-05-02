@@ -78,10 +78,7 @@ static LLNode* list_innit_node(void *info, size_t size){
 	}
 	node->next = NULL;
 	node->prev = NULL;
-	if(!memcpy(node->info, info, size)){
-		printerr_memory_op(list_innit_node);
-		return NULL;
-	}
+	memcpy(node->info, info, size);
 	return node;
 }
 
@@ -177,10 +174,7 @@ int list_set(LinkedList *list, void *element, void *replacement){
 			return ELEMENT_NOT_FOUND_ERROR;
 		}
 	}
-	if(!memcpy(aux->info, replacement, list->data_size)){
-		printerr_memory_op(list_set);
-		return ALLOCATION_ERROR;
-	}
+	memcpy(aux->info, replacement, list->data_size);
 	return SUCCESS;
 }
 
@@ -233,10 +227,7 @@ void* list_get_into_array(LinkedList *list, void *array, size_t array_length){
 	LLNode *aux = list->head;
 	for (size_t i = 0; i < array_length; i++){
 		void *dst = void_offset(array, i * list->data_size);
-		if (!memcpy(dst, aux->info, list->data_size)){
-			printerr_memory_op(list_get_into_array);
-			return NULL;
-		}
+		memcpy(dst, aux->info, list->data_size);
 		aux = aux->next;
 	}
 	return array;
@@ -300,12 +291,7 @@ void* list_pop_front(LinkedList *list, void *dest){
 	if (list->head == NULL){
 		return NULL;
 	}
-	dest = memcpy(dest, list->head->info, list->data_size);
-	if (!dest){
-		printerr_memory_op(list_pop_front);
-		return NULL;
-	}
-
+	memcpy(dest, list->head->info, list->data_size);
 	LLNode *del = list->head;
 	list->head = list->head->next;
 	free(del);
@@ -321,12 +307,7 @@ void* list_pop_back(LinkedList *list, void *dest){
 	if (list->tail == NULL){
 		return NULL;
 	}
-	dest = memcpy(dest, list->tail->info, list->data_size);
-	if (!dest){
-		printerr_memory_op(list_pop_back);
-		return NULL;
-	}
-
+	memcpy(dest, list->tail->info, list->data_size);
 	LLNode *del = list->tail;
 	list->tail = list->tail->prev;
 	free(del);

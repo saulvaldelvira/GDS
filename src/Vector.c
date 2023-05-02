@@ -95,11 +95,7 @@ static int vector_resize(Vector *vector, size_t new_size){
 		printerr_allocation(vector_resize);
 		return ALLOCATION_ERROR;
 	}
-	tmp = memcpy(tmp, vector->elements, vector->n_elements * vector->data_size);
-	if(!tmp){
-		printerr_memory_op(vector_resize);
-		return MEMORY_OP_ERROR;
-	}
+	memcpy(tmp, vector->elements, vector->n_elements * vector->data_size);
 	free(vector->elements);
 	vector->elements = tmp;
 	vector->max_elements = new_size;
@@ -119,11 +115,7 @@ int vector_append(Vector *vector, void *element){
 		}
 	}
 	void *tmp = void_offset(vector->elements, vector->n_elements * vector->data_size);
-	tmp = memcpy(tmp , element, vector->data_size);
-	if (!tmp){
-		printerr_memory_op(vector_append);
-		return MEMORY_OP_ERROR;
-	}
+	memcpy(tmp , element, vector->data_size);
 	vector->n_elements++;
 	return SUCCESS;
 }
@@ -140,12 +132,8 @@ int vector_push_front(Vector *vector, void *element){
 		}
 	}
 	void *tmp = void_offset(vector->elements, vector->data_size);
-	tmp = memmove(tmp, vector->elements, vector->n_elements * vector->data_size);
-	void *dst = memcpy(vector->elements, element, vector->data_size);
-	if (!tmp || !dst){
-		printerr_memory_op(vector_push_front);
-		return MEMORY_OP_ERROR;
-	}
+	memmove(tmp, vector->elements, vector->n_elements * vector->data_size);
+	memcpy(vector->elements, element, vector->data_size);
 	vector->n_elements++;
 	return SUCCESS;
 }
@@ -163,11 +151,7 @@ int vector_append_array(Vector *vector, void *array, size_t array_length){
 		}
 	}
 	void *tmp = void_offset(vector->elements, vector->n_elements * vector->data_size);
-	tmp = memcpy(tmp, array, array_length * vector->data_size);
-	if (!tmp){
-		printerr_memory_op(vector_append_array);
-		return MEMORY_OP_ERROR;
-	}
+	memcpy(tmp, array, array_length * vector->data_size);
 	vector->n_elements += array_length;
 	return SUCCESS;
 }
@@ -184,16 +168,8 @@ int vector_push_front_array(Vector *vector, void *array, size_t array_length){
 		}
 	}
 	void *tmp = void_offset(vector->elements, array_length * vector->data_size);
-	tmp = memmove(tmp, vector->elements, vector->n_elements * vector->data_size);
-	if (!tmp){
-		printerr_memory_op(vector_push_front_array);
-		return MEMORY_OP_ERROR;
-	}
-	tmp = memmove(vector->elements, array, array_length * vector->data_size);
-	if (!tmp){
-		printerr_memory_op(vector_push_front_array);
-		return MEMORY_OP_ERROR;
-	}
+	memmove(tmp, vector->elements, vector->n_elements * vector->data_size);
+	memcpy(vector->elements, array, array_length * vector->data_size);
 	vector->n_elements += array_length;
 	return SUCCESS;
 }
@@ -208,11 +184,7 @@ int vector_set_at(Vector *vector, size_t index, void *element){
 		return INDEX_BOUNDS_ERROR;
 	}
 	void *tmp = void_offset(vector->elements, index * vector->data_size);
-	tmp = memmove(tmp, element , vector->data_size);
-	if(!tmp){
-		printerr_memory_op(vector_set_at);
-		return MEMORY_OP_ERROR;
-	}
+	memmove(tmp, element , vector->data_size);
 	return SUCCESS;
 }
 
@@ -225,13 +197,8 @@ int vector_set(Vector *vector, void *element, void *replacement){
 	for (size_t i=0; i < vector->n_elements; i++){
 		ptr = void_offset(vector->elements, i * vector->data_size);
 		if ((*vector->compare) (ptr, element) == 0){
-			ptr = memmove(ptr, replacement, vector->data_size);
-			if(ptr){
-				return SUCCESS;
-			}else{
-				printerr_memory_op(vector_set);
-				return MEMORY_OP_ERROR;
-			}
+			memmove(ptr, replacement, vector->data_size);
+			return SUCCESS;
 		}
 	}
 	return ELEMENT_NOT_FOUND_ERROR;
@@ -263,12 +230,8 @@ int vector_insert_at(Vector *vector, size_t index, void *element){
 	void *src = void_offset(vector->elements, index * vector->data_size);
 	void *dst = void_offset(vector->elements, (index + 1) * vector->data_size);
 	int n = vector->n_elements - index; // number of elements to shift
-	dst = memmove(dst, src, n * vector->data_size); // Shift elements to the right
-	src = memcpy(src, element, vector->data_size); // Insert the element
-	if (!dst || !src){
-		printerr_memory_op(vector_insert_at);
-		return MEMORY_OP_ERROR;
-	}
+	memmove(dst, src, n * vector->data_size); // Shift elements to the right
+	memcpy(src, element, vector->data_size); // Insert the element
 	vector->n_elements++;
 	return SUCCESS;
 }
@@ -280,11 +243,7 @@ int vector_populate(Vector *vector, void *template){
 	}
 	void *tmp = vector->elements;
 	for (size_t i = 0; i < vector->max_elements; i++){
-		tmp = memcpy(tmp, template, vector->data_size);
-		if (!tmp){
-			printerr_memory_op(vector_populate);
-			return MEMORY_OP_ERROR;
-		}
+		memcpy(tmp, template, vector->data_size);
 		tmp = void_offset(tmp, vector->data_size);
 	}
 	vector->n_elements = vector->max_elements;
@@ -326,10 +285,7 @@ int vector_remove_at(Vector *vector, size_t index){
 		size_t leftover = (vector->n_elements - index - 1) * vector->data_size;
 		void *dst = void_offset(vector->elements, index * vector->data_size);
 		void *src = void_offset(vector->elements, (index+1) * vector->data_size);
-		if(!memmove(dst, src, leftover)){
-			printerr_memory_op(vector_remove_at);
-			return MEMORY_OP_ERROR;
-		}
+		memmove(dst, src, leftover);
 	}
 	vector->n_elements--;
 	return SUCCESS;
@@ -355,11 +311,7 @@ void* vector_pop_front(Vector *vector, void *dest){
 	if (vector->n_elements == 0){
 		return NULL;
 	}
-	dest = memcpy(dest, vector->elements, vector->data_size);
-	if (!dest){
-		printerr_memory_op(vector_pop_front);
-		return NULL;
-	}
+	memcpy(dest, vector->elements, vector->data_size);
 	vector_remove_at(vector, 0);
 	return dest;
 }
@@ -373,11 +325,7 @@ void* vector_pop_back(Vector *vector, void *dest){
 		return NULL;
 	}
 	void *src = void_offset(vector->elements, (vector->n_elements - 1) * vector->data_size);
-	dest = memcpy(dest, src, vector->data_size);
-	if (!dest){
-		printerr_memory_op(vector_pop_front);
-		return NULL;
-	}
+	memcpy(dest, src, vector->data_size);
 	vector_remove_at(vector, vector->n_elements - 1);
 	return dest;
 }
@@ -485,11 +433,7 @@ void* vector_get_into_array(Vector *vector, void *array, size_t array_length){
 	if (array_length > vector->n_elements){
 		array_length = vector->n_elements;
 	}
-	if (!memcpy(array, vector->elements, array_length * vector->data_size)){
-		printerr_memory_op(vector_get_into_array);
-		return NULL;
-	}
-
+	memcpy(array, vector->elements, array_length * vector->data_size);
 	return array;
 }
 
@@ -546,20 +490,11 @@ int vector_swap(Vector *vector, size_t index_1, size_t index_2){
 
 	void *e1 = get_position(vector, index_1);
 	void *e2 = get_position(vector, index_2);
-	if(!memcpy(e1, e2, vector->data_size)){
-		printerr_memory_op(vector_swap);
-		return MEMORY_OP_ERROR;
-	}
-
-	if(!memcpy(e2, tmp, vector->data_size)){
-		printerr_memory_op(vector_swap);
-		return MEMORY_OP_ERROR;
-	}
+	memcpy(e1, e2, vector->data_size);
+	memcpy(e2, tmp, vector->data_size);
 
 	free(tmp);
-
 	return SUCCESS;
-
 }
 
 int vector_compare(Vector *vector, size_t index_1, size_t index_2){

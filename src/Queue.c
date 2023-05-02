@@ -73,10 +73,7 @@ void queue_configure(Queue *queue, comparator_function_t cmp){
 */
 static QueueNode* queue_init_node(void *element, size_t size){
 	QueueNode *node = malloc(offsetof(QueueNode, info) + size);
-	if(!memcpy(node->info, element, size)){
-		printerr_memory_op(queue_init_node);
-		return NULL;
-	}
+	memcpy(node->info, element, size);
 	node->next = NULL;
 	return node;
 }
@@ -138,10 +135,7 @@ void* queue_dequeue(Queue *queue, void *dest){
 	}
 	QueueNode *aux = queue->head;    // Save the head
 	queue->head = queue->head->next; // Change it to the next element
-	if(!memcpy(dest, aux->info, queue->data_size)){       // Save the element
-		printerr_memory_op(queue_dequeue);
-		return NULL;
-	}
+	memcpy(dest, aux->info, queue->data_size); // Save the element
 	free(aux);                    // Free the old head
 	queue->n_elements--;
 	return dest;                  // Return the element
@@ -155,10 +149,7 @@ int queue_dequeue_array(Queue *queue, void *dest_array, size_t dest_length){
 	void *tmp;
 	for (size_t i = 0; i < dest_length; i++){
 		tmp = void_offset(dest_array, i * queue->data_size);
-		tmp = queue_dequeue(queue, tmp);
-		if (!tmp){
-			return MEMORY_OP_ERROR;
-		}
+		queue_dequeue(queue, tmp);
 	}
 	return SUCCESS;
 }

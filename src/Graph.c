@@ -59,11 +59,7 @@ static int expand_memory(Graph *graph, size_t new_size){
 	}
 
 	// Copy old vertex values in the range [0, oldSize) and free the old one
-	void *tmp = memcpy(vertices, graph->vertices, graph->max_elements * graph->data_size);
-	if (!tmp){
-		printerr_memory_op(expand_memory);
-		return MEMORY_OP_ERROR;
-	}
+	memcpy(vertices, graph->vertices, graph->max_elements * graph->data_size);
 	free(graph->vertices);
 
 	// Initialize the columns for edges and weights.
@@ -76,12 +72,7 @@ static int expand_memory(Graph *graph, size_t new_size){
 			printerr_allocation(expand_memory);
 			return ALLOCATION_ERROR;
 		}
-
-		tmp = memcpy(weights[i], graph->weights[i], sizeof(*weights[i])*graph->max_elements);
-		if (!tmp){
-			printerr_memory_op(expand_memory);
-			return MEMORY_OP_ERROR;
-		}
+		memcpy(weights[i], graph->weights[i], sizeof(*weights[i])*graph->max_elements);
 
 		// Allocate edges[i] and copy old values
 		edges[i] = calloc(new_size, sizeof(*edges[i]));
@@ -89,12 +80,7 @@ static int expand_memory(Graph *graph, size_t new_size){
 			printerr_allocation(expand_memory);
 			return ALLOCATION_ERROR;
 		}
-
-		tmp = memcpy(edges[i], graph->edges[i], sizeof(*edges[i])*graph->max_elements);
-		if (!tmp){
-			printerr_memory_op(expand_memory);
-			return MEMORY_OP_ERROR;
-		}
+		memcpy(edges[i], graph->edges[i], sizeof(*edges[i])*graph->max_elements);
 
 		// Set the new rows to INFINITY. Edges are already 0 because of calloc.
 		for (size_t j = graph->max_elements; j < new_size; j++){
@@ -226,11 +212,7 @@ int graph_add_vertex(Graph *graph, void *vertex){
 		}
 	}
 	void *tmp = void_offset(graph->vertices, graph->n_elements * graph->data_size); // Position to copy value into
-	tmp = memcpy(tmp, vertex, graph->data_size); // Perform the copy and store the reuslt
-	if (!tmp){
-		printerr_memory_op(graph_add_vertex);
-		return MEMORY_OP_ERROR;
-	}
+	memcpy(tmp, vertex, graph->data_size); // Perform the copy and store the reuslt
 	graph->n_elements++;
 	return SUCCESS;
 }
@@ -272,31 +254,17 @@ int graph_remove_vertex(Graph *graph, void *vertex){
 		// Set vertex at index to the last vertex in the array
 		void *target = void_offset(graph->vertices, index.value * graph->data_size);
 		void *source = void_offset(graph->vertices, (graph->n_elements-1) * graph->data_size);
-		target = memmove(target, source, graph->data_size);
-		if (!target){
-			printerr_memory_op(graph_remove_vertex);
-			return MEMORY_OP_ERROR;
-		}
+		memmove(target, source, graph->data_size);
 
 		// Swap the weights columns of the vertex to be removed and the last one
 		target = (void*) (graph->weights[index.value]);
 		source = (void*) (graph->weights[graph->n_elements-1]);
-
-		target = memmove(target, source, graph->max_elements * sizeof(*graph->weights[0]));
-		if (!target){
-			printerr_memory_op(graph_remove_vertex);
-			return MEMORY_OP_ERROR;
-		}
+		memmove(target, source, graph->max_elements * sizeof(*graph->weights[0]));
 
 		// Swap the edges columns of the vertex to be removed and the last one
 		target = (void*) (graph->edges[index.value]);
 		source = (void*) (graph->edges[graph->n_elements-1]);
-
-		target = memmove(target, source, graph->max_elements * sizeof(*graph->edges[0]));
-		if (!target){
-			printerr_memory_op(graph_remove_vertex);
-			return MEMORY_OP_ERROR;
-		}
+		memmove(target, source, graph->max_elements * sizeof(*graph->edges[0]));
 
 		// Swap rows of the vertex to be removed and the last one
 		for (size_t i = 0; i < graph->max_elements; i++){
@@ -808,12 +776,7 @@ static int traverse_df_rec(traverse_data_t *data, size_t index, uint8_t *visited
 	visited[index] = 1;
 	void *dst = void_offset(data->elements, data->elements_size * graph->data_size);
 	void *src = void_offset(graph->vertices, index * graph->data_size);
-	dst = memcpy(dst, src, graph->data_size);
-	if (!dst){
-		printerr_memory_op(traverse_df_rec);
-		free(data->elements);
-		return MEMORY_OP_ERROR;
-	}
+	memcpy(dst, src, graph->data_size);
 	data->elements_size++;
 	int s;
 	for (size_t i = 0; i < graph->n_elements; i++){
@@ -907,16 +870,8 @@ traverse_data_t graph_traverse_BF(Graph *graph, void *vertex){
 
 		// Copy it into result array
 		src = void_offset(graph->vertices, piv * graph->data_size);
-		src = memcpy(dst, src, graph->data_size);
+		memcpy(dst, src, graph->data_size);
 		dst = void_offset(dst, graph->data_size);
-		if (!src){
-			printerr_memory_op(graph_traverse_BF);
-			free(visited);
-			free(bf.elements);
-			free(queue);
-			bf.status = MEMORY_OP_ERROR;
-			return bf;
-		}
 		bf.elements_size++;
 
 		// Add all it's sons to queue

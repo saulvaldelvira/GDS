@@ -112,16 +112,11 @@ static int right_shift_node(BTreeNode *node, int index, BTree *tree, void *eleme
 	void *src = void_offset(node->elements, index * tree->data_size);
 	void *dst = void_offset(node->elements, (index+1) * tree->data_size);
 	int n_elements_to_move = node->n_elements - index;
-	dst = memmove(dst, src, n_elements_to_move * tree->data_size);
+	memmove(dst, src, n_elements_to_move * tree->data_size);
 
 	// Insert the element
-	src = memcpy(src, element, tree->data_size);
+	memcpy(src, element, tree->data_size);
 	node->n_elements++;
-
-	if (!dst || !src){
-		printerr_memory_op(right_shift_node);
-		return NULL_PARAMETER_ERROR;
-	}
 
 	// Also shift the child nodes to the right
 	for (int i=node->n_childs; i > index; i--){
@@ -192,17 +187,11 @@ static BTreeNode* split_node(BTreeNode *node, void *element, BTree *tree, BTreeN
 	// The element to propagate is the element to add itself
 	if (index == middle){
 		// Add the element into the father node
-		if (!memcpy(split->elements, element, tree->data_size)){
-			printerr_memory_op(split_node);
-			return NULL;
-		}
+		memcpy(split->elements, element, tree->data_size);
 
 		// Add the elements of the right node
 		void *tmp = void_offset(left->elements, middle * tree->data_size);
-		if (!memcpy(right->elements, tmp, right->n_elements * tree->data_size)){
-			printerr_memory_op(split_node);
-			return NULL;
-		}
+		memcpy(right->elements, tmp, right->n_elements * tree->data_size);
 
 		// Split the childs arrays
 		for (int i=1, m = middle; i < right->n_childs ; i++){
@@ -218,19 +207,11 @@ static BTreeNode* split_node(BTreeNode *node, void *element, BTree *tree, BTreeN
 	}else if (index < middle){ // Add the element into the left node
 		// Add the element into the father node.
 		void *tmp = void_offset(node->elements, (middle-1) * tree->data_size);
-		tmp = memcpy(split->elements, tmp, tree->data_size);
-		if (!tmp){
-			printerr_memory_op(split_node);
-			return NULL;
-		}
+		memcpy(split->elements, tmp, tree->data_size);
 
 		// Add second half of element into right node
 		tmp = void_offset(left->elements, middle * tree->data_size);
-		tmp = memcpy(right->elements, tmp, right->n_elements * tree->data_size);
-		if (!tmp){
-			printerr_memory_op(split_node);
-			return NULL;
-		}
+		memcpy(right->elements, tmp, right->n_elements * tree->data_size);
 
 		// Make space for the extra element
 		void *src = void_offset(left->elements, index * tree->data_size);
@@ -238,11 +219,7 @@ static BTreeNode* split_node(BTreeNode *node, void *element, BTree *tree, BTreeN
 		dst = memmove(dst, src, (middle - index) * tree->data_size); // Move elements to the right
 
 		// Insert the element into index
-		src = memcpy(src, element, tree->data_size); // Add in the element in the spot
-		if (!dst || !src){
-			printerr_memory_op(split_node);
-			return NULL;
-		}
+		memcpy(src, element, tree->data_size); // Add in the element in the spot
 
 		// Split the childs arrays
 		for (int i=0, m = middle; i < right->n_childs ; i++){
@@ -262,37 +239,25 @@ static BTreeNode* split_node(BTreeNode *node, void *element, BTree *tree, BTreeN
 	} else {// Add the element into the right node
 		// Add the middle to father
 		void *tmp = void_offset(left->elements, middle * tree->data_size);
-		if (!memcpy(split->elements, tmp, tree->data_size)){
-			printerr_memory_op(split_node);
-			return NULL;
-		}
+		memcpy(split->elements, tmp, tree->data_size);
 
 		int n; // To keep track of how many element we already added to right
 
 		// Add everithing from [middle + 1 ] to [inserting point]
 		void *src = void_offset(left->elements, (middle+1) * tree->data_size);
 		int first_chunk = index - (middle+1);
-		src = memcpy(right->elements, src, first_chunk * tree->data_size);
+		memcpy(right->elements, src, first_chunk * tree->data_size);
 		n = first_chunk;
 
 		// Insert the element in the index
 		void *dst = void_offset(right->elements, first_chunk * tree->data_size);
-		dst = memcpy(dst, element, tree->data_size);
+		memcpy(dst, element, tree->data_size);
 		n++;
-
-		if (!dst || !src){
-			printerr_memory_op(split_node);
-			return NULL;
-		}
 
 		// Add the rest of the elements
 		src = void_offset(left->elements, index * tree->data_size);
 		dst = void_offset(right->elements, n * tree->data_size);
-		dst = memcpy(dst, src, (right->n_elements - n) * tree->data_size);
-		if (!dst){
-			printerr_memory_op(split_node);
-			return NULL;
-		}
+		memcpy(dst, src, (right->n_elements - n) * tree->data_size);
 
 		// Split the childs arrays
 		for (int i=1, m = middle; i < right->n_childs ; i++){
@@ -435,20 +400,11 @@ static int get_min_and_delete(BTreeNode *node, void *dest, size_t data_size){
 		return NULL_PARAMETER_ERROR;
 	}
 	if (LEAF(node)){
-		void *tmp = memcpy(dest, node->elements, data_size);
-		if (!tmp){
-			printerr_memory_op(get_min_and_delete);
-			return MEMORY_OP_ERROR;
-		}
+		memcpy(dest, node->elements, data_size);
 		node->n_elements--;
 
-		tmp = void_offset(node->elements, 1 * data_size);
-		tmp = memmove(node->elements, tmp, node->n_elements * data_size);
-		if (!tmp){
-			printerr_memory_op(get_min_and_delete);
-			return MEMORY_OP_ERROR;
-		}
-
+		void *tmp = void_offset(node->elements, 1 * data_size);
+		memmove(node->elements, tmp, node->n_elements * data_size);
 		return SUCCESS;
 	}else {
 		return get_min_and_delete(node->childs[0], dest, data_size);
@@ -465,11 +421,7 @@ static int get_max_and_delete(BTreeNode *node, void *dest, size_t data_size){
 	}
 	if (node->n_childs == 0){
 		void *tmp = void_offset(node->elements, (node->n_elements - 1) * data_size);
-		tmp = memcpy(dest, tmp, data_size);
-		if (!tmp){
-			printerr_memory_op(get_max_and_delete);
-			return MEMORY_OP_ERROR;
-		}
+		memcpy(dest, tmp, data_size);
 		node->n_elements--;
 		return SUCCESS;
 	}else {
@@ -485,11 +437,7 @@ static int remove_element(BTreeNode *node, size_t data_size, int pos){
 		void *src = void_offset(node->elements, (pos + 1) * data_size);
 		void *dst = void_offset(node->elements, pos * data_size);
 		int n = node->n_elements - pos - 1;
-		dst = memmove(dst, src, n * data_size);
-		if (!dst){
-			printerr_memory_op(remove_element);
-			return MEMORY_OP_ERROR;
-		}
+		memmove(dst, src, n * data_size);
 	}
 	if (node->n_childs > 0){
 
@@ -511,22 +459,14 @@ static int remove_element(BTreeNode *node, size_t data_size, int pos){
 static void merge_nodes(BTreeNode **left, void *mid_element, BTreeNode **right, size_t data_size){
 	// Copy the mid element into left
 	void *dst = void_offset((*left)->elements, (*left)->n_elements * data_size);
-	dst = memcpy(dst, mid_element, data_size);
-	if (!dst){
-		printerr_memory_op(merge_nodes);
-		return;
-	}
+	memcpy(dst, mid_element, data_size);
 	(*left)->n_elements++;
 
 	// Move dst one position
 	dst = void_offset(dst, data_size);
 
 	// Copy right's elements to the node.
-	dst = memcpy(dst, (*right)->elements, (*right)->n_elements * data_size);
-	if (!dst){
-		printerr_memory_op(merge_nodes);
-		return;
-	}
+	memcpy(dst, (*right)->elements, (*right)->n_elements * data_size);
 	(*left)->n_elements += (*right)->n_elements;
 
 	// Copy right's childs to the node
@@ -580,17 +520,12 @@ static BTreeNode* borrow_min_node(BTreeNode *node, int K){
 /**
  * Copies the maximun element from the rightmos leaf node into dest.
 */
-static void* copy_max_element(BTreeNode *node, int K, size_t data_size, void *dest){
+static void copy_max_element(BTreeNode *node, int K, size_t data_size, void *dest){
 	if (LEAF(node)){
 		void *max = void_offset(node->elements, (node->n_elements - 1) * data_size);
-		dest = memcpy(dest, max, data_size);
-		if (!dest){
-			printerr_memory_op(copy_max_element);
-			return NULL;
-		}
-		return dest;
+		memcpy(dest, max, data_size);
 	}else {
-		return copy_max_element(node->childs[node->n_childs-1], K, data_size, dest);
+		copy_max_element(node->childs[node->n_childs-1], K, data_size, dest);
 	}
 }
 
@@ -698,12 +633,8 @@ static struct add_remove_ret btree_remove_rec(BTreeNode *node, BTreeNode *father
 			}else {
 				// If both childs are in a critic situation, get an element from the left
 				// child and start a recursive remove call to reorganize the branch.
-				void *tmp = copy_max_element(node->childs[pos], tree->K, tree->data_size, element_to_delete);
-				if (!tmp){
-					ret.status = MEMORY_OP_ERROR;
-				} else {
-					ret.status = btree_remove_rec(node->childs[pos], node, tree, tmp).status;
-				}
+				copy_max_element(node->childs[pos], tree->K, tree->data_size, element_to_delete);
+				ret.status = btree_remove_rec(node->childs[pos], node, tree, element_to_delete).status;
 			}
 		}
 	}
@@ -770,10 +701,7 @@ void* btree_get(BTree *tree, void *element, void *dest){
 		return NULL;
 	}
 	void *tmp = void_offset(node->elements, index * tree->data_size);
-	dest = memcpy(dest, tmp, tree->data_size);
-	if(!dest){
-		printerr_memory_op(btree_get);
-	}
+	memcpy(dest, tmp, tree->data_size);
 	return dest;
 }
 

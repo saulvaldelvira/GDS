@@ -317,14 +317,8 @@ int dict_put(Dictionary *dict, void *key, void *value){
                 return ALLOCATION_ERROR;
         }
 
-        node.key = memcpy(node.key, key, dict->key_size);
-        node.value = memcpy(node.value, value, dict->value_size);
-        if (!node.key || !node.value){
-                printerr_memory_op(dict_put);
-                free(node.key);
-                free(node.value);
-                return MEMORY_OP_ERROR;
-        }
+        memcpy(node.key, key, dict->key_size);
+        memcpy(node.value, value, dict->value_size);
 
         node.state = FULL;
         // Very important. We need to copy back the node to the vector.
@@ -364,10 +358,7 @@ void* dict_get(Dictionary *dict, void *key, void *dest){
                         int h1 = dict->hash(key);
                         int h2 = dict->hash(node.key);
                         if (h1 == h2){
-                                dest = memcpy(dest, node.value, dict->value_size);
-                                if(!dest){
-                                        printerr_memory_op(dict_get);
-                                }
+                                memcpy(dest, node.value, dict->value_size);
                                 return dest;
                         }
                 }

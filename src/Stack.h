@@ -58,8 +58,9 @@ void* stack_pop(Stack *stack, void *dest);
 
 /**
  * Pops [dest_length] elements into array_dest
+ * Returns the number of copied elements elements.
 */
-int stack_pop_array(Stack *stack, void *array_dest, size_t dest_length);
+size_t stack_pop_array(Stack *stack, void *array_dest, size_t dest_length);
 
 /**
  * @return the last pushed element (without deleting it)

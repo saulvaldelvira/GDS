@@ -24,10 +24,9 @@ extern "C" {
 #define INDEX_BOUNDS_ERROR      -0xE001
 #define ALLOCATION_ERROR        -0xE002
 #define NULL_PARAMETER_ERROR    -0xE003
-#define MEMORY_OP_ERROR         -0xE004
-#define ELEMENT_NOT_FOUND_ERROR -0xE005
-#define REPEATED_ELEMENT_ERROR  -0xE006
-#define INVALID_PARAMETER_ERROR -0xE007
+#define ELEMENT_NOT_FOUND_ERROR -0xE004
+#define REPEATED_ELEMENT_ERROR  -0xE005
+#define INVALID_PARAMETER_ERROR -0xE006
 
 // Print error macros
 #ifdef __GDS_ENABLE_ERROR_MACROS
@@ -39,8 +38,6 @@ extern "C" {
 #define printerr_null_param(func) fprintf(stderr, "ERROR: NULL parameter(s). Function: " #func "\n");
 
 #define printerr_out_of_bounds(func, index, max) fprintf(stderr, "ERROR: Index %zu out of bounds for [0, %zu). Function: " #func "\n", index, max);
-
-#define printerr_memory_op(func) fprintf(stderr, "ERROR: In memory operation. Function: " #func "\n");
 
 #define printerr_data_size(func) fprintf(stderr, "ERROR: Data size must be > 0. Function: " #func "\n");
 

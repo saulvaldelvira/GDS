@@ -75,11 +75,7 @@ static StackNode* init_node(void *element, size_t size){
 		printerr_allocation(init_node);
 		return NULL;
 	}
-	if (!memcpy(node->info, element, size)){
-		printerr_memory_op(init_node);
-		return NULL;
-	}
-
+	memcpy(node->info, element, size);
 	node->next = NULL;
 	return node;
 }
@@ -137,11 +133,7 @@ void* stack_pop(Stack *stack, void *dest){
 	if(stack->head != NULL){
 		StackNode* aux = stack->head;    // Save the head
 		stack->head = stack->head->next; // Change it to the next element
-		dest = memcpy(dest, aux->info, stack->data_size);
-		if(!dest){       // Save the element
-			printerr_memory_op(stack_pop);
-			return NULL;
-		}
+		memcpy(dest, aux->info, stack->data_size); // Save the element
 		free(aux);                       // Free the old head
 		stack->n_elements--;
 		return dest;
@@ -149,20 +141,19 @@ void* stack_pop(Stack *stack, void *dest){
 	return NULL;
 }
 
-int stack_pop_array(Stack *stack, void *array_dest, size_t dest_length){
+size_t stack_pop_array(Stack *stack, void *array_dest, size_t dest_length){
 	if(!stack || !array_dest){
 		printerr_null_param(stack_pop_array);
-		return MEMORY_OP_ERROR;
+		return NULL_PARAMETER_ERROR;
 	}
-	void *tmp;
 	for (size_t i = 0; i < dest_length; i++){
-		tmp = void_offset(array_dest, i * stack->data_size);
-		tmp = stack_pop(stack, tmp);
-		if (!tmp){
-			return MEMORY_OP_ERROR;
+		// When the stack is empty, return
+		if (!stack_pop(stack, array_dest)){
+			return i;
 		}
+		array_dest = void_offset(array_dest, stack->data_size);
 	}
-	return SUCCESS;
+	return dest_length;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
