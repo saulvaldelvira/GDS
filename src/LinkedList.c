@@ -38,10 +38,6 @@ struct _LinkedList {
 /// INITIALIZE ////////////////////////////////////////////////////////////////
 
 LinkedList* list_init(size_t data_size, comparator_function_t cmp){
-	if (data_size <= 0){
-		printerr_data_size(list_init);
-		return NULL;
-	}
 	if (!cmp){
 		printerr_null_param(list_init);
 		return NULL;

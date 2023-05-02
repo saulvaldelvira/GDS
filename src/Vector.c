@@ -42,14 +42,18 @@ Vector* vector_init(size_t data_size, comparator_function_t cmp){
 	}
 
 	Vector *vector = malloc(sizeof(*vector));
-	void *elements = malloc(VECTOR_DEFAULT_SIZE * data_size);
-
-	if (!vector || !elements){
+	if (!vector){
 		printerr_allocation(vector_init);
 		return NULL;
 	}
 
-	vector->elements = elements;
+	vector->elements = malloc(VECTOR_DEFAULT_SIZE * data_size);
+	if (!vector->elements){
+		printerr_allocation(vector_init);
+		free(vector);
+		return NULL;
+	}
+
 	vector->data_size = data_size;
 	vector->n_elements = 0;
 	vector->max_elements = VECTOR_DEFAULT_SIZE;
@@ -108,20 +112,18 @@ int vector_append(Vector *vector, void *element){
 		return NULL_PARAMETER_ERROR;
 	}
 	if(vector->n_elements >= vector->max_elements){
-		// If the vector is empty, double the array size
+		// If the vector is full, double the array size
 		int status = vector_resize(vector, vector->n_elements * 2);
 		if (status != SUCCESS){
 			return status;
 		}
 	}
-
 	void *tmp = void_offset(vector->elements, vector->n_elements * vector->data_size);
-	tmp = memmove(tmp , element, vector->data_size);
+	tmp = memcpy(tmp , element, vector->data_size);
 	if (!tmp){
 		printerr_memory_op(vector_append);
 		return MEMORY_OP_ERROR;
 	}
-
 	vector->n_elements++;
 	return SUCCESS;
 }
@@ -131,13 +133,12 @@ int vector_push_front(Vector *vector, void *element){
 		printerr_null_param(vector_push_front);
 		return NULL_PARAMETER_ERROR;
 	}
-	if(vector->n_elements >= vector->max_elements){ // If the vector is empty, double the array size
+	if(vector->n_elements >= vector->max_elements){
 		int status = vector_resize(vector, vector->max_elements * 2);
 		if (status != SUCCESS){
 			return status;
 		}
 	}
-
 	void *tmp = void_offset(vector->elements, vector->data_size);
 	tmp = memmove(tmp, vector->elements, vector->n_elements * vector->data_size);
 	void *dst = memcpy(vector->elements, element, vector->data_size);
@@ -168,7 +169,6 @@ int vector_append_array(Vector *vector, void *array, size_t array_length){
 		return MEMORY_OP_ERROR;
 	}
 	vector->n_elements += array_length;
-
 	return SUCCESS;
 }
 
@@ -204,7 +204,7 @@ int vector_set_at(Vector *vector, size_t index, void *element){
 		return NULL_PARAMETER_ERROR;
 	}
 	if (index >= vector->n_elements){
-		printerr_out_of_bounds(index, vector_set_at, vector->n_elements);
+		printerr_out_of_bounds(vector_set_at, index, vector->n_elements);
 		return INDEX_BOUNDS_ERROR;
 	}
 	void *tmp = void_offset(vector->elements, index * vector->data_size);
@@ -318,7 +318,7 @@ int vector_remove_at(Vector *vector, size_t index){
 		return NULL_PARAMETER_ERROR;
 	}
 	if (index >= vector->n_elements){
-		printerr_out_of_bounds(index, vector_remove_at, vector->n_elements);
+		printerr_out_of_bounds(vector_remove_at, index, vector->n_elements);
 		return INDEX_BOUNDS_ERROR;
 	}
 
@@ -441,7 +441,7 @@ void* vector_get_at(Vector *vector, size_t index, void *dest){
 		return NULL;
 	}
 	if (index >= vector->n_elements){
-		printerr_out_of_bounds(index, vector_get_at, vector->n_elements);
+		printerr_out_of_bounds(vector_get_at, index, vector->n_elements);
 		return NULL;
 	}
 	void *tmp = void_offset(vector->elements, index * vector->data_size);
@@ -526,11 +526,11 @@ int vector_swap(Vector *vector, size_t index_1, size_t index_2){
 		return NULL_PARAMETER_ERROR;
 	}
 	if (index_1 >= vector->n_elements){
-		printerr_out_of_bounds(index_1, vector_swap, vector->n_elements);
+		printerr_out_of_bounds(vector_swap, index_1, vector->n_elements);
 		return INDEX_BOUNDS_ERROR;
 	}
 	if (index_2 >= vector->n_elements){
-		printerr_out_of_bounds(index_2, vector_swap, vector->n_elements);
+		printerr_out_of_bounds(vector_swap, index_2, vector->n_elements);
 		return INDEX_BOUNDS_ERROR;
 	}
 
@@ -602,7 +602,7 @@ Vector* vector_join(Vector *vector_1, Vector *vector_2){
 		return NULL;
 	}
 	if (vector_1->data_size != vector_2->data_size){
-		fprintf(stderr, "ERROR: the vectors have different data sizes. In function vector_join\n");
+		printerr(vector_join, "The vectors have different data sizes %zu and %zu",, vector_1->data_size, vector_2->data_size);
 		return NULL;
 	}
 

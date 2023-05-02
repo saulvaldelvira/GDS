@@ -38,7 +38,7 @@ extern "C" {
 
 #define printerr_null_param(func) fprintf(stderr, "ERROR: NULL parameter(s). Function: " #func "\n");
 
-#define printerr_out_of_bounds(index, max, func) fprintf(stderr, "ERROR: Index %llu out of bounds for [0, %llu). Function: " #func "\n", (unsigned long long) index, (unsigned long long) max);
+#define printerr_out_of_bounds(func, index, max) fprintf(stderr, "ERROR: Index %zu out of bounds for [0, %zu). Function: " #func "\n", index, max);
 
 #define printerr_memory_op(func) fprintf(stderr, "ERROR: In memory operation. Function: " #func "\n");
 

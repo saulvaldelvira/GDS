@@ -17,6 +17,7 @@ struct test {
 void joins_test(){
 	Vector *a1 = vector_init(sizeof(int), compare_int);
 	Vector *a2 = vector_init(sizeof(int), compare_int);
+	Vector *diff_size = vector_init(sizeof(char), compare_char);
 	LinkedList *l1 = list_init(sizeof(int), compare_int);
 	LinkedList *l2 = list_init(sizeof(int), compare_int);
 
@@ -30,6 +31,8 @@ void joins_test(){
 		list_append(l2, &i);
 	}
 
+	Ignore_Error(assert(!vector_join(a1, diff_size)), 18);
+
 	Vector *vec_joint = vector_join(a1, a2);
 	assert(vec_joint != NULL);
 	LinkedList *lnkd_joint = list_join(l1, l2);
@@ -39,7 +42,7 @@ void joins_test(){
 		assert(list_exists(lnkd_joint, &i));
 	}
 
-	vector_free_all(3, a1, a2, vec_joint);
+	vector_free_all(4, a1, a2, diff_size, vec_joint);
 	list_free_all(3, l1, l2, lnkd_joint);
 }
 

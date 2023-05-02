@@ -137,7 +137,7 @@ static int expand_memory(Graph *graph, size_t new_size){
 }
 
 Graph* graph_empty(size_t data_size, comparator_function_t cmp){
-	if (data_size <= 0){
+	if (data_size == 0){
 		printerr_data_size(graph_empty);
 		return NULL;
 	}
@@ -153,7 +153,7 @@ Graph* graph_empty(size_t data_size, comparator_function_t cmp){
 }
 
 Graph* graph_init(size_t data_size, size_t n_elements, comparator_function_t cmp){
-	if (data_size <= 0){
+	if (data_size == 0){
 		printerr_data_size(graph_init);
 		return NULL;
 	}
