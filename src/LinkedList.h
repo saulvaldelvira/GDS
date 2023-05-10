@@ -21,7 +21,7 @@ extern "C" {
 #include "./Util/comparator.h"
 
 /**
- * @brief Linked List structure.
+ * Linked List structure.
  */
 typedef struct _LinkedList LinkedList;
 

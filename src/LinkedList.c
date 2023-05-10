@@ -1,4 +1,6 @@
 /**
+ *  Doubly Linked List implementation.
+ *
  *  Copyright (C) 2023 - Saúl Valdelvira
  *
  *  This library is free software. You can modify
@@ -21,8 +23,8 @@
  * Node of a Linked List
 */
 typedef struct LLNode {
-	struct LLNode *next; // Pointer to the next node
-	struct LLNode *prev; // Pointer to the previous node
+	struct LLNode *next;
+	struct LLNode *prev;
 	byte_t info[];
 }LLNode;
 
@@ -110,14 +112,13 @@ int list_append_array(LinkedList *list, void *array, size_t array_length){
 		printerr_null_param(list_append_array);
 		return NULL_PARAMETER_ERROR;
 	}
-	void *tmp;
-	int status;
-	for (size_t i = 0; i < array_length; i++){
-		tmp = void_offset(array, i * list->data_size);
-		status = list_append(list, tmp);
+	void *tmp = array;
+	while (array_length-- > 0){
+		int status = list_append(list, tmp);
 		if (status != SUCCESS){
 			return status;
 		}
+		tmp = void_offset(tmp, list->data_size);
 	}
 	return SUCCESS;
 }
@@ -127,19 +128,14 @@ int list_push_front(LinkedList *list, void *element){
 		printerr_null_param(list_push_front);
 		return NULL_PARAMETER_ERROR;
 	}
-	if (list->head == NULL){
-		list->head = list_innit_node(element, list->data_size);
-		if(!list->head){
-			return ALLOCATION_ERROR;
-		}
-		list->tail = list->head;
-	}else {
-		list->head->prev = list_innit_node(element, list->data_size);
-		if(!list->head->prev){
-			return ALLOCATION_ERROR;
-		}
-		list->head->prev->next = list->head;
-		list->head = list->head->prev;
+	LLNode *old_head = list->head;
+	list->head = list_innit_node(element, list->data_size);
+	if(!list->head){
+		return ALLOCATION_ERROR;
+	}
+	list->head->next = old_head;
+	if (old_head){
+		old_head->prev = list->head;
 	}
 	list->n_elements++;
 	return SUCCESS;
@@ -150,14 +146,14 @@ int list_push_front_array(LinkedList *list, void *array, size_t array_length){
 		printerr_null_param(list_push_front_array);
 		return NULL_PARAMETER_ERROR;
 	}
-	void *tmp;
+	void *tmp = array;
 	int status;
-	for (size_t i = 0; i < array_length; i++){
-		tmp = void_offset(array, i * list->data_size);
+	while (array_length-- > 0){
 		status = list_push_front(list, tmp);
 		if (status != SUCCESS){
 			return status;
 		}
+		tmp = void_offset(tmp, list->data_size);
 	}
 	return SUCCESS;
 }
@@ -225,10 +221,11 @@ void* list_get_into_array(LinkedList *list, void *array, size_t array_length){
 		array_length = list->n_elements;
 	}
 	LLNode *aux = list->head;
-	for (size_t i = 0; i < array_length; i++){
-		void *dst = void_offset(array, i * list->data_size);
+	void *dst = array;
+	while (array_length-- > 0){
 		memcpy(dst, aux->info, list->data_size);
 		aux = aux->next;
+		dst = void_offset(dst, list->data_size);
 	}
 	return array;
 
@@ -262,23 +259,24 @@ int list_remove(LinkedList *list, void *element){
 		printerr_null_param(list_remove);
 		return NULL_PARAMETER_ERROR;
 	}
-	LLNode **tmp = &list->head;
-	while((*tmp) != NULL && list->compare ((*tmp)->info, element) != 0){
-		tmp = &(*tmp)->next;
-	}
-	if((*tmp) != NULL){
-		LLNode *del = *tmp;
-
-		if (list->tail == *tmp){
-			list->tail = (*tmp)->prev;
-		}else {
-			(*tmp)->next->prev = (*tmp)->prev;
+	LLNode *tmp = list->head;
+	while(tmp){
+		if (list->compare (tmp->info, element) == 0){
+			if (list->tail == tmp){
+				list->tail = tmp->prev;
+			}else{
+				tmp->next->prev = tmp->prev;
+			}
+			if (list->head == tmp){
+				list->head = tmp->next;
+			}else{
+				tmp->prev->next = tmp->next;
+			}
+			free(tmp);
+			list->n_elements--;
+			return SUCCESS;
 		}
-		*tmp = (*tmp)->next;
-
-		free(del);
-		list->n_elements--;
-		return SUCCESS;
+		tmp = tmp->next;
 	}
 	return ELEMENT_NOT_FOUND_ERROR;
 }
@@ -320,14 +318,14 @@ int list_remove_array(LinkedList *list, void *array, size_t array_length){
 		printerr_null_param(list_push_remove_array);
 		return NULL_PARAMETER_ERROR;
 	}
-	void *tmp;
+	void *tmp = array;
 	int status;
-	for (size_t i = 0; i < array_length; i++){
-		tmp = void_offset(array, i * list->data_size);
+	while (array_length-- > 0){
 		status = list_remove(list, tmp);
 		if (status != SUCCESS){
 			return status;
 		}
+		tmp = void_offset(tmp, list->data_size);
 	}
 	return SUCCESS;
 }
@@ -391,10 +389,10 @@ LinkedList* list_join(LinkedList *list_1, LinkedList *list_2){
 		status = list_append_array(list_joint, tmp, list_1->n_elements);
 		free(tmp);
 		if (status != SUCCESS){
-			goto exit_err;
+			free(list_joint);
+			return NULL;
 		}
 	}
-
 	// Get the elements of the second list
 	tmp = list_get_array(list_2, list_2->n_elements);
 	if (tmp != NULL){
@@ -402,12 +400,10 @@ LinkedList* list_join(LinkedList *list_1, LinkedList *list_2){
 		status = list_append_array(list_joint, tmp, list_2->n_elements);
 		free(tmp);
 		if (status != SUCCESS){
-			exit_err:
 			free(list_joint);
 			return NULL;
 		}
 	}
-
 	return list_joint;
 }
 
