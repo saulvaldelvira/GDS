@@ -1,73 +1,35 @@
-# VIM FILES
-*.*.swp
-
-# Meld Files
-*.orig
-*_BACKUP_*
-*_BASE_*
-*_LOCAL_*
-*_REMOTE_*
-
-# Valgrind
-cachegrind.out.*
-vgcore*
-
+# Folders
 .vscode
-
-# Bin folders
 bin
 lib
 include
 
-# Prerequisites
-*.d
-
-# Object files
+# Objects
 *.o
-*.ko
-*.obj
-*.elf
-
-# Linker output
-*.ilk
-*.map
-*.exp
-
-# Precompiled Headers
-*.gch
-*.pch
 
 # Libraries
 *.lib
 *.a
 *.la
 *.lo
-
-# Shared objects (inc. Windows DLLs)
 *.dll
 *.so
 *.so.*
-*.dylib
 
 # Executables
 *.exe
 *.out
-*.app
-*.i*86
-*.x86_64
-*.hex
 
-# Debug files
-*.dSYM/
-*.su
-*.idb
-*.pdb
+# Valgrind
+cachegrind.out.*
+vgcore*
 
-# Kernel Module Compile Results
-*.mod*
-*.cmd
-.tmp_versions/
-modules.order
-Module.symvers
-Mkfile.old
-dkms.conf
+# VIM FILES
+*.*.swp
+
+# Meld (git mergetool) Files
+*.orig
+*_BACKUP_*
+*_BASE_*
+*_LOCAL_*
+*_REMOTE_*
