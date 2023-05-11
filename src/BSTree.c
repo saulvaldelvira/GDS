@@ -34,10 +34,6 @@ struct _BSTree {
 ///// INITIALIZE //////////////////////////////////////////////////////////////
 
 BSTree* bst_init(size_t data_size, comparator_function_t cmp){
-	if (data_size <= 0){
-		printerr_data_size(bst_init);
-		return NULL;
-	}
 	if (!cmp){
 		printerr_null_param(bst_init);
 		return NULL;
