@@ -64,9 +64,6 @@ void queue_configure(Queue *queue, comparator_function_t cmp){
 	queue->compare = cmp;
 }
 
-/**
- * Initializes a new QueueNode with the element
-*/
 static QueueNode* queue_init_node(void *element, size_t size){
 	QueueNode *node = malloc(offsetof(QueueNode, info) + size);
 	memcpy(node->info, element, size);
@@ -83,17 +80,15 @@ int queue_enqueue(Queue *queue, void *element){
 		printerr_null_param(queue_enqueue);
 		return NULL_PARAMETER_ERROR;
 	}
-	if (queue->head == NULL){
-		queue->head = queue_init_node(element, queue->data_size);
-		if (!queue->head){
-			return ALLOCATION_ERROR;
-		}
-		queue->tail = queue->head;
-	}else {
-		queue->tail->next = queue_init_node(element, queue->data_size);
-		if (!queue->tail->next){
-			return ALLOCATION_ERROR;
-		}
+	QueueNode *node = queue_init_node(element, queue->data_size);
+	if (!node){
+		return ALLOCATION_ERROR;
+	}
+	if (!queue->head){
+		queue->head = node;
+		queue->tail = node;
+	}else{
+		queue->tail->next = node;
 		queue->tail = queue->tail->next;
 	}
 	queue->n_elements++;
@@ -105,14 +100,12 @@ int queue_enqueue_array(Queue *queue, void *array, size_t array_length){
 		printerr_null_param(queue_enqueue_array);
 		return NULL_PARAMETER_ERROR;
 	}
-	void *tmp;
-	int status;
-	for (size_t i = 0; i < array_length; i++){
-		tmp = void_offset(array, i * queue->data_size);
-		status = queue_enqueue(queue, tmp);
+	while (array_length-- > 0){
+		int status = queue_enqueue(queue, array);
 		if (status != SUCCESS){
 			return status;
 		}
+		array = void_offset(array, queue->data_size);
 	}
 	return SUCCESS;
 }
@@ -129,23 +122,24 @@ void* queue_dequeue(Queue *queue, void *dest){
 	if (queue->head == NULL){
 		return NULL;
 	}
-	QueueNode *aux = queue->head;    // Save the head
-	queue->head = queue->head->next; // Change it to the next element
-	memcpy(dest, aux->info, queue->data_size); // Save the element
-	free(aux);                    // Free the old head
+	QueueNode *aux = queue->head;
+	queue->head = queue->head->next;
+	memcpy(dest, aux->info, queue->data_size);
+	free(aux);
 	queue->n_elements--;
-	return dest;                  // Return the element
+	return dest;
 }
 
-int queue_dequeue_array(Queue *queue, void *dest_array, size_t dest_length){
-	if (!queue || !dest_array){
+int queue_dequeue_array(Queue *queue, void *array, size_t array_length){
+	if (!queue || !array){
 		printerr_null_param(queue_enqueue_array);
 		return NULL_PARAMETER_ERROR;
 	}
-	void *tmp;
-	for (size_t i = 0; i < dest_length; i++){
-		tmp = void_offset(dest_array, i * queue->data_size);
-		queue_dequeue(queue, tmp);
+	while (array_length-- > 0) {
+		if (!queue_dequeue(queue, array)){
+			break;
+		}
+		array = void_offset(array, queue->data_size);
 	}
 	return SUCCESS;
 }
@@ -174,7 +168,7 @@ bool queue_exists(Queue *queue, void *element){
 	}
 	QueueNode *aux = queue->head;
 	while (aux != NULL){
-		if((*queue->compare) (aux->info, element) == 0){
+		if(queue->compare(aux->info, element) == 0){
 			return true;
 		}
 		aux = aux->next;

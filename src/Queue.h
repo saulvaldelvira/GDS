@@ -58,7 +58,7 @@ void* queue_dequeue(Queue *queue, void *dest);
 /**
  * Dequeues [array_length] elements into dest_array
 */
-int queue_dequeue_array(Queue *queue, void *dest_array, size_t dest_length);
+int queue_dequeue_array(Queue *queue, void *array, size_t array_length);
 
 /**
  * @return the corresponding element of the queue (the one added first), without removing it

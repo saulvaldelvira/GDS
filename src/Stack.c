@@ -62,9 +62,6 @@ void stack_configure(Stack *stack, comparator_function_t cmp){
 	stack->compare = cmp;
 }
 
-/**
- * Initializes a new StackNode with the given info
-*/
 static StackNode* init_node(void *element, size_t size){
 	StackNode *node = malloc(offsetof(StackNode, info) + size);
 	if (!node){
@@ -85,21 +82,13 @@ int stack_push(Stack *stack, void *element){
 		printerr_null_param(stack_push);
 		return NULL_PARAMETER_ERROR;
 	}
-	if(stack->head == NULL){
-		stack->head = init_node(element, stack->data_size);
-		if (!stack->head){
-			printerr_allocation(stack_push);
-			return ALLOCATION_ERROR;
-		}
-	}else{ // Push an element to the head
-		StackNode *aux = init_node(element, stack->data_size);
-		if (!aux){
-			printerr_allocation(stack_push);
-			return ALLOCATION_ERROR;
-		}
-		aux->next = stack->head;
-		stack->head = aux;
+	StackNode *old_head = stack->head;
+	stack->head = init_node(element, stack->data_size);
+	if (!stack->head){
+		printerr_allocation(stack_push);
+		return ALLOCATION_ERROR;
 	}
+	stack->head->next = old_head;
 	stack->n_elements++;
 	return SUCCESS;
 }
@@ -109,14 +98,13 @@ int stack_push_array(Stack *stack, void *array, size_t array_length){
 		printerr_null_param(stack_push_array);
 		return NULL_PARAMETER_ERROR;
 	}
-	void *tmp;
 	int status;
-	for (size_t i = 0; i < array_length; i++){
-		tmp = void_offset(array, i * stack->data_size);
-		status = stack_push(stack, tmp);
+	while (array_length-- > 0){
+		status = stack_push(stack, array);
 		if (status != SUCCESS){
 			return status;
 		}
+		array = void_offset(array, stack->data_size);
 	}
 	return SUCCESS;
 }
@@ -126,30 +114,30 @@ void* stack_pop(Stack *stack, void *dest){
 		printerr_null_param(stack_pop);
 		return NULL;
 	}
-	if(stack->head != NULL){
-		StackNode* aux = stack->head;    // Save the head
-		stack->head = stack->head->next; // Change it to the next element
-		memcpy(dest, aux->info, stack->data_size); // Save the element
-		free(aux);                       // Free the old head
-		stack->n_elements--;
-		return dest;
+	if(!stack->head){
+		return NULL;
 	}
-	return NULL;
+	StackNode* aux = stack->head;
+	stack->head = stack->head->next;
+	memcpy(dest, aux->info, stack->data_size);
+	free(aux);
+	stack->n_elements--;
+	return dest;
 }
 
-size_t stack_pop_array(Stack *stack, void *array_dest, size_t dest_length){
-	if(!stack || !array_dest){
+size_t stack_pop_array(Stack *stack, void *array, size_t array_length){
+	if(!stack || !array){
 		printerr_null_param(stack_pop_array);
 		return NULL_PARAMETER_ERROR;
 	}
-	for (size_t i = 0; i < dest_length; i++){
+	for (size_t i = 0; i < array_length; i++){
 		// When the stack is empty, return
-		if (!stack_pop(stack, array_dest)){
+		if (!stack_pop(stack, array)){
 			return i;
 		}
-		array_dest = void_offset(array_dest, stack->data_size);
+		array = void_offset(array, stack->data_size);
 	}
-	return dest_length;
+	return array_length;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
