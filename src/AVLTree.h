@@ -20,7 +20,7 @@ extern "C" {
 #include <stdbool.h>
 #include "./Util/comparator.h"
 
-typedef struct _AVLTree AVLTree;
+typedef struct AVLTree AVLTree;
 
 /**
  * Initializes an AVLTree.

@@ -21,7 +21,7 @@ extern "C" {
 #include "./Util/definitions.h"
 #include "./Util/comparator.h"
 
-typedef struct _Heap Heap;
+typedef struct Heap Heap;
 
 /**
  * @return a new Binary Heap of mins with the given data size and comparator function

@@ -20,7 +20,7 @@ extern "C" {
 #include <stdbool.h>
 #include "./Util/hash.h"
 
-typedef struct _Dictionary Dictionary;
+typedef struct Dictionary Dictionary;
 
 enum Redispersion{
 	LINEAR, QUADRATIC, DOUBLE_HASHING

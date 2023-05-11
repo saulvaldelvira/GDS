@@ -19,7 +19,7 @@ extern "C" {
 #include <stdbool.h>
 #include "./Util/comparator.h"
 
-typedef struct _BTree BTree;
+typedef struct BTree BTree;
 
 BTree* btree_init(size_t data_size, int K, comparator_function_t cmp);
 

@@ -23,7 +23,7 @@ extern "C" {
 /**
  * Linked List structure.
  */
-typedef struct _LinkedList LinkedList;
+typedef struct LinkedList LinkedList;
 
 /**
  * Initializes the linked list

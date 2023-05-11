@@ -16,7 +16,7 @@
 #include <string.h>
 #include <stdarg.h>
 
-struct _Heap {
+struct Heap {
 	Vector *elements;
 };
 

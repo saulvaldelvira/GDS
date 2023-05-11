@@ -23,7 +23,7 @@ typedef struct BTreeNode {
 	byte_t elements[];
 } BTreeNode;
 
-struct _BTree {
+struct BTree {
 	int K; // Max number of childs
 	BTreeNode *root;
 	size_t data_size;

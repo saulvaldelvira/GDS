@@ -28,7 +28,7 @@ typedef struct LLNode {
 	byte_t info[];
 }LLNode;
 
-struct _LinkedList {
+struct LinkedList {
 	LLNode *head;
 	LLNode *tail;
 	size_t n_elements;

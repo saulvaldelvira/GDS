@@ -22,7 +22,7 @@ extern "C" {
 #include "./Util/index_t.h"
 #include "./Util/comparator.h"
 
-typedef struct _Vector Vector;
+typedef struct Vector Vector;
 
 /**
  * Creates a Vector.

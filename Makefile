@@ -10,7 +10,7 @@ OFILES = $(patsubst %.c,%.o,$(CFILES))
 TESTFILES = $(wildcard test/*)
 
 CC = gcc
-CCFLAGS = -Wall -Wextra -Werror -pedantic -g -fPIC -O3 -D__GDS_ENABLE_ERROR_MACROS
+CCFLAGS = -Wall -Wextra -Werror -pedantic -g -fPIC -O3 -DGDS_ENABLE_ERROR_MACROS
 
 # User's custom flags
 ifdef FLAGS

@@ -23,7 +23,7 @@ extern "C" {
 
 #define GRAPH_DEFAULT_SIZE 8
 
-typedef struct _Graph Graph;
+typedef struct Graph Graph;
 
 /**
  * Returns an empty graph with a default initial size.

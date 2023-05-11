@@ -29,7 +29,7 @@ extern "C" {
 #define INVALID_PARAMETER_ERROR -0xE006
 
 // Print error macros
-#ifdef __GDS_ENABLE_ERROR_MACROS
+#ifdef GDS_ENABLE_ERROR_MACROS
 
 // If it's not already defined, define a macro for the base name of the file
 // Example: If __FILE__ is "/path/to/proyect/main.c" __FILE_NAME__ is "main.c"

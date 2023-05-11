@@ -21,7 +21,7 @@ typedef struct QueueNode {
 	byte_t info[];
 } QueueNode;
 
-struct _Queue {
+struct Queue {
 	QueueNode *head;
 	QueueNode *tail;
 	size_t data_size;

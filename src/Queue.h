@@ -25,7 +25,7 @@ extern "C" {
  * This is because a Queue is a Data Structure that follows a FIFO (First In First Out) dynamic. The first element added (the head)
  * is the first one that goes out.
 */
-typedef struct _Queue Queue;
+typedef struct Queue Queue;
 
 /**
  * @param data_size the size of the data being stored.

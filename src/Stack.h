@@ -25,7 +25,7 @@ extern "C" {
  * This is because a Stack is a Data Structure that follows a LIFO (Last In First Out) dynamic. The last element added
  * is the first one that goes out.
 */
-typedef struct _Stack Stack;
+typedef struct Stack Stack;
 
 /**
  * Initializes an empty Stack.

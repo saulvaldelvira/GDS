@@ -25,7 +25,7 @@ typedef struct DictionaryNode {
         } state;
 } DictionaryNode;
 
-struct _Dictionary{
+struct Dictionary{
         size_t value_size;
         size_t key_size;
         Vector *elements;

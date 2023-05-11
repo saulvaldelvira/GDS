@@ -23,7 +23,7 @@ typedef struct BSNode {
 	byte_t info[];
 }BSNode;
 
-struct _BSTree {
+struct BSTree {
 	BSNode *root;
 	// Comparator function for 2 elements
 	comparator_function_t compare;

@@ -23,7 +23,7 @@ extern "C" {
 /**
  * @brief BSTree (Binary Search Tree) structure.
  */
-typedef struct _BSTree BSTree;
+typedef struct BSTree BSTree;
 
 /**
  * Returns an empty new BSTree

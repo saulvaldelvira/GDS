@@ -26,7 +26,7 @@ typedef struct AVLNode {
         byte_t info[];
 } AVLNode;
 
-struct _AVLTree {
+struct AVLTree {
         AVLNode *root;
         size_t data_size;
         size_t n_elements;

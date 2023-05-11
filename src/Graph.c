@@ -19,7 +19,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-struct _Graph {
+struct Graph {
 	size_t n_elements;
 	size_t max_elements;
 	size_t data_size;

@@ -20,7 +20,7 @@
 
 #define VECTOR_DEFAULT_SIZE 12
 
-struct _Vector {
+struct Vector {
 	size_t n_elements;
 	size_t max_elements;
 	size_t data_size;

@@ -21,7 +21,7 @@ typedef struct StackNode {
 	byte_t info[];
 } StackNode;
 
-struct _Stack {
+struct Stack {
 	StackNode *head;
 	// Comparator function
 	comparator_function_t compare;
