@@ -51,7 +51,7 @@ static int expand_memory(Graph *graph, size_t new_size){
 	int8_t **edges = malloc(new_size * sizeof(*edges));
 
 	if (!edges || !weights || !vertices){
-		printerr_allocation(expand_memory);
+		printerr_allocation();
 		free(vertices);
 		free(weights);
 		free(edges);
@@ -69,7 +69,7 @@ static int expand_memory(Graph *graph, size_t new_size){
 		// Allocate weights[i] and copy old values
 		weights[i] = malloc(new_size * sizeof(*weights[i]));
 		if (!weights[i]){
-			printerr_allocation(expand_memory);
+			printerr_allocation();
 			return ALLOCATION_ERROR;
 		}
 		memcpy(weights[i], graph->weights[i], sizeof(*weights[i])*graph->max_elements);
@@ -77,7 +77,7 @@ static int expand_memory(Graph *graph, size_t new_size){
 		// Allocate edges[i] and copy old values
 		edges[i] = calloc(new_size, sizeof(*edges[i]));
 		if (!edges[i]){
-			printerr_allocation(expand_memory);
+			printerr_allocation();
 			return ALLOCATION_ERROR;
 		}
 		memcpy(edges[i], graph->edges[i], sizeof(*edges[i])*graph->max_elements);
@@ -97,13 +97,13 @@ static int expand_memory(Graph *graph, size_t new_size){
 	for (size_t i = graph->max_elements; i < new_size; i++){
 		weights[i] = malloc(new_size * sizeof(*weights[i]));
 		if (!weights[i]){
-			printerr_allocation(expand_memory);
+			printerr_allocation();
 			return ALLOCATION_ERROR;
 		}
 
 		edges[i] = calloc(new_size, sizeof(*edges[i]));
 		if (!edges[i]){
-			printerr_allocation(expand_memory);
+			printerr_allocation();
 			return ALLOCATION_ERROR;
 		}
 
@@ -124,11 +124,11 @@ static int expand_memory(Graph *graph, size_t new_size){
 
 Graph* graph_empty(size_t data_size, comparator_function_t cmp){
 	if (!cmp){
-		printerr_null_param(graph_empty);
+		printerr_null_param();
 		return NULL;
 	}
 	if (data_size == 0){
-		printerr_data_size(graph_empty);
+		printerr_data_size();
 		return NULL;
 	}
 	return graph_init(data_size, GRAPH_DEFAULT_SIZE, cmp);
@@ -136,16 +136,16 @@ Graph* graph_empty(size_t data_size, comparator_function_t cmp){
 
 Graph* graph_init(size_t data_size, size_t n_elements, comparator_function_t cmp){
 	if (!cmp){
-		printerr_null_param(graph_init);
+		printerr_null_param();
 		return NULL;
 	}
 	if (data_size == 0){
-		printerr_data_size(graph_init);
+		printerr_data_size();
 		return NULL;
 	}
 	Graph *graph = malloc(sizeof(*graph));
 	if (!graph){
-		printerr_allocation(graph_init);
+		printerr_allocation();
 		return NULL;
 	}
 
@@ -168,7 +168,7 @@ Graph* graph_init(size_t data_size, size_t n_elements, comparator_function_t cmp
 
 void graph_configure(Graph *graph, comparator_function_t cmp){
 	if (!graph || !cmp){
-		printerr_null_param(graph_configure);
+		printerr_null_param();
 		return;
 	}
 	graph->compare = cmp;
@@ -176,7 +176,7 @@ void graph_configure(Graph *graph, comparator_function_t cmp){
 
 int graph_fill(Graph *graph, void *array_vertices, void *array_sources, void *array_targets, float *array_weights, size_t vertices_length, size_t edges_length){
 	if (!graph || !array_vertices || !array_sources || !array_targets || !array_weights){
-		printerr_null_param(graph_fill);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	int status = graph_add_vertices_array(graph, array_vertices, vertices_length);
@@ -195,7 +195,7 @@ int graph_fill(Graph *graph, void *array_vertices, void *array_sources, void *ar
 /// vertices /////////////////////////////////////////////////////////////////////
 int graph_add_vertex(Graph *graph, void *vertex){
 	if (!graph || !vertex){
-		printerr_null_param(graph_add_vertex);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	if (graph->n_elements == graph->max_elements){
@@ -211,7 +211,7 @@ int graph_add_vertex(Graph *graph, void *vertex){
 
 int graph_add_vertices_array(Graph *graph, void *array, size_t array_length){
 	if (!graph || !array){
-		printerr_null_param(graph_add_vertices_array);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	void *tmp;
@@ -234,7 +234,7 @@ int graph_add_vertices_array(Graph *graph, void *array, size_t array_length){
 */
 int graph_remove_vertex(Graph *graph, void *vertex){
 	if (!graph || !vertex){
-		printerr_null_param(graph_remove_vertex);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	index_t index = graph_indexof(graph, vertex); // Get the index of the vertex
@@ -288,7 +288,7 @@ int graph_remove_vertex(Graph *graph, void *vertex){
 
 int graph_remove_vertices_array(Graph *graph, void *array, size_t array_length){
 	if (!graph || !array){
-		printerr_null_param(graph_remove_vertices_array);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	void *tmp;
@@ -305,7 +305,7 @@ int graph_remove_vertices_array(Graph *graph, void *array, size_t array_length){
 
 bool graph_exists_vertex(Graph *graph, void *vertex){
 	if (!graph || !vertex){
-		printerr_null_param(graph_exists);
+		printerr_null_param();
 		return false;
 	}
 	void *tmp;
@@ -324,7 +324,7 @@ bool graph_exists_vertex(Graph *graph, void *vertex){
 
 int graph_add_edge(Graph *graph, void *source, void *target, float weight){
 	if (!graph || !source || !target){
-		printerr_null_param(graph_add_edge);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	index_t index_src = graph_indexof(graph, source);
@@ -342,7 +342,7 @@ int graph_add_edge(Graph *graph, void *source, void *target, float weight){
 
 int graph_add_edges_array(Graph *graph, void *array_sources, void *array_targets, float *array_weights, size_t arrays_length){
 	if (!graph || !array_sources || !array_targets || !array_weights){
-		printerr_null_param(graph_add_edges_array);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	void *src;
@@ -361,7 +361,7 @@ int graph_add_edges_array(Graph *graph, void *array_sources, void *array_targets
 
 int graph_remove_edge(Graph *graph, void *source, void *target){
 	if (!graph || !source || !target){
-		printerr_null_param(graph_remove_edge);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	index_t index_src = graph_indexof(graph, source);
@@ -379,7 +379,7 @@ int graph_remove_edge(Graph *graph, void *source, void *target){
 
 int graph_remove_edges_array(Graph *graph, void *array_sources, void *array_targets, size_t arrays_length){
 	if (!graph || !array_sources || !array_targets){
-		printerr_null_param(graph_remove_edges_array);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	void *src;
@@ -398,7 +398,7 @@ int graph_remove_edges_array(Graph *graph, void *array_sources, void *array_targ
 
 float graph_get_edge(Graph *graph, void *source, void *target){
 	if (!graph || !source || !target){
-		printerr_null_param(graph_get_edge);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	index_t index_src = graph_indexof(graph, source);
@@ -414,7 +414,7 @@ float graph_get_edge(Graph *graph, void *source, void *target){
 
 bool graph_exists_edge(Graph *graph, void *source, void *target){
 	if (!graph || !source || !target){
-		printerr_null_param(graph_exists_edge);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	index_t index_src = graph_indexof(graph, source);
@@ -432,7 +432,7 @@ bool graph_exists_edge(Graph *graph, void *source, void *target){
 
 size_t graph_size(Graph *graph){
 	if (!graph){
-		printerr_null_param(graph_size);
+		printerr_null_param();
 		return 0; // ??Also wrongggg
 	}
 	return graph->n_elements;
@@ -440,7 +440,7 @@ size_t graph_size(Graph *graph){
 
 bool graph_isempty(Graph *graph){
 	if (!graph){
-		printerr_null_param(graph_isempty);
+		printerr_null_param();
 		return false;
 	}
 	return graph->n_elements == 0;
@@ -464,7 +464,7 @@ static void graph_init_dijkstra(DijkstraData_t *dijkstra, Graph *graph, size_t s
 	dijkstra->D = malloc(graph->n_elements * sizeof(*dijkstra->D));
 	dijkstra->P = malloc(graph->n_elements * sizeof(*dijkstra->P));
 	if (!dijkstra->D || !dijkstra->P){
-		printerr_allocation(graph_dijkstra);
+		printerr_allocation();
 		free(dijkstra->D);
 		free(dijkstra->P);
 		dijkstra->status = ALLOCATION_ERROR;
@@ -513,7 +513,7 @@ static index_t graph_get_pivot(uint8_t *S, float *D, size_t n_elements){
 DijkstraData_t graph_dijkstra(Graph *graph, void *source){
 	DijkstraData_t dijkstra = {.D = NULL, .P = NULL, .n_elements = 0, .status = NULL_PARAMETER_ERROR};
 	if (!graph || !source){
-		printerr_null_param(graph_dijkstra);
+		printerr_null_param();
 		return dijkstra;
 	}
 	index_t source_index = graph_indexof(graph, source);
@@ -530,7 +530,7 @@ DijkstraData_t graph_dijkstra(Graph *graph, void *source){
 	// Initialize the visited array
 	uint8_t *S = calloc(graph->n_elements, sizeof(*S));
 	if (!S){
-		printerr_allocation(graph_dijkstra);
+		printerr_allocation();
 		free(dijkstra.D);
 		free(dijkstra.P);
 		dijkstra.D = NULL;
@@ -600,7 +600,7 @@ static void graph_init_floyd(FloydData_t *floyd, Graph *graph){
 	floyd->A = malloc(sizeof(*floyd->A) * graph->n_elements);
 	floyd->P = malloc(sizeof(*floyd->P) * graph->n_elements);
 	if (!floyd->A || !floyd->P){
-		printerr_allocation(graph_init_floyd);
+		printerr_allocation();
 		floyd->status = ALLOCATION_ERROR;
 		free(floyd->A);
 		free(floyd->P);
@@ -611,7 +611,7 @@ static void graph_init_floyd(FloydData_t *floyd, Graph *graph){
 		floyd->A[i] = malloc(sizeof(*floyd->A[i]) * graph->n_elements);
 		floyd->P[i] = malloc(sizeof(*floyd->P[i]) * graph->n_elements);
 		if (!floyd->A[i] || !floyd->P[i]){
-			printerr_allocation(graph_init_floyd);
+			printerr_allocation();
 			floyd->n_elements = i+1; // Number of arrays already allocated
 			graph_free_floyd_data(floyd); // Free everything before returning
 			floyd->status = ALLOCATION_ERROR;
@@ -631,7 +631,7 @@ static void graph_init_floyd(FloydData_t *floyd, Graph *graph){
 FloydData_t graph_floyd(Graph *graph){
 	FloydData_t floyd = {.A = NULL, .P = NULL, .n_elements = 0, .status = NULL_PARAMETER_ERROR};
 	if (!graph){
-		printerr_null_param(graph_floyd);
+		printerr_null_param();
 		return floyd;
 	}
 	graph_init_floyd(&floyd, graph);
@@ -694,7 +694,7 @@ void graph_free_floyd_data(FloydData_t *data){
 vertexDegree_t graph_get_degree(Graph *graph, void *vertex){
 	vertexDegree_t degree = {0, 0, 0, NULL_PARAMETER_ERROR};
 	if (!graph || !vertex){
-		printerr_null_param(graph_get_degree);
+		printerr_null_param();
 		return degree;
 	}
 	index_t index = graph_indexof(graph, vertex);
@@ -741,7 +741,7 @@ bool graph_is_isolated_vertex(Graph *graph, void *vertex){
 
 float graph_eccentricity(Graph *graph, void *vertex){
 	if (!graph || !vertex){
-		printerr_null_param(graph_eccentricity);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR * 1.0f;
 	}
 	index_t index = graph_indexof(graph, vertex);
@@ -785,7 +785,7 @@ static int traverse_df_rec(traverse_data_t *data, size_t index, uint8_t *visited
 traverse_data_t graph_traverse_DF(Graph *graph, void *vertex){
 	traverse_data_t df = {NULL, 0, NULL_PARAMETER_ERROR};
 	if (!graph){
-		printerr_null_param(graph_traverse_DF);
+		printerr_null_param();
 		return df;
 	}
 	index_t index = graph_indexof(graph, vertex);
@@ -799,7 +799,7 @@ traverse_data_t graph_traverse_DF(Graph *graph, void *vertex){
 
 	uint8_t *visited = calloc(graph->n_elements, sizeof(*visited));
 	if (!df.elements || !visited){
-		printerr_allocation(graph_traverse_DF);
+		printerr_allocation();
 		df.status = ALLOCATION_ERROR;
 		free(df.elements);
 		free(visited);
@@ -821,7 +821,7 @@ traverse_data_t graph_traverse_DF(Graph *graph, void *vertex){
 traverse_data_t graph_traverse_BF(Graph *graph, void *vertex){
 	traverse_data_t bf = {NULL, 0, NULL_PARAMETER_ERROR};
 	if (!graph){
-		printerr_null_param(graph_traverse_BF);
+		printerr_null_param();
 		return bf;
 	}
 	// Get index of the starting vertex
@@ -838,7 +838,7 @@ traverse_data_t graph_traverse_BF(Graph *graph, void *vertex){
 	size_t *queue = malloc(graph->n_elements * sizeof(*queue));
 
 	if (!bf.elements || !visited || !queue){
-		printerr_allocation(graph_traverse_BF);
+		printerr_allocation();
 		bf.status = ALLOCATION_ERROR;
 		free(bf.elements);
 		bf.elements = NULL;
@@ -895,7 +895,7 @@ static void free_contents(Graph *graph){
 
 int graph_free(Graph *graph){
 	if (!graph){
-		printerr_null_param(graph_free);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	free_contents(graph);
@@ -915,7 +915,7 @@ void graph_free_all(unsigned int n, ...){
 
 Graph* graph_reset(Graph *graph){
 	if (!graph){
-		printerr_null_param(graph_reset);
+		printerr_null_param();
 		return NULL;
 	}
 	free_contents(graph);

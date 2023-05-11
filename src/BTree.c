@@ -39,11 +39,11 @@ struct _BTree {
 
 BTree* btree_init(size_t data_size, int K, comparator_function_t cmp){
 	if (!cmp){
-		printerr_null_param(btree_init);
+		printerr_null_param();
 		return NULL;
 	}
 	if (data_size == 0){
-		printerr_data_size(btree_init);
+		printerr_data_size();
 		return NULL;
 	}
 	if (K < MIN_K){
@@ -53,7 +53,7 @@ BTree* btree_init(size_t data_size, int K, comparator_function_t cmp){
 
 	BTree *tree = malloc(sizeof(*tree));
 	if (!tree){
-		printerr_allocation(btree_init);
+		printerr_allocation();
 		return NULL;
 	}
 	tree->compare = cmp;
@@ -65,7 +65,7 @@ BTree* btree_init(size_t data_size, int K, comparator_function_t cmp){
 
 void btree_configure(BTree *tree, comparator_function_t cmp){
 	if (!tree || !cmp){
-		printerr_null_param(btree_configure);
+		printerr_null_param();
 		return;
 	}
 	tree->compare = cmp;
@@ -74,12 +74,12 @@ void btree_configure(BTree *tree, comparator_function_t cmp){
 static BTreeNode* btree_init_node(int K, size_t data_size){
 	BTreeNode *node = malloc(offsetof(BTreeNode, elements) + (data_size * MAX_ELEMENTS(K)));
 	if (!node){
-		printerr_allocation(btree_init_node);
+		printerr_allocation();
 		return NULL;
 	}
 	node->childs = calloc(K, sizeof(BTreeNode*));
 	if (!node->childs){
-		printerr_allocation(btree_init_node);
+		printerr_allocation();
 		free(node);
 		return NULL;
 	}
@@ -164,7 +164,7 @@ static BTreeNode* split_node(BTreeNode *node, void *element, BTree *tree, BTreeN
 	BTreeNode *split = btree_init_node(tree->K, tree->data_size);
 	BTreeNode *left  = node;
 	if (!right || !split){
-		printerr_allocation(split_node);
+		printerr_allocation();
 		return NULL;
 	}
 
@@ -289,7 +289,7 @@ static struct add_remove_ret btree_add_rec(BTreeNode *node, BTree *tree, void *e
 	// Find position to insert element
 	int pos = find_position(node, element, tree->compare, tree->data_size);
 	if (pos < 0){
-		printerr(btree_add, "The element %p already exists\n",, element);
+		printerr("The element %p already exists\n",, element);
 		ret.status = REPEATED_ELEMENT_ERROR;
 		return ret;
 	}
@@ -340,13 +340,13 @@ static int add_to_node(BTreeNode *node, BTree *tree, void *element){
 
 int btree_add(BTree *tree, void *element){
 	if (!tree || !element){
-		printerr_null_param(btree_add);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	if (tree->root == NULL){
 		tree->root = btree_init_node(tree->K, tree->data_size);
 		if (!tree->root){
-			printerr_allocation(btree_add);
+			printerr_allocation();
 			return ALLOCATION_ERROR;
 		}
 	}
@@ -359,7 +359,7 @@ int btree_add(BTree *tree, void *element){
 
 int btree_add_array(BTree *tree, void *array, size_t array_size){
 	if (!tree || !array){
-		printerr_null_param(btree_add_array);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	for (size_t i = 0; i < array_size; ++i){
@@ -644,7 +644,7 @@ static struct add_remove_ret btree_remove_rec(BTreeNode *node, BTreeNode *father
 
 int btree_remove(BTree *tree, void *element){
 	if (!tree || !element){
-		printerr_null_param(btree_remove);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	struct add_remove_ret ret = btree_remove_rec(tree->root, NULL, tree, element);
@@ -654,7 +654,7 @@ int btree_remove(BTree *tree, void *element){
 
 int btree_remove_array(BTree *tree, void *array, size_t array_size){
 	if (!tree || !array){
-		printerr_null_param(btree_remove_array);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	for (size_t i = 0; i < array_size; ++i){
@@ -692,7 +692,7 @@ static BTreeNode* btree_get_node(BTreeNode *node, size_t data_size, void *elemen
 
 void* btree_get(BTree *tree, void *element, void *dest){
 	if (!tree || !element || !dest){
-		printerr_null_param(btree_get);
+		printerr_null_param();
 		return false;
 	}
 	int index;
@@ -707,7 +707,7 @@ void* btree_get(BTree *tree, void *element, void *dest){
 
 bool btree_exists(BTree *tree, void *element){
 	if (!tree || !element){
-		printerr_null_param(btree_exists);
+		printerr_null_param();
 		return false;
 	}
 	int tmp;

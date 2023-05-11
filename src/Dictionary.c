@@ -96,16 +96,16 @@ int free_node(void *node, void *args){
 
 Dictionary* dict_init(size_t key_size, size_t value_size, hash_function_t hash_func){
         if (!hash_func){
-                printerr_null_param(dict_init);
+                printerr_null_param();
                 return NULL;
         }
         if (key_size == 0 || value_size == 0){
-                printerr_data_size(dict_init);
+                printerr_data_size();
                 return NULL;
         }
         Dictionary *dict = malloc(sizeof(*dict));
         if (!dict){
-                printerr_allocation(dict_init);
+                printerr_allocation();
                 return NULL;
         }
         dict->value_size = value_size;
@@ -136,7 +136,7 @@ Dictionary* dict_init(size_t key_size, size_t value_size, hash_function_t hash_f
 
 int dict_configure(Dictionary *dict, enum Redispersion redispersion, double min_lf, double max_lf, hash_function_t hash_func){
         if (!dict){
-                printerr_null_param(dict_configure);
+                printerr_null_param();
                 return NULL_PARAMETER_ERROR;
         }
         float min, max;
@@ -153,7 +153,7 @@ int dict_configure(Dictionary *dict, enum Redispersion redispersion, double min_
         }
 
         if (min >= max){
-                printerr(dict_configure, "Invalid values for min_lf (%f) and max_lf (%f). min_lf must be lower than max_lf",, min, max);
+                printerr("Invalid values for min_lf (%f) and max_lf (%f). min_lf must be lower than max_lf",, min, max);
                 return INVALID_PARAMETER_ERROR;
         }
 
@@ -283,7 +283,7 @@ static size_t dict_get_pos(Dictionary *dict, void *key, size_t n_it){
 
 int dict_put(Dictionary *dict, void *key, void *value){
         if (!dict || !key || !value){
-                printerr_null_param(dict_put);
+                printerr_null_param();
                 return NULL_PARAMETER_ERROR;
         }
         size_t pos = 0;
@@ -313,7 +313,7 @@ int dict_put(Dictionary *dict, void *key, void *value){
                 node.value = malloc(dict->value_size);
         }
         if (!node.key || !node.value){
-                printerr_allocation(dict_put);
+                printerr_allocation();
                 return ALLOCATION_ERROR;
         }
 
@@ -331,7 +331,7 @@ int dict_put(Dictionary *dict, void *key, void *value){
                 size_t new_size = get_next_prime(dict->vec_size * 2);
                 int status = dict_redisperse(dict, new_size);
                 if (status != SUCCESS){
-                        printerr(dict_put, "Could not redisperse");
+                        printerr("Could not redisperse");
                         return status;
                 }
         }
@@ -342,7 +342,7 @@ int dict_put(Dictionary *dict, void *key, void *value){
 
 void* dict_get(Dictionary *dict, void *key, void *dest){
         if (!dict || !key){
-                printerr_null_param(dict_get);
+                printerr_null_param();
                 return NULL;
         }
         size_t pos;
@@ -358,8 +358,7 @@ void* dict_get(Dictionary *dict, void *key, void *dest){
                         int h1 = dict->hash(key);
                         int h2 = dict->hash(node.key);
                         if (h1 == h2){
-                                memcpy(dest, node.value, dict->value_size);
-                                return dest;
+                                return memcpy(dest, node.value, dict->value_size);
                         }
                 }
 
@@ -370,7 +369,7 @@ void* dict_get(Dictionary *dict, void *key, void *dest){
 
 bool dict_exists(Dictionary *dict, void *key){
         if (!dict || !key){
-                printerr_null_param(dict_exists);
+                printerr_null_param();
                 return NULL_PARAMETER_ERROR;
         }
         size_t pos;
@@ -405,7 +404,7 @@ static int dict_delete_node(Dictionary *dict, size_t pos, DictionaryNode node){
                 size_t new_size = get_prev_prime(dict->vec_size / 2);
                 int status = dict_redisperse(dict, new_size);
                 if (status != SUCCESS){
-                        printerr(dict_delete_node, "Could not redisperse");
+                        printerr("Could not redisperse");
                         return status;
                 }
         }
@@ -414,7 +413,7 @@ static int dict_delete_node(Dictionary *dict, size_t pos, DictionaryNode node){
 
 int dict_remove(Dictionary *dict, void *key){
         if (!dict || !key){
-                printerr_null_param(dict_contains);
+                printerr_null_param();
                 return NULL_PARAMETER_ERROR;
         }
         size_t pos;

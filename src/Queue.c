@@ -34,17 +34,17 @@ struct _Queue {
 
 Queue* queue_init(size_t data_size, comparator_function_t cmp){
 	if (!cmp){
-		printerr_null_param(queue_init);
+		printerr_null_param();
 		return NULL;
 	}
 	if (data_size == 0){
-		printerr_data_size(queue_init);
+		printerr_data_size();
 		return NULL;
 	}
 	// Allocate queue
 	Queue *queue = malloc(sizeof(*queue));
 	if (!queue){
-		printerr_allocation(queue_init);
+		printerr_allocation();
 		return NULL;
 	}
 	// Initialize queue
@@ -58,7 +58,7 @@ Queue* queue_init(size_t data_size, comparator_function_t cmp){
 
 void queue_configure(Queue *queue, comparator_function_t cmp){
 	if (!queue || !cmp){
-		printerr_null_param(queue_configure);
+		printerr_null_param();
 		return;
 	}
 	queue->compare = cmp;
@@ -77,7 +77,7 @@ static QueueNode* queue_init_node(void *element, size_t size){
 
 int queue_enqueue(Queue *queue, void *element){
 	if (!queue || !element){
-		printerr_null_param(queue_enqueue);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	QueueNode *node = queue_init_node(element, queue->data_size);
@@ -97,7 +97,7 @@ int queue_enqueue(Queue *queue, void *element){
 
 int queue_enqueue_array(Queue *queue, void *array, size_t array_length){
 	if (!queue || !array){
-		printerr_null_param(queue_enqueue_array);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	while (array_length-- > 0){
@@ -116,7 +116,7 @@ int queue_enqueue_array(Queue *queue, void *array, size_t array_length){
 
 void* queue_dequeue(Queue *queue, void *dest){
 	if (!queue || !dest){
-		printerr_null_param(queue_dequeue);
+		printerr_null_param();
 		return NULL;
 	}
 	if (queue->head == NULL){
@@ -132,7 +132,7 @@ void* queue_dequeue(Queue *queue, void *dest){
 
 int queue_dequeue_array(Queue *queue, void *array, size_t array_length){
 	if (!queue || !array){
-		printerr_null_param(queue_enqueue_array);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	while (array_length-- > 0) {
@@ -150,7 +150,7 @@ int queue_dequeue_array(Queue *queue, void *array, size_t array_length){
 
 void* queue_peek(Queue *queue, void *dest){
 	if (!queue || !dest){
-		printerr_null_param(queue_peek);
+		printerr_null_param();
 		return NULL;
 	}
 	if (queue->head == NULL){
@@ -163,7 +163,7 @@ void* queue_peek(Queue *queue, void *dest){
 
 bool queue_exists(Queue *queue, void *element){
 	if (!queue || !element){
-		printerr_null_param(queue_exists);
+		printerr_null_param();
 		return false;
 	}
 	QueueNode *aux = queue->head;
@@ -178,7 +178,7 @@ bool queue_exists(Queue *queue, void *element){
 
 size_t queue_size(Queue *queue){
 	if (!queue){
-		printerr_null_param(queue_size);
+		printerr_null_param();
 		return 0;
 	}
 	return queue->n_elements;
@@ -186,7 +186,7 @@ size_t queue_size(Queue *queue){
 
 bool queue_isempty(Queue *queue){
 	if (!queue){
-		printerr_null_param(queue_isempty);
+		printerr_null_param();
 		return false;
 	}
 	return queue->head == NULL;
@@ -206,7 +206,7 @@ static void queue_free_node(QueueNode *node){
 
 int queue_free(Queue *queue){
 	if (!queue){
-		printerr_null_param(queue_free);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	queue_free_node(queue->head);
@@ -226,7 +226,7 @@ void queue_free_all(unsigned int n, ...){
 
 Queue* queue_reset(Queue *queue){
 	if (!queue){
-		printerr_null_param(queue_reset);
+		printerr_null_param();
 		return NULL;
 	}
 	queue_free_node(queue->head);

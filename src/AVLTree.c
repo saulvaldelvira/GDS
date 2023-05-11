@@ -38,7 +38,7 @@ struct _AVLTree {
 static AVLNode* init_node(void *element, size_t data_size){
         AVLNode *node = malloc(sizeof(*node));
         if (!node){
-                printerr_allocation(init_node);
+                printerr_allocation();
                 return NULL;
         }
         node->left = NULL;
@@ -51,7 +51,7 @@ static AVLNode* init_node(void *element, size_t data_size){
 
 void avl_configure(AVLTree *tree, comparator_function_t cmp){
 	if (!tree || !cmp){
-		printerr_null_param(avl_configure);
+		printerr_null_param();
 		return;
 	}
 	tree->compare = cmp;
@@ -59,16 +59,16 @@ void avl_configure(AVLTree *tree, comparator_function_t cmp){
 
 AVLTree* avl_init(size_t data_size, comparator_function_t cmp){
         if (!cmp){
-                printerr_null_param(avl_init);
+                printerr_null_param();
                 return NULL;
         }
 	if (data_size == 0){
-		printerr_data_size(avl_init);
+		printerr_data_size();
 		return NULL;
 	}
         AVLTree *tree = malloc(sizeof(*tree));
         if (!tree){
-                printerr_allocation(avl_init);
+                printerr_allocation();
                 return NULL;
         }
         tree->compare = cmp;
@@ -228,7 +228,7 @@ static struct add_rec_ret add_rec(AVLNode *node, void *element, comparator_funct
 
 int avl_add(AVLTree *tree, void *element){
         if (!tree || !element){
-                printerr_null_param(avl_add);
+                printerr_null_param();
                 return NULL_PARAMETER_ERROR;
         }
         struct add_rec_ret ret = add_rec(tree->root, element, tree->compare, tree->data_size);
@@ -242,7 +242,7 @@ int avl_add(AVLTree *tree, void *element){
 
 int avl_add_array(AVLTree *tree, void *array, size_t array_length){
 	if (!tree || !array){
-                printerr_null_param(avl_add_array);
+                printerr_null_param();
                 return NULL_PARAMETER_ERROR;
         }
 	void *tmp;
@@ -339,7 +339,7 @@ static struct remove_rec_ret remove_rec(AVLNode *node, void *element, comparator
 
 int avl_remove(AVLTree *tree, void *element){
 	if (!tree || !element){
-		printerr_null_param(avl_remove);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	struct remove_rec_ret ret = remove_rec(tree->root, element, tree->compare, tree->data_size);
@@ -353,7 +353,7 @@ int avl_remove(AVLTree *tree, void *element){
 
 int avl_remove_array(AVLTree *tree, void *array, size_t array_length){
 	if (!tree || !array){
-                printerr_null_param(avl_remove_array);
+                printerr_null_param();
                 return NULL_PARAMETER_ERROR;
         }
 	void *tmp;
@@ -388,7 +388,7 @@ bool exists_rec(AVLNode *node, void *element, comparator_function_t compare){
 
 bool avl_exists(AVLTree *tree, void *element){
 	if (!tree || !element){
-		printerr_null_param(avl_exists);
+		printerr_null_param();
 		return false;
 	}
 	return exists_rec(tree->root, element, tree->compare);
@@ -410,7 +410,7 @@ static AVLNode* get_rec(AVLNode *node, void *element, comparator_function_t comp
 
 void* avl_get(AVLTree *tree, void *element, void *dest){
 	if (!tree || !element || !dest){
-		printerr_null_param(avl_get);
+		printerr_null_param();
 		return NULL;
 	}
 	AVLNode *node = get_rec(tree->root, element, tree->compare);
@@ -423,7 +423,7 @@ void* avl_get(AVLTree *tree, void *element, void *dest){
 
 size_t avl_size(AVLTree *tree){
 	if (!tree){
-		printerr_null_param(avl_size);
+		printerr_null_param();
 		return 0;
 	}
 	return tree->n_elements;
@@ -431,7 +431,7 @@ size_t avl_size(AVLTree *tree){
 
 bool avl_isempty(AVLTree *tree){
 	if (!tree){
-		printerr_null_param(avl_isempty);
+		printerr_null_param();
 		return 0;
 	}
 	return tree->root == NULL;
@@ -439,7 +439,7 @@ bool avl_isempty(AVLTree *tree){
 
 int avl_height(AVLTree *tree){
 	if (!tree){
-		printerr_null_param(avl_height);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	if (tree->root == NULL){
@@ -499,7 +499,7 @@ static struct traversal_ret traversal_rec(AVLNode *node, enum Traversal order, s
 	result.elements_size = left.elements_size + right.elements_size + 1; // The +1 is for the element in this node
 	result.elements = malloc(result.elements_size * size);
 	if(!result.elements){
-		printerr_allocation(traversal_rec);
+		printerr_allocation();
 		free(result.elements);
 		result.status = ALLOCATION_ERROR;
 		free(left.elements);
@@ -547,7 +547,7 @@ static struct traversal_ret traversal_rec(AVLNode *node, enum Traversal order, s
 
 void* avl_preorder(AVLTree *tree){
 	if (!tree){
-		printerr_null_param(avl_preorder);
+		printerr_null_param();
 		return NULL;
 	}
 	struct traversal_ret result = traversal_rec(tree->root, PRE_ORDER, tree->data_size);
@@ -559,7 +559,7 @@ void* avl_preorder(AVLTree *tree){
 
 void* avl_inorder(AVLTree *tree){
 	if (!tree){
-		printerr_null_param(avl_inorder);
+		printerr_null_param();
 		return NULL;
 	}
 	struct traversal_ret result = traversal_rec(tree->root, IN_ORDER, tree->data_size);
@@ -571,7 +571,7 @@ void* avl_inorder(AVLTree *tree){
 
 void* avl_postorder(AVLTree *tree){
 	if (!tree){
-		printerr_null_param(avl_postorder);
+		printerr_null_param();
 		return NULL;
 	}
 	struct traversal_ret result = traversal_rec(tree->root, POST_ORDER, tree->data_size);
@@ -585,7 +585,7 @@ void* avl_postorder(AVLTree *tree){
 
 AVLTree* avl_join(AVLTree *tree_1, AVLTree *tree_2){
 	if (!tree_1 || !tree_2){
-		printerr_null_param(avl_join);
+		printerr_null_param();
 		return NULL;
 	}
 	if (tree_1->data_size != tree_2->data_size){
@@ -625,7 +625,7 @@ AVLTree* avl_join(AVLTree *tree_1, AVLTree *tree_2){
 
 void* avl_max(AVLTree *tree, void *dest){
 	if (!tree || !dest){
-		printerr_null_param(avl_max);
+		printerr_null_param();
 		return NULL;
 	}
 	return avl_max_from(tree, tree->root->info, dest);
@@ -633,7 +633,7 @@ void* avl_max(AVLTree *tree, void *dest){
 
 void* avl_min(AVLTree *tree, void *dest){
 	if (!tree || !dest){
-		printerr_null_param(avl_min);
+		printerr_null_param();
 		return NULL;
 	}
 	return avl_min_from(tree, tree->root->info, dest);
@@ -641,7 +641,7 @@ void* avl_min(AVLTree *tree, void *dest){
 
 void* avl_max_from(AVLTree *tree, void *element, void *dest){
 	if (!tree || !element || !dest){
-		printerr_null_param(avl_max_from);
+		printerr_null_param();
 		return NULL;
 	}
 	AVLNode *tmp = get_rec(tree->root, element, tree->compare);
@@ -655,7 +655,7 @@ void* avl_max_from(AVLTree *tree, void *element, void *dest){
 
 void* avl_min_from(AVLTree *tree, void *element, void *dest){
 	if (!tree || !element || !dest){
-		printerr_null_param(avl_min_from);
+		printerr_null_param();
 		return NULL;
 	}
 	AVLNode *tmp = get_rec(tree->root, element, tree->compare);

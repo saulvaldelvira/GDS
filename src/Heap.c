@@ -24,21 +24,21 @@ struct _Heap {
 
 Heap* heap_init(size_t data_size, comparator_function_t cmp){
 	if (!cmp){
-		printerr_null_param(heap_init);
+		printerr_null_param();
 		return NULL;
 	}
 	if (data_size == 0){
-		printerr_data_size(heap_init);
+		printerr_data_size();
 		return NULL;
 	}
 	Heap *heap = malloc(sizeof(*heap));
 	if (!heap){
-		printerr_allocation(heap_init);
+		printerr_allocation();
 		return NULL;
 	}
 	heap->elements = vector_init(data_size, cmp);
 	if (!heap->elements){
-		printerr_allocation(heap_init);
+		printerr_allocation();
 		free(heap);
 		return NULL;
 	}
@@ -47,7 +47,7 @@ Heap* heap_init(size_t data_size, comparator_function_t cmp){
 
 void heap_configure(Heap *heap, comparator_function_t cmp){
 	if (!heap || !cmp){
-		printerr_null_param(heap_configure);
+		printerr_null_param();
 		return;
 	}
 	vector_configure(heap->elements, cmp);
@@ -129,7 +129,7 @@ static void filter_down(Vector *list, size_t pos){
 
 int heap_add(Heap *heap, void *element){
 	if (!heap || !element){
-		printerr_null_param(heap_add);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	int status = vector_append(heap->elements, element);
@@ -142,7 +142,7 @@ int heap_add(Heap *heap, void *element){
 
 int heap_add_array(Heap *heap, void *array, size_t array_length){
 	if (!heap || !array){
-		printerr_null_param(heap_add_array);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	// If the heap is empty, we use this piece of code because it
@@ -179,7 +179,7 @@ int heap_add_array(Heap *heap, void *array, size_t array_length){
 
 void* heap_pop_min(Heap *heap, void *dest){
 	if (!heap || !dest){
-		printerr_null_param(heap_pop_min);
+		printerr_null_param();
 		return NULL;
 	}
 	dest = vector_get_at(heap->elements, 0, dest);
@@ -199,7 +199,7 @@ void* heap_pop_min(Heap *heap, void *dest){
 
 int heap_change_priority(Heap *heap, void *element, void *replacement){
 	if (!heap || !element || !replacement){
-		printerr_null_param(heap_change_priority);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	// Get pos of the element
@@ -229,7 +229,7 @@ int heap_change_priority(Heap *heap, void *element, void *replacement){
 
 void* heap_get_array(Heap *heap, size_t array_length){
 	if (!heap){
-		printerr_null_param(heap_get_array);
+		printerr_null_param();
 		return NULL;
 	}
 	return vector_get_array(heap->elements, array_length);
@@ -237,7 +237,7 @@ void* heap_get_array(Heap *heap, size_t array_length){
 
 void* heap_get_into_array(Heap *heap, void *array, size_t array_length){
 	if (!heap){
-		printerr_null_param(heap_get_array);
+		printerr_null_param();
 		return NULL;
 	}
 	return vector_get_into_array(heap->elements, array, array_length);
@@ -245,7 +245,7 @@ void* heap_get_into_array(Heap *heap, void *array, size_t array_length){
 
 void* heap_peek(Heap *heap, void *dest){
 	if (!heap || !dest){
-		printerr_null_param(heap_peek);
+		printerr_null_param();
 		return NULL;
 	}
 	return vector_get_at(heap->elements, 0, dest);
@@ -253,7 +253,7 @@ void* heap_peek(Heap *heap, void *dest){
 
 int heap_remove(Heap *heap, void *element){
 	if (!heap || !element){
-		printerr_null_param(heap_remove);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	index_t index = vector_indexof(heap->elements, element);
@@ -273,7 +273,7 @@ int heap_remove(Heap *heap, void *element){
 
 bool heap_exists(Heap *heap, void *element){
 	if (!heap || !element){
-		printerr_null_param(heap_exists);
+		printerr_null_param();
 		return false;
 	}
 	return vector_exists(heap->elements, element);
@@ -281,7 +281,7 @@ bool heap_exists(Heap *heap, void *element){
 
 size_t heap_size(Heap *heap){
 	if (!heap){
-		printerr_null_param(heap_size);
+		printerr_null_param();
 		return 0; /// ?? change ???
 	}
 	return vector_size(heap->elements);
@@ -289,7 +289,7 @@ size_t heap_size(Heap *heap){
 
 bool heap_isempty(Heap *heap){
 	if (!heap){
-		printerr_null_param(heap_isempty);
+		printerr_null_param();
 		return false;
 	}
 	return vector_isempty(heap->elements);
@@ -301,7 +301,7 @@ bool heap_isempty(Heap *heap){
 
 int heap_free(Heap *heap){
 	if (!heap){
-		printerr_null_param(heap_free);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	vector_free(heap->elements);
@@ -321,7 +321,7 @@ void heap_free_all(unsigned int n, ...){
 
 Heap* heap_reset(Heap *heap){
 	if (!heap){
-		printerr_null_param(heap_reset);
+		printerr_null_param();
 		return NULL;
 	}
 	heap->elements = vector_reset(heap->elements);

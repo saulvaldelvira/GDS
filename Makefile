@@ -7,7 +7,6 @@ INCLUDE = include
 
 CFILES = $(wildcard $(SRC)/*.c) $(wildcard $(SRC)/*/*.c)
 OFILES = $(patsubst %.c,%.o,$(CFILES))
-LIBFILES = $(addprefix $(LIB)/lib,$(notdir $(CFILES:.c=.so)))
 TESTFILES = $(wildcard test/*)
 
 CC = gcc
@@ -59,7 +58,7 @@ test: $(TESTFILES) $(LIB)/libGDS-static.a | $(BIN)/
 $(LIB)/libGDS-static.a: libs
 
 .c.o:
-	$(CC) $(CCFLAGS) -c -o $@ $<
+	$(CC) $(CCFLAGS) -o $@ -c $<
 
 %/:
 	@ mkdir $@

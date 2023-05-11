@@ -41,16 +41,16 @@ struct _LinkedList {
 
 LinkedList* list_init(size_t data_size, comparator_function_t cmp){
 	if (!cmp){
-		printerr_null_param(list_init);
+		printerr_null_param();
 		return NULL;
 	}
 	if (data_size == 0){
-		printerr_data_size(list_init);
+		printerr_data_size();
 		return NULL;
 	}
 	LinkedList *list = malloc(sizeof(*list));
 	if (!list){
-		printerr_allocation(list_init);
+		printerr_allocation();
 		return NULL;
 	}
 	list->n_elements = 0;
@@ -63,7 +63,7 @@ LinkedList* list_init(size_t data_size, comparator_function_t cmp){
 
 void list_configure(LinkedList *list, comparator_function_t cmp){
 	if (!list || !cmp){
-		printerr_null_param(list_configure);
+		printerr_null_param();
 		return;
 	}
 	list->compare = cmp;
@@ -75,7 +75,7 @@ void list_configure(LinkedList *list, comparator_function_t cmp){
 static LLNode* list_innit_node(void *info, size_t size){
 	LLNode *node = malloc(offsetof(LLNode, info) + size);
 	if (!node){
-		printerr_allocation(list_innit_node);
+		printerr_allocation();
 		return NULL;
 	}
 	node->next = NULL;
@@ -90,7 +90,7 @@ static LLNode* list_innit_node(void *info, size_t size){
 
 int list_append(LinkedList *list, void *element){
 	if (!list || !element){
-		printerr_null_param(list_append);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	LLNode **ref = list->head == NULL ? // If head NULL
@@ -98,7 +98,7 @@ int list_append(LinkedList *list, void *element){
 			&list->tail->next;  // Else add to the tail
 	*ref = list_innit_node(element, list->data_size);
 	if (!*ref){
-		printerr_allocation(list_append);
+		printerr_allocation();
 		return ALLOCATION_ERROR;
 	}
 	(*ref)->prev = list->tail;
@@ -109,7 +109,7 @@ int list_append(LinkedList *list, void *element){
 
 int list_append_array(LinkedList *list, void *array, size_t array_length){
 	if (!list || !array){
-		printerr_null_param(list_append_array);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	void *tmp = array;
@@ -125,7 +125,7 @@ int list_append_array(LinkedList *list, void *array, size_t array_length){
 
 int list_push_front(LinkedList *list, void *element){
 	if (!list || !element){
-		printerr_null_param(list_push_front);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	LLNode *old_head = list->head;
@@ -143,7 +143,7 @@ int list_push_front(LinkedList *list, void *element){
 
 int list_push_front_array(LinkedList *list, void *array, size_t array_length){
 	if (!list || !array){
-		printerr_null_param(list_push_front_array);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	void *tmp = array;
@@ -160,7 +160,7 @@ int list_push_front_array(LinkedList *list, void *array, size_t array_length){
 
 int list_set(LinkedList *list, void *element, void *replacement){
 	if (!list || !element || !replacement){
-		printerr_null_param(list_set);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	LLNode *aux = list->head;
@@ -180,7 +180,7 @@ int list_set(LinkedList *list, void *element, void *replacement){
 
 void* list_get(LinkedList *list, void *element, void *dest){
 	if (!list || !element || !dest){
-		printerr_null_param(list_get);
+		printerr_null_param();
 		return NULL;
 	}
 	LLNode *aux = list->head;
@@ -192,7 +192,7 @@ void* list_get(LinkedList *list, void *element, void *dest){
 
 void* list_get_front(LinkedList *list, void *dest){
 	if (!list || !dest){
-		printerr_null_param(list_get_front);
+		printerr_null_param();
 		return NULL;
 	}
 	if (list->head == NULL){
@@ -203,7 +203,7 @@ void* list_get_front(LinkedList *list, void *dest){
 
 void* list_get_back(LinkedList *list, void *dest){
 	if (!list || !dest){
-		printerr_null_param(list_get_back);
+		printerr_null_param();
 		return NULL;
 	}
 	if (list->tail == NULL){
@@ -214,7 +214,7 @@ void* list_get_back(LinkedList *list, void *dest){
 
 void* list_get_into_array(LinkedList *list, void *array, size_t array_length){
 	if (!list || !array){
-		printerr_null_param(list_get_into_array);
+		printerr_null_param();
 		return NULL;
 	}
 	if (array_length > list->n_elements){
@@ -233,7 +233,7 @@ void* list_get_into_array(LinkedList *list, void *array, size_t array_length){
 
 void* list_get_array(LinkedList *list, size_t array_length){
 	if (!list){
-		printerr_null_param(list_get_array);
+		printerr_null_param();
 		return NULL;
 	}
 	if (array_length == GET_ALL_ELEMENTS || array_length > list->n_elements){
@@ -256,7 +256,7 @@ void* list_get_array(LinkedList *list, size_t array_length){
 
 int list_remove(LinkedList *list, void *element){
 	if (!list || !element){
-		printerr_null_param(list_remove);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	LLNode *tmp = list->head;
@@ -283,7 +283,7 @@ int list_remove(LinkedList *list, void *element){
 
 void* list_pop_front(LinkedList *list, void *dest){
 	if (!list || !dest){
-		printerr_null_param(list_pop_front);
+		printerr_null_param();
 		return NULL;
 	}
 	if (list->head == NULL){
@@ -299,7 +299,7 @@ void* list_pop_front(LinkedList *list, void *dest){
 
 void* list_pop_back(LinkedList *list, void *dest){
 	if (!list || !dest){
-		printerr_null_param(list_pop_back);
+		printerr_null_param();
 		return NULL;
 	}
 	if (list->tail == NULL){
@@ -315,7 +315,7 @@ void* list_pop_back(LinkedList *list, void *dest){
 
 int list_remove_array(LinkedList *list, void *array, size_t array_length){
 	if (!list || !array){
-		printerr_null_param(list_push_remove_array);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	void *tmp = array;
@@ -336,7 +336,7 @@ int list_remove_array(LinkedList *list, void *array, size_t array_length){
 
 bool list_exists(LinkedList *list, void *element){
 	if (!list || !element){
-		printerr_null_param(list_exists);
+		printerr_null_param();
 		return false;
 	}
 	LLNode *aux = list->head;
@@ -351,7 +351,7 @@ bool list_exists(LinkedList *list, void *element){
 
 size_t list_size(LinkedList *list){
 	if (!list){
-		printerr_null_param(list_size);
+		printerr_null_param();
 		return 0;
 	}
 	return list->n_elements;
@@ -359,7 +359,7 @@ size_t list_size(LinkedList *list){
 
 bool list_isempty(LinkedList *list){
 	if (!list){
-		printerr_null_param(list_isempty);
+		printerr_null_param();
 		return false;
 	}
 	return list->n_elements == 0;
@@ -367,7 +367,7 @@ bool list_isempty(LinkedList *list){
 
 LinkedList* list_join(LinkedList *list_1, LinkedList *list_2){
 	if (!list_1 || !list_2){
-		printerr_null_param(list_join);
+		printerr_null_param();
 		return NULL;
 	}
 	if (list_1->data_size != list_2->data_size){
@@ -421,7 +421,7 @@ static void list_free_node(LLNode *node){
 
 int list_free(LinkedList *list){
 	if (!list){
-		printerr_null_param(list_free);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	list_free_node(list->head);
@@ -441,7 +441,7 @@ void list_free_all(unsigned int n, ...){
 
 LinkedList* list_reset(LinkedList *list){
 	if (!list){
-		printerr_null_param(list_reset);
+		printerr_null_param();
 		return NULL;
 	}
 	list_free_node(list->head);

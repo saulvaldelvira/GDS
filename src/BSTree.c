@@ -35,16 +35,16 @@ struct _BSTree {
 
 BSTree* bst_init(size_t data_size, comparator_function_t cmp){
 	if (!cmp){
-		printerr_null_param(bst_init);
+		printerr_null_param();
 		return NULL;
 	}
 	if (data_size == 0){
-		printerr_data_size(bst_init);
+		printerr_data_size();
 		return NULL;
 	}
 	BSTree *tree = malloc(sizeof(*tree));
 	if (!tree){
-		printerr_allocation(bst_init);
+		printerr_allocation();
 		return NULL;
 	}
 	tree->root = NULL;
@@ -56,7 +56,7 @@ BSTree* bst_init(size_t data_size, comparator_function_t cmp){
 
 void bst_configure(BSTree *tree, comparator_function_t cmp){
 	if (!tree || !cmp){
-		printerr_null_param(bst_configure);
+		printerr_null_param();
 		return;
 	}
 	tree->compare = cmp;
@@ -65,7 +65,7 @@ void bst_configure(BSTree *tree, comparator_function_t cmp){
 static BSNode* init_node(void *info, size_t size){
 	BSNode *node = malloc(offsetof(BSNode, info) + size);
 	if (!node){
-		printerr_allocation(init_node);
+		printerr_allocation();
 		return NULL;
 	}
 	node->left = NULL;
@@ -147,7 +147,7 @@ static struct add_rec_ret add_rec(BSNode *node, void *element, comparator_functi
 
 int bst_add(BSTree *tree, void *element){
 	if (!tree || !element){
-		printerr_null_param(bst_add);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	struct add_rec_ret ret = add_rec(tree->root, element, tree->compare, tree->data_size);
@@ -160,7 +160,7 @@ int bst_add(BSTree *tree, void *element){
 
 int bst_add_array(BSTree *tree, void *array, size_t array_length){
 	if (!tree || !array){
-		printerr_null_param(bst_add_array);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	void *tmp;
@@ -230,7 +230,7 @@ static struct remove_rec_ret remove_rec(BSNode *node, void *element, comparator_
 
 int bst_remove(BSTree *tree, void *element){
 	if (!tree || !element){
-		printerr_null_param(bst_remove);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	struct remove_rec_ret ret = remove_rec(tree->root, element, tree->compare, tree->data_size);
@@ -243,7 +243,7 @@ int bst_remove(BSTree *tree, void *element){
 
 int bst_remove_array(BSTree *tree, void *array, size_t array_length){
 	if (!tree || !array){
-		printerr_null_param(bst_remove_array);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	void *tmp;
@@ -278,7 +278,7 @@ static BSNode* get_rec(BSNode *node, void *element, comparator_function_t cmp){
 
 void* bst_get(BSTree *tree, void* element, void *dest){
 	if (!tree || !element || !dest){
-		printerr_null_param(bst_get);
+		printerr_null_param();
 		return NULL;
 	}
 	BSNode *node = get_rec(tree->root, element, tree->compare);
@@ -291,7 +291,7 @@ void* bst_get(BSTree *tree, void* element, void *dest){
 
 void* bst_max(BSTree *tree, void *dest){
 	if (!tree || !dest){
-		printerr_null_param(bst_max);
+		printerr_null_param();
 		return NULL;
 	}
 	return bst_max_from(tree, tree->root->info, dest);
@@ -299,7 +299,7 @@ void* bst_max(BSTree *tree, void *dest){
 
 void* bst_min(BSTree *tree, void *dest){
 	if (!tree || !dest){
-		printerr_null_param(bst_min);
+		printerr_null_param();
 		return NULL;
 	}
 	return bst_min_from(tree, tree->root->info, dest);
@@ -307,7 +307,7 @@ void* bst_min(BSTree *tree, void *dest){
 
 void* bst_max_from(BSTree *tree, void *element, void *dest){
 	if (!tree || !element || !dest){
-		printerr_null_param(bst_max_from);
+		printerr_null_param();
 		return NULL;
 	}
 	BSNode *tmp = get_rec(tree->root, element, tree->compare);
@@ -321,7 +321,7 @@ void* bst_max_from(BSTree *tree, void *element, void *dest){
 
 void* bst_min_from(BSTree *tree, void *element, void *dest){
 	if (!tree || !element || !dest){
-		printerr_null_param(bst_min_from);
+		printerr_null_param();
 		return NULL;
 	}
 	BSNode *tmp = get_rec(tree->root, element, tree->compare);
@@ -353,7 +353,7 @@ static bool exists_rec(BSNode *node, void *element, comparator_function_t cmp){
 
 bool bst_exists(BSTree *tree, void *element){
 	if (!tree || !element){
-		printerr_null_param(bst_exists);
+		printerr_null_param();
 		return NULL;
 	}
 	return exists_rec(tree->root, element, tree->compare);
@@ -361,7 +361,7 @@ bool bst_exists(BSTree *tree, void *element){
 
 size_t bst_size(BSTree *tree){
 	if (!tree){
-		printerr_null_param(bst_size);
+		printerr_null_param();
 		return 0; // Should we use index_t ???
 	}
 	return tree->n_elements;
@@ -369,7 +369,7 @@ size_t bst_size(BSTree *tree){
 
 bool bst_isempty(BSTree *tree){
 	if (!tree){
-		printerr_null_param(bst_isempty);
+		printerr_null_param();
 		return false;
 	}
 	return tree->root == NULL;
@@ -377,7 +377,7 @@ bool bst_isempty(BSTree *tree){
 
 BSTree* bst_join(BSTree *tree_1, BSTree *tree_2){
 	if (!tree_1 || !tree_2){
-		printerr_null_param(bst_joins);
+		printerr_null_param();
 		return NULL;
 	}
 	if (tree_1->data_size != tree_2->data_size){
@@ -464,7 +464,7 @@ static struct traversal_ret traversal_rec(BSNode *node, enum Traversal order, si
 	result.elements_size = left.elements_size + right.elements_size + 1; // The +1 is for the element in this node
 	result.elements = malloc(result.elements_size * size);
 	if(!result.elements){
-		printerr_allocation(traversal_rec);
+		printerr_allocation();
 		result.status = ALLOCATION_ERROR;
 		free(left.elements);
 		free(right.elements);
@@ -512,7 +512,7 @@ static struct traversal_ret traversal_rec(BSNode *node, enum Traversal order, si
 
 void* bst_preorder(BSTree *tree){
 	if (!tree){
-		printerr_null_param(bst_preorder);
+		printerr_null_param();
 		return NULL;
 	}
 	struct traversal_ret result = traversal_rec(tree->root, PRE_ORDER, tree->data_size);
@@ -524,7 +524,7 @@ void* bst_preorder(BSTree *tree){
 
 void* bst_inorder(BSTree *tree){
 	if (!tree){
-		printerr_null_param(bst_inorder);
+		printerr_null_param();
 		return NULL;
 	}
 	struct traversal_ret result = traversal_rec(tree->root, IN_ORDER, tree->data_size);
@@ -536,7 +536,7 @@ void* bst_inorder(BSTree *tree){
 
 void* bst_postorder(BSTree *tree){
 	if (!tree){
-		printerr_null_param(bst_postorder);
+		printerr_null_param();
 		return NULL;
 	}
 	struct traversal_ret result = traversal_rec(tree->root, POST_ORDER, tree->data_size);

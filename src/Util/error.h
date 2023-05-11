@@ -31,15 +31,29 @@ extern "C" {
 // Print error macros
 #ifdef __GDS_ENABLE_ERROR_MACROS
 
-#define printerr(func, msg, ...) fprintf(stderr, "ERROR: " msg  ". Function: " #func "\n" __VA_ARGS__)  // C23 will add __VA_OPT__(,)
+// If it's not already defined, define a macro for the base name of the file
+// Example: If __FILE__ is "/path/to/proyect/main.c" __FILE_NAME__ is "main.c"
+#ifndef __FILE_NAME__
+        #include <string.h>
+        #ifdef __unix__
+                #define __FILE_NAME__ (strrchr(__FILE__, '/') ? strrchr(__FILE__, '/') + 1 : __FILE__)
+        #else
+                #define __FILE_NAME__ (strrchr(__FILE__, '\\') ? strrchr(__FILE__, '\\') + 1 : __FILE__)
+        #endif
+#endif
 
-#define printerr_allocation(func) fprintf(stderr, "ERROR: Unable to allocate memory. Function: " #func "\n");
+#define _context_str "In %s, line %d (%s)\n"
+#define _context_args __FILE_NAME__, __LINE__, __func__
 
-#define printerr_null_param(func) fprintf(stderr, "ERROR: NULL parameter(s). Function: " #func "\n");
+#define printerr(msg, ...) fprintf(stderr, "ERROR: " msg  ".\n"_context_str __VA_ARGS__, _context_args)  // C23 will add __VA_OPT__(,)
 
-#define printerr_out_of_bounds(func, index, max) fprintf(stderr, "ERROR: Index %zu out of bounds for [0, %zu). Function: " #func "\n", index, max);
+#define printerr_allocation() fprintf(stderr, "ERROR: Unable to allocate memory.\n" _context_str, _context_args)
 
-#define printerr_data_size(func) fprintf(stderr, "ERROR: Data size must be > 0. Function: " #func "\n");
+#define printerr_null_param() fprintf(stderr, "ERROR: NULL parameter(s).\n" _context_str, _context_args)
+
+#define printerr_out_of_bounds(index, max) fprintf(stderr, "ERROR: Index %zu out of bounds for [0, %zu).\n" _context_str, index, max, _context_args)
+
+#define printerr_data_size() fprintf(stderr, "ERROR: Data size must be > 0.\n" _context_str, _context_args)
 
 #endif //__GDS_ENABLE_ERROR_MACROS
 

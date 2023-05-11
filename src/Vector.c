@@ -33,23 +33,23 @@ struct _Vector {
 
 Vector* vector_init(size_t data_size, comparator_function_t cmp){
 	if (data_size == 0){
-		printerr_data_size(vector_init);
+		printerr_data_size();
 		return NULL;
 	}
 	if (!cmp){
-		printerr_null_param(vector_init);
+		printerr_null_param();
 		return NULL;
 	}
 
 	Vector *vector = malloc(sizeof(*vector));
 	if (!vector){
-		printerr_allocation(vector_init);
+		printerr_allocation();
 		return NULL;
 	}
 
 	vector->elements = malloc(VECTOR_DEFAULT_SIZE * data_size);
 	if (!vector->elements){
-		printerr_allocation(vector_init);
+		printerr_allocation();
 		free(vector);
 		return NULL;
 	}
@@ -63,7 +63,7 @@ Vector* vector_init(size_t data_size, comparator_function_t cmp){
 
 void vector_configure(Vector *vector, comparator_function_t cmp){
 	if (!vector || !cmp){
-		printerr_null_param(vector_configure);
+		printerr_null_param();
 		return;
 	}
 	vector->compare = cmp;
@@ -71,7 +71,7 @@ void vector_configure(Vector *vector, comparator_function_t cmp){
 
 size_t vector_get_data_size(Vector *vector){
 	if (!vector){
-		printerr_null_param(vector_data_size);
+		printerr_null_param();
 		return 0;
 	}
 	return vector->data_size;
@@ -79,7 +79,7 @@ size_t vector_get_data_size(Vector *vector){
 
 comparator_function_t vector_get_comparator(Vector *vector){
 	if (!vector){
-		printerr_null_param(vector_get_comparator);
+		printerr_null_param();
 		return NULL;
 	}
 	return vector->compare;
@@ -92,7 +92,7 @@ comparator_function_t vector_get_comparator(Vector *vector){
 static int vector_resize(Vector *vector, size_t new_size){
 	void *tmp = calloc(new_size, vector->data_size);
 	if(!tmp){
-		printerr_allocation(vector_resize);
+		printerr_allocation();
 		return ALLOCATION_ERROR;
 	}
 	memcpy(tmp, vector->elements, vector->n_elements * vector->data_size);
@@ -104,7 +104,7 @@ static int vector_resize(Vector *vector, size_t new_size){
 
 int vector_append(Vector *vector, void *element){
 	if (!vector || !element){
-		printerr_null_param(vector_append);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	if(vector->n_elements >= vector->max_elements){
@@ -122,7 +122,7 @@ int vector_append(Vector *vector, void *element){
 
 int vector_push_front(Vector *vector, void *element){
 	if (!vector || !element){
-		printerr_null_param(vector_push_front);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	if(vector->n_elements >= vector->max_elements){
@@ -140,7 +140,7 @@ int vector_push_front(Vector *vector, void *element){
 
 int vector_append_array(Vector *vector, void *array, size_t array_length){
 	if (!vector || !array){
-		printerr_null_param(vector_append_array);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 
@@ -158,7 +158,7 @@ int vector_append_array(Vector *vector, void *array, size_t array_length){
 
 int vector_push_front_array(Vector *vector, void *array, size_t array_length){
 	if (!vector || !array){
-		printerr_null_param(vector_push_front_array);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	if (vector->n_elements + array_length > vector->max_elements){
@@ -176,11 +176,11 @@ int vector_push_front_array(Vector *vector, void *array, size_t array_length){
 
 int vector_set_at(Vector *vector, size_t index, void *element){
 	if (!vector || !element){
-		printerr_null_param(vector_set_at);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	if (index >= vector->n_elements){
-		printerr_out_of_bounds(vector_set_at, index, vector->n_elements);
+		printerr_out_of_bounds(index, vector->n_elements-1);
 		return INDEX_BOUNDS_ERROR;
 	}
 	void *tmp = void_offset(vector->elements, index * vector->data_size);
@@ -190,7 +190,7 @@ int vector_set_at(Vector *vector, size_t index, void *element){
 
 int vector_set(Vector *vector, void *element, void *replacement){
 	if (!vector || !element || !replacement){
-		printerr_null_param(vector_set);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	void *ptr;
@@ -206,7 +206,7 @@ int vector_set(Vector *vector, void *element, void *replacement){
 
 int vector_insert(Vector *vector, void *element, void *insert){
 	if (!vector || !element || !insert){
-		printerr_null_param(vector_insert_at);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	index_t index = vector_indexof(vector, element);
@@ -218,7 +218,7 @@ int vector_insert(Vector *vector, void *element, void *insert){
 
 int vector_insert_at(Vector *vector, size_t index, void *element){
 	if (!vector || !element){
-		printerr_null_param(vector_insert_at);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	if (vector->n_elements == vector->max_elements){
@@ -238,7 +238,7 @@ int vector_insert_at(Vector *vector, size_t index, void *element){
 
 int vector_populate(Vector *vector, void *template){
 	if (!vector || !template){
-		printerr_null_param(vector_populate);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	void *tmp = vector->elements;
@@ -252,14 +252,14 @@ int vector_populate(Vector *vector, void *template){
 
 int vector_process(Vector *vector, int (*func) (void *,void*), void *args){
 	if (!vector || !func){
-		printerr_null_param(vector_process);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	void *tmp = vector->elements;
 	for (size_t i = 0; i < vector->n_elements; ++i){
 		int status = func(tmp, args);
 		if (status != SUCCESS){
-			printerr(vector_process, "Failed to process vector, at element %p",, tmp);
+			printerr("Failed to process vector, at element %p",, tmp);
 			return status;
 		}
 		tmp = void_offset(tmp, vector->data_size);
@@ -273,11 +273,11 @@ int vector_process(Vector *vector, int (*func) (void *,void*), void *args){
 
 int vector_remove_at(Vector *vector, size_t index){
 	if (!vector){
-		printerr_null_param(vector_remove_at);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	if (index >= vector->n_elements){
-		printerr_out_of_bounds(vector_remove_at, index, vector->n_elements);
+		printerr_out_of_bounds(index, vector->n_elements-1);
 		return INDEX_BOUNDS_ERROR;
 	}
 
@@ -293,7 +293,7 @@ int vector_remove_at(Vector *vector, size_t index){
 
 int vector_remove(Vector *vector, void *element){
 	if (!vector || !element){
-		printerr_null_param(vector_remove);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	index_t i = vector_indexof(vector, element);
@@ -305,7 +305,7 @@ int vector_remove(Vector *vector, void *element){
 
 void* vector_pop_front(Vector *vector, void *dest){
 	if (!vector || !dest){
-		printerr_null_param(vector_pop_front);
+		printerr_null_param();
 		return NULL;
 	}
 	if (vector->n_elements == 0){
@@ -318,7 +318,7 @@ void* vector_pop_front(Vector *vector, void *dest){
 
 void* vector_pop_back(Vector *vector, void *dest){
 	if (!vector || !dest){
-		printerr_null_param(vector_pop_back);
+		printerr_null_param();
 		return NULL;
 	}
 	if (vector->n_elements == 0){
@@ -332,7 +332,7 @@ void* vector_pop_back(Vector *vector, void *dest){
 
 int vector_remove_array(Vector *vector, void *array, size_t array_length){
 	if (!vector || !array){
-		printerr_null_param(vector_remove_array);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	void *tmp;
@@ -353,7 +353,7 @@ int vector_remove_array(Vector *vector, void *array, size_t array_length){
 
 index_t vector_indexof(Vector *vector, void *element){
 	if (!vector || !element){
-		printerr_null_param(vector_indexof);
+		printerr_null_param();
 		return index_t(0,NULL_PARAMETER_ERROR);
 	}
 
@@ -369,7 +369,7 @@ index_t vector_indexof(Vector *vector, void *element){
 
 bool vector_exists(Vector *vector, void *element){
 	if (!vector){
-		printerr_null_param(vector_exists);
+		printerr_null_param();
 		return false;
 	}
 	return vector_indexof(vector, element).status == SUCCESS;
@@ -377,7 +377,7 @@ bool vector_exists(Vector *vector, void *element){
 
 bool vector_isempty(Vector *vector){
 	if (!vector){
-		printerr_null_param(vector_isempty);
+		printerr_null_param();
 		return false;
 	}
 	return vector->n_elements == 0;
@@ -385,11 +385,11 @@ bool vector_isempty(Vector *vector){
 
 void* vector_get_at(Vector *vector, size_t index, void *dest){
 	if (!vector || !dest){
-		printerr_null_param(vector_get_at);
+		printerr_null_param();
 		return NULL;
 	}
 	if (index >= vector->n_elements){
-		printerr_out_of_bounds(vector_get_at, index, vector->n_elements);
+		printerr_out_of_bounds(index, vector->n_elements-1);
 		return NULL;
 	}
 	void *tmp = void_offset(vector->elements, index * vector->data_size);
@@ -399,7 +399,7 @@ void* vector_get_at(Vector *vector, size_t index, void *dest){
 
 void* vector_get(Vector *vector, void *element, void *dest){
 	if (!vector || !element || !dest){
-		printerr_null_param(vector_get);
+		printerr_null_param();
 		return NULL;
 	}
 	index_t index = vector_indexof(vector, element);
@@ -411,7 +411,7 @@ void* vector_get(Vector *vector, void *element, void *dest){
 
 void* vector_get_front(Vector *vector, void *dest){
 	if (!vector || !dest){
-		printerr_null_param(vector_get_front);
+		printerr_null_param();
 		return NULL;
 	}
 	return vector_get_at(vector, 0, dest);
@@ -419,7 +419,7 @@ void* vector_get_front(Vector *vector, void *dest){
 
 void* vector_get_back(Vector *vector, void *dest){
 	if (!vector || !dest){
-		printerr_null_param(vector_get_back);
+		printerr_null_param();
 		return NULL;
 	}
 	return vector_get_at(vector, vector->n_elements - 1, dest);
@@ -427,7 +427,7 @@ void* vector_get_back(Vector *vector, void *dest){
 
 void* vector_get_into_array(Vector *vector, void *array, size_t array_length){
 	if (!vector || !array){
-		printerr_null_param(vector_get_into_array);
+		printerr_null_param();
 		return NULL;
 	}
 	if (array_length > vector->n_elements){
@@ -439,7 +439,7 @@ void* vector_get_into_array(Vector *vector, void *array, size_t array_length){
 
 void* vector_get_array(Vector *vector, size_t array_length){
 	if (!vector){
-		printerr_null_param(vector_get_array);
+		printerr_null_param();
 		return NULL;
 	}
 	if (array_length == GET_ALL_ELEMENTS || array_length > vector->n_elements){
@@ -466,21 +466,21 @@ static void* get_position(Vector *vector, size_t index){
 
 int vector_swap(Vector *vector, size_t index_1, size_t index_2){
 	if (!vector){
-		printerr_null_param(vector_swap);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	if (index_1 >= vector->n_elements){
-		printerr_out_of_bounds(vector_swap, index_1, vector->n_elements);
+		printerr_out_of_bounds(index_1, vector->n_elements-1);
 		return INDEX_BOUNDS_ERROR;
 	}
 	if (index_2 >= vector->n_elements){
-		printerr_out_of_bounds(vector_swap, index_2, vector->n_elements);
+		printerr_out_of_bounds(index_2, vector->n_elements-1);
 		return INDEX_BOUNDS_ERROR;
 	}
 
 	void *tmp = malloc(vector->data_size);
 	if (!tmp){
-		printerr_allocation(vector_swap);
+		printerr_allocation();
 		return ALLOCATION_ERROR;
 	}
 
@@ -499,7 +499,7 @@ int vector_swap(Vector *vector, size_t index_1, size_t index_2){
 
 int vector_compare(Vector *vector, size_t index_1, size_t index_2){
 	if (!vector){
-		printerr_null_param(vector_swap);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	void *e1 = get_position(vector, index_1);
@@ -509,7 +509,7 @@ int vector_compare(Vector *vector, size_t index_1, size_t index_2){
 
 size_t vector_size(Vector *vector){
 	if (!vector){
-		printerr_null_param(vector_size);
+		printerr_null_param();
 		return false;
 	}
 	return vector->n_elements;
@@ -517,7 +517,7 @@ size_t vector_size(Vector *vector){
 
 int vector_reserve(Vector *vector, size_t n_elements){
 	if (!vector){
-		printerr_null_param(vector_reserve);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	if (vector->max_elements >= n_elements){
@@ -533,11 +533,11 @@ int vector_reserve(Vector *vector, size_t n_elements){
 
 Vector* vector_join(Vector *vector_1, Vector *vector_2){
 	if (!vector_1 || !vector_2){
-		printerr_null_param(vector_join);
+		printerr_null_param();
 		return NULL;
 	}
 	if (vector_1->data_size != vector_2->data_size){
-		printerr(vector_join, "The vectors have different data sizes %zu and %zu",, vector_1->data_size, vector_2->data_size);
+		printerr("The vectors have different data sizes %zu and %zu",, vector_1->data_size, vector_2->data_size);
 		return NULL;
 	}
 
@@ -586,7 +586,7 @@ Vector* vector_join(Vector *vector_1, Vector *vector_2){
 
 int vector_free(Vector *vector){
 	if (!vector){
-		printerr_null_param(vector_free);
+		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	free(vector->elements);
@@ -606,14 +606,14 @@ void vector_free_all(unsigned int n, ...){
 
 Vector* vector_reset(Vector *vector){
 	if (!vector){
-		printerr_null_param(vector_reset);
+		printerr_null_param();
 		return NULL;
 	}
 	free(vector->elements);
 	vector->elements = malloc(VECTOR_DEFAULT_SIZE * vector->data_size);
 
 	if (!vector->elements){
-		printerr_allocation(vector_reset);
+		printerr_allocation();
 		return NULL;
 	}
 
