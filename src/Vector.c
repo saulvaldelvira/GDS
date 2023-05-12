@@ -143,9 +143,9 @@ int vector_append_array(Vector *vector, void *array, size_t array_length){
 		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
-
 	if (vector->n_elements + array_length > vector->max_elements){
-		int status = vector_resize(vector, (vector->max_elements + array_length) * 2);
+		size_t new_size = (vector->max_elements + array_length) * 2;
+		int status = vector_resize(vector, new_size);
 		if (status != SUCCESS){
 			return status;
 		}
@@ -162,7 +162,8 @@ int vector_push_front_array(Vector *vector, void *array, size_t array_length){
 		return NULL_PARAMETER_ERROR;
 	}
 	if (vector->n_elements + array_length > vector->max_elements){
-		int status = vector_resize(vector, (vector->max_elements + array_length) * 2);
+		size_t new_size = (vector->max_elements + array_length) * 2;
+		int status = vector_resize(vector, new_size);
 		if (status != SUCCESS){
 			return status;
 		}
@@ -196,7 +197,7 @@ int vector_set(Vector *vector, void *element, void *replacement){
 	void *ptr;
 	for (size_t i=0; i < vector->n_elements; i++){
 		ptr = void_offset(vector->elements, i * vector->data_size);
-		if ((*vector->compare) (ptr, element) == 0){
+		if (vector->compare(ptr, element) == 0){
 			memmove(ptr, replacement, vector->data_size);
 			return SUCCESS;
 		}
@@ -537,7 +538,7 @@ Vector* vector_join(Vector *vector_1, Vector *vector_2){
 		return NULL;
 	}
 	if (vector_1->data_size != vector_2->data_size){
-		printerr("The vectors have different data sizes %zu and %zu",, vector_1->data_size, vector_2->data_size);
+		printerr("The vectors have different data sizes (%zu and %zu)",, vector_1->data_size, vector_2->data_size);
 		return NULL;
 	}
 

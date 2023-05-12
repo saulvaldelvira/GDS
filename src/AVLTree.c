@@ -165,7 +165,7 @@ static AVLNode* update_bf(AVLNode *node){
                 }
 		node_update_height(node);
 
-        }else if (bf  >= MAX_DISBALANCE){
+        }else if (bf >= MAX_DISBALANCE){
                 int right_bf = node_bf(node->right);
                 if (right_bf >= 0){
                 	node = single_right_rotation(node);
@@ -245,14 +245,12 @@ int avl_add_array(AVLTree *tree, void *array, size_t array_length){
                 printerr_null_param();
                 return NULL_PARAMETER_ERROR;
         }
-	void *tmp;
-	int status;
-	for (size_t i = 0; i < array_length; i++){
-		tmp = void_offset(array, i * tree->data_size);
-		status = avl_add(tree, tmp);
+	while (array_length-- > 0){
+		int status = avl_add(tree, array);
 		if (status != SUCCESS){
 			return status;
 		}
+		array = void_offset(array, tree->data_size);
 	}
 	return SUCCESS;
 }
@@ -343,12 +341,11 @@ int avl_remove(AVLTree *tree, void *element){
 		return NULL_PARAMETER_ERROR;
 	}
 	struct remove_rec_ret ret = remove_rec(tree->root, element, tree->compare, tree->data_size);
-	if (ret.status != SUCCESS){
-		return ret.status;
+	if (ret.status == SUCCESS){
+		tree->root = ret.node;
+		tree->n_elements--;
 	}
-	tree->root = ret.node;
-	tree->n_elements--;
-	return SUCCESS;
+	return ret.status;
 }
 
 int avl_remove_array(AVLTree *tree, void *array, size_t array_length){
@@ -356,14 +353,9 @@ int avl_remove_array(AVLTree *tree, void *array, size_t array_length){
                 printerr_null_param();
                 return NULL_PARAMETER_ERROR;
         }
-	void *tmp;
-	int status;
-	for (size_t i = 0; i < array_length; i++){
-		tmp = void_offset(array, i * tree->data_size);
-		status = avl_remove(tree, tmp);
-		if (status != SUCCESS){
-			return status;
-		}
+	while (array_length-- > 0){
+		avl_remove(tree, array);
+		array = void_offset(array, tree->data_size);
 	}
 	return SUCCESS;
 }
@@ -507,34 +499,29 @@ static struct traversal_ret traversal_rec(AVLNode *node, enum Traversal order, s
 		return result;
 	}
 	result.status = SUCCESS;
-	size_t index = 0;
 
 	// Depending on the order paranmeter, the current node will be added before (pre order) in the middle (in order) or after (post order)
-	void *tmp;
+	void *tmp = result.elements;
 
 	if(order == PRE_ORDER){
-		memcpy(result.elements, node->info, size);
-		index++;
+		memcpy(tmp, node->info, size);
+		tmp = void_offset(tmp, size);
 	}
 
 	// Add the elements of the left
-	tmp = void_offset(result.elements, index * size);
 	memcpy(tmp, left.elements, size * left.elements_size);
-	index += left.elements_size;
+	tmp = void_offset(tmp, size * left.elements_size);
 
 	if(order == IN_ORDER){
-		tmp = void_offset(result.elements, index * size);
 		memcpy(tmp, node->info, size);
-		index++;
+		tmp = void_offset(tmp, size);
 	}
 
 	// Add the elements of the right
-	tmp = void_offset(result.elements, index * size);
 	memcpy(tmp, right.elements, size * right.elements_size);
-	index += right.elements_size;
+	tmp = void_offset(tmp, size * right.elements_size);
 
 	if(order == POST_ORDER){
-		tmp = void_offset(result.elements, index * size);
 		memcpy(tmp, node->info, size);
 	}
 
@@ -589,7 +576,7 @@ AVLTree* avl_join(AVLTree *tree_1, AVLTree *tree_2){
 		return NULL;
 	}
 	if (tree_1->data_size != tree_2->data_size){
-		fprintf(stderr, "ERROR: the trees have different data sizes. In function avl_join\n");
+		printerr("The trees have different data sizes (%zu and %zu)",, tree_1->data_size, tree_2->data_size);
 		return NULL;
 	}
 	AVLTree *tree_joint = avl_init(tree_1->data_size, tree_1->compare);

@@ -149,11 +149,10 @@ int heap_add_array(Heap *heap, void *array, size_t array_length){
 	// uses half as much "filter_down" calls than the other one
 	if (vector_size(heap->elements) == 0){
 		vector_append_array(heap->elements, array, array_length);
-		size_t father;
-		for (size_t i = array_length-1; i > 0; ){
-			father = (i-1) / 2;
+		size_t i = array_length - 1;
+		while (i > 0){
+			size_t father = (i - 1) / 2;
 			filter_down(heap->elements, father);
-
 			// This is because if i is 1 and we substract 2, we get
 			// the max size_t value (since it is unsigned)
 			if (i > 1){
@@ -164,14 +163,12 @@ int heap_add_array(Heap *heap, void *array, size_t array_length){
 		}
 	} else {
 		size_t data_size = vector_get_data_size(heap->elements);
-		void *tmp;
-		int status;
-		for (size_t i = 0; i < array_length; i++){
-			tmp = void_offset(array, i * data_size);
-			status = heap_add(heap, tmp);
+		while (array_length-- > 0){
+			int status = heap_add(heap, array);
 			if (status != SUCCESS){
 				return status;
 			}
+			array = void_offset(array, data_size);
 		}
 	}
 	return SUCCESS;
@@ -183,15 +180,13 @@ void* heap_pop_min(Heap *heap, void *dest){
 		return NULL;
 	}
 	dest = vector_get_at(heap->elements, 0, dest);
-
 	if (dest != NULL){
-		size_t n_elements = vector_size(heap->elements) - 1;
-		int status = vector_swap(heap->elements, 0, n_elements);
+		size_t last_pos = vector_size(heap->elements) - 1;
+		int status = vector_swap(heap->elements, 0, last_pos);
 		if (status != SUCCESS){
 			return NULL;
 		}
-		vector_remove_at(heap->elements, n_elements);
-
+		vector_remove_at(heap->elements, last_pos);
 		filter_down(heap->elements, 0);
 	}
 	return dest;

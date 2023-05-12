@@ -60,7 +60,7 @@ static inline int rand_range(int min, int max){
 #ifndef NO_COLOR
 	#define assert(expr) if (!(expr)){ fprintf(stderr, Color_BRed "[%d] ASSERT FAILED: " Color_Reset #expr "\n", __LINE__); abort(); }
 #else
-	#define assert(expr) if (!(expr)){ fprintf(stderr, "ASSERT FAILED: " #expr "\n"); abort(); }
+	#define assert(expr) if (!(expr)){ fprintf(stderr, "[%d] ASSERT FAILED: " #expr "\n", __LINE__); abort(); }
 #endif
 
 void assert_array_int(int *arr, int *exp, int size){

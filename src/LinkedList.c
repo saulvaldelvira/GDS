@@ -112,13 +112,12 @@ int list_append_array(LinkedList *list, void *array, size_t array_length){
 		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
-	void *tmp = array;
 	while (array_length-- > 0){
-		int status = list_append(list, tmp);
+		int status = list_append(list, array);
 		if (status != SUCCESS){
 			return status;
 		}
-		tmp = void_offset(tmp, list->data_size);
+		array = void_offset(array, list->data_size);
 	}
 	return SUCCESS;
 }
@@ -318,14 +317,9 @@ int list_remove_array(LinkedList *list, void *array, size_t array_length){
 		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
-	void *tmp = array;
-	int status;
 	while (array_length-- > 0){
-		status = list_remove(list, tmp);
-		if (status != SUCCESS){
-			return status;
-		}
-		tmp = void_offset(tmp, list->data_size);
+		list_remove(list, array);
+		array = void_offset(array, list->data_size);
 	}
 	return SUCCESS;
 }
@@ -371,7 +365,7 @@ LinkedList* list_join(LinkedList *list_1, LinkedList *list_2){
 		return NULL;
 	}
 	if (list_1->data_size != list_2->data_size){
-		fprintf(stderr, "ERROR: the lists have different data sizes. In function list_join\n");
+		printerr("The lists have different data sizes (%zu and %zu)",, list_1->data_size, list_2->data_size);
 		return NULL;
 	}
 

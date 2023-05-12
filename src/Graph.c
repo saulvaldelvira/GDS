@@ -199,12 +199,13 @@ int graph_add_vertex(Graph *graph, void *vertex){
 		return NULL_PARAMETER_ERROR;
 	}
 	if (graph->n_elements == graph->max_elements){
-		if (expand_memory(graph, graph->max_elements * 2) != SUCCESS){
-			return ALLOCATION_ERROR;
+		int status = expand_memory(graph, graph->max_elements * 2);
+		if (status != SUCCESS){
+			return status;
 		}
 	}
-	void *tmp = void_offset(graph->vertices, graph->n_elements * graph->data_size); // Position to copy value into
-	memcpy(tmp, vertex, graph->data_size); // Perform the copy and store the reuslt
+	void *tmp = void_offset(graph->vertices, graph->n_elements * graph->data_size);
+	memcpy(tmp, vertex, graph->data_size);
 	graph->n_elements++;
 	return SUCCESS;
 }
@@ -214,14 +215,12 @@ int graph_add_vertices_array(Graph *graph, void *array, size_t array_length){
 		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
-	void *tmp;
-	int status;
-	for (size_t i = 0; i < array_length; i++){
-		tmp = void_offset(array, i * graph->data_size);
-		status = graph_add_vertex(graph, tmp);
+	while (array_length-- > 0){
+		int status = graph_add_vertex(graph, array);
 		if (status != SUCCESS){
 			return status;
 		}
+		array = void_offset(array, graph->data_size);
 	}
 	return SUCCESS;
 }
@@ -291,14 +290,9 @@ int graph_remove_vertices_array(Graph *graph, void *array, size_t array_length){
 		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
-	void *tmp;
-	int status;
-	for (size_t i = 0; i < array_length; i++){
-		tmp = void_offset(array, i * graph->data_size);
-		status = graph_remove_vertex(graph, tmp);
-		if (status != SUCCESS){
-			return status;
-		}
+	while (array_length-- > 0){
+		graph_remove_vertex(graph, array);
+		array = void_offset(array, graph->data_size);
 	}
 	return SUCCESS;
 }
@@ -345,16 +339,14 @@ int graph_add_edges_array(Graph *graph, void *array_sources, void *array_targets
 		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
-	void *src;
-	void *trg;
-	int status;
-	for (size_t i = 0; i < arrays_length; i++){
-		src = void_offset(array_sources, i * graph->data_size);
-		trg = void_offset(array_targets, i * graph->data_size);
-		status = graph_add_edge(graph, src, trg, array_weights[i]);
+	while (arrays_length-- > 0){
+		int status = graph_add_edge(graph, array_sources, array_targets, *array_weights);
 		if (status != SUCCESS){
 			return status;
 		}
+		array_sources = void_offset(array_sources, graph->data_size);
+		array_targets = void_offset(array_targets, graph->data_size);
+		array_weights++;
 	}
 	return SUCCESS;
 }
@@ -382,16 +374,10 @@ int graph_remove_edges_array(Graph *graph, void *array_sources, void *array_targ
 		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
-	void *src;
-	void *trg;
-	int status;
-	for (size_t i = 0; i < arrays_length; i++){
-		src = void_offset(array_sources, i * graph->data_size);
-		trg = void_offset(array_targets, i * graph->data_size);
-		status = graph_remove_edge(graph, src, trg);
-		if (status != SUCCESS){
-			return status;
-		}
+	while (arrays_length-- > 0){
+		graph_remove_edge(graph, array_sources, array_targets);
+		array_sources = void_offset(array_sources, graph->data_size);
+		array_targets = void_offset(array_targets, graph->data_size);
 	}
 	return SUCCESS;
 }

@@ -234,8 +234,8 @@ int bst_remove(BSTree *tree, void *element){
 		return NULL_PARAMETER_ERROR;
 	}
 	struct remove_rec_ret ret = remove_rec(tree->root, element, tree->compare, tree->data_size);
-	if (ret.status){
-		tree->root = ret.node; // ??? should this be here our outside ???
+	if (ret.status == SUCCESS){
+		tree->root = ret.node;
 		tree->n_elements--;
 	}
 	return ret.status;
@@ -246,14 +246,9 @@ int bst_remove_array(BSTree *tree, void *array, size_t array_length){
 		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
-	void *tmp;
-	int status;
-	for (size_t i = 0; i < array_length; i++){
-		tmp = void_offset(array, i * tree->data_size);
-		status = bst_remove(tree, tmp);
-		if (status != SUCCESS){
-			return status;
-		}
+	while (array_length-- > 0){
+		bst_remove(tree, array);
+		array = void_offset(array, tree->data_size);
 	}
 	return SUCCESS;
 }
@@ -381,7 +376,7 @@ BSTree* bst_join(BSTree *tree_1, BSTree *tree_2){
 		return NULL;
 	}
 	if (tree_1->data_size != tree_2->data_size){
-		fprintf(stderr, "ERROR: the trees have different data sizes. In function bst_join\n");
+		printerr("The trees have different data sizes (%zu,%zu)",, tree_1->data_size, tree_2->data_size);
 		return NULL;
 	}
 	BSTree *tree_joint = bst_init(tree_1->data_size, tree_1->compare);
@@ -465,6 +460,7 @@ static struct traversal_ret traversal_rec(BSNode *node, enum Traversal order, si
 	result.elements = malloc(result.elements_size * size);
 	if(!result.elements){
 		printerr_allocation();
+		free(result.elements);
 		result.status = ALLOCATION_ERROR;
 		free(left.elements);
 		free(right.elements);
@@ -472,35 +468,28 @@ static struct traversal_ret traversal_rec(BSNode *node, enum Traversal order, si
 	}
 	result.status = SUCCESS;
 
-	size_t index = 0;
-
 	// Depending on the order paranmeter, the current node will be added before (pre order) in the middle (in order) or after (post order)
-
-	void *tmp;
+	void *tmp = result.elements;
 
 	if(order == PRE_ORDER){
-		memcpy(result.elements, node->info, size);
-		index++;
+		memcpy(tmp, node->info, size);
+		tmp = void_offset(tmp, size);
 	}
 
 	// Add the elements of the left
-	tmp = void_offset(result.elements, index * size);
 	memcpy(tmp, left.elements, size * left.elements_size);
-	index += left.elements_size;
+	tmp = void_offset(tmp, size * left.elements_size);
 
 	if(order == IN_ORDER){
-		tmp = void_offset(result.elements, index * size);
 		memcpy(tmp, node->info, size);
-		index++;
+		tmp = void_offset(tmp, size);
 	}
 
 	// Add the elements of the right
-	tmp = void_offset(result.elements, index * size);
 	memcpy(tmp, right.elements, size * right.elements_size);
-	index += right.elements_size;
+	tmp = void_offset(tmp, size * right.elements_size);
 
 	if(order == POST_ORDER){
-		tmp = void_offset(result.elements, index * size);
 		memcpy(tmp, node->info, size);
 	}
 

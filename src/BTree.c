@@ -362,12 +362,12 @@ int btree_add_array(BTree *tree, void *array, size_t array_size){
 		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
-	for (size_t i = 0; i < array_size; ++i){
-		void *tmp = void_offset(array, i * tree->data_size);
-		int ret = btree_add(tree, tmp);
+	while (array_size-- > 0){
+		int ret = btree_add(tree, array);
 		if (ret != SUCCESS){
 			return ret;
 		}
+		array = void_offset(array, tree->data_size);
 	}
 	return SUCCESS;
 }
@@ -657,12 +657,9 @@ int btree_remove_array(BTree *tree, void *array, size_t array_size){
 		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
-	for (size_t i = 0; i < array_size; ++i){
-		void *tmp = void_offset(array, i * tree->data_size);
-		int ret = btree_remove(tree, tmp);
-		if (ret != SUCCESS){
-			return ret;
-		}
+	while (array_size-- > 0){
+		btree_remove(tree, array);
+		array = void_offset(array, tree->data_size);
 	}
 	return SUCCESS;
 }
