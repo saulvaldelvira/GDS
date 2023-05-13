@@ -9,6 +9,7 @@
  *  Email: saulvaldelvira@gmail.com
  */
 #include "Heap.h"
+#define GDS_ENABLE_ERROR_MACROS
 #include "./Util/error.h"
 #include "./Vector.h"
 #include <stdlib.h>

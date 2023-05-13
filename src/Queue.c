@@ -11,6 +11,7 @@
 #include "Queue.h"
 #include <stdlib.h>
 #include <stdio.h>
+#define GDS_ENABLE_ERROR_MACROS
 #include "./Util/error.h"
 #include "./Util/definitions.h"
 #include <string.h>

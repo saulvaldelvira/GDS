@@ -9,6 +9,7 @@
  *  Email: saulvaldelvira@gmail.com
  */
 #include "BSTree.h"
+#define GDS_ENABLE_ERROR_MACROS
 #include "./Util/error.h"
 #include "./Util/definitions.h"
 #include <stdlib.h>

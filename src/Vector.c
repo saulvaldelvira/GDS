@@ -12,6 +12,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdlib.h>
+#define GDS_ENABLE_ERROR_MACROS
 #include "./Util/error.h"
 #include "./Util/definitions.h"
 #include <string.h>

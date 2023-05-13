@@ -9,6 +9,7 @@
  *  Email: saulvaldelvira@gmail.com
  */
 #include "AVLTree.h"
+#define GDS_ENABLE_ERROR_MACROS
 #include "./Util/error.h"
 #include "./Util/definitions.h" // void_offset macro and byte_t typedef
 #include <stdlib.h> // malloc
