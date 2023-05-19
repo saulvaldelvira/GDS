@@ -3,12 +3,7 @@
  *  Implements functions to compare different data types.
  *
  *  Copyright (C) 2023 - Saúl Valdelvira
- *
- *  This library is free software. You can modify
- *  and/or redistribute it under the terms of the
- *  GNU Lesser General Public License version 2.1
- *  See <https://www.gnu.org/licenses/>
- *
+ *  License: BSD 3-Clause
  *  Email: saulvaldelvira@gmail.com
  */
 #include "comparator.h"
