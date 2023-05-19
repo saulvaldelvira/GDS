@@ -13,8 +13,7 @@ void change_priority(){
 	int elements[] = {12 ,14, 15, 20, 16, 17, 19, 24, 30};
 	heap_add_array(min, elements, 9);
 
-	int tmp = -78;
-	assert(heap_change_priority(min, &tmp, cast_int(90)) != SUCCESS);
+	assert(heap_change_priority(min, cast_int(-78), cast_int(90)) != SUCCESS);
 	Ignore_Error(assert(heap_change_priority(min, NULL, NULL) != SUCCESS), 0);
 	Ignore_Error(assert(heap_change_priority(min, &elements[0], NULL) != SUCCESS), 24);
 
