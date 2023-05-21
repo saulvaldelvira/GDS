@@ -7,6 +7,8 @@
  *  Email: saulvaldelvira@gmail.com
  */
 #include "comparator.h"
+#include <stdlib.h>
+#include <stdint.h>
 
 // COMPARATORS
 int compare_int(const void *e_1, const void *e_2){
@@ -69,8 +71,25 @@ int compare_double(const void *e_1, const void *e_2){
 	}
 }
 
-int compare_ignore(const void *e_1, const void *e_2){
+int compare_lesser(const void *e_1, const void *e_2){
+	(void) e_1;
+	(void) e_2;
+	return -1;
+}
+
+int compare_equal(const void *e_1, const void *e_2){
 	(void) e_1;
 	(void) e_2;
 	return 0;
+}
+
+int compare_greater(const void *e_1, const void *e_2){
+	(void) e_1;
+	(void) e_2;
+	return 1;
+}
+
+void destroy_ptr(void *e){
+	void *ptr = * (void**) e;
+	free(ptr);
 }

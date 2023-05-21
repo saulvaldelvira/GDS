@@ -24,10 +24,15 @@ typedef struct Heap Heap;
 Heap* heap_init(size_t data_size, comparator_function_t cmp);
 
 /**
- * Changes the comparator function of the heap
+ * Sets the comparator function of the heap
  * @param cmp the new comparator function
 */
-void heap_configure(Heap *heap, comparator_function_t cmp);
+void heap_set_comparator(Heap *heap, comparator_function_t cmp);
+
+/**
+ * Sets the destructor function of the heap
+*/
+void heap_set_destructor(Heap *heap, destructor_function_t destructor);
 
 /**
  * Adds the element into de heap

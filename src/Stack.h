@@ -30,10 +30,16 @@ typedef struct Stack Stack;
 Stack* stack_init(size_t data_size, comparator_function_t cmp);
 
 /**
- * Changes the comparator function of the stack
- * @param cmp the new comparator function
+ * Sets the comparator function of the stack
+ * @param cmp the new comparator function.
 */
-void stack_configure(Stack *stack, comparator_function_t cmp);
+void stack_set_comparator(Stack *stack, comparator_function_t cmp);
+
+/**
+ * Sets the comparator function of the stack
+ * @param destructor the new destructor function. NULL means no destructor.
+*/
+void stack_set_destructor(Stack *stack, destructor_function_t destructor);
 
 /**
  * Pushes the given element to the top of the stack
@@ -68,6 +74,12 @@ void* stack_peek(Stack *stack, void *dest);
 bool stack_exists(Stack *stack, void *element);
 
 /**
+ * Copies into dest the given element (if it exists)
+*/
+void* stack_get(Stack *stack, void *element, void *dest);
+
+/**
+ * Removes the element from the stack.
  * @return 1 if the element is successfuly deleted
 */
 int stack_remove(Stack *stack, void *element);

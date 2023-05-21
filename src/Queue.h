@@ -32,7 +32,13 @@ Queue* queue_init(size_t data_size, comparator_function_t cmp);
  * Changes the comparator function of the queue
  * @param cmp the new comparator function
 */
-void queue_configure(Queue *queue, comparator_function_t cmp);
+void queue_set_comparator(Queue *queue, comparator_function_t cmp);
+
+/**
+ * Changes the destructor function of the queue
+ * @param destructor the new destructor function. NULL means no destructor.
+*/
+void queue_set_destructor(Queue *queue, destructor_function_t destructor);
 
 /**
  * Adds the element to the queue
@@ -64,6 +70,17 @@ void* queue_peek(Queue *queue, void *dest);
  * @return true if the element is in the queue
 */
 bool queue_exists(Queue *queue, void *element);
+
+/**
+ * Copies into dest the given element (if it exists)
+*/
+void* queue_get(Queue *queue, void *element, void *dest);
+
+/**
+ * Removes the element from the queue.
+ * @return 1 if the element is successfuly deleted
+*/
+int queue_remove(Queue *queue, void *element);
 
 /**
  * @return the number of elements in the Queue

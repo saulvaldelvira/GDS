@@ -41,12 +41,18 @@ Heap* heap_init(size_t data_size, comparator_function_t cmp){
 	return heap;
 }
 
-void heap_configure(Heap *heap, comparator_function_t cmp){
-	if (!heap || !cmp){
+void heap_set_comparator(Heap *heap, comparator_function_t cmp){
+	if (!heap || !cmp)
 		printerr_null_param();
-		return;
-	}
-	vector_configure(heap->elements, cmp);
+	else
+		vector_set_comparator(heap->elements, cmp);
+}
+
+void heap_set_destructor(Heap *heap, destructor_function_t destructor){
+	if (!heap)
+		printerr_null_param();
+	else
+		vector_set_destructor(heap->elements, destructor);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -175,14 +181,13 @@ void* heap_pop_min(Heap *heap, void *dest){
 		printerr_null_param();
 		return NULL;
 	}
-	dest = vector_get_at(heap->elements, 0, dest);
+	dest = vector_get_front(heap->elements, dest);
 	if (dest != NULL){
 		size_t last_pos = vector_size(heap->elements) - 1;
 		int status = vector_swap(heap->elements, 0, last_pos);
-		if (status != SUCCESS){
+		if (status != SUCCESS)
 			return NULL;
-		}
-		vector_remove_at(heap->elements, last_pos);
+		vector_pop_back(heap->elements, NULL);
 		filter_down(heap->elements, 0);
 	}
 	return dest;
@@ -256,8 +261,7 @@ int heap_remove(Heap *heap, void *element){
 	if (status != SUCCESS){
 		return status;
 	}
-	vector_remove_at(heap->elements, n_elements);
-
+	vector_pop_back(heap->elements, NULL);
 	filter_down(heap->elements, index.value);
 	return SUCCESS;
 }

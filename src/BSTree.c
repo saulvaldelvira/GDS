@@ -21,8 +21,8 @@ typedef struct BSNode {
 
 struct BSTree {
 	BSNode *root;
-	// Comparator function for 2 elements
 	comparator_function_t compare;
+	destructor_function_t destructor;
 	size_t n_elements;
 	size_t data_size;
 };
@@ -45,17 +45,24 @@ BSTree* bst_init(size_t data_size, comparator_function_t cmp){
 	}
 	tree->root = NULL;
 	tree->compare = cmp;
+	tree->destructor = NULL;
 	tree->n_elements = 0;
 	tree->data_size = data_size;
 	return tree;
 }
 
-void bst_configure(BSTree *tree, comparator_function_t cmp){
-	if (!tree || !cmp){
+void bst_set_comparator(BSTree *tree, comparator_function_t cmp){
+	if (!tree || !cmp)
 		printerr_null_param();
-		return;
-	}
-	tree->compare = cmp;
+	else
+		tree->compare = cmp;
+}
+
+void bst_set_destructor(BSTree *tree, destructor_function_t destructor){
+	if (!tree)
+		printerr_null_param();
+	else
+		tree->destructor = destructor;
 }
 
 static BSNode* init_node(void *info, size_t size){
@@ -535,20 +542,20 @@ void* bst_postorder(BSTree *tree){
 
 /// FREE //////////////////////////////////////////////////////////////////////
 
-static void free_rec(BSNode *node){
-	if(node == NULL){
+static void free_rec(BSNode *node, destructor_function_t destructor){
+	if(node == NULL)
 		return;
-	}
-	free_rec(node->left);
-	free_rec(node->right);
+	if (destructor)
+		destructor(node->info);
+	free_rec(node->left, destructor);
+	free_rec(node->right, destructor);
 	free(node);
 }
 
 int bst_free(BSTree *tree){
-	if (!tree){
+	if (!tree)
 		return NULL_PARAMETER_ERROR;
-	}
-	free_rec(tree->root);
+	free_rec(tree->root, tree->destructor);
 	free(tree);
 	return 1;
 }
@@ -564,10 +571,9 @@ void bst_free_all(unsigned int n, ...){
 }
 
 BSTree* bst_reset(BSTree *tree){
-	if (!tree){
+	if (!tree)
 		return NULL;
-	}
-	free_rec(tree->root);
+	free_rec(tree->root, tree->destructor);
 	tree->root = NULL;
 	tree->n_elements = 0;
 	return tree;

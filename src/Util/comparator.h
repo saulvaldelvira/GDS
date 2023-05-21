@@ -24,12 +24,18 @@ int compare_double(const void *e_1, const void *e_2);
 int compare_long_long(const void *e_1, const void *e_2);
 
 /**
- * An useless comparator function.
+ * Useless comparator functions.
  * For when you don't need to compare elements
  * inside a structure (e.g. in a stack, if you
  * only need to push and pop)
 */
-int compare_ignore(const void *e_1, const void *e_2);
+int compare_equal(const void *e_1, const void *e_2);
+int compare_lesser(const void *e_1, const void *e_2);
+int compare_greater(const void *e_1, const void *e_2);
+
+// Destructor functions
+typedef void (*destructor_function_t) (void *);
+void destroy_ptr(void *e);
 
 #ifdef __cplusplus
 }

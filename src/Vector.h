@@ -31,17 +31,28 @@ Vector* vector_init(size_t data_size, comparator_function_t cmp);
  * Changes the comparator function of the list
  * @param cmp the new comparator function
 */
-void vector_configure(Vector *vector, comparator_function_t cmp);
-
-/**
- * @return the data size of the list
-*/
-size_t vector_get_data_size(Vector *vector);
+void vector_set_comparator(Vector *vector, comparator_function_t cmp);
 
 /**
  * @return the comparator function used by the list
 */
 comparator_function_t vector_get_comparator(Vector *vector);
+
+/**
+ * Changes the destructor function of the list
+ * @param cmp the new destructor function, NULL means no destructor.
+*/
+void vector_set_destructor(Vector *vector, destructor_function_t destructor);
+
+/**
+ * @return the destructor function used by the list, if it has one.
+*/
+destructor_function_t vector_get_destructor(Vector *vector);
+
+/**
+ * @return the data size of the list
+*/
+size_t vector_get_data_size(Vector *vector);
 
 /**
  * \brief
@@ -173,40 +184,104 @@ int vector_swap(Vector *vector, size_t index_1, size_t index_2);
 int vector_compare(Vector *vector, size_t index_1, size_t index_2);
 
 /**
- * Removes the element at the given index
+ * Remove vs. Pop
+ * The remove functions (remove_at, remove_front, etc.) will call the destructor
+ * on the removed elements, if it is defined. The pop functions (pop_at, pop_back, etc.) won't.
+ * -> It is assumed that, if a structure has a destructor it is responsible of it's contents,
+ *    thus it should take care of "destroying" them.
+ * -> It is also assumed that remove means "destroy this element, it's no longer needed"
+ *    whereas pop means "extract the element from the strucuture"
+ *    That's why the pop functions will return the "popped" element, but the remove ones won't.
+*/
+
+/**
+ * Removes the element at the given index.
+ * @note If defined, the destructor will be called on the removed element.
+ * @note If you don't want that, see vector_pop_at
  * @return 1 if the operation is successful.
  */
 int vector_remove_at(Vector *vector, size_t index);
 
 /**
- * Removes the specified element
+ * Removes the specified element.
+ * @note If defined, the destructor will be called on the removed element.
+ * @note If you don't want that, see vector_pop
  * @return 1 if the operation is successful.
  */
 int vector_remove(Vector *vector, void *element);
 
 /**
- * Removes the first element in the list and copies it into dest
- * @return the pointer dest, or NULL if error
+ * Removes the first element in the list.
+ * @note If defined, the destructor will be called on the removed element.
+ * @note If you don't want that, see vector_pop_front
+ * @return 1 if the operation is succesful
 */
-void* vector_pop_front(Vector *vector, void *dest);
+int vector_remove_front(Vector *vector);
 
 /**
- * Removes the last element in the list and copies it into dest
- * @return the pointer dest, or NULL if error
+ * Removes the last element in the list.
+ * @note If defined, the destructor will be called on the removed element.
+ * @note If you don't want that, see vector_pop_back
+ * @return 1 if the operation is successful
 */
-void* vector_pop_back(Vector *vector, void *dest);
+int vector_remove_back(Vector *vector);
 
 /**
- * Removes from the first [array_length] elements of the array.
+ * Removes from the first [array_length] elements of the given array.
+ * @note If defined, the destructor will be called on the removed elements.
+ * @note If you don't want that, see vector_pop_array
+ * @return 1 if the operation is successful
 */
 int vector_remove_array(Vector *vector, void *array, size_t array_length);
 
 /**
- * @return a new Vector with the elements of the two given lists.
+ * Pops the element at the given index.
+ * @param dest if not NULL, copies the element into it.
+ * @note If you want the destructor to be called on the element, use vector_remove_at instead
+ * @return the dest pointer
+ */
+void* vector_pop_at(Vector *vector, size_t index, void *dest);
+
+/**
+ * Pops the element
+ * @param dest if not NULL, copies the element into it.
+ * @note If you want the destructor to be called on the element, use vector_remove instead
+ * @return the dest pointer
+ */
+void* vector_pop(Vector *vector, void *element, void *dest);
+
+/**
+ * Pops the first element.
+ * @param dest if not NULL, copies the element into it.
+ * @note If you want the destructor to be called on the element, use vector_remove_front instead
+ * @return the dest pointer
+*/
+void* vector_pop_front(Vector *vector, void *dest);
+
+/**
+ * Pops the last element.
+ * @param dest if not NULL, copies the element into it.
+ * @note If you want the destructor to be called on the element, use vector_remove_back instead
+ * @return the dest pointer
+*/
+void* vector_pop_back(Vector *vector, void *dest);
+
+/**
+ * Pops from the first [array_length] elements of the given array.
+ * @param dest an array. If not NULL, copies the elements into it.
+ *             Must be large enough to, at least, hold [array_length] elements
+ * @note If you want the destructor to be called on the element, use vector_remove_array instead
+ * @return the dest pointer
+*/
+void* vector_pop_array(Vector *vector, void *array, size_t array_length, void *dest);
+
+
+/**
+ * @return a new Vector with the elements of the two given vectors.
  * @note No particular order of elements is guaranteed.
  * @note ATTENTION: The lists must store the same data. At least, they must have
- * the same data size. Also, the comparator function of list_1 will be taken,
- * because it is assumed that both list have the same comparator functions.
+ * the same data size.
+ * @note Also, it is assumed that both list have the same comparator functions.
 */
 Vector* vector_join(Vector *vector_1, Vector *vector_2);
 

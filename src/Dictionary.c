@@ -108,7 +108,7 @@ Dictionary* dict_init(size_t key_size, size_t value_size, hash_function_t hash_f
         dict->key_size = key_size;
         dict->min_lf = DICT_DEF_MIN_LF;
         dict->max_lf = DICT_DEF_MAX_LF;
-        dict->elements = vector_init(sizeof(DictionaryNode), compare_ignore);
+        dict->elements = vector_init(sizeof(DictionaryNode), compare_equal);
         if (!dict->elements){
                 free(dict);
                 return NULL;
@@ -202,19 +202,21 @@ static int dict_redisperse(Dictionary *dict, size_t new_size){
 
         /// Reset the vector
         if (new_size < dict->vec_size) {
+                destructor_function_t destructor = vector_get_destructor(dict->elements);
                 status = vector_free(dict->elements);
-                dict->elements = vector_init(sizeof(DictionaryNode), compare_ignore);
+                dict->elements = vector_init(sizeof(DictionaryNode), compare_equal);
                 if (!dict->elements || status != SUCCESS){
                         return ERROR;
                 }
                 vector_reserve(dict->elements, new_size);
+                vector_set_destructor(dict->elements, destructor);
         }
         status = vector_reserve(dict->elements, new_size);
         if (status != SUCCESS){
                 return status;
         }
-        size_t sizes[] = {dict->key_size, dict->value_size};
-        status = vector_process(dict->elements, init_node, sizes);
+        // size_t sizes[] = {dict->key_size, dict->value_size};
+        status = vector_process(dict->elements, init_node, NULL);
         if (status != SUCCESS){
                 return status;
         }
@@ -316,13 +318,15 @@ int dict_put(Dictionary *dict, void *key, void *value){
         memcpy(node.key, key, dict->key_size);
         memcpy(node.value, value, dict->value_size);
 
+        if (node.state != FULL)
+                dict->n_elements++;
         node.state = FULL;
+
         // Very important. We need to copy back the node to the vector.
         // Remember, the get function returns a COPY of the element.
         vector_set_at(dict->elements, pos, &node);
 
-        // Update n_elements and resize if needed
-        dict->n_elements++;
+        // Resize if needed
         if (LF(dict->n_elements, dict->vec_size) >= dict->max_lf){
                 size_t new_size = get_next_prime(dict->vec_size * 2);
                 int status = dict_redisperse(dict, new_size);
@@ -351,8 +355,8 @@ void* dict_get(Dictionary *dict, void *key, void *dest){
                         break;
                 }
                 if (node.state != DELETED){
-                        int h1 = dict->hash(key);
-                        int h2 = dict->hash(node.key);
+                        int64_t h1 = dict->hash(key);
+                        int64_t h2 = dict->hash(node.key);
                         if (h1 == h2){
                                 return memcpy(dest, node.value, dict->value_size);
                         }
@@ -379,8 +383,8 @@ bool dict_exists(Dictionary *dict, void *key){
                         break;
                 }
                 if (node.state != DELETED){
-                        int h1 = dict->hash(key);
-                        int h2 = dict->hash(node.key);
+                        int64_t h1 = dict->hash(key);
+                        int64_t h2 = dict->hash(node.key);
                         if (h1 == h2){
                                 return true;
                         }

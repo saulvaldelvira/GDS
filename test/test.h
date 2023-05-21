@@ -75,6 +75,23 @@ void assert_array_char(char *arr, char *exp, int size){
         }
 }
 
+int* int_array(int start, int end){
+	int *arr = malloc((end - start) * sizeof(int));
+        for (int i = start; i < end; i++){
+                arr[i] = i;
+        }
+	return arr;
+}
+
+void shuffle_array(int *arr, int length){
+	for (int i = 0; i < length; i++){
+                int tmp = arr[i];
+                int pos = rand() % length;
+                arr[i] = arr[pos];
+                arr[pos] = tmp;
+        }
+}
+
 //////////////////////////////////////
 
 #define Clear_Line	"\033[2K\033[1A"

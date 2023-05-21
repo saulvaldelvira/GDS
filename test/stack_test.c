@@ -4,6 +4,16 @@
 #include "test.h"
 #undef QUIET_DISABLE
 
+void destructor_test(){
+	Stack *stack = stack_init(sizeof(int*), compare_lesser);
+	stack_set_destructor(stack, destroy_ptr);
+	for (int i = 0; i < 1024; i++){
+		int *ptr = malloc(sizeof(int));
+		assert(stack_push(stack, &ptr) == SUCCESS);
+	}
+	stack_free(stack);
+}
+
 int main(){
 	int n = 10000, temp;
 	print_test_start(Stack);
@@ -26,9 +36,9 @@ int main(){
 	assert(!stack_isempty(stack));
 
 	/// Config test
-	stack_configure(stack, compare_ignore);
+	stack_set_comparator(stack, compare_equal);
 	assert(stack_exists(stack, cast_int(-64546)));
-	stack_configure(stack, compare_char);
+	stack_set_comparator(stack, compare_char);
 	////////////////
 
 	for(int i=n-1; i>=0; i--){
@@ -49,7 +59,8 @@ int main(){
 
 	stack_free(stack);
 
-	TIMESTAMP_STOP
+	destructor_test();
 
+	TIMESTAMP_STOP
 	print_test_end(Stack);
 }

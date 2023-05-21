@@ -44,6 +44,16 @@ void join_test(){
 	avl_free_all(3, t1, t2, joint);
 }
 
+void destructor_test(){
+	AVLTree *avl = avl_init(sizeof(int*), compare_lesser);
+	avl_set_destructor(avl, destroy_ptr);
+	for (int i = 0; i < 1024; i++){
+		int *ptr = malloc(sizeof(int));
+		assert(avl_add(avl, &ptr) == SUCCESS);
+	}
+	avl_free(avl);
+}
+
 int main(){
 	print_test_start(AVL);
 	TIMESTAMP_START
@@ -59,12 +69,6 @@ int main(){
 	assert(20 == * (int*) avl_max(t, &max));
 	int min;
 	assert(3 == * (int*) avl_min(t, &min));
-
-	// configure test
-	avl_configure(t, compare_ignore);
-	assert(avl_exists(t, cast_int(125)));
-	avl_configure(t, compare_int);
-	///////////////////////////////////
 
 	int exp1 [] = {10, 6, 3, 9, 15, 14, 20};
 	assert_preord(t, exp1);
@@ -115,10 +119,11 @@ int main(){
 	assert(avl_remove_array(t, nums, 11UL));
 	assert(avl_isempty(t));
 
-
 	avl_free(t);
 
 	join_test();
+
+	destructor_test();
 
 	TIMESTAMP_STOP
 

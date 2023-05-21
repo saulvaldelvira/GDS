@@ -19,8 +19,8 @@ typedef struct StackNode {
 
 struct Stack {
 	StackNode *head;
-	// Comparator function
 	comparator_function_t compare;
+	destructor_function_t destructor;
 	size_t data_size;
 	size_t n_elements;
 };
@@ -47,15 +47,22 @@ Stack* stack_init(size_t data_size, comparator_function_t cmp){
 	stack->compare = cmp;
 	stack->data_size = data_size;
 	stack->n_elements = 0;
+	stack->destructor = NULL;
 	return stack;
 }
 
-void stack_configure(Stack *stack, comparator_function_t cmp){
-	if (!stack || !cmp){
+void stack_set_comparator(Stack *stack, comparator_function_t cmp){
+	if (!stack || !cmp)
 		printerr_null_param();
-		return;
-	}
-	stack->compare = cmp;
+	else
+		stack->compare = cmp;
+}
+
+void stack_set_destructor(Stack *stack, destructor_function_t destructor){
+	if (!stack)
+		printerr_null_param();
+	else
+		stack->destructor = destructor;
 }
 
 static StackNode* init_node(void *element, size_t size){
@@ -167,6 +174,25 @@ bool stack_exists(Stack *stack, void *element){
 	return false;
 }
 
+void* stack_get(Stack *stack, void *element, void *dest){
+	if(!stack || !element || !dest){
+		printerr_null_param();
+		return NULL;
+	}
+	StackNode** aux = &stack->head;
+	while (*aux != NULL && stack->compare((*aux)->info, element) != 0){
+		aux = &(*aux)->next;
+	}
+	if (!*aux)
+		return NULL;
+	StackNode *del = *aux;
+	*aux = (*aux)->next;
+	memcpy(dest, del->info, stack->data_size);
+	free(del);
+	stack->n_elements--;
+	return dest;
+}
+
 int stack_remove(Stack *stack, void *element){
 	if(!stack || !element){
 		printerr_null_param();
@@ -176,9 +202,8 @@ int stack_remove(Stack *stack, void *element){
 	while (*aux != NULL && stack->compare((*aux)->info, element) != 0){
 		aux = &(*aux)->next;
 	}
-	if (!*aux){
+	if (!*aux)
 		return ELEMENT_NOT_FOUND_ERROR;
-	}
 	StackNode *del = *aux;
 	*aux = (*aux)->next;
 	free(del);
@@ -206,11 +231,12 @@ bool stack_isempty(Stack *stack){
 
 /// FREE //////////////////////////////////////////////////////////////////////
 
-static void free_node(StackNode *node){
-	if (node == NULL){
+static void free_node(StackNode *node, destructor_function_t destructor){
+	if (node == NULL)
 		return;
-	}
-	free_node(node->next);
+	if (destructor)
+		destructor(node->info);
+	free_node(node->next, destructor);
 	free(node);
 }
 
@@ -219,7 +245,7 @@ int stack_free(Stack *stack){
 		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
-	free_node(stack->head);
+	free_node(stack->head, stack->destructor);
 	free(stack);
 	return SUCCESS;
 }
@@ -239,7 +265,7 @@ Stack* stack_reset(Stack *stack){
 		printerr_null_param();
 		return NULL;
 	}
-	free_node(stack->head);
+	free_node(stack->head, stack->destructor);
 	stack->head = NULL;
 	return stack;
 }

@@ -4,6 +4,16 @@
 #include "test.h"
 #undef QUIET_DISABLE
 
+void destructor_test(){
+	Queue *queue = queue_init(sizeof(int*), compare_lesser);
+	queue_set_destructor(queue, destroy_ptr);
+	for (int i = 0; i < 1024; i++){
+		int *ptr = malloc(sizeof(int));
+		assert(queue_enqueue(queue, &ptr) == SUCCESS);
+	}
+	queue_free(queue);
+}
+
 int main(){
 	int n = 10000, tmp;
 
@@ -21,9 +31,9 @@ int main(){
 	assert(queue_size(q) == (size_t) n);
 
 	/// config test
-	queue_configure(q, compare_ignore);
+	queue_set_comparator(q, compare_equal);
 	assert(queue_exists(q, cast_int(-854654)));
-	queue_configure(q, compare_int);
+	queue_set_comparator(q, compare_int);
 	//////////
 
 	for(int i=0; i<n; i++){
@@ -46,6 +56,8 @@ int main(){
 	}
 
 	queue_free(q);
+
+	destructor_test();
 
 	TIMESTAMP_STOP
 	print_test_end(Queue);

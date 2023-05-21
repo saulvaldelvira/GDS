@@ -20,8 +20,8 @@ struct Vector {
 	size_t n_elements;
 	size_t max_elements;
 	size_t data_size;
-	// Comparator function for 2 elements
 	comparator_function_t compare;
+	destructor_function_t destructor;
 	void *elements;
 };
 
@@ -49,28 +49,19 @@ Vector* vector_init(size_t data_size, comparator_function_t cmp){
 		free(vector);
 		return NULL;
 	}
-
 	vector->data_size = data_size;
 	vector->n_elements = 0;
 	vector->max_elements = VECTOR_DEFAULT_SIZE;
 	vector->compare = cmp;
+	vector->destructor = NULL;
 	return vector;
 }
 
-void vector_configure(Vector *vector, comparator_function_t cmp){
-	if (!vector || !cmp){
+void vector_set_comparator(Vector *vector, comparator_function_t cmp){
+	if (!vector || !cmp)
 		printerr_null_param();
-		return;
-	}
-	vector->compare = cmp;
-}
-
-size_t vector_get_data_size(Vector *vector){
-	if (!vector){
-		printerr_null_param();
-		return 0;
-	}
-	return vector->data_size;
+	else
+		vector->compare = cmp;
 }
 
 comparator_function_t vector_get_comparator(Vector *vector){
@@ -79,6 +70,27 @@ comparator_function_t vector_get_comparator(Vector *vector){
 		return NULL;
 	}
 	return vector->compare;
+}
+
+void vector_set_destructor(Vector *vector, destructor_function_t destructor){
+	if (!vector)
+		printerr_null_param();
+	else
+		vector->destructor = destructor;
+}
+
+destructor_function_t vector_get_destructor(Vector *vector){
+	if (vector)
+		return vector->destructor;
+	printerr_null_param();
+	return NULL;
+}
+
+size_t vector_get_data_size(Vector *vector){
+	if (vector)
+		return vector->data_size;
+	printerr_null_param();
+	return 0;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -181,7 +193,7 @@ int vector_set_at(Vector *vector, size_t index, void *element){
 		return INDEX_BOUNDS_ERROR;
 	}
 	void *tmp = void_offset(vector->elements, index * vector->data_size);
-	memmove(tmp, element , vector->data_size);
+	memmove(tmp, element, vector->data_size);
 	return SUCCESS;
 }
 
@@ -277,12 +289,14 @@ int vector_remove_at(Vector *vector, size_t index){
 		printerr_out_of_bounds(index, vector->n_elements-1);
 		return INDEX_BOUNDS_ERROR;
 	}
-
+	void *remove = void_offset(vector->elements, index * vector->data_size);
+	if (vector->destructor)
+		vector->destructor(remove);
 	if (index < vector->n_elements - 1){
 		size_t leftover = (vector->n_elements - index - 1) * vector->data_size;
-		void *dst = void_offset(vector->elements, index * vector->data_size);
 		void *src = void_offset(vector->elements, (index+1) * vector->data_size);
-		memmove(dst, src, leftover);
+
+		memmove(remove, src, leftover);
 	}
 	vector->n_elements--;
 	return SUCCESS;
@@ -294,37 +308,29 @@ int vector_remove(Vector *vector, void *element){
 		return NULL_PARAMETER_ERROR;
 	}
 	index_t i = vector_indexof(vector, element);
-	if (!i.status){
+	if (i.status != SUCCESS)
 		return i.status;
-	}
 	return vector_remove_at(vector, i.value);
 }
 
-void* vector_pop_front(Vector *vector, void *dest){
-	if (!vector || !dest){
+int vector_remove_front(Vector *vector){
+	if (!vector){
 		printerr_null_param();
-		return NULL;
+		return NULL_PARAMETER_ERROR;
 	}
-	if (vector->n_elements == 0){
-		return NULL;
-	}
-	memcpy(dest, vector->elements, vector->data_size);
-	vector_remove_at(vector, 0);
-	return dest;
+	if (vector->n_elements == 0)
+		return SUCCESS;
+	return vector_remove_at(vector, 0);
 }
 
-void* vector_pop_back(Vector *vector, void *dest){
-	if (!vector || !dest){
+int vector_remove_back(Vector *vector){
+	if (!vector){
 		printerr_null_param();
-		return NULL;
+		return NULL_PARAMETER_ERROR;
 	}
-	if (vector->n_elements == 0){
-		return NULL;
-	}
-	void *src = void_offset(vector->elements, (vector->n_elements - 1) * vector->data_size);
-	memcpy(dest, src, vector->data_size);
-	vector_remove_at(vector, vector->n_elements - 1);
-	return dest;
+	if (vector->n_elements == 0)
+		return SUCCESS;
+	return vector_remove_at(vector, vector->n_elements - 1);
 }
 
 int vector_remove_array(Vector *vector, void *array, size_t array_length){
@@ -332,16 +338,79 @@ int vector_remove_array(Vector *vector, void *array, size_t array_length){
 		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
-	void *tmp;
-	int status;
 	for (size_t i = 0; i < array_length; i++){
-		tmp = void_offset(array, i * vector->data_size);
-		status = vector_remove(vector, tmp);
-		if (status != SUCCESS){
+		void *tmp = void_offset(array, i * vector->data_size);
+		int status = vector_remove(vector, tmp);
+		if (status != SUCCESS)
 			return status;
-		}
 	}
 	return SUCCESS;
+}
+
+void* vector_pop_at(Vector *vector, size_t index, void *dest){
+	if (!vector){
+		printerr_null_param();
+		return NULL;
+	}
+	if (index >= vector->n_elements){
+		printerr_out_of_bounds(index, vector->n_elements-1);
+		return NULL;
+	}
+	void *remove = void_offset(vector->elements, index * vector->data_size);
+	if (dest)
+		memcpy(dest, remove, vector->data_size);
+	if (index < vector->n_elements - 1){
+		size_t leftover = (vector->n_elements - index - 1) * vector->data_size;
+		void *src = void_offset(vector->elements, (index+1) * vector->data_size);
+		memmove(remove, src, leftover);
+	}
+	vector->n_elements--;
+	return dest;
+}
+
+void* vector_pop(Vector *vector, void *element, void *dest){
+	if (!vector || !element){
+		printerr_null_param();
+		return NULL;
+	}
+	index_t i = vector_indexof(vector, element);
+	if (i.status != SUCCESS)
+		return NULL;
+	return vector_pop_at(vector, i.value, dest);
+}
+
+void* vector_pop_front(Vector *vector, void *dest){
+	if (!vector){
+		printerr_null_param();
+		return NULL;
+	}
+	if (vector->n_elements == 0)
+		return NULL;
+	return vector_pop_at(vector, 0, dest);
+}
+
+void* vector_pop_back(Vector *vector, void *dest){
+	if (!vector){
+		printerr_null_param();
+		return NULL;
+	}
+	if (vector->n_elements == 0)
+		return NULL;
+	return vector_pop_at(vector, vector->n_elements - 1, dest);
+}
+
+void* vector_pop_array(Vector *vector, void *array, size_t array_length, void *dest){
+	if (!vector || !array){
+		printerr_null_param();
+		return NULL;
+	}
+	while (array_length-- > 0){
+		vector_pop(vector, array, dest);
+		array = void_offset(array, vector->data_size);
+		if (dest)
+			dest = void_offset(dest, vector->data_size);
+	}
+	return dest;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -390,8 +459,7 @@ void* vector_get_at(Vector *vector, size_t index, void *dest){
 		return NULL;
 	}
 	void *tmp = void_offset(vector->elements, index * vector->data_size);
-	tmp = memcpy(dest, tmp, vector->data_size);
-	return tmp;
+	return memcpy(dest, tmp, vector->data_size);
 }
 
 void* vector_get(Vector *vector, void *element, void *dest){
@@ -457,10 +525,6 @@ void* vector_get_array(Vector *vector, size_t array_length){
 
 /// OTHER /////////////////////////////////////////////////////////////////////
 
-static void* get_position(Vector *vector, size_t index){
-	return void_offset(vector->elements, index * vector->data_size);
-}
-
 int vector_swap(Vector *vector, size_t index_1, size_t index_2){
 	if (!vector){
 		printerr_null_param();
@@ -474,19 +538,16 @@ int vector_swap(Vector *vector, size_t index_1, size_t index_2){
 		printerr_out_of_bounds(index_2, vector->n_elements-1);
 		return INDEX_BOUNDS_ERROR;
 	}
-
 	void *tmp = malloc(vector->data_size);
 	if (!tmp){
 		printerr_allocation();
 		return ALLOCATION_ERROR;
 	}
-
-	if (!vector_get_at(vector, index_1, tmp)){
+	if (!vector_get_at(vector, index_1, tmp))
 		return ERROR;
-	}
 
-	void *e1 = get_position(vector, index_1);
-	void *e2 = get_position(vector, index_2);
+	void *e1 = void_offset(vector->elements, index_1 * vector->data_size);
+	void *e2 = void_offset(vector->elements, index_2 * vector->data_size);
 	memcpy(e1, e2, vector->data_size);
 	memcpy(e2, tmp, vector->data_size);
 
@@ -499,9 +560,9 @@ int vector_compare(Vector *vector, size_t index_1, size_t index_2){
 		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
-	void *e1 = get_position(vector, index_1);
-	void *e2 = get_position(vector, index_2);
-	return (*vector->compare) (e1, e2);
+	void *e1 = void_offset(vector->elements, index_1 * vector->data_size);
+	void *e2 = void_offset(vector->elements, index_2 * vector->data_size);
+	return vector->compare(e1, e2);
 }
 
 size_t vector_size(Vector *vector){
@@ -581,11 +642,22 @@ Vector* vector_join(Vector *vector_1, Vector *vector_2){
 
 /// FREE //////////////////////////////////////////////////////////////////////
 
+static void destroy_content(Vector *vector){
+	if (vector->destructor){
+		void *tmp = vector->elements;
+		for (size_t i = 0; i < vector->n_elements; i++){
+			vector->destructor(tmp);
+			tmp = void_offset(tmp, vector->data_size);
+		}
+	}
+}
+
 int vector_free(Vector *vector){
 	if (!vector){
 		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
+	destroy_content(vector);
 	free(vector->elements);
 	free(vector);
 	return SUCCESS;
@@ -606,14 +678,13 @@ Vector* vector_reset(Vector *vector){
 		printerr_null_param();
 		return NULL;
 	}
+	destroy_content(vector);
 	free(vector->elements);
 	vector->elements = malloc(VECTOR_DEFAULT_SIZE * vector->data_size);
-
 	if (!vector->elements){
 		printerr_allocation();
 		return NULL;
 	}
-
 	vector->n_elements = 0;
 	vector->max_elements = VECTOR_DEFAULT_SIZE;
 	return vector;

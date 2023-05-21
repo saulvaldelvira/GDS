@@ -28,7 +28,13 @@ AVLTree* avl_init(size_t data_size, comparator_function_t cmp);
  * Changes the comparator function of the tree
  * @param cmp the new comparator function
 */
-void avl_configure(AVLTree *tree, comparator_function_t cmp);
+void avl_set_comparator(AVLTree *tree, comparator_function_t cmp);
+
+/**
+ * Sets the destructor function of the tree
+ * @param destructor the new destructor function. NULL means no destructor
+*/
+void avl_set_destructor(AVLTree *tree, destructor_function_t destructor);
 
 /**
  * Adds the elements to the tree

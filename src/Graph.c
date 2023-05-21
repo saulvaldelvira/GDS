@@ -20,6 +20,7 @@ struct Graph {
 	size_t max_elements;
 	size_t data_size;
 	comparator_function_t compare;
+	destructor_function_t destructor;
 	float **weights;
 	int8_t **edges;
 	void *vertices;
@@ -148,6 +149,7 @@ Graph* graph_init(size_t data_size, size_t n_elements, comparator_function_t cmp
 	graph->n_elements = 0;
 	graph->max_elements = 0;
 	graph->compare = cmp;
+	graph->destructor = NULL;
 	graph->weights = NULL;
 	graph->edges = NULL;
 	graph->vertices = NULL;
@@ -162,12 +164,18 @@ Graph* graph_init(size_t data_size, size_t n_elements, comparator_function_t cmp
 	return graph;
 }
 
-void graph_configure(Graph *graph, comparator_function_t cmp){
-	if (!graph || !cmp){
+void graph_set_comparator(Graph *graph, comparator_function_t cmp){
+	if (!graph || !cmp)
 		printerr_null_param();
-		return;
-	}
-	graph->compare = cmp;
+	else
+		graph->compare = cmp;
+}
+
+void graph_set_destructor(Graph *graph, destructor_function_t destructor){
+	if (!graph)
+		printerr_null_param();
+	else
+		graph->destructor = destructor;
 }
 
 int graph_fill(Graph *graph, void *array_vertices, void *array_sources, void *array_targets, float *array_weights, size_t vertices_length, size_t edges_length){
@@ -264,10 +272,6 @@ int graph_remove_vertex(Graph *graph, void *vertex){
 			graph->weights[i][graph->n_elements-1] = INFINITY;
 			graph->weights[graph->n_elements-1][i] = INFINITY;
 		}
-	// If the vertex to remove is the last, we still have to clear the values.
-	// The reason i didn't just put this loop outside the if-else
-	// Statement is because if so, in the case we remove a non-last vertex (most) we should iteratre twice.
-	// This way, we have longer code, but At runtime, the loop will only run once. (Hope I wrote this clear enough :p)
 	}else{
 		for (size_t i = 0; i < graph->max_elements; i++){
 			graph->edges[i][graph->n_elements-1] = 0;
@@ -866,6 +870,13 @@ traverse_data_t graph_traverse_BF(Graph *graph, void *vertex){
 /// FREE //////////////////////////////////////////////////////////////////////
 
 static void free_contents(Graph *graph){
+	if (graph->destructor){
+		void *tmp = graph->vertices;
+		for (size_t i = 0; i < graph->n_elements; i++){
+			graph->destructor(tmp);
+			tmp = void_offset(tmp, graph->data_size);
+		}
+	}
 	free(graph->vertices);
 	for (size_t i = 0; i < graph->max_elements; i++){
 		free(graph->edges[i]);

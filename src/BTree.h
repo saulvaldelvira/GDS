@@ -22,7 +22,13 @@ BTree* btree_init(size_t data_size, int K, comparator_function_t cmp);
  * Changes the comparator function of the tree
  * @param cmp the new comparator function
 */
-void btree_configure(BTree *tree, comparator_function_t cmp);
+void btree_set_comparator(BTree *tree, comparator_function_t cmp);
+
+/**
+ * Sets the destructor function of the tree
+ * @param destructor the new destructor function. NULL means no destructor
+*/
+void dict_set_destructor(BTree *tree, destructor_function_t destructor);
 
 /**
  * Adds an element to the tree

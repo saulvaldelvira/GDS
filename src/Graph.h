@@ -36,10 +36,16 @@ Graph* graph_empty(size_t data_size, comparator_function_t cmp);
 Graph* graph_init(size_t data_size, size_t n_elements, comparator_function_t cmp);
 
 /**
- * Changes the comparator function of the graph
+ * Sets the comparator function of the graph
  * @param cmp the new comparator function
 */
-void graph_configure(Graph *graph, comparator_function_t cmp);
+void graph_set_comparator(Graph *graph, comparator_function_t cmp);
+
+/**
+ * Sets the destructor function of the graph
+ * @param destructor the new destructor function. NULL means no destructor
+*/
+void graph_set_destructor(Graph *graph, destructor_function_t destructor);
 
 /**
  * Fills the graph given arrays for vertices, edge sources, edge targets, and weights.
@@ -61,6 +67,7 @@ int graph_add_vertices_array(Graph *graph, void *array, size_t array_length);
 
 /**
  * Removes a vertex from the graph.
+ * @note If it exists, the destructor will be called on the element.
  * @return 1 if the operation is successful
 */
 int graph_remove_vertex(Graph *graph, void *vertex);

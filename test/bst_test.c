@@ -29,6 +29,16 @@ void join_test(){
 	bst_free_all(3, t1, t2, joint);
 }
 
+void destructor_test(){
+	BSTree *bst = bst_init(sizeof(int*), compare_lesser);
+	bst_set_destructor(bst, destroy_ptr);
+	for (int i = 0; i < 1024; i++){
+		int *ptr = malloc(sizeof(int));
+		assert(bst_add(bst, &ptr) == SUCCESS);
+	}
+	bst_free(bst);
+}
+
 int main(){
 	int n = 1000;//, min = 0, max = 10;
 	int temp;
@@ -48,9 +58,9 @@ int main(){
 	print_test_ok();
 
 	/// config test
-	bst_configure(t, compare_ignore);
+	bst_set_comparator(t, compare_equal);
 	assert(bst_exists(t, cast_int(-24163435)));
-	bst_configure(t, compare_int);
+	bst_set_comparator(t, compare_int);
 	/////////
 
 	print_test_step(Remove);
@@ -136,6 +146,8 @@ int main(){
 	bst_free(t);
 
 	join_test();
+
+	destructor_test();
 
 	TIMESTAMP_STOP
 	print_test_end(BSTree);

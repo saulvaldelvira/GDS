@@ -68,12 +68,23 @@ int main(){
     return 0;
 }
 ```
+
 The header file **comparator.h** defines functions to compare the most common data types (int, char, long, etc.) <br>
-If you don't need to compare elements inside the structure (e.g. when using a stack to just push and pop) you can use the `compare_always_equal` function so the program doesn't complain.
 
 ```c
 LinkedList *list = list_init(sizeof(char), compare_char); // This list stores chars
 ```
+
+If you don't need to compare elements inside the structure (e.g. when using a stack to just push and pop) you can use the `compare_equal`, `compare_lesser` or `compare_greater` functions so the program doesn't complain.
+
+## Destructors
+You can set a "destructor" function, to perform some extra cleanup. <br>
+For example, let's say you have a Vector of int*, and you're allocating it's elements with malloc. <br>
+You can use the `vector_set_destructor` function, and pass the `destroy_ptr` function as a destructor for that vector. <br>
+When freeing or removing elements from the vector, destroy_ptr will be called. <br>
+You can also write your own destructors. See `/example/destructors.c` <br>
+NOTE: if you set a destructor, and want to remove elements from the vector without "destroying" them, use pop instead. <br>
+
 ## Building
 You can use the Makefile to build and install the library. <br>
 - `make`: builds the library <br>

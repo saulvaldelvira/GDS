@@ -22,8 +22,8 @@ struct Queue {
 	QueueNode *tail;
 	size_t data_size;
 	size_t n_elements;
-	// Comparator function
 	comparator_function_t compare;
+	destructor_function_t destructor;
 };
 
 /// INITIALIZE ////////////////////////////////////////////////////////////////
@@ -49,15 +49,22 @@ Queue* queue_init(size_t data_size, comparator_function_t cmp){
 	queue->compare = cmp;
 	queue->data_size = data_size;
 	queue->n_elements = 0;
+	queue->destructor = NULL;
 	return queue;
 }
 
-void queue_configure(Queue *queue, comparator_function_t cmp){
-	if (!queue || !cmp){
+void queue_set_comparator(Queue *queue, comparator_function_t cmp){
+	if (!queue || !cmp)
 		printerr_null_param();
-		return;
-	}
-	queue->compare = cmp;
+	else
+		queue->compare = cmp;
+}
+
+void queue_set_destructor(Queue *queue, destructor_function_t destructor){
+	if (!queue)
+		printerr_null_param();
+	else
+		queue->destructor = destructor;
 }
 
 static QueueNode* queue_init_node(void *element, size_t size){
@@ -172,6 +179,43 @@ bool queue_exists(Queue *queue, void *element){
 	return false;
 }
 
+void* queue_get(Queue *queue, void *element, void *dest){
+	if(!queue || !element || !dest){
+		printerr_null_param();
+		return NULL;
+	}
+	QueueNode** aux = &queue->head;
+	while (*aux != NULL && queue->compare((*aux)->info, element) != 0){
+		aux = &(*aux)->next;
+	}
+	if (!*aux)
+		return NULL;
+	QueueNode *del = *aux;
+	*aux = (*aux)->next;
+	memcpy(dest, del->info, queue->data_size);
+	free(del);
+	queue->n_elements--;
+	return dest;
+}
+
+int queue_remove(Queue *queue, void *element){
+	if(!queue || !element){
+		printerr_null_param();
+		return NULL_PARAMETER_ERROR;
+	}
+	QueueNode** aux = &queue->head;
+	while (*aux != NULL && queue->compare((*aux)->info, element) != 0){
+		aux = &(*aux)->next;
+	}
+	if (!*aux)
+		return ELEMENT_NOT_FOUND_ERROR;
+	QueueNode *del = *aux;
+	*aux = (*aux)->next;
+	free(del);
+	queue->n_elements--;
+	return SUCCESS;
+}
+
 size_t queue_size(Queue *queue){
 	if (!queue){
 		printerr_null_param();
@@ -192,11 +236,12 @@ bool queue_isempty(Queue *queue){
 
 /// FREE //////////////////////////////////////////////////////////////////////
 
-static void queue_free_node(QueueNode *node){
-	if (node == NULL){
+static void queue_free_node(QueueNode *node, destructor_function_t destructor){
+	if (node == NULL)
 		return;
-	}
-	queue_free_node(node->next);
+	if (destructor)
+		destructor(node->info);
+	queue_free_node(node->next, destructor);
 	free(node);
 }
 
@@ -205,7 +250,7 @@ int queue_free(Queue *queue){
 		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
-	queue_free_node(queue->head);
+	queue_free_node(queue->head, queue->destructor);
 	free(queue);
 	return SUCCESS;
 }
@@ -225,7 +270,7 @@ Queue* queue_reset(Queue *queue){
 		printerr_null_param();
 		return NULL;
 	}
-	queue_free_node(queue->head);
+	queue_free_node(queue->head, queue->destructor);
 	queue->head = NULL;
 	queue->tail = NULL;
 	return queue;

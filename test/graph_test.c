@@ -26,9 +26,9 @@ void dijkstra_test(void){
 	assert(graph_add_edge(g, &c, &e, 1.0f));
 
 	/// config test
-	graph_configure(g, compare_ignore);
+	graph_set_comparator(g, compare_equal);
 	assert(graph_exists_vertex(g, cast_int(-54654)));
-	graph_configure(g, compare_char);
+	graph_set_comparator(g, compare_char);
 	/////////////////
 
 	DijkstraData_t dijkstra = graph_dijkstra(g, &a);
@@ -254,6 +254,16 @@ void eccentricity_test(void){
 	graph_free(g);
 }
 
+void destructor_test(){
+	Graph *g = graph_init(sizeof(int*), 100, compare_lesser);
+	graph_set_destructor(g, destroy_ptr);
+	for (int i = 0; i < 1024; i++){
+		int *ptr = malloc(sizeof(int));
+		assert(graph_add_vertex(g, &ptr) == SUCCESS);
+	}
+	graph_free(g);
+}
+
 int main(){
 	intptr_t n = 1200;
 	print_test_start(Graph);
@@ -300,6 +310,8 @@ int main(){
 	print_test_step(Eccentricity);
 	eccentricity_test();
 	print_test_ok();
+
+	destructor_test();
 
 	g = graph_reset(g);
 	int vertices [] = {1, 2, 3, 4, 5};

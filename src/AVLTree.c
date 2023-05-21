@@ -27,12 +27,13 @@ struct AVLTree {
         size_t data_size;
         size_t n_elements;
         comparator_function_t compare;
+	destructor_function_t destructor;
 };
 
 /// INITIALIZE ////////////////////////////////////////////////////////////////
 
 static AVLNode* init_node(void *element, size_t data_size){
-        AVLNode *node = malloc(sizeof(*node));
+        AVLNode *node = malloc(offsetof(AVLNode, info) + data_size);
         if (!node){
                 printerr_allocation();
                 return NULL;
@@ -45,12 +46,18 @@ static AVLNode* init_node(void *element, size_t data_size){
         return node;
 }
 
-void avl_configure(AVLTree *tree, comparator_function_t cmp){
-	if (!tree || !cmp){
+void avl_set_comparator(AVLTree *tree, comparator_function_t cmp){
+	if (!tree || !cmp)
 		printerr_null_param();
-		return;
-	}
-	tree->compare = cmp;
+	else
+		tree->compare = cmp;
+}
+
+void avl_set_destructor(AVLTree *tree, destructor_function_t destructor){
+	if (!tree)
+		printerr_null_param();
+	else
+		tree->destructor = destructor;
 }
 
 AVLTree* avl_init(size_t data_size, comparator_function_t cmp){
@@ -68,6 +75,7 @@ AVLTree* avl_init(size_t data_size, comparator_function_t cmp){
                 return NULL;
         }
         tree->compare = cmp;
+	tree->destructor = NULL;
         tree->data_size = data_size;
         tree->n_elements = 0;
         tree->root = NULL;
@@ -654,20 +662,20 @@ void* avl_min_from(AVLTree *tree, void *element, void *dest){
 
 //// FREE /////////////////////////////////////////////////////////////////////
 
-static void free_node(AVLNode *node){
-	if (!node){
+static void free_node(AVLNode *node, destructor_function_t destructor){
+	if (!node)
 		return;
-	}
-	free_node(node->left);
-	free_node(node->right);
+	if (destructor)
+		destructor(node->info);
+	free_node(node->left, destructor);
+	free_node(node->right, destructor);
 	free(node);
 }
 
 int avl_free(AVLTree *tree){
-	if (!tree){
+	if (!tree)
 		return NULL_PARAMETER_ERROR;
-	}
-	free_node(tree->root);
+	free_node(tree->root, tree->destructor);
 	free(tree);
 	return SUCCESS;
 }
@@ -683,10 +691,9 @@ void avl_free_all(unsigned int n, ...){
 }
 
 AVLTree* avl_reset(AVLTree *tree){
-	if (!tree){
+	if (!tree)
 		return NULL;
-	}
-	free_node(tree->root);
+	free_node(tree->root, tree->destructor);
 	tree->root = NULL;
 	tree->n_elements = 0;
 	return tree;

@@ -64,14 +64,22 @@ void config(){
 
 void random_test(){
         print_test_step(Random);
-        int n = 100;
-        srand(time(NULL));
+        int n = 2048;
+        srand(time(0));
+
+        // Create 2 arrays for the keys and
+        // values, and shuffle them randomly
+        int *keys = int_array(0,n);
+        int *values = int_array(0,n);
+        shuffle_array(keys, n);
+        shuffle_array(values, n);
+
         Dictionary *dic = dict_init(sizeof(int), sizeof(int), hash_int);
         int *exp = malloc(n * sizeof(int));
         int *exp2 = malloc(n * sizeof(int));
         for (int i = 0; i < n; i++){
-                int k = rand();
-                int v = rand();
+                int k = keys[i];
+                int v = values[i];
                 exp[i] = k;
                 exp2[i] = v;
                 assert(dict_put(dic, &k, &v) == SUCCESS);
@@ -84,6 +92,8 @@ void random_test(){
         }
         free(exp);
         free(exp2);
+        free(keys);
+        free(values);
         dict_free(dic);
         print_test_ok();
 }

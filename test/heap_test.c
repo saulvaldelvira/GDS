@@ -40,9 +40,9 @@ void filter_up(){
 	heap_add(min, cast_int(8));
 
 	/// Config test
-	heap_configure(min, compare_ignore);
+	heap_set_comparator(min, compare_equal);
 	assert(heap_exists(min, cast_int(-15454)));
-	heap_configure(min, compare_int);
+	heap_set_comparator(min, compare_int);
 	////////////
 
 	int exp1[] = {8, 10, 9};
@@ -143,6 +143,16 @@ void pop_min(){
 	heap_free(min);
 }
 
+void destructor_test(){
+	Heap *heap = heap_init(sizeof(int*), compare_lesser);
+	heap_set_destructor(heap, destroy_ptr);
+	for (int i = 0; i < 1024; i++){
+		int *ptr = malloc(sizeof(int));
+		assert(heap_add(heap, &ptr) == SUCCESS);
+	}
+	heap_free(heap);
+}
+
 int main(){
 	print_test_start(Heap);
 	TIMESTAMP_START
@@ -175,7 +185,8 @@ int main(){
 	pop_min();
 
 	change_priority();
-
+	destructor_test();
+	
 	TIMESTAMP_STOP
 	print_test_end(Heap);
 	return 0;

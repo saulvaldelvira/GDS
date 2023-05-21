@@ -32,7 +32,13 @@ LinkedList* list_init(size_t data_size, comparator_function_t cmp);
  * Changes the comparator function of the list
  * @param cmp the new comparator function
 */
-void list_configure(LinkedList *list, comparator_function_t cmp);
+void list_set_comparator(LinkedList *list, comparator_function_t cmp);
+
+/**
+ * Changes the comparator function of the list
+ * @param destructor the new destructor function
+*/
+void list_set_destructor(LinkedList *list, destructor_function_t destructor);
 
 /**
  * Adds the given element to the end of the list
@@ -107,27 +113,69 @@ size_t list_size(LinkedList *list);
 bool list_isempty(LinkedList *list);
 
 /**
- * Removes the element from the list
- * @return 1 if the operation is successful
-*/
+ * Removes the specified element.
+ * @note If defined, the destructor will be called on the removed element.
+ * @note If you don't want that, see list_pop
+ * @return 1 if the operation is successful.
+ */
 int list_remove(LinkedList *list, void *element);
 
 /**
- * Removes the first element in the list and copies it into dest
- * @return the pointer dest, or NULL if error
+ * Removes the first element.
+ * @note If defined, the destructor will be called on the removed element.
+ * @note If you don't want that, see list_pop_front
+ * @return 1 if the operation is successful.
+ */
+int list_remove_front(LinkedList *list);
+
+/**
+ * Removes the last element.
+ * @note If defined, the destructor will be called on the removed element.
+ * @note If you don't want that, see list_pop_back
+ * @return 1 if the operation is successful.
+ */
+int list_remove_back(LinkedList *list);
+
+/**
+ * Removes from the first [array_length] elements of the given array.
+ * @note If defined, the destructor will be called on the removed elements.
+ * @note If you don't want that, see list_pop_array
+ * @return 1 if the operation is successful
 */
+int list_remove_array(LinkedList *list, void *array, size_t array_length);
+
+/**
+ * Pops the given element
+ * @param dest if not NULL, copies the element into it.
+ * @note If you want the destructor to be called on the element, use list_remove instead
+ * @return the dest pointer
+ */
+void* list_pop(LinkedList *list, void *element, void *dest);
+
+/**
+ * Pops the frist element
+ * @param dest if not NULL, copies the element into it.
+ * @note If you want the destructor to be called on the element, use list_remove_front instead
+ * @return the dest pointer
+ */
 void* list_pop_front(LinkedList *list, void *dest);
 
 /**
- * Removes the last element in the list and copies it into dest
- * @return the pointer dest, or NULL if error
-*/
+ * Pops the last element
+ * @param dest if not NULL, copies the element into it.
+ * @note If you want the destructor to be called on the element, use list_remove_back instead
+ * @return the dest pointer
+ */
 void* list_pop_back(LinkedList *list, void *dest);
 
 /**
- * Removes from the list the first [array_length] elements of the array
+ * Pops from the first [array_length] elements of the given array.
+ * @param dest an array. If not NULL, copies the elements into it.
+ *             Must be large enough to, at least, hold [array_length] elements
+ * @note If you want the destructor to be called on the element, use list_remove_array instead
+ * @return the dest pointer
 */
-int list_remove_array(LinkedList *list, void *array, size_t array_length);
+void* list_pop_array(LinkedList *list, void *array, size_t array_length, void *dest);
 
 /**
  * @return a new LinkedList with the elements of the two given lists.

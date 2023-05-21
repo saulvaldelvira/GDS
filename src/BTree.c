@@ -24,6 +24,7 @@ struct BTree {
 	BTreeNode *root;
 	size_t data_size;
 	comparator_function_t compare;
+	destructor_function_t destructor;
 };
 
 #define MIN_K 2
@@ -53,18 +54,25 @@ BTree* btree_init(size_t data_size, int K, comparator_function_t cmp){
 		return NULL;
 	}
 	tree->compare = cmp;
+	tree->destructor = NULL;
 	tree->data_size = data_size;
 	tree->K = K;
 	tree->root = NULL;
 	return tree;
 }
 
-void btree_configure(BTree *tree, comparator_function_t cmp){
-	if (!tree || !cmp){
+void btree_set_comparator(BTree *tree, comparator_function_t cmp){
+	if (!tree || !cmp)
 		printerr_null_param();
-		return;
-	}
-	tree->compare = cmp;
+	else
+		tree->compare = cmp;
+}
+
+void btree_set_destructor(BTree *tree, destructor_function_t destructor){
+	if (!tree)
+		printerr_null_param();
+	else
+		tree->destructor = destructor;
 }
 
 static BTreeNode* btree_init_node(int K, size_t data_size){
@@ -709,22 +717,27 @@ bool btree_exists(BTree *tree, void *element){
 
 /// FREE //////////////////////////////////////////////////////////////////////
 
-static void btree_free_node(BTreeNode *node){
-	if (!node){
+static void btree_free_node(BTreeNode *node, destructor_function_t destructor, size_t data_size){
+	if (!node)
 		return;
+	if (destructor){
+		void *ptr = node->elements;
+		for (int i = 0; i < node->n_elements; i++){
+			destructor(ptr);
+			ptr = void_offset(ptr, data_size);
+		}
+
 	}
-	for (int i = 0; i < node->n_childs; i++){
-		btree_free_node(node->childs[i]);
-	}
+	for (int i = 0; i < node->n_childs; i++)
+		btree_free_node(node->childs[i], destructor, data_size);
 	free(node->childs);
 	free(node);
 }
 
 int btree_free(BTree *tree){
-	if (!tree){
+	if (!tree)
 		return NULL_PARAMETER_ERROR;
-	}
-	btree_free_node(tree->root);
+	btree_free_node(tree->root, tree->destructor, tree->data_size);
 	free(tree);
 	return SUCCESS;
 }
@@ -740,10 +753,9 @@ void btree_free_all(unsigned int n, ...){
 }
 
 BTree* btree_reset(BTree *tree){
-	if (!tree){
+	if (!tree)
 		return NULL;
-	}
-	btree_free_node(tree->root);
+	btree_free_node(tree->root, tree->destructor, tree->data_size);
 	tree->root = NULL;
 	return tree;
 }

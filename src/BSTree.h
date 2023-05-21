@@ -29,10 +29,16 @@ typedef struct BSTree BSTree;
 BSTree* bst_init(size_t data_size, comparator_function_t cmp);
 
 /**
- * Changes the comparator function of the tree
+ * Sets the comparator function of the tree
  * @param cmp the new comparator function
 */
-void bst_configure(BSTree *tree, comparator_function_t cmp);
+void bst_set_comparator(BSTree *tree, comparator_function_t cmp);
+
+/**
+ * Sets the destructor function of the tree
+ * @param destructor the new destructor function. NULL means no destructor
+*/
+void bst_set_destructor(BSTree *tree, destructor_function_t destructor);
 
 /**
  * @return 1 if the operation is successful

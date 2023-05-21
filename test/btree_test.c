@@ -32,9 +32,9 @@ int main(){
 	}
 
 	/// Config test
-	btree_configure(tree, compare_ignore);
+	btree_set_comparator(tree, compare_equal);
 	assert(btree_exists(tree, cast_int(-897987)));
-	btree_configure(tree, compare_int);
+	btree_set_comparator(tree, compare_int);
 	/////////////////////////////////
 
 	btree_free(tree);
