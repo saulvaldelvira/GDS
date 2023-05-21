@@ -48,7 +48,7 @@ int main(){
 	print_test_ok();
 
 	/// config test
-	bst_configure(t, compare_always_equal);
+	bst_configure(t, compare_ignore);
 	assert(bst_exists(t, cast_int(-24163435)));
 	bst_configure(t, compare_int);
 	/////////

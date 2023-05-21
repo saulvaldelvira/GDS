@@ -69,7 +69,7 @@ int compare_double(const void *e_1, const void *e_2){
 	}
 }
 
-int compare_always_equal(const void *e_1, const void *e_2){
+int compare_ignore(const void *e_1, const void *e_2){
 	(void) e_1;
 	(void) e_2;
 	return 0;

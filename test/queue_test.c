@@ -21,7 +21,7 @@ int main(){
 	assert(queue_size(q) == (size_t) n);
 
 	/// config test
-	queue_configure(q, compare_always_equal);
+	queue_configure(q, compare_ignore);
 	assert(queue_exists(q, cast_int(-854654)));
 	queue_configure(q, compare_int);
 	//////////

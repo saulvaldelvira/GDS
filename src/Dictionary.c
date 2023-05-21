@@ -108,7 +108,7 @@ Dictionary* dict_init(size_t key_size, size_t value_size, hash_function_t hash_f
         dict->key_size = key_size;
         dict->min_lf = DICT_DEF_MIN_LF;
         dict->max_lf = DICT_DEF_MAX_LF;
-        dict->elements = vector_init(sizeof(DictionaryNode), compare_always_equal);
+        dict->elements = vector_init(sizeof(DictionaryNode), compare_ignore);
         if (!dict->elements){
                 free(dict);
                 return NULL;
@@ -203,7 +203,7 @@ static int dict_redisperse(Dictionary *dict, size_t new_size){
         /// Reset the vector
         if (new_size < dict->vec_size) {
                 status = vector_free(dict->elements);
-                dict->elements = vector_init(sizeof(DictionaryNode), compare_always_equal);
+                dict->elements = vector_init(sizeof(DictionaryNode), compare_ignore);
                 if (!dict->elements || status != SUCCESS){
                         return ERROR;
                 }

@@ -40,7 +40,7 @@ void filter_up(){
 	heap_add(min, cast_int(8));
 
 	/// Config test
-	heap_configure(min, compare_always_equal);
+	heap_configure(min, compare_ignore);
 	assert(heap_exists(min, cast_int(-15454)));
 	heap_configure(min, compare_int);
 	////////////
