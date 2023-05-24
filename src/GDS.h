@@ -14,8 +14,6 @@ extern "C" {
 
 #include "AVLTree.h"
 #include "Heap.h"
-#include "BSTree.h"
-#include "BTree.h"
 #include "Dictionary.h"
 #include "Graph.h"
 #include "LinkedList.h"
