@@ -17,11 +17,10 @@ extern "C" {
 #define SUCCESS		         1
 #define ERROR                    0
 #define INDEX_BOUNDS_ERROR      -0xE001
-#define ALLOCATION_ERROR        -0xE002
-#define NULL_PARAMETER_ERROR    -0xE003
-#define ELEMENT_NOT_FOUND_ERROR -0xE004
-#define REPEATED_ELEMENT_ERROR  -0xE005
-#define INVALID_PARAMETER_ERROR -0xE006
+#define NULL_PARAMETER_ERROR    -0xE002
+#define ELEMENT_NOT_FOUND_ERROR -0xE003
+#define REPEATED_ELEMENT_ERROR  -0xE004
+#define INVALID_PARAMETER_ERROR -0xE005
 
 // Print error macros
 #ifdef GDS_ENABLE_ERROR_MACROS
@@ -41,8 +40,6 @@ extern "C" {
 #define _context_args __FILE_NAME__, __LINE__, __func__
 
 #define printerr(msg, ...) fprintf(stderr, "ERROR: " msg  ".\n"_context_str __VA_ARGS__, _context_args)  // C23 will add __VA_OPT__(,)
-
-#define printerr_allocation() fprintf(stderr, "ERROR: Unable to allocate memory.\n" _context_str, _context_args)
 
 #define printerr_null_param() fprintf(stderr, "ERROR: NULL parameter(s).\n" _context_str, _context_args)
 

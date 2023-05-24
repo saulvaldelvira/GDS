@@ -13,6 +13,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include "Vector.h"
+#include <assert.h>
 
 #define VECTOR_DEFAULT_SIZE 12
 
@@ -38,17 +39,9 @@ Vector* vector_init(size_t data_size, comparator_function_t cmp){
 	}
 
 	Vector *vector = malloc(sizeof(*vector));
-	if (!vector){
-		printerr_allocation();
-		return NULL;
-	}
-
+	assert(vector);
 	vector->elements = malloc(VECTOR_DEFAULT_SIZE * data_size);
-	if (!vector->elements){
-		printerr_allocation();
-		free(vector);
-		return NULL;
-	}
+	assert(vector->elements);
 	vector->data_size = data_size;
 	vector->n_elements = 0;
 	vector->max_elements = VECTOR_DEFAULT_SIZE;
@@ -97,19 +90,14 @@ size_t vector_get_data_size(Vector *vector){
 
 /// ADD-SET ///////////////////////////////////////////////////////////////////////
 
-static int vector_resize(Vector *vector, size_t new_size){
+static void vector_resize(Vector *vector, size_t new_size){
+	assert(vector->n_elements <= new_size);
 	void *tmp = calloc(new_size, vector->data_size);
-	if(!tmp){
-		printerr_allocation();
-		return ALLOCATION_ERROR;
-	}
-	if (vector->n_elements > new_size)
-		vector->n_elements = new_size;
+	assert(tmp);
 	memcpy(tmp, vector->elements, vector->n_elements * vector->data_size);
 	free(vector->elements);
 	vector->elements = tmp;
 	vector->max_elements = new_size;
-	return SUCCESS;
 }
 
 int vector_append(Vector *vector, void *element){
@@ -117,13 +105,9 @@ int vector_append(Vector *vector, void *element){
 		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
-	if(vector->n_elements >= vector->max_elements){
-		// If the vector is full, double the array size
-		int status = vector_resize(vector, vector->n_elements * 2);
-		if (status != SUCCESS){
-			return status;
-		}
-	}
+	// If the vector is full, double the array size
+	if(vector->n_elements >= vector->max_elements)
+		vector_resize(vector, vector->n_elements * 2);
 	void *tmp = void_offset(vector->elements, vector->n_elements * vector->data_size);
 	memcpy(tmp , element, vector->data_size);
 	vector->n_elements++;
@@ -135,17 +119,7 @@ int vector_push_front(Vector *vector, void *element){
 		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
-	if(vector->n_elements >= vector->max_elements){
-		int status = vector_resize(vector, vector->max_elements * 2);
-		if (status != SUCCESS){
-			return status;
-		}
-	}
-	void *tmp = void_offset(vector->elements, vector->data_size);
-	memmove(tmp, vector->elements, vector->n_elements * vector->data_size);
-	memcpy(vector->elements, element, vector->data_size);
-	vector->n_elements++;
-	return SUCCESS;
+	return vector_insert_at(vector, 0, element);
 }
 
 int vector_insert_array(Vector *vector, size_t index, void *array, size_t array_length){
@@ -153,11 +127,8 @@ int vector_insert_array(Vector *vector, size_t index, void *array, size_t array_
 		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
-	if (vector->max_elements - vector->n_elements < array_length){
-		int status = vector_resize(vector, vector->max_elements + array_length);
-		if (status != SUCCESS)
-			return status;
-	}
+	if (vector->max_elements - vector->n_elements < array_length)
+		vector_resize(vector, vector->max_elements + array_length);
 	if (index > vector->n_elements){
 		printerr_out_of_bounds(index, vector->n_elements);
 		return INDEX_BOUNDS_ERROR;
@@ -198,9 +169,8 @@ int vector_set(Vector *vector, void *element, void *replacement){
 		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
-	void *ptr;
 	for (size_t i=0; i < vector->n_elements; i++){
-		ptr = void_offset(vector->elements, i * vector->data_size);
+		void *ptr = void_offset(vector->elements, i * vector->data_size);
 		if (vector->compare(ptr, element) == 0){
 			memmove(ptr, replacement, vector->data_size);
 			return SUCCESS;
@@ -226,12 +196,8 @@ int vector_insert_at(Vector *vector, size_t index, void *element){
 		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
-	if (vector->n_elements == vector->max_elements){
-		int status = vector_resize(vector, vector->max_elements * 2);
-		if (status != SUCCESS){
-			return status;
-		}
-	}
+	if (vector->n_elements == vector->max_elements)
+		vector_resize(vector, vector->max_elements * 2);
 	void *src = void_offset(vector->elements, index * vector->data_size);
 	void *dst = void_offset(vector->elements, (index + 1) * vector->data_size);
 	int n = vector->n_elements - index; // number of elements to shift
@@ -291,7 +257,6 @@ int vector_remove_at(Vector *vector, size_t index){
 	if (index < vector->n_elements - 1){
 		size_t leftover = (vector->n_elements - index - 1) * vector->data_size;
 		void *src = void_offset(vector->elements, (index+1) * vector->data_size);
-
 		memmove(remove, src, leftover);
 	}
 	vector->n_elements--;
@@ -465,6 +430,7 @@ void* vector_get(Vector *vector, void *element, void *dest){
 	}
 	index_t index = vector_indexof(vector, element);
 	if (!index.status){
+
 		return NULL;
 	}
 	return vector_get_at(vector, index.value, dest);
@@ -534,10 +500,7 @@ int vector_swap(Vector *vector, size_t index_1, size_t index_2){
 		return INDEX_BOUNDS_ERROR;
 	}
 	void *tmp = malloc(vector->data_size);
-	if (!tmp){
-		printerr_allocation();
-		return ALLOCATION_ERROR;
-	}
+	assert(tmp);
 	if (!vector_get_at(vector, index_1, tmp))
 		return ERROR;
 
@@ -581,14 +544,10 @@ int vector_reserve(Vector *vector, size_t n_elements){
 		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
-	if (vector->max_elements >= n_elements){
-		vector->n_elements = n_elements;
-		return SUCCESS;
-	}
-	int status = vector_resize(vector, n_elements);
-	if (status == SUCCESS)
-		vector->n_elements = n_elements;
-	return status;
+	if (vector->max_elements < n_elements)
+		vector_resize(vector, n_elements);
+	vector->n_elements = n_elements;
+	return SUCCESS;
 }
 
 int vector_shrink(Vector *vector){
@@ -596,7 +555,8 @@ int vector_shrink(Vector *vector){
 		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
-	return vector_resize(vector, vector->n_elements);
+	vector_resize(vector, vector->n_elements);
+	return SUCCESS;
 }
 
 Vector* vector_join(Vector *vector_1, Vector *vector_2){
@@ -691,10 +651,8 @@ Vector* vector_reset(Vector *vector){
 	destroy_content(vector);
 	free(vector->elements);
 	vector->elements = malloc(VECTOR_DEFAULT_SIZE * vector->data_size);
-	if (!vector->elements){
-		printerr_allocation();
-		return NULL;
-	}
+	assert(vector->elements);
+
 	vector->n_elements = 0;
 	vector->max_elements = VECTOR_DEFAULT_SIZE;
 	return vector;

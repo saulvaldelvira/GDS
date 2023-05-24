@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
+#include <assert.h>
 
 struct Heap {
 	Vector *elements;
@@ -28,16 +29,8 @@ Heap* heap_init(size_t data_size, comparator_function_t cmp){
 		return NULL;
 	}
 	Heap *heap = malloc(sizeof(*heap));
-	if (!heap){
-		printerr_allocation();
-		return NULL;
-	}
+	assert(heap);	
 	heap->elements = vector_init(data_size, cmp);
-	if (!heap->elements){
-		printerr_allocation();
-		free(heap);
-		return NULL;
-	}
 	return heap;
 }
 
@@ -66,9 +59,8 @@ void heap_set_destructor(Heap *heap, destructor_function_t destructor){
 */
 static void filter_up(Vector *list, size_t pos){
 	size_t father = (pos-1) / 2;
-	if (pos == 0 || vector_compare(list, pos, father) >= 0){
+	if (pos == 0 || vector_compare(list, pos, father) >= 0)
 		return;
-	}
 	vector_swap(list, pos, father);
 	filter_up(list, father);
 }
@@ -94,11 +86,10 @@ static index_t lowest_child(Vector *list, size_t pos){
 	}else if (r_child >= size){
 		lowest.value = l_child;
 	}else{
-		if (vector_compare(list, l_child, r_child) < 0){
+		if (vector_compare(list, l_child, r_child) < 0)
 			lowest.value = l_child;
-		}else{
+		else
 			lowest.value = r_child;
-		}
 	}
 
 	if (vector_compare(list, lowest.value, pos) >= 0){
@@ -114,13 +105,11 @@ static index_t lowest_child(Vector *list, size_t pos){
  * every iteration until we find the last element.
 */
 static void filter_down(Vector *list, size_t pos){
-	if (pos >= vector_size(list)){
+	if (pos >= vector_size(list))
 		return;
-	}
 	index_t lowest = lowest_child(list, pos);
-	if (lowest.status != SUCCESS){
+	if (lowest.status != SUCCESS)
 		return;
-	}
 	vector_swap(list, pos, lowest.value);
 	filter_down(list, lowest.value);
 }
@@ -135,9 +124,8 @@ int heap_add(Heap *heap, void *element){
 		return NULL_PARAMETER_ERROR;
 	}
 	int status = vector_append(heap->elements, element);
-	if (status != SUCCESS){
+	if (status != SUCCESS)
 		return status;
-	}
 	filter_up(heap->elements, vector_size(heap->elements)-1);
 	return SUCCESS;
 }
@@ -157,19 +145,17 @@ int heap_add_array(Heap *heap, void *array, size_t array_length){
 			filter_down(heap->elements, father);
 			// This is because if i is 1 and we substract 2, we get
 			// the max size_t value (since it is unsigned)
-			if (i > 1){
+			if (i > 1)
 				i -=2;
-			}else if(i == 1){
+			else if(i == 1)
 				i--;
-			}
 		}
 	} else {
 		size_t data_size = vector_get_data_size(heap->elements);
 		while (array_length-- > 0){
 			int status = heap_add(heap, array);
-			if (status != SUCCESS){
+			if (status != SUCCESS)
 				return status;
-			}
 			array = void_offset(array, data_size);
 		}
 	}
@@ -209,6 +195,7 @@ int heap_change_priority(Heap *heap, void *element, void *replacement){
 		return status;
 	}
 	// Filter (if necessary)
+	
 	comparator_function_t comp_func = vector_get_comparator(heap->elements);
 	int c = comp_func(element, replacement);
 	if (c > 0){

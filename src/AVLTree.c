@@ -11,6 +11,7 @@
 #include <string.h> // memcpy
 #include <stdio.h> // fprintf
 #include <stdarg.h>
+#include <assert.h>
 
 #define MAX_DISBALANCE 2
 
@@ -34,10 +35,7 @@ struct AVLTree {
 
 static AVLNode* init_node(void *element, size_t data_size){
         AVLNode *node = malloc(offsetof(AVLNode, info) + data_size);
-        if (!node){
-                printerr_allocation();
-                return NULL;
-        }
+        assert(node);
         node->left = NULL;
         node->right = NULL;
         node->father = NULL;
@@ -70,10 +68,7 @@ AVLTree* avl_init(size_t data_size, comparator_function_t cmp){
 		return NULL;
 	}
         AVLTree *tree = malloc(sizeof(*tree));
-        if (!tree){
-                printerr_allocation();
-                return NULL;
-        }
+	assert(tree);
         tree->compare = cmp;
 	tree->destructor = NULL;
         tree->data_size = data_size;
@@ -93,18 +88,16 @@ AVLTree* avl_init(size_t data_size, comparator_function_t cmp){
  * If both are NULL this means the current node is a leaf of the three, thus it's height is set to 0.
 */
 static void node_update_height(AVLNode *node){
-	if (!node){
+	if (!node)
 		return;
-	}
-        if (node->left == NULL && node->right == NULL){
+        if (node->left == NULL && node->right == NULL)
                 node->height = 0;
-        }else if (node->left == NULL){
+        else if (node->left == NULL)
                 node->height = node->right->height + 1;
-        }else if (node->right == NULL){
+        else if (node->right == NULL)
                 node->height = node->left->height + 1;
-        }else {
-                node->height = MAX(node->left->height, node->right->height) + 1;
-        }
+        else
+		node->height = MAX(node->left->height, node->right->height) + 1;
 }
 
 static int node_bf(AVLNode *node){
@@ -155,27 +148,23 @@ static AVLNode* double_left_rotation(AVLNode *node){
 }
 
 static AVLNode* update_bf(AVLNode *node){
-	if (!node){
+	if (!node)
 		return NULL;
-	}
         node_update_height(node);
         int bf = node_bf(node);
         if (bf <= -MAX_DISBALANCE){
                 int left_bf = node_bf(node->left);
-                if (left_bf <= 0){
+                if (left_bf <= 0)
                         node = single_left_rotation(node);
-                }else {
+                else
                         node = double_left_rotation(node);
-                }
 		node_update_height(node);
-
         }else if (bf >= MAX_DISBALANCE){
                 int right_bf = node_bf(node->right);
-                if (right_bf >= 0){
+                if (right_bf >= 0)
                 	node = single_right_rotation(node);
-                }else {
+                else
                         node = double_right_rotation(node);
-                }
 		node_update_height(node);
         }
         return node;
@@ -207,11 +196,8 @@ struct add_rec_ret
 static struct add_rec_ret add_rec(AVLNode *node, void *element, comparator_function_t cmp, size_t size){
 	if (node == NULL){
 		AVLNode *aux = init_node(element, size);
-		if (!aux){
-			return (struct add_rec_ret){aux, ALLOCATION_ERROR};
-		} else {
-			return (struct add_rec_ret){aux, SUCCESS};
-		}
+		assert(aux);
+		return (struct add_rec_ret){aux, SUCCESS};
 	}
 	struct add_rec_ret ret;
 	int c = (*cmp) (element, node->info);
@@ -221,7 +207,7 @@ static struct add_rec_ret add_rec(AVLNode *node, void *element, comparator_funct
 	}else if (c < 0){
 		ret = add_rec(node->left, element, cmp, size);
 		node->left = ret.node;
-	}else {
+	}else{
 		return (struct add_rec_ret){node, REPEATED_ELEMENT_ERROR};
 	}
 	ret.node->father = node;
@@ -264,23 +250,19 @@ int avl_add_array(AVLTree *tree, void *array, size_t array_length){
 /// MAX-MIN ///////////////////////////////////////////////////////////////////
 
 static AVLNode* get_max(AVLNode *node){
-	if (node == NULL){
+	if (node == NULL)
 		return NULL;
-	}
-	while (node->right != NULL){
+	while (node->right != NULL)
 		node = node->right;
-	}
 	return node;
 }
 
 static AVLNode* get_min(AVLNode *node){
-	if (node == NULL){
+	if (node == NULL)
 		return NULL;
-	}
-	while (node->left != NULL){
+	while (node->left != NULL)
 		node = node->left;
-	}
-	return node;
+       	return node;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -306,9 +288,8 @@ struct remove_rec_ret {
  * 2) If the node is null, this means the element does not exist.
 */
 static struct remove_rec_ret remove_rec(AVLNode *node, void *element, comparator_function_t cmp, size_t size){
-	if (node == NULL){
+	if (node == NULL)
 		return (struct remove_rec_ret){NULL, ELEMENT_NOT_FOUND_ERROR};
-	}
 
 	int c = (*cmp) (element, node->info);
 	struct remove_rec_ret ret;
@@ -369,17 +350,15 @@ int avl_remove_array(AVLTree *tree, void *array, size_t array_length){
 /// OTHER FUNCTIONS ///////////////////////////////////////////////////////////
 
 bool exists_rec(AVLNode *node, void *element, comparator_function_t compare){
-	if (!node){
+	if (!node)
 		return false;
-	}
 	int c = compare(element, node->info);
-	if (c < 0){
+	if (c < 0)
 		return exists_rec(node->left, element, compare);
-	} else if (c > 0){
+	else if (c > 0)
 		return exists_rec(node->right, element, compare);
-	} else{
+	else
 		return true;
-	}
 }
 
 bool avl_exists(AVLTree *tree, void *element){
@@ -391,17 +370,15 @@ bool avl_exists(AVLTree *tree, void *element){
 }
 
 static AVLNode* get_rec(AVLNode *node, void *element, comparator_function_t compare){
-	if (!node){
+	if (!node)
 		return NULL;
-	}
 	int c = compare(element, node->info);
-	if (c < 0){
+	if (c < 0)
 		return get_rec(node->left, element, compare);
-	} else if (c > 0){
+	else if (c > 0)
 		return get_rec(node->right, element, compare);
-	} else{
+	else
 		return node;
-	}
 }
 
 void* avl_get(AVLTree *tree, void *element, void *dest){
@@ -410,9 +387,8 @@ void* avl_get(AVLTree *tree, void *element, void *dest){
 		return NULL;
 	}
 	AVLNode *node = get_rec(tree->root, element, tree->compare);
-	if (!node){
+	if (!node)
 		return NULL;
-	}
 	memcpy(dest, node->info, tree->data_size);
 	return dest;
 }
@@ -438,9 +414,8 @@ int avl_height(AVLTree *tree){
 		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
-	if (tree->root == NULL){
+	if (tree->root == NULL)
 		return -1;
-	}
 	return tree->root->height;
 }
 
@@ -450,7 +425,6 @@ int avl_height(AVLTree *tree){
 struct traversal_ret {
 	void* elements;
 	size_t elements_size;
-	int status;
 };
 
 // Auxliar enum to specify the type of traversal for "traversal_rec" function
@@ -475,7 +449,6 @@ static struct traversal_ret traversal_rec(AVLNode *node, enum Traversal order, s
 		return (struct traversal_ret){
 			.elements = NULL,
 			.elements_size = 0,
-			.status = SUCCESS
 		};
 	}
 
@@ -484,25 +457,17 @@ static struct traversal_ret traversal_rec(AVLNode *node, enum Traversal order, s
 	struct traversal_ret result;
 
 	// If the tarversals from the right returned with error statuses, propagate it.
-	if(left.status != SUCCESS || right.status != SUCCESS){
+/*	if(left.status != SUCCESS || right.status != SUCCESS){
 		result.status = left.status != SUCCESS ? left.status : right.status;
 		free(left.elements);
 		free(right.elements);
 		return result;
-	}
+		}*/
 
 	// Create a new struct traversal_ret to agregate the traversal from left and right and this current node all in one
 	result.elements_size = left.elements_size + right.elements_size + 1; // The +1 is for the element in this node
 	result.elements = malloc(result.elements_size * size);
-	if(!result.elements){
-		printerr_allocation();
-		free(result.elements);
-		result.status = ALLOCATION_ERROR;
-		free(left.elements);
-		free(right.elements);
-		return result;
-	}
-	result.status = SUCCESS;
+	assert(result.elements);
 
 	// Depending on the order paranmeter, the current node will be added before (pre order) in the middle (in order) or after (post order)
 	void *tmp = result.elements;
@@ -542,9 +507,6 @@ void* avl_preorder(AVLTree *tree){
 		return NULL;
 	}
 	struct traversal_ret result = traversal_rec(tree->root, PRE_ORDER, tree->data_size);
-	if (result.status != SUCCESS){
-		return NULL;
-	}
 	return result.elements;
 }
 
@@ -554,9 +516,6 @@ void* avl_inorder(AVLTree *tree){
 		return NULL;
 	}
 	struct traversal_ret result = traversal_rec(tree->root, IN_ORDER, tree->data_size);
-	if (result.status != SUCCESS){
-		return NULL;
-	}
 	return result.elements;
 }
 
@@ -566,9 +525,7 @@ void* avl_postorder(AVLTree *tree){
 		return NULL;
 	}
 	struct traversal_ret result = traversal_rec(tree->root, POST_ORDER, tree->data_size);
-	if (result.status != SUCCESS){
-		return NULL;
-	}
+
 	return result.elements;
 }
 
@@ -636,9 +593,8 @@ void* avl_max_from(AVLTree *tree, void *element, void *dest){
 		return NULL;
 	}
 	AVLNode *tmp = get_rec(tree->root, element, tree->compare);
-	if (!tmp){
+	if (!tmp)
 		return NULL;
-	}
 	tmp = get_max(tmp);
 	memcpy(dest, tmp->info, tree->data_size);
 	return dest;
@@ -650,9 +606,8 @@ void* avl_min_from(AVLTree *tree, void *element, void *dest){
 		return NULL;
 	}
 	AVLNode *tmp = get_rec(tree->root, element, tree->compare);
-	if (!tmp){
+	if (!tmp)
 		return NULL;
-	}
 	tmp = get_min(tmp);
 	memcpy(dest, tmp->info, tree->data_size);
 	return dest;

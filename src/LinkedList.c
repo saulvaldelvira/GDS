@@ -14,6 +14,7 @@
 #include "./Util/definitions.h"
 #include <string.h>
 #include <stdarg.h>
+#include <assert.h>
 
 /**
  * Node of a Linked List
@@ -45,10 +46,7 @@ LinkedList* list_init(size_t data_size, comparator_function_t cmp){
 		return NULL;
 	}
 	LinkedList *list = malloc(sizeof(*list));
-	if (!list){
-		printerr_allocation();
-		return NULL;
-	}
+	assert(list);
 	list->n_elements = 0;
 	list->head = NULL;
 	list->tail = NULL;
@@ -77,10 +75,7 @@ void list_set_destructor(LinkedList *list, destructor_function_t destructor){
 */
 static LLNode* list_innit_node(void *info, size_t size){
 	LLNode *node = malloc(offsetof(LLNode, info) + size);
-	if (!node){
-		printerr_allocation();
-		return NULL;
-	}
+	assert(node);
 	node->next = NULL;
 	node->prev = NULL;
 	memcpy(node->info, info, size);
@@ -100,10 +95,6 @@ int list_append(LinkedList *list, void *element){
 			&list->head 	  : // Add to head
 			&list->tail->next;  // Else add to the tail
 	*ref = list_innit_node(element, list->data_size);
-	if (!*ref){
-		printerr_allocation();
-		return ALLOCATION_ERROR;
-	}
 	(*ref)->prev = list->tail;
 	list->tail = *ref;
 	list->n_elements++;
@@ -117,9 +108,8 @@ int list_append_array(LinkedList *list, void *array, size_t array_length){
 	}
 	while (array_length-- > 0){
 		int status = list_append(list, array);
-		if (status != SUCCESS){
+		if (status != SUCCESS)
 			return status;
-		}
 		array = void_offset(array, list->data_size);
 	}
 	return SUCCESS;
@@ -132,13 +122,9 @@ int list_push_front(LinkedList *list, void *element){
 	}
 	LLNode *old_head = list->head;
 	list->head = list_innit_node(element, list->data_size);
-	if(!list->head){
-		return ALLOCATION_ERROR;
-	}
 	list->head->next = old_head;
-	if (old_head){
+	if (old_head)
 		old_head->prev = list->head;
-	}
 	list->n_elements++;
 	return SUCCESS;
 }
@@ -152,9 +138,8 @@ int list_push_front_array(LinkedList *list, void *array, size_t array_length){
 	int status;
 	while (array_length-- > 0){
 		status = list_push_front(list, tmp);
-		if (status != SUCCESS){
+		if (status != SUCCESS)
 			return status;
-		}
 		tmp = void_offset(tmp, list->data_size);
 	}
 	return SUCCESS;
@@ -168,9 +153,8 @@ int list_set(LinkedList *list, void *element, void *replacement){
 	LLNode *aux = list->head;
 	while ((*list->compare) (aux->info, element) != 0){
 		aux = aux->next;
-		if(aux == NULL){
+		if(aux == NULL)
 			return ELEMENT_NOT_FOUND_ERROR;
-		}
 	}
 	memcpy(aux->info, replacement, list->data_size);
 	return SUCCESS;
@@ -186,9 +170,8 @@ void* list_get(LinkedList *list, void *element, void *dest){
 		return NULL;
 	}
 	LLNode *aux = list->head;
-	while (aux != NULL && (*list->compare) (aux->info, element) != 0){
+	while (aux != NULL && (*list->compare) (aux->info, element) != 0)
 		aux = aux->next;
-	}
 	return aux == NULL ? NULL : memcpy(dest, aux->info, list->data_size);
 }
 
@@ -197,9 +180,8 @@ void* list_get_front(LinkedList *list, void *dest){
 		printerr_null_param();
 		return NULL;
 	}
-	if (list->head == NULL){
+	if (list->head == NULL)
 		return NULL;
-	}
 	return memcpy(dest, list->head->info, list->data_size);
 }
 
@@ -208,9 +190,8 @@ void* list_get_back(LinkedList *list, void *dest){
 		printerr_null_param();
 		return NULL;
 	}
-	if (list->tail == NULL){
+	if (list->tail == NULL)
 		return NULL;
-	}
 	return memcpy(dest, list->tail->info, list->data_size);
 }
 
@@ -219,9 +200,8 @@ void* list_get_into_array(LinkedList *list, void *array, size_t array_length){
 		printerr_null_param();
 		return NULL;
 	}
-	if (array_length > list->n_elements){
+	if (array_length > list->n_elements)
 		array_length = list->n_elements;
-	}
 	LLNode *aux = list->head;
 	void *dst = array;
 	while (array_length-- > 0){
@@ -238,13 +218,10 @@ void* list_get_array(LinkedList *list, size_t array_length){
 		printerr_null_param();
 		return NULL;
 	}
-	if (array_length == GET_ALL_ELEMENTS || array_length > list->n_elements){
+	if (array_length == GET_ALL_ELEMENTS || array_length > list->n_elements)
 		array_length = list->n_elements;
-	}
 	void *array = malloc(list->data_size * array_length);
-	if (!array){
-		return NULL;
-	}
+	assert(array);
 	if (!list_get_into_array(list, array, array_length)){
 		free(array);
 		return NULL;
@@ -264,16 +241,14 @@ int list_remove(LinkedList *list, void *element){
 	LLNode *tmp = list->head;
 	while(tmp){
 		if (list->compare (tmp->info, element) == 0){
-			if (list->tail == tmp){
+			if (list->tail == tmp)
 				list->tail = tmp->prev;
-			}else{
+			else
 				tmp->next->prev = tmp->prev;
-			}
-			if (list->head == tmp){
+			if (list->head == tmp)
 				list->head = tmp->next;
-			}else{
+			else
 				tmp->prev->next = tmp->next;
-			}
 			if (list->destructor)
 				list->destructor(tmp->info);
 			free(tmp);

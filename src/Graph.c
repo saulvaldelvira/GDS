@@ -14,6 +14,7 @@
 #include "./Util/index_t.h"
 #include <stdio.h>
 #include <stdarg.h>
+#include <assert.h>
 
 struct Graph {
 	size_t n_elements;
@@ -37,23 +38,14 @@ struct Graph {
  * 4) Frees the old spaces
  * 5) Sets the graphs vertices, weights and edges to be this new spaces. Also update max_elements value to new_size
 */
-static int expand_memory(Graph *graph, size_t new_size){
+static void expand_memory(Graph *graph, size_t new_size){
 	// Allocate vertices
 	void *vertices = malloc(new_size * graph->data_size);
-
 	// Allocate weights
 	float **weights = malloc(new_size * sizeof(*weights));
-
-	// Allocate edges
+        // Allocate edges
 	int8_t **edges = malloc(new_size * sizeof(*edges));
-
-	if (!edges || !weights || !vertices){
-		printerr_allocation();
-		free(vertices);
-		free(weights);
-		free(edges);
-		return ALLOCATION_ERROR;
-	}
+	assert(vertices && weights && edges);
 
 	// Copy old vertex values in the range [0, oldSize) and free the old one
 	memcpy(vertices, graph->vertices, graph->max_elements * graph->data_size);
@@ -65,24 +57,17 @@ static int expand_memory(Graph *graph, size_t new_size){
 	for (size_t i = 0; i < graph->max_elements; i++){
 		// Allocate weights[i] and copy old values
 		weights[i] = malloc(new_size * sizeof(*weights[i]));
-		if (!weights[i]){
-			printerr_allocation();
-			return ALLOCATION_ERROR;
-		}
+		assert(weights[i]);
 		memcpy(weights[i], graph->weights[i], sizeof(*weights[i])*graph->max_elements);
 
 		// Allocate edges[i] and copy old values
 		edges[i] = calloc(new_size, sizeof(*edges[i]));
-		if (!edges[i]){
-			printerr_allocation();
-			return ALLOCATION_ERROR;
-		}
+		assert(edges[i]);
 		memcpy(edges[i], graph->edges[i], sizeof(*edges[i])*graph->max_elements);
 
 		// Set the new rows to INFINITY. Edges are already 0 because of calloc.
-		for (size_t j = graph->max_elements; j < new_size; j++){
+		for (size_t j = graph->max_elements; j < new_size; j++)
 			weights[i][j] = INFINITY;
-		}
 
 		// Free the old pointers
 		free(graph->weights[i]);
@@ -93,16 +78,10 @@ static int expand_memory(Graph *graph, size_t new_size){
 	// but, since there are no old values to copy, we just set the default values
 	for (size_t i = graph->max_elements; i < new_size; i++){
 		weights[i] = malloc(new_size * sizeof(*weights[i]));
-		if (!weights[i]){
-			printerr_allocation();
-			return ALLOCATION_ERROR;
-		}
+		assert(weights[i]);
 
 		edges[i] = calloc(new_size, sizeof(*edges[i]));
-		if (!edges[i]){
-			printerr_allocation();
-			return ALLOCATION_ERROR;
-		}
+		assert(edges[i]);
 
 		for (size_t j = 0; j < new_size; j++){
 			weights[i][j] = INFINITY;
@@ -116,7 +95,6 @@ static int expand_memory(Graph *graph, size_t new_size){
 	graph->weights = weights;
 	graph->edges = edges;
 	graph->max_elements = new_size;
-	return SUCCESS;
 }
 
 Graph* graph_empty(size_t data_size, comparator_function_t cmp){
@@ -141,10 +119,7 @@ Graph* graph_init(size_t data_size, size_t n_elements, comparator_function_t cmp
 		return NULL;
 	}
 	Graph *graph = malloc(sizeof(*graph));
-	if (!graph){
-		printerr_allocation();
-		return NULL;
-	}
+	assert(graph);
 
 	graph->n_elements = 0;
 	graph->max_elements = 0;
@@ -157,10 +132,7 @@ Graph* graph_init(size_t data_size, size_t n_elements, comparator_function_t cmp
 
 	// "Expanding" from 0 to n_elements turns into just initializing
 	// weights, edges and vertices to their default size and state.
-	if (expand_memory(graph, n_elements) != SUCCESS){
-		return NULL;
-	}
-
+	expand_memory(graph, n_elements);
 	return graph;
 }
 
@@ -184,13 +156,11 @@ int graph_fill(Graph *graph, void *array_vertices, void *array_sources, void *ar
 		return NULL_PARAMETER_ERROR;
 	}
 	int status = graph_add_vertices_array(graph, array_vertices, vertices_length);
-	if (status != SUCCESS){
+	if (status != SUCCESS)
 		return status;
-	}
 	status = graph_add_edges_array(graph, array_sources, array_targets, array_weights, edges_length);
-	if (status != SUCCESS){
+	if (status != SUCCESS)
 		return status;
-	}
 	return SUCCESS;
 }
 
@@ -202,12 +172,8 @@ int graph_add_vertex(Graph *graph, void *vertex){
 		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
-	if (graph->n_elements == graph->max_elements){
-		int status = expand_memory(graph, graph->max_elements * 2);
-		if (status != SUCCESS){
-			return status;
-		}
-	}
+	if (graph->n_elements == graph->max_elements)
+		expand_memory(graph, graph->max_elements * 2);
 	void *tmp = void_offset(graph->vertices, graph->n_elements * graph->data_size);
 	memcpy(tmp, vertex, graph->data_size);
 	graph->n_elements++;
@@ -449,13 +415,7 @@ index_t graph_indexof(Graph *graph, void *vertex){
 static void graph_init_dijkstra(DijkstraData_t *dijkstra, Graph *graph, size_t source){
 	dijkstra->D = malloc(graph->n_elements * sizeof(*dijkstra->D));
 	dijkstra->P = malloc(graph->n_elements * sizeof(*dijkstra->P));
-	if (!dijkstra->D || !dijkstra->P){
-		printerr_allocation();
-		free(dijkstra->D);
-		free(dijkstra->P);
-		dijkstra->status = ALLOCATION_ERROR;
-		return;
-	}
+	assert(dijkstra->D && dijkstra->P);
 
 	for (size_t i = 0; i < graph->n_elements; i++){
 		dijkstra->D[i] = graph->weights[source][i];
@@ -497,9 +457,10 @@ static index_t graph_get_pivot(uint8_t *S, float *D, size_t n_elements){
 }
 
 DijkstraData_t graph_dijkstra(Graph *graph, void *source){
-	DijkstraData_t dijkstra = {.D = NULL, .P = NULL, .n_elements = 0, .status = NULL_PARAMETER_ERROR};
+	DijkstraData_t dijkstra = {.D = NULL, .P = NULL, .n_elements = 0, .status = SUCCESS};
 	if (!graph || !source){
 		printerr_null_param();
+		dijkstra.status = NULL_PARAMETER_ERROR;
 		return dijkstra;
 	}
 	index_t source_index = graph_indexof(graph, source);
@@ -509,21 +470,10 @@ DijkstraData_t graph_dijkstra(Graph *graph, void *source){
 	}
 
 	graph_init_dijkstra(&dijkstra, graph, source_index.value);
-	if (dijkstra.status != SUCCESS){
-		return dijkstra;
-	}
 
 	// Initialize the visited array
 	uint8_t *S = calloc(graph->n_elements, sizeof(*S));
-	if (!S){
-		printerr_allocation();
-		free(dijkstra.D);
-		free(dijkstra.P);
-		dijkstra.D = NULL;
-		dijkstra.P = NULL;
-		dijkstra.status = ALLOCATION_ERROR;
-		return dijkstra;
-	}
+	assert(S);
 
 	// Mark the start vertex as visited (because of the initialization)
 	S[source_index.value] = 1;
@@ -549,9 +499,7 @@ DijkstraData_t graph_dijkstra(Graph *graph, void *source){
 		S[p] = 1;
 		pivot = graph_get_pivot(S, dijkstra.D, graph->n_elements);
 	}
-
 	free(S); // Free the visited array
-	dijkstra.status = SUCCESS;
 	return dijkstra;
 }
 
@@ -585,24 +533,12 @@ void graph_free_dijkstra_data(DijkstraData_t *data){
 static void graph_init_floyd(FloydData_t *floyd, Graph *graph){
 	floyd->A = malloc(sizeof(*floyd->A) * graph->n_elements);
 	floyd->P = malloc(sizeof(*floyd->P) * graph->n_elements);
-	if (!floyd->A || !floyd->P){
-		printerr_allocation();
-		floyd->status = ALLOCATION_ERROR;
-		free(floyd->A);
-		free(floyd->P);
-		return;
-	}
+	assert(floyd->A && floyd->P);
 
 	for (size_t i = 0; i < graph->n_elements; i++){
 		floyd->A[i] = malloc(sizeof(*floyd->A[i]) * graph->n_elements);
 		floyd->P[i] = malloc(sizeof(*floyd->P[i]) * graph->n_elements);
-		if (!floyd->A[i] || !floyd->P[i]){
-			printerr_allocation();
-			floyd->n_elements = i+1; // Number of arrays already allocated
-			graph_free_floyd_data(floyd); // Free everything before returning
-			floyd->status = ALLOCATION_ERROR;
-			return;
-		}
+		assert(floyd->A[i] && floyd->P[i]);
 
 		for (size_t j = 0; j < graph->n_elements; j++){
 			floyd->A[i][j] = graph->weights[i][j];
@@ -615,15 +551,13 @@ static void graph_init_floyd(FloydData_t *floyd, Graph *graph){
 }
 
 FloydData_t graph_floyd(Graph *graph){
-	FloydData_t floyd = {.A = NULL, .P = NULL, .n_elements = 0, .status = NULL_PARAMETER_ERROR};
+	FloydData_t floyd = {.A = NULL, .P = NULL, .n_elements = 0, .status = SUCCESS};
 	if (!graph){
 		printerr_null_param();
+		floyd.status = NULL_PARAMETER_ERROR;
 		return floyd;
 	}
 	graph_init_floyd(&floyd, graph);
-	if (floyd.status != SUCCESS){
-		return floyd;
-	}
 	for (size_t pivot = 0; pivot < graph->n_elements; pivot++){
 		for (size_t i = 0; i < graph->n_elements; i++){
 			for (size_t j = 0; j < graph->n_elements; j++){
@@ -637,7 +571,6 @@ FloydData_t graph_floyd(Graph *graph){
 		}
 	}
 	return floyd;
-
 }
 
 void graph_print_floyd_data(void *output, FloydData_t data){
@@ -784,13 +717,7 @@ traverse_data_t graph_traverse_DF(Graph *graph, void *vertex){
 	df.elements = calloc(graph->n_elements , graph->data_size);
 
 	uint8_t *visited = calloc(graph->n_elements, sizeof(*visited));
-	if (!df.elements || !visited){
-		printerr_allocation();
-		df.status = ALLOCATION_ERROR;
-		free(df.elements);
-		free(visited);
-		return df;
-	}
+	assert(visited);
 
 	int s = traverse_df_rec(&df, index.value, visited, graph);
 	if (s != SUCCESS){
@@ -822,16 +749,7 @@ traverse_data_t graph_traverse_BF(Graph *graph, void *vertex){
 	bf.elements = malloc(graph->n_elements * graph->data_size);
 	uint8_t *visited = calloc(graph->n_elements, sizeof(*visited));
 	size_t *queue = malloc(graph->n_elements * sizeof(*queue));
-
-	if (!bf.elements || !visited || !queue){
-		printerr_allocation();
-		bf.status = ALLOCATION_ERROR;
-		free(bf.elements);
-		bf.elements = NULL;
-		free(visited);
-		free(queue);
-		return bf;
-	}
+	assert(visited && queue);
 
 	// Add starting element to queue and set it as visited
 	size_t *start = queue;
@@ -917,8 +835,6 @@ Graph* graph_reset(Graph *graph){
 	graph->edges = NULL;
 	graph->vertices = NULL;
 	graph->weights = NULL;
-	if (expand_memory(graph, GRAPH_DEFAULT_SIZE) != SUCCESS){
-		return NULL;
-	}
+	expand_memory(graph, GRAPH_DEFAULT_SIZE);
 	return graph;
 }

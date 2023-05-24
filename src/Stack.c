@@ -11,6 +11,7 @@
 #include "./Util/definitions.h"
 #include <string.h>
 #include <stdarg.h>
+#include <assert.h>
 
 typedef struct StackNode {
 	struct StackNode *next;
@@ -38,10 +39,7 @@ Stack* stack_init(size_t data_size, comparator_function_t cmp){
 	}
 	// Allocate stack
 	Stack *stack = malloc(sizeof(*stack));
-	if (!stack){
-		printerr_allocation();
-		return NULL;
-	}
+	assert(stack);
 	// Initialize stack
 	stack->head = NULL;
 	stack->compare = cmp;
@@ -67,10 +65,7 @@ void stack_set_destructor(Stack *stack, destructor_function_t destructor){
 
 static StackNode* init_node(void *element, size_t size){
 	StackNode *node = malloc(offsetof(StackNode, info) + size);
-	if (!node){
-		printerr_allocation();
-		return NULL;
-	}
+	assert(node);	
 	memcpy(node->info, element, size);
 	node->next = NULL;
 	return node;
@@ -87,10 +82,6 @@ int stack_push(Stack *stack, void *element){
 	}
 	StackNode *old_head = stack->head;
 	stack->head = init_node(element, stack->data_size);
-	if (!stack->head){
-		printerr_allocation();
-		return ALLOCATION_ERROR;
-	}
 	stack->head->next = old_head;
 	stack->n_elements++;
 	return SUCCESS;
@@ -104,9 +95,8 @@ int stack_push_array(Stack *stack, void *array, size_t array_length){
 	int status;
 	while (array_length-- > 0){
 		status = stack_push(stack, array);
-		if (status != SUCCESS){
+		if (status != SUCCESS)
 			return status;
-		}
 		array = void_offset(array, stack->data_size);
 	}
 	return SUCCESS;
@@ -117,9 +107,8 @@ void* stack_pop(Stack *stack, void *dest){
 		printerr_null_param();
 		return NULL;
 	}
-	if(!stack->head){
+	if(!stack->head)
 		return NULL;
-	}
 	StackNode* aux = stack->head;
 	stack->head = stack->head->next;
 	memcpy(dest, aux->info, stack->data_size);
@@ -135,9 +124,8 @@ size_t stack_pop_array(Stack *stack, void *array, size_t array_length){
 	}
 	for (size_t i = 0; i < array_length; i++){
 		// When the stack is empty, return
-		if (!stack_pop(stack, array)){
+		if (!stack_pop(stack, array))
 			return i;
-		}
 		array = void_offset(array, stack->data_size);
 	}
 	return array_length;
@@ -152,11 +140,10 @@ void* stack_peek(Stack *stack, void *dest){
 		printerr_null_param();
 		return NULL;
 	}
-	if(stack->head == NULL){
+	if(stack->head == NULL)
 		return NULL;
-	}else{
+	else
 		return memcpy(dest, stack->head->info, stack->data_size);
-	}
 }
 
 bool stack_exists(Stack *stack, void *element){
@@ -166,9 +153,8 @@ bool stack_exists(Stack *stack, void *element){
 	}
 	StackNode *aux = stack->head;
 	while (aux != NULL){
-		if((*stack->compare) (element, aux) == 0){
+		if((*stack->compare) (element, aux) == 0)
 			return true;
-		}
 		aux = aux->next;
 	}
 	return false;
@@ -199,9 +185,8 @@ int stack_remove(Stack *stack, void *element){
 		return NULL_PARAMETER_ERROR;
 	}
 	StackNode** aux = &stack->head;
-	while (*aux != NULL && stack->compare((*aux)->info, element) != 0){
+	while (*aux != NULL && stack->compare((*aux)->info, element) != 0)
 		aux = &(*aux)->next;
-	}
 	if (!*aux)
 		return ELEMENT_NOT_FOUND_ERROR;
 	StackNode *del = *aux;
