@@ -28,7 +28,6 @@ extern "C" {
 #include "Util/error.h"
 #include "Util/hash.h"
 #include "Util/index_t.h"
-#include "Util/void_cast.h"
 
 #ifdef __cplusplus
 }

@@ -18,22 +18,22 @@ int main(){
 	int rem[] = {100, 60, 65, 63};
 	assert(btree_remove_array(tree, rem, 4));
 
-	assert(!btree_exists(tree, cast_int(100)));
-	assert(!btree_exists(tree, cast_int(60)));
-	assert(!btree_exists(tree, cast_int(65)));
-	assert(!btree_exists(tree, cast_int(63)));
+	assert(!btree_exists(tree, &(int){100}));
+	assert(!btree_exists(tree, &(int){60}));
+	assert(!btree_exists(tree, &(int){65}));
+	assert(!btree_exists(tree, &(int){63}));
 
-	assert(btree_add(tree, cast_int(100)));
-	assert(btree_add(tree, cast_int(60)));
-	assert(btree_add(tree, cast_int(65)));
-	assert(btree_add(tree, cast_int(63)));
+	assert(btree_add(tree, &(int){100}));
+	assert(btree_add(tree, &(int){60}));
+	assert(btree_add(tree, &(int){65}));
+	assert(btree_add(tree, &(int){63}));
 	for (int i=0; i < (int) ARR_SIZE(nums); i++){
 		assert(btree_exists(tree, &nums[i]));
 	}
 
 	/// Config test
 	btree_set_comparator(tree, compare_equal);
-	assert(btree_exists(tree, cast_int(-897987)));
+	assert(btree_exists(tree, &(int){-897987}));
 	btree_set_comparator(tree, compare_int);
 	/////////////////////////////////
 
@@ -42,38 +42,38 @@ int main(){
 	// Test case 2
 	tree = btree_init(sizeof(int), 3, compare_int);
 
-	assert(btree_add(tree, cast_int(4)));
-	assert(btree_add(tree, cast_int(10)));
+	assert(btree_add(tree, &(int){4}));
+	assert(btree_add(tree, &(int){10}));
 
-	assert(btree_add(tree, cast_int(7)));
+	assert(btree_add(tree, &(int){7}));
 
-	assert(btree_add(tree, cast_int(6)));
+	assert(btree_add(tree, &(int){6}));
 
-	assert(btree_add(tree, cast_int(20)));
+	assert(btree_add(tree, &(int){20}));
 
-	assert(btree_add(tree, cast_int(15)));
-	assert(btree_add(tree, cast_int(5)));
+	assert(btree_add(tree, &(int){15}));
+	assert(btree_add(tree, &(int){5}));
 
-	assert(btree_add(tree, cast_int(19)));
-	assert(btree_add(tree, cast_int(16)));
+	assert(btree_add(tree, &(int){19}));
+	assert(btree_add(tree, &(int){16}));
 
 
-	assert(btree_add(tree, cast_int(13)));
-	assert(btree_add(tree, cast_int(12)));
+	assert(btree_add(tree, &(int){13}));
+	assert(btree_add(tree, &(int){12}));
 
-	assert(btree_exists(tree, cast_int(4)));
-	assert(btree_exists(tree, cast_int(10)));
-	assert(btree_exists(tree, cast_int(7)));
-	assert(btree_exists(tree, cast_int(6)));
-	assert(btree_exists(tree, cast_int(20)));
-	assert(btree_exists(tree, cast_int(15)));
-	assert(btree_exists(tree, cast_int(5)));
-	assert(btree_exists(tree, cast_int(19)));
-	assert(btree_exists(tree, cast_int(16)));
-	assert(btree_exists(tree, cast_int(13)));
-	assert(btree_exists(tree, cast_int(12)));
+	assert(btree_exists(tree, &(int){4}));
+	assert(btree_exists(tree, &(int){10}));
+	assert(btree_exists(tree, &(int){7}));
+	assert(btree_exists(tree, &(int){6}));
+	assert(btree_exists(tree, &(int){20}));
+	assert(btree_exists(tree, &(int){15}));
+	assert(btree_exists(tree, &(int){5}));
+	assert(btree_exists(tree, &(int){19}));
+	assert(btree_exists(tree, &(int){16}));
+	assert(btree_exists(tree, &(int){13}));
+	assert(btree_exists(tree, &(int){12}));
 	int n;
-	assert(4 == * (int*) btree_get(tree, cast_int(4), &n));
+	assert(4 == * (int*) btree_get(tree, &(int){4}, &n));
 
 	/*tree = btree_reset(tree);
 

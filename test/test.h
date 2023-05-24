@@ -14,7 +14,6 @@ extern "C" {
 
 #include "../src/Util/comparator.h"
 #include "../src/Util/error.h"
-#include "../src/Util/ptr_cast.h"
 #include "../src/Util/definitions.h"
 
 #include "color.h"

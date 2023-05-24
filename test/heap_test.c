@@ -8,24 +8,24 @@ void change_priority(){
 	print_test_step("Change Priority");
 	Heap *min = heap_init(sizeof(int), compare_int);
 
-	//Ignore_Error(assert(heap_change_priority(min, cast_int(12), cast_int(16)) != SUCCESS), 0);
+	//Ignore_Error(assert(heap_change_priority(min, &(int){12}, &(int){16}) != SUCCESS), 0);
 
 	int elements[] = {12 ,14, 15, 20, 16, 17, 19, 24, 30};
 	heap_add_array(min, elements, 9);
 
-	assert(heap_change_priority(min, cast_int(-78), cast_int(90)) != SUCCESS);
+	assert(heap_change_priority(min, &(int){-78}, &(int){90}) != SUCCESS);
 	Ignore_Error(assert(heap_change_priority(min, NULL, NULL) != SUCCESS), 0);
 	Ignore_Error(assert(heap_change_priority(min, &elements[0], NULL) != SUCCESS), 24);
 
 	// Change priority of 20 to 5
-	assert(heap_change_priority(min, &elements[3], cast_int(5)));
+	assert(heap_change_priority(min, &elements[3], &(int){5}));
 	int res[9];
 	heap_get_into_array(min, res, 9);
 	int expected[] = {5, 12 ,15, 14, 16, 17, 19, 24, 30};
 	assert_array_int(res, expected, 9);
 
 	// Change priority of 12 to 21
-	assert(heap_change_priority(min, &res[1], cast_int(21)));
+	assert(heap_change_priority(min, &res[1], &(int){21}));
 	heap_get_into_array(min, res, 9);
 	int expected2[] = {5, 14 ,15, 21, 16, 17, 19, 24, 30};
 	assert_array_int(res, expected2, 9);
@@ -35,13 +35,13 @@ void change_priority(){
 
 void filter_up(){
 	Heap *min = heap_init(sizeof(int), compare_int);
-	heap_add(min, cast_int(10));
-	heap_add(min, cast_int(9));
-	heap_add(min, cast_int(8));
+	heap_add(min, &(int){10});
+	heap_add(min, &(int){9});
+	heap_add(min, &(int){8});
 
 	/// Config test
 	heap_set_comparator(min, compare_equal);
-	assert(heap_exists(min, cast_int(-15454)));
+	assert(heap_exists(min, &(int){-15454}));
 	heap_set_comparator(min, compare_int);
 	////////////
 
@@ -50,43 +50,43 @@ void filter_up(){
 	assert_array_int(res, exp1, 3);
 	free(res);
 
-	heap_add(min, cast_int(7));
+	heap_add(min, &(int){7});
 	int exp2[] = {7, 8, 9, 10};
 	res = heap_get_array(min, 4);
 	assert_array_int(res, exp2, 4);
 	free(res);
 
-	heap_add(min, cast_int(6));
+	heap_add(min, &(int){6});
 	int exp3[] = {6, 7, 9, 10, 8};
 	res = heap_get_array(min, 5);
 	assert_array_int(res, exp3, 5);
 	free(res);
 
-	heap_add(min, cast_int(5));
+	heap_add(min, &(int){5});
 	int exp4[] = {5, 7, 6, 10, 8, 9};
 	res = heap_get_array(min, 6);
 	assert_array_int(res, exp4, 6);
 	free(res);
 
-	heap_add(min, cast_int(4));
+	heap_add(min, &(int){4});
 	int exp5[] = {4, 7, 5, 10, 8, 9, 6};
 	res = heap_get_array(min, 7);
 	assert_array_int(res, exp5, 7);
 	free(res);
 
-	heap_add(min, cast_int(3));
+	heap_add(min, &(int){3});
 	int exp6[] = {3, 4, 5, 7, 8, 9, 6, 10};
 	res = heap_get_array(min, 8);
 	assert_array_int(res, exp6, 8);
 	free(res);
 
-	heap_add(min, cast_int(2));
+	heap_add(min, &(int){2});
 	int exp7[] = {2, 3, 5, 4, 8, 9, 6, 10, 7};
 	res = heap_get_array(min, 9);
 	assert_array_int(res, exp7, 9);
 	free(res);
 
-	heap_add(min, cast_int(1));
+	heap_add(min, &(int){1});
 	int exp8[] = {1, 2, 5, 4, 3, 9, 6, 10, 7, 8};
 	res = heap_get_array(min, 10);
 	assert_array_int(res, exp8, 10);
@@ -115,9 +115,9 @@ void filter_up(){
 
 void pop_min(){
 	Heap *min = heap_init(sizeof(int), compare_int);
-	heap_add(min, cast_int(200));
-	heap_add(min, cast_int(105));
-	heap_add(min, cast_int(1));
+	heap_add(min, &(int){200});
+	heap_add(min, &(int){105});
+	heap_add(min, &(int){1});
 
 	int exp[] = {1, 105, 200};
 	int index = 0;
@@ -186,7 +186,7 @@ int main(){
 
 	change_priority();
 	destructor_test();
-	
+
 	TIMESTAMP_STOP
 	print_test_end(Heap);
 	return 0;

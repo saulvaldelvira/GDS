@@ -72,19 +72,18 @@ int main(){
 	free(get_into);
 
 	/*PUSH FRONT*/
-	int menos150 = -150;
-	assert(list_push_front(lnked, &menos150));
+	assert(list_push_front(lnked, &(int){-150}));
 	assert(list_size(lnked) == 1UL + n);
 	assert(-150 == * (int*) list_get_front(lnked, &tmp));
 	assert(list_remove_front(lnked));
-	assert(!list_exists(lnked, &menos150));
+	assert(!list_exists(lnked, &(int){-150}));
 
-	assert(list_append(lnked, cast_int(4525)));
+	assert(list_append(lnked, &(int){4525}));
 	assert(list_remove_back(lnked));
 
 	/// confign tests
 	list_set_comparator(lnked, compare_equal);
-	assert(list_exists(lnked, cast_int(-684765)));
+	assert(list_exists(lnked, &(int){-684765}));
 	list_set_comparator(lnked, compare_int);
 	///////////////
 

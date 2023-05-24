@@ -82,34 +82,34 @@ int main(){
 
 	assert(3 == avl_height(t));
 
-	assert(avl_add(t, cast_int(1)));
+	assert(avl_add(t, &(int){1}));
 	assert(1 == * (int*) avl_min(t, &min));
 	int exp3 [] = {10, 6, 3, 2, 1, 4, 9, 7, 15, 14, 12, 20};
 	assert_preord(t, exp3);
 
 	assert(4 == avl_height(t));
 
-	assert(avl_remove(t, cast_int(20)));
+	assert(avl_remove(t, &(int){20}));
 	int exp4 [] = {6, 3, 2, 1, 4, 10, 9, 7, 14, 12, 15};
 	assert_preord(t, exp4);
 
-	assert(avl_remove(t, cast_int(4)));
+	assert(avl_remove(t, &(int){4}));
 	int exp5 [] = {6, 2, 1, 3, 10, 9, 7, 14, 12, 15};
 	assert_preord(t, exp5);
 
-	assert(avl_remove(t, cast_int(10)));
+	assert(avl_remove(t, &(int){10}));
 	int exp6 [] = {6, 2, 1, 3, 9, 7, 14, 12, 15};
 	assert_preord(t, exp6);
 
-	assert(avl_remove(t, cast_int(9)));
+	assert(avl_remove(t, &(int){9}));
 	int exp7 [] = {6, 2, 1, 3, 14, 7, 12, 15};
 	assert_preord(t, exp7);
 
-	assert(avl_remove(t, cast_int(6)));
+	assert(avl_remove(t, &(int){6}));
 	int exp8 [] = {3, 2, 1, 14, 7, 12, 15};
 	assert_preord(t, exp8);
 
-	assert(avl_remove(t, cast_int(3)));
+	assert(avl_remove(t, &(int){3}));
 	int exp9 [] = {7, 2, 1, 14, 12, 15};
 	assert_preord(t, exp9);
 

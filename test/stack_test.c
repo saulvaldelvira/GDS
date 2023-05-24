@@ -37,7 +37,7 @@ int main(){
 
 	/// Config test
 	stack_set_comparator(stack, compare_equal);
-	assert(stack_exists(stack, cast_int(-64546)));
+	assert(stack_exists(stack, &(int){-64546}));
 	stack_set_comparator(stack, compare_char);
 	////////////////
 

@@ -27,7 +27,7 @@ void dijkstra_test(void){
 
 	/// config test
 	graph_set_comparator(g, compare_equal);
-	assert(graph_exists_vertex(g, cast_int(-54654)));
+	assert(graph_exists_vertex(g, &(int){-54654}));
 	graph_set_comparator(g, compare_char);
 	/////////////////
 
@@ -76,7 +76,7 @@ void dijkstra_test(void){
 
 	graph_free_dijkstra_data(&dijkstra);
 
-	dijkstra = graph_dijkstra(g, cast_char('F'));
+	dijkstra = graph_dijkstra(g, &(char){'F'});
 	assert(dijkstra.status == ELEMENT_NOT_FOUND_ERROR);
 	graph_free_dijkstra_data(&dijkstra);
 
@@ -245,7 +245,7 @@ void eccentricity_test(void){
 
 	Ignore_Error(assert(graph_eccentricity(NULL, NULL) == NULL_PARAMETER_ERROR * 1.0f),19)
 
-	assert(graph_eccentricity(g, cast_char('J')) == ELEMENT_NOT_FOUND_ERROR * 1.0f);
+	assert(graph_eccentricity(g, &(char){'J'}) == ELEMENT_NOT_FOUND_ERROR * 1.0f);
 
 	graph_add_vertex(g, &e);
 	graph_add_edge(g, &b, &e, 2.0f);
@@ -276,13 +276,13 @@ int main(){
 		assert(graph_size(g) == (size_t) i+1);
 	}
 
-	assert(graph_add_edge(g, cast_int(12), cast_int(15), 0.2f));
-	assert(graph_exists_edge(g, cast_int(12), cast_int(15)));
-	assert(graph_get_edge(g, cast_int(12), cast_int(15)) == 0.2f);
+	assert(graph_add_edge(g, &(int){12}, &(int){15}, 0.2f));
+	assert(graph_exists_edge(g, &(int){12}, &(int){15}));
+	assert(graph_get_edge(g, &(int){12}, &(int){15}) == 0.2f);
 
-	assert(graph_add_edge(g, cast_int(2), cast_int(98), -0.2f));
-	assert(graph_exists_edge(g, cast_int(2), cast_int(98)));
-	assert(graph_get_edge(g, cast_int(2), cast_int(98)) == -0.2f);
+	assert(graph_add_edge(g, &(int){2}, &(int){98}, -0.2f));
+	assert(graph_exists_edge(g, &(int){2}, &(int){98}));
+	assert(graph_get_edge(g, &(int){2}, &(int){98}) == -0.2f);
 
 	for(int i = 0; i < n; i++){
 		assert(graph_exists_vertex(g, &i));
@@ -323,7 +323,7 @@ int main(){
 	assert(5UL == graph_size(g));
 	assert(1.0f == graph_get_edge(g, &sources[1], &targets[1]));
 	assert(graph_remove_edges_array(g, sources, targets, 5));
-	assert(!graph_exists_edge(g, cast_int(3), cast_int(1)));
+	assert(!graph_exists_edge(g, &(int){3}, &(int){1}));
 	assert(graph_remove_vertices_array(g, vertices, 5));
 	assert(graph_isempty(g));
 

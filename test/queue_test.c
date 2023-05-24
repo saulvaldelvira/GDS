@@ -32,7 +32,7 @@ int main(){
 
 	/// config test
 	queue_set_comparator(q, compare_equal);
-	assert(queue_exists(q, cast_int(-854654)));
+	assert(queue_exists(q, &(int){-854654}));
 	queue_set_comparator(q, compare_int);
 	//////////
 

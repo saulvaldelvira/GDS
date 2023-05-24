@@ -1,20 +1,18 @@
 # Generic Data Structures
-A set of "generic" Data Structures, implemented in C. <br>
+A set of "generic" Data Structures. <br>
 It includes: <br>
-- **Lists:** Vector, LinkedList <br>
-- **Stack** <br>
-- **Queue** <br>
-- **Trees:** BTree, AVLTree, BSTree <br>
+- **Vector** <br>
+- **Linked List** <br>
+- **AVL Tree** <br>
 - **Graph** <br>
 - **Dictionary** <br>
-- **Binary Heap** <br>
+- **Heap** <br>
+- **Stack** <br>
+- **Queue** <br>
 
-## How it works
-These structures are "generic" in the sense that the only information they need about the
-data type stored is its size. <br>
-They use pointer arithmetic and memory manipulation routines (e.g. memcpy) to work with the
-data in a "type independent" way. <br>
-It's important to note that these structures store **VALUES**, not references.
+
+These structures are "generic" in the sense that they only need to know the size of the data type being stored. <br>
+This is achieved using pointer arithmetic and functions like memcpy. <br>
 
 ```c
 int main(){
@@ -23,20 +21,27 @@ int main(){
     vector_append(vec, &tmp);
     tmp = 3;
     vector_append(vec, &tmp);
-
     vector_free(vec);
     return 0;
 }
 ```
 
-In the example above, both 12 and 3 are added into the vector, since every call to the append function just copies 4 bytes (sizeof(int)) from the value stored in tmp into vec.
+In the example above, we create a vector to store integers. We pass sizeof(int) as a parameter when initializing it. <br>
+When calling vector_append, the function copies the size of an integer from the address of tmp into the vector. <br>
+Note that these structures store values, not references (i.e. they don't store the pointer we pass, but rather they copy the value that's inside)<br>
+
+Tip: you can use [compound literals](https://gcc.gnu.org/onlinedocs/gcc/Compound-Literals.html) to avoid having to declare a variable. <br>
+```c
+vector_append(vec, &(int){12});
+vector_append(vec, &(int){3});
+```
 
 ## How are elements compared?
 Since we store "generic" data, we must have a way to compare it. <br>
-That's why these structures require a comparator function to be passed as a parameter when they are constructed. <br>
+These structures require a comparator function to be passed as a parameter when they are constructed. <br>
 That function must be like this:<br>
 ```c
-int func_name (const void* param_1, const void* param_2);
+int func_name(const void* param_1, const void* param_2);
 ```
 And it must return: <br>
 - **1**  if param_1 is > than param_2 <br>
@@ -50,13 +55,12 @@ int compare_int(const void* param_1, const void* param_2){
     int i_1 = * (int*) param_1;
     int i_2 = * (int*) param_2;
     // Compare them
-    if (i_1 > i_2){
+    if (i_1 > i_2)
         return 1;
-    }else if(i_1 < i_2){
+    else if(i_1 < i_2)
         return -1;
-    }else{
+    else
         return 0;
-    }
 }
 
 int main(){
@@ -75,28 +79,28 @@ The header file **comparator.h** defines functions to compare the most common da
 LinkedList *list = list_init(sizeof(char), compare_char); // This list stores chars
 ```
 
-If you don't need to compare elements inside the structure (e.g. when using a stack to just push and pop) you can use the `compare_equal`, `compare_lesser` or `compare_greater` functions so the program doesn't complain.
+If you don't need to compare elements inside the structure (e.g. when using a stack to just push and pop) you can use the `compare_equal`, `compare_lesser` or `compare_greater` functions, which always return 0, -1, and 1 respectively.
 
 ## Destructors
-You can set a "destructor" function, to perform some extra cleanup. <br>
-For example, let's say you have a Vector of int*, and you're allocating it's elements with malloc. <br>
+You can set a "destructor" function, to perform additional cleanup. <br>
+For example, let's say you have a Vector of int pointers (int*), and you allocate it's elements using malloc. <br>
 You can use the `vector_set_destructor` function, and pass the `destroy_ptr` function as a destructor for that vector. <br>
-When freeing or removing elements from the vector, destroy_ptr will be called. <br>
+When freeing the vector or removing elements from it, destroy_ptr will be called. <br>
 You can also write your own destructors. See `/example/destructors.c` <br>
-NOTE: if you set a destructor, and want to remove elements from the vector without "destroying" them, use pop instead. <br>
+Note: if you set a destructor, and want to remove elements without "destroying" them, you should use the pop function instead. <br>
 
 ## Building
 You can use the Makefile to build and install the library. <br>
 - `make`: builds the library <br>
 - `make test`: builds and runs test programs <br>
 - `make install`: installs the library on the computer. Must be run as root.<br>
-          The default installation path is /usr/local/lib, but it
+          The default installation path is /usr/local, but it
           can be overriden by defining INSTALL_PATH (e.g. `make install INSTALL_PATH=/lib`) <br>
 - `make uninstall`: removes the library from the computer. Must be run as root.<br>
           Remember to set INSTALL_PATH to the same value as in installation.
           If you don't remember it, run `find / -name 'libGDS.so'`. <br>
 - `make clean`: removes objects and temporary files. <br>
-- `make purge`: calls make clean, and removes all the final binaries. <br>
+- `make purge`: calls make clean, and also removes all the final binaries. <br>
 
 To use the library, just include the header(s) and remember to compile with the **-lGDS** or **-lGDS-static** flags. <br>
 NOTE: The headers are installed in $(INSTALL_PATH)/include/GDS. <br>
@@ -111,4 +115,32 @@ int main(){
         return 0;
 }
 ```
-Compile: `gcc main.c -lGDS` or `gcc main.c -lGDS-static`
+
+## Another example:
+```c
+struct Person{
+    int id;
+    int age;
+    char *name;
+};
+
+int compare_person(const void* e_1, const void* e_2){
+    struct Person p1 = * (struct Person*) e_1;
+    struct Person p2 = * (struct Person*) e_2;
+    // You can tweak things as much as you want. What if the id is different?
+    // Maybe then we want to compare by name, or by age...
+    if (p1.id > p2.id)
+        return 1;
+    else if (p1.id < p2.id)
+        return -1;
+    else
+        return 0;
+}
+
+int main(){
+    Vector *vector = vector_init(sizeof(struct Person), compare_person);
+    vector_append(vector, &(struct Person){012345, 23, "My name"});
+    vector_free(vector);
+}
+```
+More in the `/example` folder

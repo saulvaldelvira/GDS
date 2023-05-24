@@ -59,7 +59,7 @@ int main(){
 
 	/// config test
 	bst_set_comparator(t, compare_equal);
-	assert(bst_exists(t, cast_int(-24163435)));
+	assert(bst_exists(t, &(int){-24163435}));
 	bst_set_comparator(t, compare_int);
 	/////////
 
@@ -127,8 +127,8 @@ int main(){
 	assert(bst_add_array(t, nums2, 5UL));
 
 	//int cinco = 5, veintitres = 23;
-	assert(bst_remove(t, cast_int(5)));
-	assert(bst_remove(t, cast_int(23)));
+	assert(bst_remove(t, &(int){5}));
+	assert(bst_remove(t, &(int){23}));
 
 	void* remove_inord = bst_inorder(t);
 	assert(3 == * (int*) remove_inord);

@@ -60,21 +60,19 @@ int main(){
 
 	/// Configure test
 	vector_set_comparator(vec, compare_equal);
-	assert(vector_exists(vec, cast_int(-8574654)));
+	assert(vector_exists(vec, &(int){-8574654}));
 	vector_set_comparator(vec, compare_int);
 	/////////
 
 	assert(!vector_isempty(vec));
 	assert(n-1 == * (int*) vector_get_back(vec, &tmp));
 	assert(0 == * (int*) vector_get_front(vec, &tmp));
-	int menosveinte = -20, treinta = 30;
+	assert(vector_indexof(vec, &(int){-20}).status == ELEMENT_NOT_FOUND_ERROR);
 
-	assert(vector_indexof(vec, &menosveinte).status == ELEMENT_NOT_FOUND_ERROR);
-
-	index_t ret = vector_indexof(vec, &treinta);
+	index_t ret = vector_indexof(vec, &(int){30});
 
 	assert(ret.status);
-	assert(ret.value == (size_t) treinta);
+	assert(ret.value == (size_t) 30);
 
 	int* get_arr = vector_get_array(vec, vector_size(vec));
 	int* get_into = malloc(n * sizeof(int));
@@ -87,8 +85,8 @@ int main(){
 
 	// Push Pop
 	size_t size = vector_size(vec);
-	assert(vector_push_front(vec, cast_int(123)));
-	assert(vector_append(vec, cast_int(456)));
+	assert(vector_push_front(vec, &(int){123}));
+	assert(vector_append(vec, &(int){456}));
 	assert(123 == * (int*) vector_get_front(vec, &tmp));
 	assert(vector_remove_front(vec));
 	assert(456 == * (int*) vector_get_back(vec, &tmp));
@@ -110,37 +108,33 @@ int main(){
 	assert(vector_size(vec) == 0);
 
 	// Set test 2
-	int one = 1;
-	int two = 2;
-	int three = 3;
+	assert(vector_append(vec, &(int){1}));
+	assert(vector_set_at(vec, 0, &(int){2}));
 
-	assert(vector_append(vec, &one));
-	assert(vector_set_at(vec, 0, &two));
+	assert(2 == * (int*) vector_get_at(vec, 0, &tmp));
 
-	assert(two == * (int*) vector_get_at(vec, 0, &tmp));
-
-	assert(vector_set(vec, &two, &three) != ELEMENT_NOT_FOUND_ERROR);
-	assert(three == * (int*) vector_get_at(vec, 0, &tmp));
+	assert(vector_set(vec, &(int){2}, &(int){3}) != ELEMENT_NOT_FOUND_ERROR);
+	assert(3 == * (int*) vector_get_at(vec, 0, &tmp));
 	/////////////////////////////////////////////////////
 	vec = vector_reset(vec);
 	int nums[] = {1, 2, 3, 4, 5};
 	assert(vector_append_array(vec, nums, 5));
 	assert(5UL == vector_size(vec));
 
-	assert(vector_insert_at(vec, 1, cast_int(120)));
-	assert(vector_exists(vec, cast_int(120)));
-	assert(1UL == vector_indexof(vec, cast_int(120)).value);
+	assert(vector_insert_at(vec, 1, &(int){120}));
+	assert(vector_exists(vec, &(int){120}));
+	assert(1UL == vector_indexof(vec, &(int){120}).value);
 	vector_remove_at(vec, 1);
 
-	assert(vector_insert(vec, &nums[3], cast_int(-89)));
-	assert(vector_exists(vec, cast_int(-89)));
-	assert(3UL == vector_indexof(vec, cast_int(-89)).value);
+	assert(vector_insert(vec, &nums[3], &(int){-89}));
+	assert(vector_exists(vec, &(int){-89}));
+	assert(3UL == vector_indexof(vec, &(int){-89}).value);
 	vector_remove_at(vec, 3);
 
 	assert(vector_remove_array(vec, nums, 5));
 	assert(vector_isempty(vec));
 
-	vector_push_front(vec, cast_int(0));
+	vector_push_front(vec, &(int){0});
 	assert(vector_push_front_array(vec, nums, 5));
 	assert(6UL == vector_size(vec));
 	assert(0 == * (int*) vector_get_at(vec, 5, &tmp));
