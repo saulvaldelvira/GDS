@@ -33,7 +33,7 @@ libs: $(OFILES) | $(LIB)/  $(INCLUDE)/ $(INCLUDE)/Util/
 	@ $(foreach H,$(wildcard $(SRC)/Util/*.h), echo $(HEADER_MSG) | cat - $(H) | cat - > $(INCLUDE)/Util/$(notdir $(H));)
 
 install: libs
-	$(info Installing GDS in $(INSTALL_PATH)/lib ...)
+	$(info Installing GDS in $(INSTALL_PATH) ...)
 	@ install -d $(INSTALL_PATH)/lib
 	@ install -m 644 $(LIB)/* $(INSTALL_PATH)/lib
 	@ install -d $(INSTALL_PATH)/include/GDS
