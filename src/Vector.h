@@ -55,7 +55,6 @@ destructor_function_t vector_get_destructor(Vector *vector);
 size_t vector_get_data_size(Vector *vector);
 
 /**
- * \brief
  * Adds the value inside element to the end of the list
  *
  * @return 1 if the operation is successful
@@ -63,7 +62,6 @@ size_t vector_get_data_size(Vector *vector);
 int vector_append(Vector *vector, void *element);
 
 /**
- * \brief
  * Adds the value inside element into the list
  *
  * @return 1 if the operation is successful
@@ -76,7 +74,13 @@ int vector_push_front(Vector *vector, void *element);
 int vector_append_array(Vector *vector, void *array, size_t array_length);
 
 /**
- * Appends [array_length] elements to the list, from the given array.
+ * Inserts all the elements in the array to the given index in the vector.
+ * @return 1 if the operation is successful
+ */
+int vector_insert_array(Vector *vector, size_t index, void *array, size_t array_length);
+
+/**
+ * Push [array_length] elements to the begining of the list, from the given array.
 */
 int vector_push_front_array(Vector *vector, void *array, size_t array_length);
 
@@ -92,20 +96,30 @@ index_t vector_indexof(Vector *vector, void *element);
 bool vector_exists(Vector *vector, void *element);
 
 /**
- * @return true if the list is empty
+ * @return true if the vector is empty
  */
 bool vector_isempty(Vector *vector);
 
 /**
- * @return the number of elements in the list
+ * @return the number of elements in the vector
  */
 size_t vector_size(Vector *vector);
 
 /**
- * Reserves space for the specified number of elements.
- * @note It does NOT shrink the vector.
+ * @return the max number of elements the vector has memory allocated for (currently)
+*/
+size_t vector_capacity(Vector *vector);
+
+/**
+ * Reserves space for, at least, the specified number of elements.
+ * @note It does NOT shrink the vector. For that, use vector_shrink
 */
 int vector_reserve(Vector *vector, size_t n_elements);
+
+/**
+ * Shrinks the vector to fit exactly it's content
+*/
+int vector_shrink(Vector *vector);
 
 /**
  * Fills the vector with copies of the given template element.

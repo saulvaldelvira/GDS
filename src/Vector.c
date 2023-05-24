@@ -103,6 +103,8 @@ static int vector_resize(Vector *vector, size_t new_size){
 		printerr_allocation();
 		return ALLOCATION_ERROR;
 	}
+	if (vector->n_elements > new_size)
+		vector->n_elements = new_size;
 	memcpy(tmp, vector->elements, vector->n_elements * vector->data_size);
 	free(vector->elements);
 	vector->elements = tmp;
@@ -146,41 +148,35 @@ int vector_push_front(Vector *vector, void *element){
 	return SUCCESS;
 }
 
-int vector_append_array(Vector *vector, void *array, size_t array_length){
+int vector_insert_array(Vector *vector, size_t index, void *array, size_t array_length){
 	if (!vector || !array){
 		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
-	if (vector->n_elements + array_length > vector->max_elements){
-		size_t new_size = (vector->max_elements + array_length) * 2;
-		int status = vector_resize(vector, new_size);
-		if (status != SUCCESS){
+	if (vector->max_elements - vector->n_elements < array_length){
+		int status = vector_resize(vector, vector->max_elements + array_length);
+		if (status != SUCCESS)
 			return status;
-		}
 	}
-	void *tmp = void_offset(vector->elements, vector->n_elements * vector->data_size);
-	memcpy(tmp, array, array_length * vector->data_size);
+	if (index > vector->n_elements){
+		printerr_out_of_bounds(index, vector->n_elements);
+		return INDEX_BOUNDS_ERROR;
+	}
+	size_t n_elements_to_move = vector->n_elements - index;
+	void *dst = void_offset(vector->elements, (index + array_length) * vector->data_size);
+	void *src = void_offset(vector->elements, index * vector->data_size);
+	memmove(dst, src, n_elements_to_move * vector->data_size);
+	memcpy(src, array, array_length * vector->data_size);
 	vector->n_elements += array_length;
 	return SUCCESS;
 }
 
+int vector_append_array(Vector *vector, void *array, size_t array_length){
+	return vector_insert_array(vector, vector->n_elements, array, array_length);
+}
+
 int vector_push_front_array(Vector *vector, void *array, size_t array_length){
-	if (!vector || !array){
-		printerr_null_param();
-		return NULL_PARAMETER_ERROR;
-	}
-	if (vector->n_elements + array_length > vector->max_elements){
-		size_t new_size = (vector->max_elements + array_length) * 2;
-		int status = vector_resize(vector, new_size);
-		if (status != SUCCESS){
-			return status;
-		}
-	}
-	void *tmp = void_offset(vector->elements, array_length * vector->data_size);
-	memmove(tmp, vector->elements, vector->n_elements * vector->data_size);
-	memcpy(vector->elements, array, array_length * vector->data_size);
-	vector->n_elements += array_length;
-	return SUCCESS;
+	return vector_insert_array(vector, 0, array, array_length);
 }
 
 int vector_set_at(Vector *vector, size_t index, void *element){
@@ -495,9 +491,8 @@ void* vector_get_into_array(Vector *vector, void *array, size_t array_length){
 		printerr_null_param();
 		return NULL;
 	}
-	if (array_length > vector->n_elements){
+	if (array_length > vector->n_elements)
 		array_length = vector->n_elements;
-	}
 	memcpy(array, vector->elements, array_length * vector->data_size);
 	return array;
 }
@@ -573,6 +568,14 @@ size_t vector_size(Vector *vector){
 	return vector->n_elements;
 }
 
+size_t vector_capacity(Vector *vector){
+	if (!vector){
+		printerr_null_param();
+		return 0;
+	}
+	return vector->max_elements;
+}
+
 int vector_reserve(Vector *vector, size_t n_elements){
 	if (!vector){
 		printerr_null_param();
@@ -583,10 +586,17 @@ int vector_reserve(Vector *vector, size_t n_elements){
 		return SUCCESS;
 	}
 	int status = vector_resize(vector, n_elements);
-	if (status == SUCCESS){
+	if (status == SUCCESS)
 		vector->n_elements = n_elements;
-	}
 	return status;
+}
+
+int vector_shrink(Vector *vector){
+	if (!vector){
+		printerr_null_param();
+		return NULL_PARAMETER_ERROR;
+	}
+	return vector_resize(vector, vector->n_elements);
 }
 
 Vector* vector_join(Vector *vector_1, Vector *vector_2){

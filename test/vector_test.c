@@ -12,7 +12,7 @@ void joins_test(){
 	for (int i = 10; i < 20; i++)
 		vector_append(a2, &i);
 
-	Ignore_Error(assert(!vector_join(a1, diff_size)), 18);
+	Ignore_Error(assert(!vector_join(a1, diff_size)), -1);
 
 	Vector *vec_joint = vector_join(a1, a2);
 	assert(vec_joint != NULL);
@@ -32,6 +32,19 @@ void destructor_test(){
 	vector_free(vector);
 }
 
+void reserve_shrink_test(){
+	Vector *vector = vector_init(sizeof(int), compare_int);
+	assert(vector_reserve(vector, 1024));
+	assert(vector_capacity(vector) == 1024);
+	vector_reset(vector);
+	for (int i = 0; i < 100; i++)
+		vector_append(vector, &i);
+	assert(vector_capacity(vector) > 100);
+	assert(vector_shrink(vector));
+	assert(vector_capacity(vector) == 100);
+	vector_free(vector);
+}
+
 int main(){
         int n = 2400;
 	int tmp;
@@ -42,7 +55,7 @@ int main(){
 	assert(vector_isempty(vec));
 	for(int i=0; i < n; i++){
 		assert(vector_append(vec, &i));
-		assert(vector_size(vec) == (size_t) i+1);
+		assert(vector_size(vec) == (size_t)i + 1UL);
 	}
 
 	/// Configure test
@@ -135,6 +148,7 @@ int main(){
 
 	destructor_test();
 	joins_test();
+	reserve_shrink_test();
 
 	TIMESTAMP_STOP
 	print_test_end(Vector);
