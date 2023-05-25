@@ -93,10 +93,10 @@ Note: if you set a destructor, and want to remove elements without "destroying" 
 You can use the Makefile to build and install the library. <br>
 - `make`: builds the library <br>
 - `make test`: builds and runs test programs <br>
-- `make install`: installs the library on the computer. Must be run as root.<br>
+- `make install`: installs the library on the computer.<br>
           The default installation path is /usr/local, but it
           can be overriden by defining INSTALL_PATH (e.g. `make install INSTALL_PATH=/lib`) <br>
-- `make uninstall`: removes the library from the computer. Must be run as root.<br>
+- `make uninstall`: removes the library from the computer.<br>
           Remember to set INSTALL_PATH to the same value as in installation.
           If you don't remember it, run `find / -name 'libGDS.so'`. <br>
 - `make clean`: removes objects and temporary files. <br>

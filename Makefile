@@ -33,22 +33,23 @@ libs: $(OFILES) | $(LIB)/  $(INCLUDE)/ $(INCLUDE)/util/
 	@ $(foreach H,$(wildcard $(SRC)/util/*.h), echo $(HEADER_MSG) | cat - $(H) | cat - > $(INCLUDE)/util/$(notdir $(H));)
 
 install: libs
-	$(info Installing GDS in $(INSTALL_PATH) ...)
-	@ install -d $(INSTALL_PATH)/lib
-	@ install -m 644 $(LIB)/* $(INSTALL_PATH)/lib
-	@ install -d $(INSTALL_PATH)/include/GDS
-	@ install -d $(INSTALL_PATH)/include/GDS/util
-	@ install -m 644 $(INCLUDE)/*.h $(INSTALL_PATH)/include/GDS
-	@ install -m 644 $(INCLUDE)/util/*.h $(INSTALL_PATH)/include/GDS/util
-	@ ldconfig $(INSTALL_PATH)/lib
+	@ sudo su -c '\
+	  echo "Installing GDS in $(INSTALL_PATH) ..." ;\
+	  install -d $(INSTALL_PATH)/lib ;\
+	  install -m 644 $(LIB)/* $(INSTALL_PATH)/lib ;\
+	  install -d $(INSTALL_PATH)/include/GDS ;\
+	  install -d $(INSTALL_PATH)/include/GDS/util ;\
+	  install -m 644 $(INCLUDE)/*.h $(INSTALL_PATH)/include/GDS ;\
+	  install -m 644 $(INCLUDE)/util/*.h $(INSTALL_PATH)/include/GDS/util ;\
+	  ldconfig $(INSTALL_PATH)/lib '
 
 uninstall:
-	$(info Uninstalling GDS ...)
-	@ rm -f $(INSTALL_PATH)/lib/libGDS*
-	@ rm -rf $(INSTALL_PATH)/include/GDS
-	@ ldconfig $(INSTALL_PATH)/lib
+	@ sudo su -c '\
+	  echo "Uninstalling GDS ..." ;\
+	  rm -f $(INSTALL_PATH)/lib/libGDS* ;\
+	  rm -rf $(INSTALL_PATH)/include/GDS ;\
+	  ldconfig $(INSTALL_PATH)/lib '
 
-# Build and run all test programs-f
 test: $(TESTFILES) $(LIB)/libGDS-static.a | $(BIN)/
 	$(info Running tests ...)
 	@ $(foreach T,$(filter %.c,$(TESTFILES)), \
