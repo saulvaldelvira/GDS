@@ -74,11 +74,6 @@ void* stack_peek(Stack *stack, void *dest);
 bool stack_exists(Stack *stack, void *element);
 
 /**
- * Copies into dest the given element (if it exists)
-*/
-void* stack_get(Stack *stack, void *element, void *dest);
-
-/**
  * Removes the element from the stack.
  * @return 1 if the element is successfuly deleted
 */

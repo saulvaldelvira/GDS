@@ -160,25 +160,6 @@ bool stack_exists(Stack *stack, void *element){
 	return false;
 }
 
-void* stack_get(Stack *stack, void *element, void *dest){
-	if(!stack || !element || !dest){
-		printerr_null_param();
-		return NULL;
-	}
-	StackNode** aux = &stack->head;
-	while (*aux != NULL && stack->compare((*aux)->info, element) != 0){
-		aux = &(*aux)->next;
-	}
-	if (!*aux)
-		return NULL;
-	StackNode *del = *aux;
-	*aux = (*aux)->next;
-	memcpy(dest, del->info, stack->data_size);
-	free(del);
-	stack->n_elements--;
-	return dest;
-}
-
 int stack_remove(Stack *stack, void *element){
 	if(!stack || !element){
 		printerr_null_param();

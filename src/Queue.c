@@ -169,24 +169,6 @@ bool queue_exists(Queue *queue, void *element){
 	return false;
 }
 
-void* queue_get(Queue *queue, void *element, void *dest){
-	if(!queue || !element || !dest){
-		printerr_null_param();
-		return NULL;
-	}
-	QueueNode** aux = &queue->head;
-	while (*aux != NULL && queue->compare((*aux)->info, element) != 0)
-		aux = &(*aux)->next;
-	if (!*aux)
-		return NULL;
-	QueueNode *del = *aux;
-	*aux = (*aux)->next;
-	memcpy(dest, del->info, queue->data_size);
-	free(del);
-	queue->n_elements--;
-	return dest;
-}
-
 int queue_remove(Queue *queue, void *element){
 	if(!queue || !element){
 		printerr_null_param();

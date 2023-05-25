@@ -72,11 +72,6 @@ void* queue_peek(Queue *queue, void *dest);
 bool queue_exists(Queue *queue, void *element);
 
 /**
- * Copies into dest the given element (if it exists)
-*/
-void* queue_get(Queue *queue, void *element, void *dest);
-
-/**
  * Removes the element from the queue.
  * @return 1 if the element is successfuly deleted
 */
