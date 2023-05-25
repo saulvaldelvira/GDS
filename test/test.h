@@ -29,7 +29,7 @@ extern "C" {
 /**
  * Returns a timestamp of the current time in milliseconds.
 */
-static inline long get_time_millis(){
+static inline long get_time_millis(void){
 	return clock() * 1000.0 / CLOCKS_PER_SEC;
 }
 

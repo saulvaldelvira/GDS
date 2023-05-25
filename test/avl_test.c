@@ -23,7 +23,7 @@ void assert_preord(AVLTree *tree, int exp[]){
 	free(preord);
 }
 
-void join_test(){
+void join_test(void){
 	AVLTree *t1 = avl_init(sizeof(int), compare_int);
 	AVLTree *t2 = avl_init(sizeof(int), compare_int);
 
@@ -44,7 +44,7 @@ void join_test(){
 	avl_free_all(3, t1, t2, joint);
 }
 
-void destructor_test(){
+void destructor_test(void){
 	AVLTree *avl = avl_init(sizeof(int*), compare_lesser);
 	avl_set_destructor(avl, destroy_ptr);
 	for (int i = 0; i < 1024; i++){
@@ -54,7 +54,7 @@ void destructor_test(){
 	avl_free(avl);
 }
 
-int main(){
+int main(void){
 	print_test_start(AVL);
 	TIMESTAMP_START
 	AVLTree *t = avl_init(sizeof(int), compare_int);

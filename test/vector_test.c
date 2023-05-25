@@ -1,7 +1,7 @@
 #include "test.h"
 #include "../src/Vector.h"
 
-void joins_test(){
+void joins_test(void){
 	Vector *a1 = vector_init(sizeof(int), compare_int);
 	Vector *a2 = vector_init(sizeof(int), compare_int);
 	Vector *diff_size = vector_init(sizeof(char), compare_char);
@@ -22,7 +22,7 @@ void joins_test(){
 	vector_free_all(4, a1, a2, diff_size, vec_joint);
 }
 
-void destructor_test(){
+void destructor_test(void){
 	Vector *vector = vector_init(sizeof(int*), compare_lesser);
 	vector_set_destructor(vector, destroy_ptr);
 	for (int i = 0; i < 1024; i++){
@@ -32,7 +32,7 @@ void destructor_test(){
 	vector_free(vector);
 }
 
-void reserve_shrink_test(){
+void reserve_shrink_test(void){
 	Vector *vector = vector_init(sizeof(int), compare_int);
 	assert(vector_reserve(vector, 1024));
 	assert(vector_capacity(vector) == 1024);
@@ -45,7 +45,7 @@ void reserve_shrink_test(){
 	vector_free(vector);
 }
 
-int main(){
+int main(void){
         int n = 2400;
 	int tmp;
         print_test_start(Vector);

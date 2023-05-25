@@ -330,7 +330,7 @@ int dict_put(Dictionary *dict, void *key, void *value){
                 size_t new_size = get_next_prime(dict->vec_size * 2);
                 int status = dict_redisperse(dict, new_size);
                 if (status != SUCCESS){
-                        printerr("Could not redisperse");
+                        printerr("Could not redisperse", );
                         return status;
                 }
         }
@@ -401,7 +401,7 @@ static int dict_delete_node(Dictionary *dict, size_t pos, DictionaryNode node){
                 size_t new_size = get_prev_prime(dict->vec_size / 2);
                 int status = dict_redisperse(dict, new_size);
                 if (status != SUCCESS){
-                        printerr("Could not redisperse");
+                        printerr("Could not redisperse",);
                         return status;
                 }
         }

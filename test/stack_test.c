@@ -4,7 +4,7 @@
 #include "test.h"
 #undef QUIET_DISABLE
 
-void destructor_test(){
+void destructor_test(void){
 	Stack *stack = stack_init(sizeof(int*), compare_lesser);
 	stack_set_destructor(stack, destroy_ptr);
 	for (int i = 0; i < 1024; i++){
@@ -14,7 +14,7 @@ void destructor_test(){
 	stack_free(stack);
 }
 
-int main(){
+int main(void){
 	int n = 10000, temp;
 	print_test_start(Stack);
 	TIMESTAMP_START

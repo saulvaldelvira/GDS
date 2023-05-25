@@ -4,7 +4,7 @@
 
 #include "../src/Heap.h"
 
-void change_priority(){
+void change_priority(void){
 	print_test_step("Change Priority");
 	Heap *min = heap_init(sizeof(int), compare_int);
 
@@ -33,7 +33,7 @@ void change_priority(){
 	print_test_ok();
 }
 
-void filter_up(){
+void filter_up(void){
 	Heap *min = heap_init(sizeof(int), compare_int);
 	heap_add(min, &(int){10});
 	heap_add(min, &(int){9});
@@ -113,7 +113,7 @@ void filter_up(){
 	heap_free(min);
 }
 
-void pop_min(){
+void pop_min(void){
 	Heap *min = heap_init(sizeof(int), compare_int);
 	heap_add(min, &(int){200});
 	heap_add(min, &(int){105});
@@ -143,7 +143,7 @@ void pop_min(){
 	heap_free(min);
 }
 
-void destructor_test(){
+void destructor_test(void){
 	Heap *heap = heap_init(sizeof(int*), compare_lesser);
 	heap_set_destructor(heap, destroy_ptr);
 	for (int i = 0; i < 1024; i++){
@@ -153,7 +153,7 @@ void destructor_test(){
 	heap_free(heap);
 }
 
-int main(){
+int main(void){
 	print_test_start(Heap);
 	TIMESTAMP_START
 

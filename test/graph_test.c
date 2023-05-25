@@ -254,7 +254,7 @@ void eccentricity_test(void){
 	graph_free(g);
 }
 
-void destructor_test(){
+void destructor_test(void){
 	Graph *g = graph_init(sizeof(int*), 100, compare_lesser);
 	graph_set_destructor(g, destroy_ptr);
 	for (int i = 0; i < 1024; i++){
@@ -264,7 +264,7 @@ void destructor_test(){
 	graph_free(g);
 }
 
-int main(){
+int main(void){
 	intptr_t n = 1200;
 	print_test_start(Graph);
 

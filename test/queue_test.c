@@ -4,7 +4,7 @@
 #include "test.h"
 #undef QUIET_DISABLE
 
-void destructor_test(){
+void destructor_test(void){
 	Queue *queue = queue_init(sizeof(int*), compare_lesser);
 	queue_set_destructor(queue, destroy_ptr);
 	for (int i = 0; i < 1024; i++){
@@ -14,7 +14,7 @@ void destructor_test(){
 	queue_free(queue);
 }
 
-int main(){
+int main(void){
 	int n = 10000, tmp;
 
 	print_test_start(Queue);

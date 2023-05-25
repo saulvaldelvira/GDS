@@ -6,7 +6,7 @@
 
 #include <string.h>
 
-void test_simple(){
+void test_simple(void){
 
         Dictionary *dic = dict_init(sizeof(int), sizeof(char), hash_int);
         int itmp = 1;
@@ -25,7 +25,7 @@ void test_simple(){
         dict_free(dic);
 }
 
-void brute(){
+void brute(void){
         print_test_step(Brute);
         int n = 1000;
         Dictionary *dic = dict_init(sizeof(int), sizeof(int), hash_int);
@@ -53,7 +53,7 @@ void brute(){
         print_test_ok();
 }
 
-void config(){
+void config(void){
         Dictionary *dic = dict_init(sizeof(int), sizeof(int), hash_int);
 
         assert(dict_configure(dic, DOUBLE_HASHING, 0.05, 0.15, NULL));
@@ -62,7 +62,7 @@ void config(){
 
 }
 
-void random_test(){
+void random_test(void){
         print_test_step(Random);
         int n = 2048;
         srand(time(0));
@@ -98,7 +98,7 @@ void random_test(){
         print_test_ok();
 }
 
-void string_test(){
+void string_test(void){
         print_test_step(String);
         Dictionary *dic = dict_init(sizeof(char*), sizeof(int), hash_string);
         char *str[] = {"Hello world!", "this is a dictionary", ":p"};
@@ -139,7 +139,7 @@ int64_t hash_structs(const void *e_1){
         return hash;
 }
 
-void struct_test(){
+void struct_test(void){
         print_test_step(Struct);
         struct key k = {
                 .i = 12,
@@ -180,7 +180,7 @@ void destructor_test(void){
 	dict_free(dict);	
 }
 
-int main(){
+int main(void){
 	print_test_start(Dictionary);
         TIMESTAMP_START
 
