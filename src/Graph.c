@@ -5,13 +5,13 @@
  */
 #include "Graph.h"
 #define GDS_ENABLE_ERROR_MACROS
-#include "./Util/error.h"
-#include "./Util/definitions.h"
+#include "./util/error.h"
+#include "./util/definitions.h"
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
 #include <stdint.h>
-#include "./Util/index_t.h"
+#include "./util/index_t.h"
 #include <stdio.h>
 #include <stdarg.h>
 #include <assert.h>

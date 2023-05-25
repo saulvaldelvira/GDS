@@ -1,7 +1,7 @@
 /**
  * Prints a matrix filled with random numbers.
  * The dimension can be given as a command line parameter (default: 10)
- * $ gcc matrix.c ../src/Vector.c ../src/Util/comparator.c -o matrix
+ * $ gcc matrix.c ../src/Vector.c ../src/util/comparator.c -o matrix
  * $ ./matrix 7
  * Output:
  *      83 86 77 15 93 35 86

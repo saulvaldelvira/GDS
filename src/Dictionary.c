@@ -6,9 +6,9 @@
  */
 #include "Dictionary.h"
 #define GDS_ENABLE_ERROR_MACROS
-#include "./Util/error.h"
+#include "./util/error.h"
 #include "./Vector.h"
-#include "./Util/definitions.h"
+#include "./util/definitions.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

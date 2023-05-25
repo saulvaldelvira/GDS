@@ -21,11 +21,11 @@ extern "C" {
 #include "Stack.h"
 #include "Vector.h"
 
-#include "Util/comparator.h"
-#include "Util/definitions.h"
-#include "Util/error.h"
-#include "Util/hash.h"
-#include "Util/index_t.h"
+#include "util/comparator.h"
+#include "util/definitions.h"
+#include "util/error.h"
+#include "util/hash.h"
+#include "util/index_t.h"
 
 #ifdef __cplusplus
 }

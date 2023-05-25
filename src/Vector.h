@@ -14,8 +14,8 @@ extern "C" {
 #include <stddef.h>
 #include <stdbool.h>
 
-#include "./Util/index_t.h"
-#include "./Util/comparator.h"
+#include "./util/index_t.h"
+#include "./util/comparator.h"
 
 typedef struct Vector Vector;
 

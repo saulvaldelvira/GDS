@@ -25,21 +25,21 @@ default: libs
 INSTALL_PATH ?= /usr/local
 HEADER_MSG = "// Source code: https://git.saulv.es/Generic-Data-Structures"
 
-libs: $(OFILES) | $(LIB)/  $(INCLUDE)/ $(INCLUDE)/Util/
+libs: $(OFILES) | $(LIB)/  $(INCLUDE)/ $(INCLUDE)/util/
 	$(info Building libs ...)
 	@ $(CC) $(CCFLAGS) -shared -o ./$(LIB)/libGDS.so $(OFILES)
 	@ $(AR) $(ARFLAGS) ./$(LIB)/libGDS-static.a $(OFILES)
 	@ $(foreach H,$(wildcard $(SRC)/*.h), echo $(HEADER_MSG) | cat - $(H) | cat - > $(INCLUDE)/$(notdir $(H));)
-	@ $(foreach H,$(wildcard $(SRC)/Util/*.h), echo $(HEADER_MSG) | cat - $(H) | cat - > $(INCLUDE)/Util/$(notdir $(H));)
+	@ $(foreach H,$(wildcard $(SRC)/util/*.h), echo $(HEADER_MSG) | cat - $(H) | cat - > $(INCLUDE)/util/$(notdir $(H));)
 
 install: libs
 	$(info Installing GDS in $(INSTALL_PATH) ...)
 	@ install -d $(INSTALL_PATH)/lib
 	@ install -m 644 $(LIB)/* $(INSTALL_PATH)/lib
 	@ install -d $(INSTALL_PATH)/include/GDS
-	@ install -d $(INSTALL_PATH)/include/GDS/Util
+	@ install -d $(INSTALL_PATH)/include/GDS/util
 	@ install -m 644 $(INCLUDE)/*.h $(INSTALL_PATH)/include/GDS
-	@ install -m 644 $(INCLUDE)/Util/*.h $(INSTALL_PATH)/include/GDS/Util
+	@ install -m 644 $(INCLUDE)/util/*.h $(INSTALL_PATH)/include/GDS/util
 	@ ldconfig $(INSTALL_PATH)/lib
 
 uninstall:

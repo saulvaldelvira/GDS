@@ -13,7 +13,7 @@ extern "C" {
 
 #include <stddef.h>
 #include <stdbool.h>
-#include "./Util/hash.h"
+#include "./util/hash.h"
 
 typedef struct Dictionary Dictionary;
 

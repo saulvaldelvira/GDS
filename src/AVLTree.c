@@ -5,8 +5,8 @@
  */
 #include "AVLTree.h"
 #define GDS_ENABLE_ERROR_MACROS
-#include "./Util/error.h"
-#include "./Util/definitions.h" // void_offset macro and byte_t typedef
+#include "./util/error.h"
+#include "./util/definitions.h" // void_offset macro and byte_t typedef
 #include <stdlib.h> // malloc
 #include <string.h> // memcpy
 #include <stdio.h> // fprintf

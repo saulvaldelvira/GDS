@@ -13,8 +13,8 @@ extern "C" {
 
 #include <stddef.h>
 #include <stdbool.h>
-#include "./Util/definitions.h"
-#include "./Util/comparator.h"
+#include "./util/definitions.h"
+#include "./util/comparator.h"
 
 typedef struct Heap Heap;
 

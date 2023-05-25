@@ -12,9 +12,9 @@ extern "C" {
 #include <stdint.h>
 #include <time.h>
 
-#include "../src/Util/comparator.h"
-#include "../src/Util/error.h"
-#include "../src/Util/definitions.h"
+#include "../src/util/comparator.h"
+#include "../src/util/error.h"
+#include "../src/util/definitions.h"
 
 #include "color.h"
 

@@ -13,7 +13,7 @@ extern "C" {
 
 #include <stddef.h>
 #include <stdbool.h>
-#include "./Util/comparator.h"
+#include "./util/comparator.h"
 
 typedef struct AVLTree AVLTree;
 
