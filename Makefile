@@ -65,18 +65,7 @@ $(LIB)/libGDS-static.a: libs
 	@ mkdir $@
 
 clean:
-	$(info Cleaning ...)
 	@ find . -type f -name '*.o' -delete
-	@ find . -type f -name 'cachegrind.out.*' -delete
-	@ find . -type f -name '*.orig' -delete
-	@ find . -type f -name '*_BACKUP_*' -delete
-	@ find . -type f -name '*_BASE_*' -delete
-	@ find . -type f -name '*_LOCAL_*' -delete
-	@ find . -type f -name '*_REMOTE_*' -delete
-	@ find . -type f -name 'vgcore*' -delete
-
-purge: clean
-	$(info Purging ...)
 	@ rm -rf $(BIN)/
 	@ rm -rf $(LIB)/
 	@ rm -rf $(INCLUDE)/
