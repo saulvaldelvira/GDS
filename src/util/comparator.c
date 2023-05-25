@@ -90,6 +90,8 @@ int compare_greater(const void *e_1, const void *e_2){
 }
 
 void destroy_ptr(void *e){
-	void *ptr = * (void**) e;
-	free(ptr);
+	if (e){
+		void *ptr = * (void**) e;
+		free(ptr);
+	}
 }

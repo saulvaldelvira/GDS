@@ -162,6 +162,24 @@ void struct_test(){
         print_test_ok();
 }
 
+void destructor_test(void){
+	Dictionary *dict = dict_init(sizeof(int), sizeof(char*), hash_int);
+	dict_set_destructor(dict, destroy_ptr);
+
+	for (int i = 0; i < 120; i++){
+		char *str = malloc(sizeof(char[12]));
+		sprintf(str, "%d", i);
+		dict_put(dict, &i, &str);
+	}
+
+	// Make sure the pointers are also
+	// freed when we overwrite the values
+	char *str = malloc(sizeof(char[12]));
+	dict_put(dict, &(int){30}, &str);
+
+	dict_free(dict);	
+}
+
 int main(){
 	print_test_start(Dictionary);
         TIMESTAMP_START
@@ -172,7 +190,8 @@ int main(){
         random_test();
         string_test();
         struct_test();
-
+	destructor_test();
+	
 	TIMESTAMP_STOP
 	print_test_end(Dictionary);
         return 0;

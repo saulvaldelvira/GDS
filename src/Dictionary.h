@@ -14,7 +14,8 @@ extern "C" {
 #include <stddef.h>
 #include <stdbool.h>
 #include "./util/hash.h"
-
+#include "./util/comparator.h"
+	
 typedef struct Dictionary Dictionary;
 
 enum Redispersion{
@@ -49,6 +50,12 @@ Dictionary* dict_init(size_t key_size, size_t value_size, hash_function_t hash_f
 */
 int dict_configure(Dictionary *dict, enum Redispersion redispersion, double min_lf, double max_lf, hash_function_t hash_func);
 
+/**
+ * Sets the destructor for value type.
+ * A NULL parameter means there's no destructor.
+*/
+void dict_set_destructor(Dictionary *dict, destructor_function_t value_destructor);
+	
 /**
  * Puts the a key-value pair in the dictionary
 */
