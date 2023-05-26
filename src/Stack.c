@@ -15,7 +15,7 @@
 
 typedef struct StackNode {
 	struct StackNode *next;
-	byte_t info[];
+	byte info[];
 } StackNode;
 
 struct Stack {

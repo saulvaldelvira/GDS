@@ -20,7 +20,7 @@ typedef struct AVLNode {
         struct AVLNode *right;
         struct AVLNode *father;
         int height;
-        byte_t info[];
+        byte info[];
 } AVLNode;
 
 struct AVLTree {

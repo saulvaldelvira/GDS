@@ -17,8 +17,8 @@ extern "C" {
 
 #define GET_ALL_ELEMENTS 0
 
-typedef int8_t byte_t;
-#define void_offset(ptr, bytes) (void*)(((byte_t*)ptr) + (bytes))
+typedef int8_t byte;
+#define void_offset(ptr, bytes) (void*)(((byte*)ptr) + (bytes))
 #define matrix_offset(arr, dim, rows, cols) (arr+((dim)*(rows) + (cols)))
 
 #define MAX(x,y) ((x) > (y) ? (x) : (y))

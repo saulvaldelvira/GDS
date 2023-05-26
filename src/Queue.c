@@ -15,7 +15,7 @@
 
 typedef struct QueueNode {
 	struct QueueNode *next;
-	byte_t info[];
+	byte info[];
 } QueueNode;
 
 struct Queue {

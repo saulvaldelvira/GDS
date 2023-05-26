@@ -22,7 +22,7 @@
 typedef struct LLNode {
 	struct LLNode *next;
 	struct LLNode *prev;
-	byte_t info[];
+	byte info[];
 }LLNode;
 
 struct LinkedList {
