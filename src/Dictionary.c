@@ -40,7 +40,7 @@ struct Dictionary{
 
 /// PRIME //////////////////////////////////////////////////////////////////////
 
-bool is_prime(int n){
+static bool is_prime(int n){
         for (int i = n-1; i > 1; --i){
                 if (n % i == 0)
                         return false;
@@ -48,14 +48,14 @@ bool is_prime(int n){
         return true;
 }
 
-int get_prev_prime(int n){
+static int get_prev_prime(int n){
         do{
                 --n;
         }while(!is_prime(n));
         return n;
 }
 
-int get_next_prime(int n){
+static int get_next_prime(int n){
         do{
                 ++n;
         }while(!is_prime(n));
@@ -69,7 +69,7 @@ int get_next_prime(int n){
 /**
  * Initializes a node.
  */
-int init_node(void *node, void *args){
+static int init_node(void *node, void *args){
         (void) args;
         DictionaryNode *n = (DictionaryNode*) node;
         n->key = NULL;
@@ -81,7 +81,7 @@ int init_node(void *node, void *args){
 /**
  * Frees the memory allocated for a node.
  */
-int free_node(void *node, void *args){
+static int free_node(void *node, void *args){
         destructor_function_t destructor = * (destructor_function_t*) args;
         DictionaryNode *n = (DictionaryNode*) node;
 	if (destructor && n->value)
