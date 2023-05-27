@@ -13,8 +13,6 @@ extern "C" {
 
 #include <stddef.h>
 #include <stdbool.h>
-
-#include "./util/index_t.h"
 #include "./util/comparator.h"
 
 typedef struct Vector Vector;
@@ -77,7 +75,7 @@ int vector_append_array(Vector *vector, void *array, size_t array_length);
  * Inserts all the elements in the array to the given index in the vector.
  * @return 1 if the operation is successful
  */
-int vector_insert_array(Vector *vector, size_t index, void *array, size_t array_length);
+int vector_insert_array(Vector *vector, ptrdiff_t index, void *array, size_t array_length);
 
 /**
  * Push [array_length] elements to the begining of the list, from the given array.
@@ -86,9 +84,8 @@ int vector_push_front_array(Vector *vector, void *array, size_t array_length);
 
 /**
  * Returns the index of the given element in the array of the list
- * @return index_t index, wich contains the index, and a status variable that determines if the index is valid or not.
  */
-index_t vector_indexof(Vector *vector, void *element);
+ptrdiff_t vector_indexof(Vector *vector, void *element);
 
 /**
  * @return true if the element exists. Null if it doesn't or if the parameter is NULL
@@ -134,7 +131,7 @@ int vector_process(Vector *vector, int (*func) (void *,void *), void *args);
 /**
  * Replaces the element at the given index with the element passed as a parameter
  */
-int vector_set_at(Vector *vector, size_t index, void *element);
+int vector_set_at(Vector *vector, ptrdiff_t index, void *element);
 
 /**
  * Inserts in the position of element the value [insert]
@@ -144,7 +141,7 @@ int vector_insert(Vector *vector, void *element, void *insert);
 /**
  * Inserts element in the position [index]
 */
-int vector_insert_at(Vector *vector, size_t index, void *element);
+int vector_insert_at(Vector *vector, ptrdiff_t index, void *element);
 
 /**
  * Replaces element with replacement in the list.
@@ -156,7 +153,7 @@ int vector_set(Vector *vector, void *element, void *replacement);
  * @param dest the memory adress to copy the value into. MUST BE INITIALIZED.
  * @return The element at the given index or NULL if it the index is out of bounds
  */
-void* vector_get_at(Vector *vector, size_t index, void *dest);
+void* vector_get_at(Vector *vector, ptrdiff_t index, void *dest);
 
 /**
  * @param dest the memory adress to copy the value into. MUST BE INITIALIZED.
@@ -189,13 +186,13 @@ void* vector_get_array(Vector *vector, size_t array_length);
 /**
  * Swaps the element at index_1 and index_2
 */
-int vector_swap(Vector *vector, size_t index_1, size_t index_2);
+int vector_swap(Vector *vector, ptrdiff_t index_1, ptrdiff_t index_2);
 
 /**
  * Compares the element at index_1 and index_2
  * @return the result of the comparison
 */
-int vector_compare(Vector *vector, size_t index_1, size_t index_2);
+int vector_compare(Vector *vector, ptrdiff_t index_1, ptrdiff_t index_2);
 
 /**
  * Remove vs. Pop
@@ -214,7 +211,7 @@ int vector_compare(Vector *vector, size_t index_1, size_t index_2);
  * @note If you don't want that, see vector_pop_at
  * @return 1 if the operation is successful.
  */
-int vector_remove_at(Vector *vector, size_t index);
+int vector_remove_at(Vector *vector, ptrdiff_t index);
 
 /**
  * Removes the specified element.
@@ -254,7 +251,7 @@ int vector_remove_array(Vector *vector, void *array, size_t array_length);
  * @note If you want the destructor to be called on the element, use vector_remove_at instead
  * @return the dest pointer
  */
-void* vector_pop_at(Vector *vector, size_t index, void *dest);
+void* vector_pop_at(Vector *vector, ptrdiff_t index, void *dest);
 
 /**
  * Pops the element

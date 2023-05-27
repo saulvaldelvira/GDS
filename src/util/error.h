@@ -43,7 +43,7 @@ extern "C" {
 
 #define printerr_null_param() fprintf(stderr, "ERROR: NULL parameter(s).\n" _context_str, _context_args)
 
-#define printerr_out_of_bounds(index, max) fprintf(stderr, "ERROR: Index %zu out of bounds for [0, %zu).\n" _context_str, index, max, _context_args)
+#define printerr_out_of_bounds(index, min, max) fprintf(stderr, "ERROR: Index %lld out of bounds for [%lld, %lld).\n" _context_str, (long long)index, (long long)min, (long long)max, _context_args)
 
 #define printerr_data_size() fprintf(stderr, "ERROR: Data size must be > 0.\n" _context_str, _context_args)
 

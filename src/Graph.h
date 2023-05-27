@@ -14,7 +14,6 @@ extern "C" {
 #include <stddef.h>
 #include <stdbool.h>
 #include "./util/comparator.h"
-#include "./util/index_t.h"
 
 #define GRAPH_DEFAULT_SIZE 8
 
@@ -118,12 +117,9 @@ float graph_get_edge(Graph *graph, void *source, void *target);
 bool graph_exists_edge(Graph *graph, void *source, void *target);
 
 /**
- * @return an index_t struct.
- * If the status is 1, the value is the index of the element in the graph.
- * If the status is != 1, this means the element is not present in the graph, and the value is garbage.
- * @note This is because the size_t type can't hold negative values, so we need these two elements (status and value) to cover all cases
+ * @return the index of the vertex in the graph
 */
-index_t graph_indexof(Graph *graph, void *vertex);
+ptrdiff_t graph_indexof(Graph *graph, void *vertex);
 
 /**
  * @return the number of elements in the graph
@@ -136,10 +132,10 @@ bool graph_isempty(Graph *graph);
 
 // Structure to return in the graph_dijkstra method. Holds the result of the algorithm.
 typedef struct DijkstraData {
-	float  *D;
-	index_t *P;
-	size_t n_elements;
-	int status; // Flag to indicate the return status of the operation
+	float     *D;
+	ptrdiff_t *P;
+	size_t     n_elements;
+	int        status;
 } DijkstraData_t;
 
 /**
@@ -171,10 +167,10 @@ void graph_free_dijkstra_data(DijkstraData_t *data);
 
 // Struct to return the result of floyd's algorithm
 typedef struct FloydData {
-	float **A; //  A matrix of weights
-	index_t **P; // P matrixt of pivots
-	size_t n_elements;
-	int status; // represents the result status of the operation (1 if success)
+	float     **A; // weights
+	ptrdiff_t **P; // pivots
+	size_t    n_elements;
+	int       status;
 } FloydData_t;
 
 /**

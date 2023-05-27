@@ -66,36 +66,31 @@ static void filter_up(Vector *list, size_t pos){
 }
 
 /**
- * Returns an index_t with the lowest of the childs of a given
+ * Returns the  with the lowest of the childs of a given
  * position (or with a status of -1 if thre is no valid childs)
 */
-static index_t lowest_child(Vector *list, size_t pos){
+static ptrdiff_t lowest_child(Vector *list, size_t pos){
 	size_t l_child = pos * 2 + 1;
 	size_t r_child = pos * 2 + 2;
 	size_t size = vector_size(list);
 
-	index_t lowest  = {0,SUCCESS};
+	ptrdiff_t lowest  = 0;
 
 	if (l_child >= size){
-		if (r_child >= size){
-			lowest.status = -1;
-			return lowest;
-		}else {
-			lowest.value = r_child;
-		}
+		if (r_child >= size)
+			return -1;
+		else
+			lowest = r_child;
 	}else if (r_child >= size){
-		lowest.value = l_child;
+		lowest = l_child;
 	}else{
 		if (vector_compare(list, l_child, r_child) < 0)
-			lowest.value = l_child;
+			lowest = l_child;
 		else
-			lowest.value = r_child;
+			lowest = r_child;
 	}
-
-	if (vector_compare(list, lowest.value, pos) >= 0){
-		lowest.status = -1;
-		return lowest;
-	}
+	if (vector_compare(list, lowest, pos) >= 0)
+		return -1;
 	return lowest;
 }
 
@@ -107,11 +102,11 @@ static index_t lowest_child(Vector *list, size_t pos){
 static void filter_down(Vector *list, size_t pos){
 	if (pos >= vector_size(list))
 		return;
-	index_t lowest = lowest_child(list, pos);
-	if (lowest.status != SUCCESS)
+	ptrdiff_t lowest = lowest_child(list, pos);
+	if (lowest < 0)
 		return;
-	vector_swap(list, pos, lowest.value);
-	filter_down(list, lowest.value);
+	vector_swap(list, pos, lowest);
+	filter_down(list, lowest);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -185,24 +180,20 @@ int heap_change_priority(Heap *heap, void *element, void *replacement){
 		return NULL_PARAMETER_ERROR;
 	}
 	// Get pos of the element
-	index_t pos = vector_indexof(heap->elements, element);
-	if (pos.status != SUCCESS){
-		return pos.status;
-	}
+	ptrdiff_t pos = vector_indexof(heap->elements, element);
+	if (pos < 0)
+		return pos;
 	// Replace with new priority
-	int status = vector_set_at(heap->elements, pos.value, replacement);
-	if (status != SUCCESS){
+	int status = vector_set_at(heap->elements, pos, replacement);
+	if (status != SUCCESS)
 		return status;
-	}
-	// Filter (if necessary)
-	
+	// Filter (if necessary)	
 	comparator_function_t comp_func = vector_get_comparator(heap->elements);
 	int c = comp_func(element, replacement);
-	if (c > 0){
-		filter_up(heap->elements, pos.value);
-	}else if (c < 0){
-		filter_down(heap->elements, pos.value);
-	}
+	if (c > 0)
+		filter_up(heap->elements, pos);
+	else if (c < 0)
+		filter_down(heap->elements, pos);
 	return SUCCESS;
 }
 
@@ -239,17 +230,16 @@ int heap_remove(Heap *heap, void *element){
 		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
-	index_t index = vector_indexof(heap->elements, element);
-	if (index.status != SUCCESS){
-		return index.status;
-	}
+	ptrdiff_t index = vector_indexof(heap->elements, element);
+	if (index < 0)
+		return index;
 	size_t n_elements = vector_size(heap->elements) - 1;
-	int status = vector_swap(heap->elements, index.value, n_elements);
+	int status = vector_swap(heap->elements, index, n_elements);
 	if (status != SUCCESS){
 		return status;
 	}
 	vector_pop_back(heap->elements, NULL);
-	filter_down(heap->elements, index.value);
+	filter_down(heap->elements, index);
 	return SUCCESS;
 }
 

@@ -45,11 +45,11 @@ void dijkstra_test(void){
 	graph_print_dijkstra_data(stdout, dijkstra);
 #endif
 
-	assert(dijkstra.P[0].status != 1);
-	assert(dijkstra.P[1].status == 1);
-	assert(dijkstra.P[2].status == 1);
-	assert(dijkstra.P[3].status != 1);
-	assert(dijkstra.P[4].status == 1);
+	assert(dijkstra.P[0] == -1);
+	assert(dijkstra.P[1] != -1);
+	assert(dijkstra.P[2] != -1);
+	assert(dijkstra.P[3] == -1);
+	assert(dijkstra.P[4] != -1);
 	graph_free_dijkstra_data(&dijkstra);
 
 	dijkstra = graph_dijkstra(g, &c);

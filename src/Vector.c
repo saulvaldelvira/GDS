@@ -3,7 +3,6 @@
  *  License: BSD 3-Clause
  *  Email: saulvaldelvira@gmail.com
  */
-
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -86,6 +85,34 @@ size_t vector_get_data_size(Vector *vector){
 	return 0;
 }
 
+static int check_and_transform_index(ptrdiff_t *index_1, ptrdiff_t *index_2, size_t n_elements){
+	if (*index_1 < 0){
+		if ((size_t)(*index_1 * -1) > n_elements){
+			printerr_out_of_bounds(*index_1, -1 * n_elements, 0);
+			return INDEX_BOUNDS_ERROR;
+		}
+		*index_1 = n_elements - *index_1;
+	}
+	if (index_2 == NULL)
+		return SUCCESS;
+	if (*index_2 < 0){
+		if ((size_t)(*index_2 * -1) > n_elements){
+			printerr_out_of_bounds(*index_2, -1 * n_elements, 0);
+			return INDEX_BOUNDS_ERROR;
+		}
+		*index_2 = n_elements - *index_2;
+	}
+	if ((size_t)*index_1 >= n_elements){
+		printerr_out_of_bounds(*index_1, 0, n_elements-1);
+		return INDEX_BOUNDS_ERROR;
+	}
+	if ((size_t)*index_2 >= n_elements){
+		printerr_out_of_bounds(*index_2, 0, n_elements-1);
+		return INDEX_BOUNDS_ERROR;
+	}
+	return SUCCESS;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 /// ADD-SET ///////////////////////////////////////////////////////////////////////
@@ -122,17 +149,16 @@ int vector_push_front(Vector *vector, void *element){
 	return vector_insert_at(vector, 0, element);
 }
 
-int vector_insert_array(Vector *vector, size_t index, void *array, size_t array_length){
+int vector_insert_array(Vector *vector, ptrdiff_t index, void *array, size_t array_length){
 	if (!vector || !array){
 		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
 	if (vector->max_elements - vector->n_elements < array_length)
 		vector_resize(vector, vector->max_elements + array_length);
-	if (index > vector->n_elements){
-		printerr_out_of_bounds(index, vector->n_elements);
-		return INDEX_BOUNDS_ERROR;
-	}
+	int status = check_and_transform_index(&index, NULL, vector->n_elements);
+	if (status != SUCCESS)
+		return status;
 	size_t n_elements_to_move = vector->n_elements - index;
 	void *dst = void_offset(vector->elements, (index + array_length) * vector->data_size);
 	void *src = void_offset(vector->elements, index * vector->data_size);
@@ -150,15 +176,14 @@ int vector_push_front_array(Vector *vector, void *array, size_t array_length){
 	return vector_insert_array(vector, 0, array, array_length);
 }
 
-int vector_set_at(Vector *vector, size_t index, void *element){
+int vector_set_at(Vector *vector, ptrdiff_t index, void *element){
 	if (!vector || !element){
 		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
-	if (index >= vector->n_elements){
-		printerr_out_of_bounds(index, vector->n_elements-1);
-		return INDEX_BOUNDS_ERROR;
-	}
+	int status = check_and_transform_index(&index, NULL, vector->n_elements);
+	if (status != SUCCESS)
+		return status;
 	void *tmp = void_offset(vector->elements, index * vector->data_size);
 	memmove(tmp, element, vector->data_size);
 	return SUCCESS;
@@ -184,14 +209,13 @@ int vector_insert(Vector *vector, void *element, void *insert){
 		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
-	index_t index = vector_indexof(vector, element);
-	if (index.status != SUCCESS){
-		return index.status;
-	}
-	return vector_insert_at(vector, index.value, insert);
+	ptrdiff_t index = vector_indexof(vector, element);
+	if (index < 0)
+		return index;
+	return vector_insert_at(vector, index, insert);
 }
 
-int vector_insert_at(Vector *vector, size_t index, void *element){
+int vector_insert_at(Vector *vector, ptrdiff_t index, void *element){
 	if (!vector || !element){
 		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
@@ -242,19 +266,18 @@ int vector_process(Vector *vector, int (*func) (void *,void*), void *args){
 
 /// REMOVE ////////////////////////////////////////////////////////////////////
 
-int vector_remove_at(Vector *vector, size_t index){
+int vector_remove_at(Vector *vector, ptrdiff_t index){
 	if (!vector){
 		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
-	if (index >= vector->n_elements){
-		printerr_out_of_bounds(index, vector->n_elements-1);
-		return INDEX_BOUNDS_ERROR;
-	}
+	int status = check_and_transform_index(&index, NULL, vector->n_elements);
+	if (status != SUCCESS)
+		return status;
 	void *remove = void_offset(vector->elements, index * vector->data_size);
 	if (vector->destructor)
 		vector->destructor(remove);
-	if (index < vector->n_elements - 1){
+	if ((size_t)index < vector->n_elements - 1){
 		size_t leftover = (vector->n_elements - index - 1) * vector->data_size;
 		void *src = void_offset(vector->elements, (index+1) * vector->data_size);
 		memmove(remove, src, leftover);
@@ -268,10 +291,10 @@ int vector_remove(Vector *vector, void *element){
 		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
-	index_t i = vector_indexof(vector, element);
-	if (i.status != SUCCESS)
-		return i.status;
-	return vector_remove_at(vector, i.value);
+	ptrdiff_t index = vector_indexof(vector, element);
+	if (index < 0)
+		return index;
+	return vector_remove_at(vector, index);
 }
 
 int vector_remove_front(Vector *vector){
@@ -308,19 +331,18 @@ int vector_remove_array(Vector *vector, void *array, size_t array_length){
 	return SUCCESS;
 }
 
-void* vector_pop_at(Vector *vector, size_t index, void *dest){
+void* vector_pop_at(Vector *vector, ptrdiff_t index, void *dest){
 	if (!vector){
 		printerr_null_param();
 		return NULL;
 	}
-	if (index >= vector->n_elements){
-		printerr_out_of_bounds(index, vector->n_elements-1);
+	int status = check_and_transform_index(&index, NULL, vector->n_elements);
+	if (status != SUCCESS)
 		return NULL;
-	}
 	void *remove = void_offset(vector->elements, index * vector->data_size);
 	if (dest)
 		memcpy(dest, remove, vector->data_size);
-	if (index < vector->n_elements - 1){
+	if ((size_t)index < vector->n_elements - 1){
 		size_t leftover = (vector->n_elements - index - 1) * vector->data_size;
 		void *src = void_offset(vector->elements, (index+1) * vector->data_size);
 		memmove(remove, src, leftover);
@@ -334,10 +356,10 @@ void* vector_pop(Vector *vector, void *element, void *dest){
 		printerr_null_param();
 		return NULL;
 	}
-	index_t i = vector_indexof(vector, element);
-	if (i.status != SUCCESS)
+	ptrdiff_t index = vector_indexof(vector, element);
+	if (index < 0)
 		return NULL;
-	return vector_pop_at(vector, i.value, dest);
+	return vector_pop_at(vector, index, dest);
 }
 
 void* vector_pop_front(Vector *vector, void *dest){
@@ -378,20 +400,20 @@ void* vector_pop_array(Vector *vector, void *array, size_t array_length, void *d
 
 /// SEARCH-GET ////////////////////////////////////////////////////////////////
 
-index_t vector_indexof(Vector *vector, void *element){
+ptrdiff_t vector_indexof(Vector *vector, void *element){
 	if (!vector || !element){
 		printerr_null_param();
-		return index_t(0,NULL_PARAMETER_ERROR);
+		return NULL_PARAMETER_ERROR;
 	}
 
 	void *ptr = vector->elements; // Current element in the iteration
 	for (size_t i = 0; i < vector->n_elements; i++){
-		if ((*vector->compare) (ptr, element) == 0){
-			return index_t(i,SUCCESS);
+		if (vector->compare(ptr, element) == 0){
+			return i;
 		}
 		ptr = void_offset(ptr, vector->data_size);
 	}
-	return index_t(0,ELEMENT_NOT_FOUND_ERROR);
+	return ELEMENT_NOT_FOUND_ERROR;
 }
 
 bool vector_exists(Vector *vector, void *element){
@@ -399,7 +421,7 @@ bool vector_exists(Vector *vector, void *element){
 		printerr_null_param();
 		return false;
 	}
-	return vector_indexof(vector, element).status == SUCCESS;
+	return vector_indexof(vector, element) >= 0;
 }
 
 bool vector_isempty(Vector *vector){
@@ -410,13 +432,13 @@ bool vector_isempty(Vector *vector){
 	return vector->n_elements == 0;
 }
 
-void* vector_get_at(Vector *vector, size_t index, void *dest){
+void* vector_get_at(Vector *vector, ptrdiff_t index, void *dest){
 	if (!vector || !dest){
 		printerr_null_param();
 		return NULL;
 	}
-	if (index >= vector->n_elements){
-		printerr_out_of_bounds(index, vector->n_elements-1);
+	if ((size_t)index >= vector->n_elements){
+		printerr_out_of_bounds(index, 0, vector->n_elements-1);
 		return NULL;
 	}
 	void *tmp = void_offset(vector->elements, index * vector->data_size);
@@ -428,12 +450,10 @@ void* vector_get(Vector *vector, void *element, void *dest){
 		printerr_null_param();
 		return NULL;
 	}
-	index_t index = vector_indexof(vector, element);
-	if (!index.status){
-
+	ptrdiff_t index = vector_indexof(vector, element);
+	if (index < 0)
 		return NULL;
-	}
-	return vector_get_at(vector, index.value, dest);
+	return vector_get_at(vector, index, dest);
 }
 
 void* vector_get_front(Vector *vector, void *dest){
@@ -486,19 +506,14 @@ void* vector_get_array(Vector *vector, size_t array_length){
 
 /// OTHER /////////////////////////////////////////////////////////////////////
 
-int vector_swap(Vector *vector, size_t index_1, size_t index_2){
+int vector_swap(Vector *vector, ptrdiff_t index_1, ptrdiff_t index_2){
 	if (!vector){
 		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
-	if (index_1 >= vector->n_elements){
-		printerr_out_of_bounds(index_1, vector->n_elements-1);
-		return INDEX_BOUNDS_ERROR;
-	}
-	if (index_2 >= vector->n_elements){
-		printerr_out_of_bounds(index_2, vector->n_elements-1);
-		return INDEX_BOUNDS_ERROR;
-	}
+	int status = check_and_transform_index(&index_1, &index_2, vector->n_elements);
+	if (status != SUCCESS)
+		return status;	
 	void *tmp = malloc(vector->data_size);
 	assert(tmp);
 	if (!vector_get_at(vector, index_1, tmp))
@@ -513,11 +528,14 @@ int vector_swap(Vector *vector, size_t index_1, size_t index_2){
 	return SUCCESS;
 }
 
-int vector_compare(Vector *vector, size_t index_1, size_t index_2){
+int vector_compare(Vector *vector, ptrdiff_t index_1, ptrdiff_t index_2){
 	if (!vector){
 		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
+	int status = check_and_transform_index(&index_1, &index_2, vector->n_elements);
+	if (status != SUCCESS)
+		return status;	
 	void *e1 = void_offset(vector->elements, index_1 * vector->data_size);
 	void *e2 = void_offset(vector->elements, index_2 * vector->data_size);
 	return vector->compare(e1, e2);

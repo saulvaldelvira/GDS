@@ -11,7 +11,6 @@
 #include <math.h>
 #include <string.h>
 #include <stdint.h>
-#include "./util/index_t.h"
 #include <stdio.h>
 #include <stdarg.h>
 #include <assert.h>
@@ -206,31 +205,30 @@ int graph_remove_vertex(Graph *graph, void *vertex){
 		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
-	index_t index = graph_indexof(graph, vertex); // Get the index of the vertex
-	if (index.status != SUCCESS){
-		return index.status;
-	}
+	ptrdiff_t index = graph_indexof(graph, vertex); // Get the index of the vertex
+	if (index < 0)
+		return index;
 	// Move latest vertex to this position (only if it is not already the last)
-	if (index.value != graph->n_elements-1){
+	if ((size_t)index != graph->n_elements-1){
 		// Set vertex at index to the last vertex in the array
-		void *target = void_offset(graph->vertices, index.value * graph->data_size);
+		void *target = void_offset(graph->vertices, index * graph->data_size);
 		void *source = void_offset(graph->vertices, (graph->n_elements-1) * graph->data_size);
 		memmove(target, source, graph->data_size);
 
 		// Swap the weights columns of the vertex to be removed and the last one
-		target = (void*) (graph->weights[index.value]);
+		target = (void*) (graph->weights[index]);
 		source = (void*) (graph->weights[graph->n_elements-1]);
 		memmove(target, source, graph->max_elements * sizeof(*graph->weights[0]));
 
 		// Swap the edges columns of the vertex to be removed and the last one
-		target = (void*) (graph->edges[index.value]);
+		target = (void*) (graph->edges[index]);
 		source = (void*) (graph->edges[graph->n_elements-1]);
 		memmove(target, source, graph->max_elements * sizeof(*graph->edges[0]));
 
 		// Swap rows of the vertex to be removed and the last one
 		for (size_t i = 0; i < graph->max_elements; i++){
-			graph->edges[i][index.value] = graph->edges[i][graph->n_elements-1];
-			graph->weights[i][index.value] = graph->weights[i][graph->n_elements-1];
+			graph->edges[i][index] = graph->edges[i][graph->n_elements-1];
+			graph->weights[i][index] = graph->weights[i][graph->n_elements-1];
 
 			// We also have to set the edges and weights to default to guarantee that in the next add, those edges and weights will not hold garbage
 			graph->edges[i][graph->n_elements-1] = 0;
@@ -287,16 +285,14 @@ int graph_add_edge(Graph *graph, void *source, void *target, float weight){
 		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
-	index_t index_src = graph_indexof(graph, source);
-	if (index_src.status != SUCCESS){
-		return index_src.status;
-	}
-	index_t index_tar = graph_indexof(graph, target);
-	if (index_tar.status != SUCCESS){
-		return index_tar.status;
-	}
-	graph->edges[index_src.value][index_tar.value] = 1;
-	graph->weights[index_src.value][index_tar.value] = weight;
+	ptrdiff_t index_src = graph_indexof(graph, source);
+	if (index_src < 0)
+		return index_src;
+	ptrdiff_t index_dst = graph_indexof(graph, target);
+	if (index_dst < 0)
+		return index_dst;
+	graph->edges[index_src][index_dst] = 1;
+	graph->weights[index_src][index_dst] = weight;
 	return SUCCESS;
 }
 
@@ -322,16 +318,14 @@ int graph_remove_edge(Graph *graph, void *source, void *target){
 		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
-	index_t index_src = graph_indexof(graph, source);
-	if (index_src.status != SUCCESS){
-		return index_src.status;
-	}
-	index_t index_tar = graph_indexof(graph, target);
-	if (index_tar.status != SUCCESS){
-		return index_tar.status;
-	}
-	graph->edges[index_src.value][index_tar.value] = 0;
-	graph->weights[index_src.value][index_tar.value] = INFINITY;
+	ptrdiff_t index_src = graph_indexof(graph, source);
+	if (index_src < 0)
+		return index_src;
+	ptrdiff_t index_dst = graph_indexof(graph, target);
+	if (index_dst < 0)
+		return index_dst;
+	graph->edges[index_src][index_dst] = 0;
+	graph->weights[index_src][index_dst] = INFINITY;
 	return SUCCESS;
 }
 
@@ -353,15 +347,13 @@ float graph_get_edge(Graph *graph, void *source, void *target){
 		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
-	index_t index_src = graph_indexof(graph, source);
-	if (index_src.status != SUCCESS){
-		return index_src.status;
-	}
-	index_t index_tar = graph_indexof(graph, target);
-	if (index_tar.status != SUCCESS){
-		return index_tar.status;
-	}
-	return graph->weights[index_src.value][index_tar.value];
+	ptrdiff_t index_src = graph_indexof(graph, source);
+	if (index_src < 0)
+		return index_src;
+	ptrdiff_t index_dst = graph_indexof(graph, target);
+	if (index_dst < 0)
+		return index_dst;
+	return graph->weights[index_src][index_dst];
 }
 
 bool graph_exists_edge(Graph *graph, void *source, void *target){
@@ -369,15 +361,13 @@ bool graph_exists_edge(Graph *graph, void *source, void *target){
 		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
-	index_t index_src = graph_indexof(graph, source);
-	if (index_src.status != SUCCESS){
-		return index_src.status;
-	}
-	index_t index_tar = graph_indexof(graph, target);
-	if (index_tar.status != SUCCESS){
-		return index_tar.status;
-	}
-	return graph->edges[index_src.value][index_tar.value];
+	ptrdiff_t index_src = graph_indexof(graph, source);
+	if (index_src < 0)
+		return index_src;
+	ptrdiff_t index_dst = graph_indexof(graph, target);
+	if (index_dst < 0)
+		return index_dst;
+	return graph->edges[index_src][index_dst];
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -385,7 +375,7 @@ bool graph_exists_edge(Graph *graph, void *source, void *target){
 size_t graph_size(Graph *graph){
 	if (!graph){
 		printerr_null_param();
-		return 0; // ??Also wrongggg
+		return 0;
 	}
 	return graph->n_elements;
 }
@@ -398,13 +388,13 @@ bool graph_isempty(Graph *graph){
 	return graph->n_elements == 0;
 }
 
-index_t graph_indexof(Graph *graph, void *vertex){
+ptrdiff_t graph_indexof(Graph *graph, void *vertex){
 	for (size_t i = 0; i < graph->n_elements; i++){
 		if((*graph->compare)(void_offset(graph->vertices, i * graph->data_size), vertex) == 0){
-			return index_t(i,SUCCESS);
+			return i;
 		}
 	}
-	return index_t(0,ELEMENT_NOT_FOUND_ERROR);
+	return ELEMENT_NOT_FOUND_ERROR;
 }
 
 /// DIJKSTRA //////////////////////////////////////////////////////////////////
@@ -419,19 +409,16 @@ static void graph_init_dijkstra(DijkstraData_t *dijkstra, Graph *graph, size_t s
 
 	for (size_t i = 0; i < graph->n_elements; i++){
 		dijkstra->D[i] = graph->weights[source][i];
-		if (graph->edges[source][i]){ // If there's an edge
-			dijkstra->P[i].value = source; // Add the pivot
-			dijkstra->P[i].status = 1; // Mark as valid
+		if (graph->edges[source][i]){
+			dijkstra->P[i] = source;
 		} else{
-			dijkstra->P[i].status = -1; // Mark as an index in wich there is no pivot
+			dijkstra->P[i] = -1;
 		}
 
 	}
 	// The source vertex's cheapest path is allways itself with weight 0
 	dijkstra->D[source] = 0.0f;
-	dijkstra->P[source].value = source;
-	dijkstra->P[source].status = 1;
-
+	dijkstra->P[source] = source;
 	dijkstra->n_elements = graph->n_elements;
 	dijkstra->status = SUCCESS;
 }
@@ -443,14 +430,13 @@ static void graph_init_dijkstra(DijkstraData_t *dijkstra, Graph *graph, size_t s
  * @param D an array of weights
  * @param n_elements the number of elements in the arrays
 */
-static index_t graph_get_pivot(uint8_t *S, float *D, size_t n_elements){
-	index_t pivot = {.value = 0, .status=-1};
+static ptrdiff_t graph_get_pivot(uint8_t *S, float *D, size_t n_elements){
+	ptrdiff_t pivot = -1;
 	float min = INFINITY;
 	for (size_t i = 0; i < n_elements; i++){
 		if (!S[i] && D[i] < min){ // If not visited and weight < min
 			min = D[i];
-			pivot.value = i;
-			pivot.status = 1;
+			pivot = i;
 		}
 	}
 	return pivot;
@@ -463,40 +449,38 @@ DijkstraData_t graph_dijkstra(Graph *graph, void *source){
 		dijkstra.status = NULL_PARAMETER_ERROR;
 		return dijkstra;
 	}
-	index_t source_index = graph_indexof(graph, source);
-	if (source_index.status != SUCCESS || graph->n_elements == 0){
-		dijkstra.status = source_index.status;
+	ptrdiff_t source_index = graph_indexof(graph, source);
+	if (source_index < 0 || graph->n_elements == 0){
+		dijkstra.status = source_index;
 		return dijkstra;
 	}
 
-	graph_init_dijkstra(&dijkstra, graph, source_index.value);
+	graph_init_dijkstra(&dijkstra, graph, source_index);
 
 	// Initialize the visited array
 	uint8_t *S = calloc(graph->n_elements, sizeof(*S));
 	assert(S);
 
 	// Mark the start vertex as visited (because of the initialization)
-	S[source_index.value] = 1;
+	S[source_index] = 1;
 
-	index_t pivot = graph_get_pivot(S, dijkstra.D, graph->n_elements);
-	while (pivot.status != -1){ // While there's still pivots
-		size_t p = pivot.value;
+	ptrdiff_t pivot = graph_get_pivot(S, dijkstra.D, graph->n_elements);
+	while (pivot != -1){ // While there's still pivots
 		for (size_t i = 0; i < graph->n_elements; i++){
 			if (S[i]){ // If already visited continue
 				continue;
 			}
 			// Calculate the cost to i through this pivot
-			float w = dijkstra.D[p] + graph->weights[p][i];
+			float w = dijkstra.D[pivot] + graph->weights[pivot][i];
 
 			// If the cost is < that the actual cost AND it exists an edge between the pivot and i
-			if (dijkstra.D[i] > w && graph->edges[p][i]){
+			if (dijkstra.D[i] > w && graph->edges[pivot][i]){
 				dijkstra.D[i] = w;
-				dijkstra.P[i].value = p;
-				dijkstra.P[i].status = 1;
+				dijkstra.P[i] = pivot;
 			}
 		}
 		// Mark the pivot as visited and get the next one
-		S[p] = 1;
+		S[pivot] = 1;
 		pivot = graph_get_pivot(S, dijkstra.D, graph->n_elements);
 	}
 	free(S); // Free the visited array
@@ -508,8 +492,8 @@ void graph_print_dijkstra_data(void *output, DijkstraData_t data){
 	fprintf(_output, "[DIJKSTRA]\n");
 	fprintf(_output, "i\tD\tP\n");
 	for (size_t i = 0; i < data.n_elements; i++){
-		if (data.P[i].status == 1){ // If the pivot exists, print it
-			fprintf(_output, "%-3zu\t%.3f\t%zu\n", i, data.D[i], data.P[i].value);
+		if (data.P[i] >= 0){ // If the pivot exists, print it
+			fprintf(_output, "%-3zu\t%.3f\t%zu\n", i, data.D[i], data.P[i]);
 		} else { // Print a '-' to mark represent an unexisting pivot
  			fprintf(_output, "%-3zu\t%.3f\t-\n", i, data.D[i]);
 		}
@@ -542,7 +526,7 @@ static void graph_init_floyd(FloydData_t *floyd, Graph *graph){
 
 		for (size_t j = 0; j < graph->n_elements; j++){
 			floyd->A[i][j] = graph->weights[i][j];
-			floyd->P[i][j].status = -1; // At the begining, all pivots are -1
+			floyd->P[i][j] = -1; // At the begining, all pivots are -1
 		}
 		floyd->A[i][i] = 0.0f; // The cost from an elements to itself is always 0
 	}
@@ -564,8 +548,7 @@ FloydData_t graph_floyd(Graph *graph){
 				float w = floyd.A[i][pivot] + floyd.A[pivot][j]; // Cost from i to j, going through the pivot
 				if (floyd.A[i][j] > w){ // If it's better that the cost of going directly from i to j
 					floyd.A[i][j] = w;
-					floyd.P[i][j].value = pivot;
-					floyd.P[i][j].status = 1;
+					floyd.P[i][j] = pivot;
 				}
 			}
 		}
@@ -585,8 +568,8 @@ void graph_print_floyd_data(void *output, FloydData_t data){
 	fprintf(_output, "P:\n");
 	for (size_t i = 0; i < data.n_elements; i++){
 		for (size_t j = 0; j < data.n_elements; j++){
-			if (data.P[i][j].status == 1){
-				fprintf(_output, "%zu\t", data.P[i][j].value);
+			if (data.P[i][j] >= 0){
+				fprintf(_output, "%zu\t", data.P[i][j]);
 			}else{
 				fprintf(_output, "-\t");
 			}
@@ -616,17 +599,17 @@ vertexDegree_t graph_get_degree(Graph *graph, void *vertex){
 		printerr_null_param();
 		return degree;
 	}
-	index_t index = graph_indexof(graph, vertex);
-	if (index.status != SUCCESS){
-		degree.status = index.status;
+	ptrdiff_t index = graph_indexof(graph, vertex);
+	if (index < 0){
+		degree.status = index;
 		return degree;
 	}
 	degree.status = SUCCESS;
 	for (size_t i = 0; i < graph->n_elements; i++){
-		if (graph->edges[i][index.value] == 1){
+		if (graph->edges[i][index] == 1){
 			degree.deg_in++;
 		}
-		if (graph->edges[index.value][i] == 1){
+		if (graph->edges[index][i] == 1){
 			degree.deg_out++;
 		}
 	}
@@ -663,16 +646,16 @@ float graph_eccentricity(Graph *graph, void *vertex){
 		printerr_null_param();
 		return NULL_PARAMETER_ERROR * 1.0f;
 	}
-	index_t index = graph_indexof(graph, vertex);
-	if (index.status != SUCCESS){
-		return index.status * 1.0f;
+	ptrdiff_t index = graph_indexof(graph, vertex);
+	if (index < 0){
+		return index * 1.0f;
 	}
 
 	FloydData_t floyd = graph_floyd(graph);
 	float max = -1.0f;
 	for (size_t i = 0; i < graph->n_elements; i++){
-		if (floyd.A[i][index.value] > max){
-			max = floyd.A[i][index.value];
+		if (floyd.A[i][index] > max){
+			max = floyd.A[i][index];
 		}
 	}
 	graph_free_floyd_data(&floyd);
@@ -707,9 +690,9 @@ traverse_data_t graph_traverse_DF(Graph *graph, void *vertex){
 		printerr_null_param();
 		return df;
 	}
-	index_t index = graph_indexof(graph, vertex);
-	if (index.status != SUCCESS){
-		df.status = index.status;
+	ptrdiff_t index = graph_indexof(graph, vertex);
+	if (index < 0){
+		df.status = index;
 		return df;
 	}
 	df.status = SUCCESS;
@@ -719,7 +702,7 @@ traverse_data_t graph_traverse_DF(Graph *graph, void *vertex){
 	uint8_t *visited = calloc(graph->n_elements, sizeof(*visited));
 	assert(visited);
 
-	int s = traverse_df_rec(&df, index.value, visited, graph);
+	int s = traverse_df_rec(&df, index, visited, graph);
 	if (s != SUCCESS){
 		free(visited);
 		free(df.elements);
@@ -738,9 +721,9 @@ traverse_data_t graph_traverse_BF(Graph *graph, void *vertex){
 		return bf;
 	}
 	// Get index of the starting vertex
-	index_t index = graph_indexof(graph, vertex);
-	if (index.status != SUCCESS){
-		bf.status = index.status;
+	ptrdiff_t index = graph_indexof(graph, vertex);
+	if (index < 0){
+		bf.status = index;
 		return bf;
 	}
 	// Initialize result and temporary structures.
@@ -754,8 +737,8 @@ traverse_data_t graph_traverse_BF(Graph *graph, void *vertex){
 	// Add starting element to queue and set it as visited
 	size_t *start = queue;
 	size_t *end = queue;
-	*end++ = index.value;
-	visited[index.value] = 1;
+	*end++ = index;
+	visited[index] = 1;
 
 	void *src;
 	void *dst = bf.elements;

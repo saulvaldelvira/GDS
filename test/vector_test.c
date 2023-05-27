@@ -67,12 +67,9 @@ int main(void){
 	assert(!vector_isempty(vec));
 	assert(n-1 == * (int*) vector_get_back(vec, &tmp));
 	assert(0 == * (int*) vector_get_front(vec, &tmp));
-	assert(vector_indexof(vec, &(int){-20}).status == ELEMENT_NOT_FOUND_ERROR);
+	assert(vector_indexof(vec, &(int){-20}) == ELEMENT_NOT_FOUND_ERROR);
 
-	index_t ret = vector_indexof(vec, &(int){30});
-
-	assert(ret.status);
-	assert(ret.value == (size_t) 30);
+	assert(vector_indexof(vec, &(int){30}) == (size_t) 30);
 
 	int* get_arr = vector_get_array(vec, vector_size(vec));
 	int* get_into = malloc(n * sizeof(int));
@@ -100,7 +97,7 @@ int main(void){
 
 	for(int i=n-1; i >= 0; i--){
 		assert(vector_exists(vec, &i));
-		assert(vector_indexof(vec, &i).value == (size_t) i);
+		assert(vector_indexof(vec, &i) == (ptrdiff_t) i);
 		assert(i == * (int*) vector_get_at(vec, i, &tmp));
 		assert(i == * (int*) vector_get(vec, &i, &tmp));
 		assert(vector_remove(vec, &i));
@@ -123,12 +120,12 @@ int main(void){
 
 	assert(vector_insert_at(vec, 1, &(int){120}));
 	assert(vector_exists(vec, &(int){120}));
-	assert(1UL == vector_indexof(vec, &(int){120}).value);
+	assert(1UL == vector_indexof(vec, &(int){120}));
 	vector_remove_at(vec, 1);
 
 	assert(vector_insert(vec, &nums[3], &(int){-89}));
 	assert(vector_exists(vec, &(int){-89}));
-	assert(3UL == vector_indexof(vec, &(int){-89}).value);
+	assert(3UL == vector_indexof(vec, &(int){-89}));
 	vector_remove_at(vec, 3);
 
 	assert(vector_remove_array(vec, nums, 5));
