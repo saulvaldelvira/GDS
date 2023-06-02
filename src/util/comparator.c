@@ -35,6 +35,18 @@ int compare_char(const void *e_1, const void *e_2){
 	}
 }
 
+int compare_long(const void *e_1, const void *e_2){
+	long l_1 = * (long *) e_1;
+	long l_2 = * (long *) e_2;
+	if (l_1 > l_2){
+		return 1;
+	}else if (l_2 > l_1){
+		return -1;
+	}else{
+		return 0;
+	}
+}
+
 int compare_long_long(const void *e_1, const void *e_2){
 	long long l_1 = * (long long *) e_1;
 	long long l_2 = * (long long *) e_2;
