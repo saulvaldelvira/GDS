@@ -91,7 +91,7 @@ static int check_and_transform_index(ptrdiff_t *index_1, ptrdiff_t *index_2, siz
 			printerr_out_of_bounds(*index_1, -1 * n_elements, 0);
 			return INDEX_BOUNDS_ERROR;
 		}
-		*index_1 = n_elements - *index_1;
+		*index_1 = n_elements + *index_1;
 	}
 	if (index_2 == NULL)
 		return SUCCESS;
@@ -100,7 +100,7 @@ static int check_and_transform_index(ptrdiff_t *index_1, ptrdiff_t *index_2, siz
 			printerr_out_of_bounds(*index_2, -1 * n_elements, 0);
 			return INDEX_BOUNDS_ERROR;
 		}
-		*index_2 = n_elements - *index_2;
+		*index_2 = n_elements + *index_2;
 	}
 	if ((size_t)*index_1 >= n_elements){
 		printerr_out_of_bounds(*index_1, 0, n_elements-1);
@@ -437,10 +437,9 @@ void* vector_get_at(Vector *vector, ptrdiff_t index, void *dest){
 		printerr_null_param();
 		return NULL;
 	}
-	if ((size_t)index >= vector->n_elements){
-		printerr_out_of_bounds(index, 0, vector->n_elements-1);
+	int status = check_and_transform_index(&index, NULL, vector->n_elements);
+	if (status != SUCCESS)
 		return NULL;
-	}
 	void *tmp = void_offset(vector->elements, index * vector->data_size);
 	return memcpy(dest, tmp, vector->data_size);
 }
