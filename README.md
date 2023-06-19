@@ -11,8 +11,7 @@ It includes: <br>
 - **Queue** <br>
 
 
-These structures are "generic" in the sense that they only need to know the size of the data type being stored. <br>
-This is achieved using pointer arithmetic and functions like memcpy. <br>
+These structures are "generic" in the sense that they can store any kind of data type, by only knowing the size of it. <br>
 
 ```c
 int main(){
@@ -142,4 +141,3 @@ int main(){
     vector_free(vector);
 }
 ```
-More in the `/example` folder

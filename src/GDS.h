@@ -25,7 +25,6 @@ extern "C" {
 #include "util/definitions.h"
 #include "util/error.h"
 #include "util/hash.h"
-#include "util/index_t.h"
 
 #ifdef __cplusplus
 }
