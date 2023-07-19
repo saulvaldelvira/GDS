@@ -93,6 +93,10 @@ static int check_and_transform_index(ptrdiff_t *index_1, ptrdiff_t *index_2, siz
 		}
 		*index_1 = n_elements + *index_1;
 	}
+	if ((size_t)*index_1 >= n_elements){
+		printerr_out_of_bounds(*index_1, 0, n_elements-1);
+		return INDEX_BOUNDS_ERROR;
+	}
 	if (index_2 == NULL)
 		return SUCCESS;
 	if (*index_2 < 0){
@@ -101,10 +105,6 @@ static int check_and_transform_index(ptrdiff_t *index_1, ptrdiff_t *index_2, siz
 			return INDEX_BOUNDS_ERROR;
 		}
 		*index_2 = n_elements + *index_2;
-	}
-	if ((size_t)*index_1 >= n_elements){
-		printerr_out_of_bounds(*index_1, 0, n_elements-1);
-		return INDEX_BOUNDS_ERROR;
 	}
 	if ((size_t)*index_2 >= n_elements){
 		printerr_out_of_bounds(*index_2, 0, n_elements-1);
@@ -132,13 +132,7 @@ int vector_append(Vector *vector, void *element){
 		printerr_null_param();
 		return NULL_PARAMETER_ERROR;
 	}
-	// If the vector is full, double the array size
-	if(vector->n_elements >= vector->max_elements)
-		vector_resize(vector, vector->n_elements * 2);
-	void *tmp = void_offset(vector->elements, vector->n_elements * vector->data_size);
-	memcpy(tmp , element, vector->data_size);
-	vector->n_elements++;
-	return SUCCESS;
+	return vector_insert_at(vector, vector->n_elements, element);
 }
 
 int vector_push_front(Vector *vector, void *element){
@@ -156,19 +150,28 @@ int vector_insert_array(Vector *vector, ptrdiff_t index, void *array, size_t arr
 	}
 	if (vector->max_elements - vector->n_elements < array_length)
 		vector_resize(vector, vector->max_elements + array_length);
-	int status = check_and_transform_index(&index, NULL, vector->n_elements);
-	if (status != SUCCESS)
-		return status;
-	size_t n_elements_to_move = vector->n_elements - index;
-	void *dst = void_offset(vector->elements, (index + array_length) * vector->data_size);
-	void *src = void_offset(vector->elements, index * vector->data_size);
-	memmove(dst, src, n_elements_to_move * vector->data_size);
-	memcpy(src, array, array_length * vector->data_size);
+	if (index >= 0 && (size_t)index == vector->n_elements){
+		void *dst = void_offset(vector->elements, vector->n_elements * vector->data_size);
+		memcpy(dst, array, array_length * vector->data_size);
+	}else {
+		int status = check_and_transform_index(&index, NULL, vector->n_elements);
+		if (status != SUCCESS)
+			return status;
+		size_t n_elements_to_move = vector->n_elements - index;
+		void *dst = void_offset(vector->elements, (index + array_length) * vector->data_size);
+		void *src = void_offset(vector->elements, index * vector->data_size);
+		memmove(dst, src, n_elements_to_move * vector->data_size);
+		memcpy(src, array, array_length * vector->data_size);
+	}
 	vector->n_elements += array_length;
 	return SUCCESS;
 }
 
 int vector_append_array(Vector *vector, void *array, size_t array_length){
+	if (!vector || !array){
+		printerr_null_param();
+		return NULL_PARAMETER_ERROR;
+	}
 	return vector_insert_array(vector, vector->n_elements, array, array_length);
 }
 
@@ -222,11 +225,19 @@ int vector_insert_at(Vector *vector, ptrdiff_t index, void *element){
 	}
 	if (vector->n_elements == vector->max_elements)
 		vector_resize(vector, vector->max_elements * 2);
-	void *src = void_offset(vector->elements, index * vector->data_size);
-	void *dst = void_offset(vector->elements, (index + 1) * vector->data_size);
-	int n = vector->n_elements - index; // number of elements to shift
-	memmove(dst, src, n * vector->data_size); // Shift elements to the right
-	memcpy(src, element, vector->data_size); // Insert the element
+	if (index >= 0 && (size_t)index == vector->n_elements){
+		void *dst = void_offset(vector->elements, vector->n_elements * vector->data_size);
+		memcpy(dst, element, vector->data_size);
+	}else {	
+		int status = check_and_transform_index(&index, NULL, vector->n_elements);
+		if (status != SUCCESS)
+			return status;
+		void *src = void_offset(vector->elements, index * vector->data_size);
+		void *dst = void_offset(vector->elements, (index + 1) * vector->data_size);
+		int n = vector->n_elements - index; // number of elements to shift
+		memmove(dst, src, n * vector->data_size); // Shift elements to the right
+		memcpy(src, element, vector->data_size); // Insert the element
+	}       
 	vector->n_elements++;
 	return SUCCESS;
 }
