@@ -92,7 +92,7 @@ void* list_get_into_array(LinkedList *list, void *array, size_t array_length);
 
 /**
  * Creates an array with the first [array_length] elements of the list.
- * @param array_length the number of elements to get. Pass GET_ALL_ELEMENTS to get all the elements in the list
+ * @param array_length the number of elements to get. Pass 0 to get all the elements in the list
  * @note Remember to free the array.
 */
 void* list_get_array(LinkedList *list, size_t array_length);

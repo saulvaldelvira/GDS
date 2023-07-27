@@ -498,7 +498,7 @@ void* vector_get_array(Vector *vector, size_t array_length){
 		printerr_null_param();
 		return NULL;
 	}
-	if (array_length == GET_ALL_ELEMENTS || array_length > vector->n_elements){
+	if (array_length == 0 || array_length > vector->n_elements){
 		array_length = vector->n_elements;
 	}
 	void *array = malloc(vector->data_size * array_length);

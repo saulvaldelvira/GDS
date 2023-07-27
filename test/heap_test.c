@@ -100,13 +100,13 @@ void filter_up(void){
 	char input[] = {'f', 'g', 'a', 'z', 'd'};
 	heap_add_array(min, input, 5);
 	char expchar[] = {'a', 'd', 'f', 'z', 'g'};
-	char* result = heap_get_array(min, GET_ALL_ELEMENTS);
+	char* result = heap_get_array(min, 0);
 	assert_array_char(result, expchar, 5);
 	free(result);
 	char dest;
 	assert('a' == * (char*) heap_pop_min(min, &dest));
 	char expchar2[] = {'d', 'g', 'f', 'z'};
-	result = heap_get_array(min, GET_ALL_ELEMENTS);
+	result = heap_get_array(min, 0);
 	assert_array_char(result, expchar2, 4);
 	free(result);
 

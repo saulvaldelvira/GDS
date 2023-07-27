@@ -51,7 +51,7 @@ void* heap_pop_min(Heap *heap, void *dest);
 
 /**
  * Allocs an array with [array_length] elements and fills it with the elements in the heap
- * @param array_length the number of elements to get. Pass GET_ALL_ELEMENTS to get all the elements in the heap
+ * @param array_length the number of elements to get. Pass 0 to get all the elements in the heap
 */
 void* heap_get_array(Heap *heap, size_t array_length);
 

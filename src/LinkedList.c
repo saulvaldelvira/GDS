@@ -218,7 +218,7 @@ void* list_get_array(LinkedList *list, size_t array_length){
 		printerr_null_param();
 		return NULL;
 	}
-	if (array_length == GET_ALL_ELEMENTS || array_length > list->n_elements)
+	if (array_length == 0 || array_length > list->n_elements)
 		array_length = list->n_elements;
 	void *array = malloc(list->data_size * array_length);
 	assert(array);

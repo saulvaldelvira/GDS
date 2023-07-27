@@ -179,7 +179,7 @@ void* vector_get_into_array(Vector *vector, void *array, size_t array_length);
 /**
  * Allocates an array of [array_length] elements and fills it with
  * the first [array_length] elements fom the list
- * @param array_length the number of elements to get. Pass GET_ALL_ELEMENTS to get all the elements in the list
+ * @param array_length the number of elements to get. Pass 0 to get all the elements in the list
 */
 void* vector_get_array(Vector *vector, size_t array_length);
 
