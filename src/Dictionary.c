@@ -37,6 +37,7 @@ struct Dictionary{
 };
 
 #define LF(x,B) ((x) * 1.0 / (B))
+#define DICT_INITIAL_SIZE 11
 
 /// PRIME //////////////////////////////////////////////////////////////////////
 
@@ -63,8 +64,6 @@ static int get_next_prime(int n){
 }
 
 /// INITIALIZE /////////////////////////////////////////////////////////////////
-
-#define DICT_INITIAL_SIZE 11
 
 /**
  * Initializes a node.
