@@ -57,10 +57,13 @@ void destructor_test(void){
 int main(void){
 	print_test_start(AVL);
 	TIMESTAMP_START
+	int tmp;
+
 	AVLTree *t = avl_init(sizeof(int), compare_int);
 	assert(avl_size(t) == 0UL);
 	assert(avl_isempty(t));
 	assert(-1 == avl_height(t));
+	assert(avl_get(t, &(int){12}, &tmp) == NULL);
 
 	int nums[] = {10, 6, 15, 3, 9, 14, 20, 2, 4, 7, 12};
 

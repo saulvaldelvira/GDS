@@ -22,6 +22,7 @@ int main(void){
 
 	Queue *q = queue_init(sizeof(int), compare_int);
 	assert(queue_isempty(q));
+	assert(queue_dequeue(q, &tmp) == NULL);
 
 	for(int i=0; i < n; i++){
 		assert(queue_enqueue(q, &i));

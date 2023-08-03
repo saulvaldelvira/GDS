@@ -15,18 +15,20 @@ void destructor_test(void){
 }
 
 int main(void){
-	int n = 10000, temp;
+	int n = 10000, tmp;
 	print_test_start(Stack);
 	TIMESTAMP_START
 
 	Stack *stack = stack_init(sizeof(int), compare_int);
 	assert(stack_isempty(stack));
-	temp = 12;
-	stack_push(stack, &temp);
+	assert(stack_pop(stack, &tmp) == NULL);
+
+	tmp = 12;
+	stack_push(stack, &tmp);
 	assert(!stack_isempty(stack));
-	assert(* (int*) stack_peek(stack, &temp) == 12);
+	assert(* (int*) stack_peek(stack, &tmp) == 12);
 	assert(!stack_isempty(stack));
-	assert(* (int*) stack_pop(stack, &temp) == 12);
+	assert(* (int*) stack_pop(stack, &tmp) == 12);
 	assert(stack_isempty(stack));
 
 	for(int i=0; i<n; i++){
@@ -42,8 +44,8 @@ int main(void){
 	////////////////
 
 	for(int i=n-1; i>=0; i--){
-		assert(i == * (int*) stack_peek(stack, &temp));
-		assert(i == * (int*) stack_pop(stack, &temp));
+		assert(i == * (int*) stack_peek(stack, &tmp));
+		assert(i == * (int*) stack_pop(stack, &tmp));
 		assert(stack_size(stack) == (size_t) i);
 	}
 	assert(stack_isempty(stack));

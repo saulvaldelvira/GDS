@@ -156,9 +156,11 @@ void destructor_test(void){
 int main(void){
 	print_test_start(Heap);
 	TIMESTAMP_START
+	int tmp;
 
 	Heap *min = heap_init(sizeof(int), compare_int);
 	assert(heap_isempty(min));
+	assert(heap_pop_min(min, &tmp) == NULL);
 
 	int nums[] = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1};
 	heap_add_array(min, nums, 10);

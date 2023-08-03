@@ -44,14 +44,14 @@ void destructor_test(void){
 int main(void){
 	int n = 2400;
 	int tmp;
-
 	print_test_start(LinkedList);
 	TIMESTAMP_START
-
 
 	LinkedList *lnked = list_init(sizeof(int), compare_int);
 
 	assert(list_isempty(lnked));
+	assert(list_get_front(lnked, &tmp) == NULL);
+	assert(list_get_back(lnked, &tmp) == NULL);
 
 	for(int i=0; i < n; i++){
 		assert(list_append(lnked, &i));

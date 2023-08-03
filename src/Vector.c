@@ -471,7 +471,10 @@ void* vector_get_front(Vector *vector, void *dest){
 		printerr_null_param();
 		return NULL;
 	}
-	return vector_get_at(vector, 0, dest);
+	if (vector->n_elements > 0UL)
+		return vector_get_at(vector, 0, dest);
+	else
+		return NULL;
 }
 
 void* vector_get_back(Vector *vector, void *dest){
@@ -479,7 +482,10 @@ void* vector_get_back(Vector *vector, void *dest){
 		printerr_null_param();
 		return NULL;
 	}
-	return vector_get_at(vector, vector->n_elements - 1, dest);
+	if (vector->n_elements > 0UL)
+		return vector_get_at(vector, vector->n_elements - 1, dest);
+	else
+		return NULL;
 }
 
 void* vector_get_into_array(Vector *vector, void *array, size_t array_length){

@@ -166,6 +166,9 @@ void destructor_test(void){
 	Dictionary *dict = dict_init(sizeof(int), sizeof(char*), hash_int);
 	dict_set_destructor(dict, destroy_ptr);
 
+        char *tmp;
+        assert(dict_get(dict, &(int){12}, &tmp) == NULL);
+
 	for (int i = 0; i < 120; i++){
 		char *str = malloc(sizeof(char[12]));
 		sprintf(str, "%d", i);
@@ -177,7 +180,7 @@ void destructor_test(void){
 	char *str = malloc(sizeof(char[12]));
 	dict_put(dict, &(int){30}, &str);
 
-	dict_free(dict);	
+	dict_free(dict);
 }
 
 int main(void){
@@ -191,7 +194,7 @@ int main(void){
         string_test();
         struct_test();
 	destructor_test();
-	
+
 	TIMESTAMP_STOP
 	print_test_end(Dictionary);
         return 0;

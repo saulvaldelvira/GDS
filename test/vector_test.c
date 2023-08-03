@@ -125,7 +125,7 @@ int main(void){
 	assert(SUCCESS == vector_set_at(vec, -2, &(int){4}));
 	Ignore_Error(assert(SUCCESS != vector_set_at(vec, -50, &(int){-50})), 0);
 	Ignore_Error(assert(NULL == vector_get_at(vec, -12, &tmp)), 0);
-	
+
 	assert(vector_insert_at(vec, 1, &(int){120}));
 	assert(vector_exists(vec, &(int){120}));
 	assert(1UL == vector_indexof(vec, &(int){120}));
