@@ -25,7 +25,6 @@ INSTALL_PATH ?= /usr/local
 HEADER_MSG = "// Source code: https://git.saulv.es/Generic-Data-Structures"
 
 libs: $(OFILES) | $(BIN)/  $(INCLUDE)/ $(INCLUDE)/util/
-	$(info Building libs ...)
 	@ $(CC) $(CCFLAGS) -shared -o ./$(BIN)/libGDS.so $(OFILES)
 	@ $(AR) $(ARFLAGS) ./$(BIN)/libGDS-static.a $(OFILES)
 	@ $(foreach H,$(wildcard $(SRC)/*.h), echo $(HEADER_MSG) | cat - $(H) | cat - > $(INCLUDE)/$(notdir $(H));)
@@ -50,12 +49,10 @@ uninstall:
 	  ldconfig $(INSTALL_PATH)/lib '
 
 NO-RUN?= false # If true, only builds the test, without running them
-test: $(TESTFILES) $(BIN)/libGDS-static.a | $(BIN)/
+test: $(TESTFILES) libs | $(BIN)/
 	@ $(foreach T,$(filter %.c,$(TESTFILES)), \
 	  $(CC) $(CCFLAGS) -o $(BIN)/$(patsubst %.c,%.out, $(notdir $(T))) $(T) -L./$(BIN)/ -lGDS-static; \
 	  $(NO-RUN) || $(BIN)/$(patsubst %.c,%.out, $(notdir $(T))) || exit 1;)
-
-$(BIN)/libGDS-static.a: libs
 
 .c.o:
 	$(CC) $(CCFLAGS) -o $@ -c $<
