@@ -49,11 +49,11 @@ uninstall:
 	  rm -rf $(INSTALL_PATH)/include/GDS ;\
 	  ldconfig $(INSTALL_PATH)/lib '
 
+NO-RUN?= false # If true, only builds the test, without running them
 test: $(TESTFILES) $(BIN)/libGDS-static.a | $(BIN)/
-	$(info Running tests ...)
 	@ $(foreach T,$(filter %.c,$(TESTFILES)), \
 	  $(CC) $(CCFLAGS) -o $(BIN)/$(patsubst %.c,%.out, $(notdir $(T))) $(T) -L./$(BIN)/ -lGDS-static; \
-	  $(BIN)/$(patsubst %.c,%.out, $(notdir $(T))) || exit 1;)
+	  $(NO-RUN) || $(BIN)/$(patsubst %.c,%.out, $(notdir $(T))) || exit 1;)
 
 $(BIN)/libGDS-static.a: libs
 
