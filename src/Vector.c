@@ -537,7 +537,7 @@ int vector_swap(Vector *vector, ptrdiff_t index_1, ptrdiff_t index_2){
 
 	void *e1 = void_offset(vector->elements, index_1 * vector->data_size);
 	void *e2 = void_offset(vector->elements, index_2 * vector->data_size);
-	memcpy(e1, e2, vector->data_size);
+	memmove(e1, e2, vector->data_size);
 	memcpy(e2, tmp, vector->data_size);
 
 	free(tmp);
