@@ -1,10 +1,9 @@
-/**
- *  Comparator module.
- *  Implements functions to compare different data types.
+/*
+ * Implements functions to compare different data types.
  *
  *  Copyright (C) 2023 - Saúl Valdelvira
  *  License: BSD 3-Clause
- *  Email: saulvaldelvira@gmail.com
+ *  Email: saul@saulv.es
  */
 #include "comparator.h"
 #include <stdlib.h>

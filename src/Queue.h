@@ -1,11 +1,16 @@
 /**
- *  Copyright (C) 2023 - Saúl Valdelvira
- *  License: BSD 3-Clause
- *  Email: saulvaldelvira@gmail.com
+ * @file Queue.h
+ * Definition of the Queue.
+ *
+ *  Copyright (C) 2023 - Saúl Valdelvira \n
+ *  License: BSD 3-Clause \n
+ *  Email: saul@saulv.es
  */
+/// @cond
 #pragma once
 #ifndef QUEUE_H
 #define QUEUE_H
+/// @endcond
 
 #ifdef __cplusplus
 extern "C" {
@@ -95,7 +100,7 @@ int queue_free(Queue *queue);
 
 /**
  * Frees multiple queues at once.
- * @n number of pointers to free.
+ * @param n number of pointers to free.
 */
 void queue_free_all(unsigned int n, ...);
 

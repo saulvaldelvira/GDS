@@ -1,11 +1,16 @@
 /**
- *  Copyright (C) 2023 - Saúl Valdelvira
- *  License: BSD 3-Clause
- *  Email: saulvaldelvira@gmail.com
+ * @file hash.h
+ * Defines functions to hash different data types.
+ *
+ *  Copyright (C) 2023 - Saúl Valdelvira \n
+ *  License: BSD 3-Clause \n
+ *  Email: saul@saulv.es
  */
+/// @cond
 #pragma once
 #ifndef HASH_H
 #define HASH_H
+/// @endcond
 
 #ifdef __cplusplus
 extern "C" {

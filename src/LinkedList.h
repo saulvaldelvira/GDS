@@ -1,11 +1,16 @@
 /**
- *  Copyright (C) 2023 - Saúl Valdelvira
- *  License: BSD 3-Clause
- *  Email: saulvaldelvira@gmail.com
+ * @file LinkedList.h
+ * Definition of the Linked List.
+ *
+ *  Copyright (C) 2023 - Saúl Valdelvira \n
+ *  License: BSD 3-Clause \n
+ *  Email: saul@saulv.es
  */
+/// @cond
 #pragma once
 #ifndef LINKED_LIST_H
 #define LINKED_LIST_H
+/// @endcond
 
 #ifdef __cplusplus
 extern "C" {
@@ -70,7 +75,7 @@ int list_push_front_array(LinkedList *list, void *array, size_t array_length);
 int list_set(LinkedList *list, void *element, void *replacement);
 
 /**
- * @param dest adress to store the reuslt in. MUST BE INITIALIZED.
+ * @param[out] dest adress to store the element into.
  * @return a pointer to the first element in the list that is equal to the parameter element.
 */
 void* list_get(LinkedList *list, void *element, void *dest);
@@ -146,7 +151,7 @@ int list_remove_array(LinkedList *list, void *array, size_t array_length);
 
 /**
  * Pops the given element
- * @param dest if not NULL, copies the element into it.
+ * @param[out] dest if not NULL, copies the element into it.
  * @note If you want the destructor to be called on the element, use list_remove instead
  * @return the dest pointer
  */
@@ -154,7 +159,7 @@ void* list_pop(LinkedList *list, void *element, void *dest);
 
 /**
  * Pops the frist element
- * @param dest if not NULL, copies the element into it.
+ * @param[out] dest if not NULL, copies the element into it.
  * @note If you want the destructor to be called on the element, use list_remove_front instead
  * @return the dest pointer
  */
@@ -162,7 +167,7 @@ void* list_pop_front(LinkedList *list, void *dest);
 
 /**
  * Pops the last element
- * @param dest if not NULL, copies the element into it.
+ * @param[out] dest if not NULL, copies the element into it.
  * @note If you want the destructor to be called on the element, use list_remove_back instead
  * @return the dest pointer
  */
@@ -170,7 +175,7 @@ void* list_pop_back(LinkedList *list, void *dest);
 
 /**
  * Pops from the first [array_length] elements of the given array.
- * @param dest an array. If not NULL, copies the elements into it.
+ * @param[out] dest an array. If not NULL, copies the elements into it.
  *             Must be large enough to, at least, hold [array_length] elements
  * @note If you want the destructor to be called on the element, use list_remove_array instead
  * @return the dest pointer
@@ -193,7 +198,7 @@ int list_free(LinkedList *list);
 
 /**
  * Frees multiple lists at once.
- * @n number of pointers to free.
+ * @param n number of pointers to free.
 */
 void list_free_all(unsigned int n, ...);
 

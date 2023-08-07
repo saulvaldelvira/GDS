@@ -1,7 +1,10 @@
 /**
- *  Copyright (C) 2023 - Saúl Valdelvira
- *  License: BSD 3-Clause
- *  Email: saulvaldelvira@gmail.com
+ * Dictionary.c
+ * Implementation of the Dictionary.
+ *
+ *  Copyright (C) 2023 - Saúl Valdelvira \n
+ *  License: BSD 3-Clause \n
+ *  Email: saul@saulv.es
  */
 #include "Dictionary.h"
 #define GDS_ENABLE_ERROR_MACROS
@@ -14,6 +17,7 @@
 #include <stdarg.h>
 #include <assert.h>
 
+/// @cond
 typedef struct DictionaryNode {
         void *key;
         void *value;
@@ -21,21 +25,32 @@ typedef struct DictionaryNode {
                 EMPTY, FULL, DELETED
         } state;
 } DictionaryNode;
+/// @endcond
 
+/**
+ * Dictionary struct
+ * @headerfile Dictionary.h <GDS/Dictionary.h>
+ * @see Dictionary.h
+*/
 struct Dictionary{
-        size_t value_size;
-        size_t key_size;
-        Vector *elements;
-        size_t n_elements;
-        size_t vec_size;
-        size_t prev_vec_size;
-        float min_lf;
-        float max_lf;
-        enum Redispersion redispersion;
-        hash_function_t hash;
-	destructor_function_t destructor;
+        size_t value_size;      ///< Size (in bytes) of the value data type
+        size_t key_size;        ///< Size (in bytes) of the key data type
+        Vector *elements;       ///< Vector to store the elements
+        size_t n_elements;      ///< Number of elements in the Dictionary
+        size_t vec_size;        ///< Capacity of the vector
+        size_t prev_vec_size;   ///< Previous capacity of the vector
+        float min_lf;           ///< Minimun load factor before shrinking
+        float max_lf;           ///< Maximun load factor before redispersing
+        enum Redispersion redispersion;         ///< Type of redispersion to apply
+        hash_function_t hash;                   ///< Hashing function pointer
+	destructor_function_t destructor;       ///< Destructor function pointer
 };
 
+/**
+ * Calculates the load factor.
+ * @param x number of elements
+ * @param B capacity of the table
+*/
 #define LF(x,B) ((x) * 1.0 / (B))
 #define DICT_INITIAL_SIZE 11
 
@@ -107,7 +122,7 @@ Dictionary* dict_init(size_t key_size, size_t value_size, hash_function_t hash_f
         dict->key_size = key_size;
         dict->min_lf = DICT_DEF_MIN_LF;
         dict->max_lf = DICT_DEF_MAX_LF;
-	dict->destructor = NULL;	
+	dict->destructor = NULL;
         dict->elements = vector_init(sizeof(DictionaryNode), compare_equal);
         assert(dict->elements);
         vector_reserve(dict->elements, DICT_INITIAL_SIZE);
@@ -306,11 +321,11 @@ int dict_put(Dictionary *dict, void *key, void *value){
 	}else{
 		dict->n_elements++;
 	}
-	
+
         // If the node is empty, we need to allocate
         // memory for the key and value.
         if (!node.key)
-                node.key = malloc(dict->key_size);	
+                node.key = malloc(dict->key_size);
         if (!node.value)
                 node.value = malloc(dict->value_size);
 	assert(node.key && node.value);
@@ -429,7 +444,7 @@ int dict_remove(Dictionary *dict, void *key){
         return ELEMENT_NOT_FOUND_ERROR;
 }
 
-/// FREE //////////////////////////////////////////////////////////////////////
+//// FREE //////////////////////////////////////////////////////////////////////
 
 int dict_free(Dictionary *dict){
         if (!dict)

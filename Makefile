@@ -1,4 +1,4 @@
-.PHONY: default clean purge libs test install uninstall
+.PHONY: default clean purge libs test install uninstall doxygen
 
 SRC = src
 BIN = bin
@@ -54,6 +54,9 @@ test: $(TESTFILES) libs | $(BIN)/
 	  $(CC) $(CCFLAGS) -o $(BIN)/$(patsubst %.c,%.out, $(notdir $(T))) $(T) -L./$(BIN)/ -lGDS-static; \
 	  $(NO-RUN) || $(BIN)/$(patsubst %.c,%.out, $(notdir $(T))) || exit 1;)
 
+doxygen: ./doxygen
+	doxygen .doxyfile
+
 .c.o:
 	$(CC) $(CCFLAGS) -o $@ -c $<
 
@@ -64,3 +67,4 @@ clean:
 	@ find . -type f -name '*.o' -delete
 	@ rm -rf $(BIN)/
 	@ rm -rf $(INCLUDE)/
+	@ rm -rf doxygen

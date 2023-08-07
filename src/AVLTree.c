@@ -1,7 +1,10 @@
 /**
- *  Copyright (C) 2023 - Saúl Valdelvira
- *  License: BSD 3-Clause
- *  Email: saulvaldelvira@gmail.com
+ * AVLTree.c
+ * Implementation of the AVLTree.
+ *
+ *  Copyright (C) 2023 - Saúl Valdelvira \n
+ *  License: BSD 3-Clause \n
+ *  Email: saul@saulv.es
  */
 #include "AVLTree.h"
 #define GDS_ENABLE_ERROR_MACROS
@@ -15,6 +18,7 @@
 
 #define MAX_DISBALANCE 2
 
+/// @cond
 typedef struct AVLNode {
         struct AVLNode *left;
         struct AVLNode *right;
@@ -23,15 +27,32 @@ typedef struct AVLNode {
         byte info[];
 } AVLNode;
 
-struct AVLTree {
-        AVLNode *root;
-        size_t data_size;
-        size_t n_elements;
-        comparator_function_t compare;
-	destructor_function_t destructor;
+struct add_rec_ret
+{
+	AVLNode* node;
+	int status;
 };
 
-/// INITIALIZE ////////////////////////////////////////////////////////////////
+struct remove_rec_ret {
+	AVLNode* node;
+	int status;
+};
+/// @endcond
+
+/**
+ * AVL Tree struct
+ * @headerfile AVLTree.h <GDS/AVLTree.h>
+ * @see AVLTree.h
+*/
+struct AVLTree {
+        AVLNode *root;				///< Root node of the tree
+        size_t data_size;			///< Size (in bytes) of the data type being stored
+        size_t n_elements;			///< Number of elements in the tree
+        comparator_function_t compare;		///< Comparator function pointer
+	destructor_function_t destructor;	///< Destructor function pointer
+};
+
+//// INITIALIZE ////////////////////////////////////////////////////////////////
 
 static AVLNode* init_node(void *element, size_t data_size){
         AVLNode *node = malloc(offsetof(AVLNode, info) + data_size);
@@ -79,7 +100,7 @@ AVLTree* avl_init(size_t data_size, comparator_function_t cmp){
 
 ///////////////////////////////////////////////////////////////////////////////
 
-/// NODE UPDATE FUNCTIONS /////////////////////////////////////////////////////
+//// NODE UPDATE FUNCTIONS /////////////////////////////////////////////////////
 
 /**
  * Updates the node's height.
@@ -172,14 +193,7 @@ static AVLNode* update_bf(AVLNode *node){
 
 ///////////////////////////////////////////////////////////////////////////////
 
-/// ADD ///////////////////////////////////////////////////////////////////////
-
-// Auxiliar struct for the add function
-struct add_rec_ret
-{
-	AVLNode* node;
-	int status;
-};
+//// ADD ///////////////////////////////////////////////////////////////////////
 
 /**
  * Adds the element to the node.
@@ -267,13 +281,7 @@ static AVLNode* get_min(AVLNode *node){
 
 ///////////////////////////////////////////////////////////////////////////////
 
-/// REMOVE ////////////////////////////////////////////////////////////////////
-
-// Auxiliar struct for the remove function
-struct remove_rec_ret {
-	AVLNode* node;
-	int status;
-};
+//// REMOVE ////////////////////////////////////////////////////////////////////
 
 /**
  * This fucntion works like the add.
@@ -349,7 +357,7 @@ int avl_remove_array(AVLTree *tree, void *array, size_t array_length){
 
 /// OTHER FUNCTIONS ///////////////////////////////////////////////////////////
 
-bool exists_rec(AVLNode *node, void *element, comparator_function_t compare){
+static bool exists_rec(AVLNode *node, void *element, comparator_function_t compare){
 	if (!node)
 		return false;
 	int c = compare(element, node->info);
@@ -421,11 +429,13 @@ int avl_height(AVLTree *tree){
 
 ///////////////////////////////////////////////////////////////////////////////
 
-// Auxiliar structure to use in the traversal methods
+/// @cond
+/// Auxiliar structure to use in the traversal methods
 struct traversal_ret {
 	void* elements;
 	size_t elements_size;
 };
+/// @endcond
 
 // Auxliar enum to specify the type of traversal for "traversal_rec" function
 enum Traversal {

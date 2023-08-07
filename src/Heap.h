@@ -1,11 +1,16 @@
 /**
- *  Copyright (C) 2023 - Saúl Valdelvira
- *  License: BSD 3-Clause
- *  Email: saulvaldelvira@gmail.com
+ * @file Heap.h
+ * Definition of the Heap.
+ *
+ *  Copyright (C) 2023 - Saúl Valdelvira \n
+ *  License: BSD 3-Clause \n
+ *  Email: saul@saulv.es
  */
+/// @cond
 #pragma once
-#ifndef BINARY_HEAP_MIN_H
-#define BINARY_HEAP_MIN_H
+#ifndef HEAP_H
+#define HEAP_H
+/// @endcond
 
 #ifdef __cplusplus
 extern "C" {
@@ -101,7 +106,7 @@ int heap_free(Heap *heap);
 
 /**
  * Frees multiple heaps at once.
- * @n number of pointers to free.
+ * @param n number of pointers to free.
 */
 void heap_free_all(unsigned int n, ...);
 
@@ -115,4 +120,4 @@ Heap* heap_reset(Heap *heap);
 }
 #endif
 
-#endif
+#endif // HEAP_H

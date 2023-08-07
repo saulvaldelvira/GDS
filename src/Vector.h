@@ -1,11 +1,16 @@
 /**
- *  Copyright (C) 2023 - Saúl Valdelvira
- *  License: BSD 3-Clause
- *  Email: saulvaldelvira@gmail.com
+ * @file Vector.h
+ * Definition of the Vector.
+ *
+ *  Copyright (C) 2023 - Saúl Valdelvira \n
+ *  License: BSD 3-Clause \n
+ *  Email: saul@saulv.es
  */
+/// @cond
 #pragma once
 #ifndef VECTOR_H
 #define VECTOR_H
+/// @endcond
 
 #ifdef __cplusplus
 extern "C" {
@@ -150,14 +155,14 @@ int vector_insert_at(Vector *vector, ptrdiff_t index, void *element);
 int vector_set(Vector *vector, void *element, void *replacement);
 
 /**
- * @param dest the memory adress to copy the value into. MUST BE INITIALIZED.
- * @return The element at the given index or NULL if it the index is out of bounds
+ * @param[out] dest the memory adress to copy the value into.
+ * @return the dest pointer, or NULL if error
  */
 void* vector_get_at(Vector *vector, ptrdiff_t index, void *dest);
 
 /**
- * @param dest the memory adress to copy the value into. MUST BE INITIALIZED.
- * @return The first ocurrence of the given element or NULL if it doesn't exist in the list
+ * @param[out] dest the memory adress to copy the value into.
+ * @return the dest pointer, or NULL if error
  */
 void* vector_get(Vector *vector, void *element, void *dest);
 
@@ -208,7 +213,7 @@ int vector_compare(Vector *vector, ptrdiff_t index_1, ptrdiff_t index_2);
 /**
  * Removes the element at the given index.
  * @note If defined, the destructor will be called on the removed element.
- * @note If you don't want that, see vector_pop_at
+ * @note If you don't want that, see #vector_pop_at
  * @return 1 if the operation is successful.
  */
 int vector_remove_at(Vector *vector, ptrdiff_t index);
@@ -216,7 +221,7 @@ int vector_remove_at(Vector *vector, ptrdiff_t index);
 /**
  * Removes the specified element.
  * @note If defined, the destructor will be called on the removed element.
- * @note If you don't want that, see vector_pop
+ * @note If you don't want that, see #vector_pop
  * @return 1 if the operation is successful.
  */
 int vector_remove(Vector *vector, void *element);
@@ -224,7 +229,7 @@ int vector_remove(Vector *vector, void *element);
 /**
  * Removes the first element in the list.
  * @note If defined, the destructor will be called on the removed element.
- * @note If you don't want that, see vector_pop_front
+ * @note If you don't want that, see #vector_pop_front
  * @return 1 if the operation is succesful
 */
 int vector_remove_front(Vector *vector);
@@ -232,7 +237,7 @@ int vector_remove_front(Vector *vector);
 /**
  * Removes the last element in the list.
  * @note If defined, the destructor will be called on the removed element.
- * @note If you don't want that, see vector_pop_back
+ * @note If you don't want that, see #vector_pop_back
  * @return 1 if the operation is successful
 */
 int vector_remove_back(Vector *vector);
@@ -240,59 +245,60 @@ int vector_remove_back(Vector *vector);
 /**
  * Removes from the first [array_length] elements of the given array.
  * @note If defined, the destructor will be called on the removed elements.
- * @note If you don't want that, see vector_pop_array
+ * @note If you don't want that, see #vector_pop_array
  * @return 1 if the operation is successful
 */
 int vector_remove_array(Vector *vector, void *array, size_t array_length);
 
 /**
  * Pops the element at the given index.
- * @param dest if not NULL, copies the element into it.
- * @note If you want the destructor to be called on the element, use vector_remove_at instead
+ * @param[out] dest if not NULL, copies the element into it.
+ * @note If you want the destructor to be called on the element, use #vector_remove_at instead
  * @return the dest pointer
  */
 void* vector_pop_at(Vector *vector, ptrdiff_t index, void *dest);
 
 /**
  * Pops the element
- * @param dest if not NULL, copies the element into it.
- * @note If you want the destructor to be called on the element, use vector_remove instead
+ * @param[out] dest if not NULL, copies the element into it.
+ * @note If you want the destructor to be called on the element, use #vector_remove instead
  * @return the dest pointer
  */
 void* vector_pop(Vector *vector, void *element, void *dest);
 
 /**
  * Pops the first element.
- * @param dest if not NULL, copies the element into it.
- * @note If you want the destructor to be called on the element, use vector_remove_front instead
+ * @param[out] dest if not NULL, copies the element into it.
+ * @note If you want the destructor to be called on the element, use #vector_remove_front instead
  * @return the dest pointer
 */
 void* vector_pop_front(Vector *vector, void *dest);
 
 /**
  * Pops the last element.
- * @param dest if not NULL, copies the element into it.
- * @note If you want the destructor to be called on the element, use vector_remove_back instead
+ * @param[out] dest if not NULL, copies the element into it.
+ * @note If you want the destructor to be called on the element, use #vector_remove_back instead
  * @return the dest pointer
 */
 void* vector_pop_back(Vector *vector, void *dest);
 
 /**
  * Pops from the first [array_length] elements of the given array.
- * @param dest an array. If not NULL, copies the elements into it.
+ * @param[out] dest an array. If not NULL, copies the elements into it.
  *             Must be large enough to, at least, hold [array_length] elements
- * @note If you want the destructor to be called on the element, use vector_remove_array instead
+ * @note If you want the destructor to be called on the element, use #vector_remove_array instead
  * @return the dest pointer
 */
 void* vector_pop_array(Vector *vector, void *array, size_t array_length, void *dest);
 
 
 /**
+ * Combines the elements of two vectors into one
  * @return a new Vector with the elements of the two given vectors.
- * @note No particular order of elements is guaranteed.
- * @note ATTENTION: The lists must store the same data. At least, they must have
- * the same data size.
- * @note Also, it is assumed that both list have the same comparator functions.
+ * @note No particular order of elements is guaranteed. \n
+ *       ATTENTION: The lists must store the same data.
+ *       At least, they must have the same data size. \n
+ *       Also, it is assumed that both lists have the same comparator functions.
 */
 Vector* vector_join(Vector *vector_1, Vector *vector_2);
 
@@ -304,7 +310,7 @@ int vector_free(Vector *vector);
 
 /**
  * Frees multiple vector at once.
- * @n number of pointers to free.
+ * @param n number of pointers to free.
 */
 void vector_free_all(unsigned int n, ...);
 

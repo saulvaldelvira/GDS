@@ -1,11 +1,16 @@
 /**
- *  Copyright (C) 2023 - Saúl Valdelvira
- *  License: BSD 3-Clause
- *  Email: saulvaldelvira@gmail.com
+ * @file Graph.h
+ * Definition of the Graph.
+ *
+ *  Copyright (C) 2023 - Saúl Valdelvira \n
+ *  License: BSD 3-Clause \n
+ *  Email: saul@saulv.es
  */
+/// @cond
 #pragma once
 #ifndef GRAPH_H
 #define GRAPH_H
+/// @endcond
 
 #ifdef __cplusplus
 extern "C" {
@@ -14,8 +19,6 @@ extern "C" {
 #include <stddef.h>
 #include <stdbool.h>
 #include "./util/comparator.h"
-
-#define GRAPH_DEFAULT_SIZE 8
 
 typedef struct Graph Graph;
 
@@ -102,7 +105,6 @@ int graph_remove_edge(Graph *graph, void *source, void *target);
 
 /**
  * Removes the first [arrays_length] edges from the arrays.
- * @note The three arrays MUST BE THE SAME SIZE
 */
 int graph_remove_edges_array(Graph *graph, void *array_sources, void *array_targets, size_t arrays_length);
 
@@ -130,12 +132,12 @@ bool graph_isempty(Graph *graph);
 
 /////// DIJKSTRA ///////
 
-// Structure to return in the graph_dijkstra method. Holds the result of the algorithm.
+/// Struct to return the result of dijkstra's algorithm
 typedef struct DijkstraData {
-	float     *D;
-	ptrdiff_t *P;
-	size_t     n_elements;
-	int        status;
+	float     *D; 		///< Array of weights
+	ptrdiff_t *P; 		///< Array of pivots
+	size_t     n_elements; 	///< Number of elements in the D and P arrays
+	int        status; 	///< Return status of the algorithm
 } DijkstraData_t;
 
 /**
@@ -165,12 +167,12 @@ void graph_free_dijkstra_data(DijkstraData_t *data);
 
 /////// FLOYD ///////
 
-// Struct to return the result of floyd's algorithm
+/// Struct to return the result of floyd's algorithm
 typedef struct FloydData {
-	float     **A; // weights
-	ptrdiff_t **P; // pivots
-	size_t    n_elements;
-	int       status;
+	float     **A; 		///< Weights matrix
+	ptrdiff_t **P; 		///< Pivots matrix
+	size_t    n_elements; 	///< Dimension of the D and P matrices
+	int       status; 	///< Return status of the algorithm
 } FloydData_t;
 
 /**
@@ -193,22 +195,22 @@ void graph_free_floyd_data(FloydData_t *data);
 
 //// OTHER ALGORITHMS ////
 
-// Represents the Degree of a vertex
-typedef struct vertexDegree {
-	size_t deg_in;
-	size_t deg_out;
-	size_t deg;
-	int status;
-} vertexDegree_t;
+/// Represents the Degree of a vertex
+typedef struct graph_degree {
+	size_t deg_in; ///< Degree in the vertex
+	size_t deg_out; ///< Degree out the vertex
+	size_t deg; ///< Total degree of the vertex
+	int status; ///< return status of the algorithm
+} graph_degree;
 
 /**
- * @note Returns a vertexDegree_t struct with the above information.
+ * @note Returns a graph_degree struct with the above information.
  * @param     status:  if 1, this means the operation was successful and the rest of the elements are valid
  * @param     deg_out: the out degree of the vertex. This means, number of edges going into the vertex.
  * @param     deg_in:  the in degree of the vertex. This means, number of edges starting from the vertex.
  * @param     deg:     total degree of the vertex. It's value is deg_in plus deg_out.
 */
-vertexDegree_t graph_get_degree(Graph *graph, void *vertex);
+graph_degree graph_get_degree(Graph *graph, void *vertex);
 
 /**
  * @return true if the given vertex is a source vertex.
@@ -240,11 +242,15 @@ float graph_eccentricity(Graph *graph, void *vertex);
 /////////////////////////////////////////////////////////
 
 ////// Traverse /////////////////////////////////////////
-typedef struct traverse_data {
-	void *elements;
-	size_t elements_size;
-	int status;
-}traverse_data_t;
+
+/**
+ * Struct that hold the result of a graph traversal
+*/
+typedef struct graph_traversal {
+	void *elements; 	///< Array of elements
+	size_t elements_size; 	///< Number of elements in the array
+	int status; 		///< return status of the traversal
+}graph_traversal;
 
 /**
  * Traverses the graph using the Deep First algorithm.
@@ -255,7 +261,7 @@ typedef struct traverse_data {
  * This is because, as there might be unreachable vertices, it's posible that the length of the array is < than the number of elements in the graph.
  * @note Remember to free the returned array when you finish working with it.
 */
-traverse_data_t graph_traverse_DF(Graph *graph, void *vertex);
+graph_traversal graph_traverse_DF(Graph *graph, void *vertex);
 
 /**
  * Traverses the graph using the Breadth First algorithm.
@@ -267,7 +273,7 @@ traverse_data_t graph_traverse_DF(Graph *graph, void *vertex);
  * This is because, as there might be unreachable vertices, it's posible that the length of the array is < than the number of elements in the graph.
  * @note Remember to free the returned array when you finish working with it.
 */
-traverse_data_t graph_traverse_BF(Graph *graph, void *vertex);
+graph_traversal graph_traverse_BF(Graph *graph, void *vertex);
 
 /////////////////////////////////////////////////////////
 
@@ -279,7 +285,7 @@ int graph_free(Graph *graph);
 
 /**
  * Frees multiple graphs at once.
- * @n number of pointers to free.
+ * @param n number of pointers to free.
 */
 void graph_free_all(unsigned int n, ...);
 

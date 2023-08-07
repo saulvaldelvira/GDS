@@ -1,7 +1,10 @@
 /**
- *  Copyright (C) 2023 - Saúl Valdelvira
- *  License: BSD 3-Clause
- *  Email: saulvaldelvira@gmail.com
+ * Heap.c
+ * Implementation of the Heap.
+ *
+ *  Copyright (C) 2023 - Saúl Valdelvira \n
+ *  License: BSD 3-Clause \n
+ *  Email: saul@saulv.es
  */
 #include "Heap.h"
 #define GDS_ENABLE_ERROR_MACROS
@@ -13,8 +16,13 @@
 #include <stdarg.h>
 #include <assert.h>
 
+/**
+ * Heap struct
+ * @headerfile Heap.h <GDS/Heap.h>
+ * @see Heap.h
+*/
 struct Heap {
-	Vector *elements;
+	Vector *elements;	///< Vector to hold the elements of the heap
 };
 
 /// INITIALIZE ////////////////////////////////////////////////////////////////
@@ -29,7 +37,7 @@ Heap* heap_init(size_t data_size, comparator_function_t cmp){
 		return NULL;
 	}
 	Heap *heap = malloc(sizeof(*heap));
-	assert(heap);	
+	assert(heap);
 	heap->elements = vector_init(data_size, cmp);
 	return heap;
 }
@@ -187,7 +195,7 @@ int heap_change_priority(Heap *heap, void *element, void *replacement){
 	int status = vector_set_at(heap->elements, pos, replacement);
 	if (status != SUCCESS)
 		return status;
-	// Filter (if necessary)	
+	// Filter (if necessary)
 	comparator_function_t comp_func = vector_get_comparator(heap->elements);
 	int c = comp_func(element, replacement);
 	if (c > 0)

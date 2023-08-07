@@ -1,7 +1,10 @@
 /**
- *  Copyright (C) 2023 - Saúl Valdelvira
- *  License: BSD 3-Clause
- *  Email: saulvaldelvira@gmail.com
+ * Queue.c
+ * Implementation of the Queue.
+ *
+ *  Copyright (C) 2023 - Saúl Valdelvira \n
+ *  License: BSD 3-Clause \n
+ *  Email: saul@saulv.es
  */
 #include "Queue.h"
 #include <stdlib.h>
@@ -13,18 +16,25 @@
 #include <stdarg.h>
 #include <assert.h>
 
+/// @cond
 typedef struct QueueNode {
 	struct QueueNode *next;
 	byte info[];
 } QueueNode;
+/// @endcond
 
+/**
+ * Queue struct
+ * @headerfile Queue.h <GDS/Queue.h>
+ * @see Queue.h
+*/
 struct Queue {
-	QueueNode *head;
-	QueueNode *tail;
-	size_t data_size;
-	size_t n_elements;
-	comparator_function_t compare;
-	destructor_function_t destructor;
+	QueueNode *head;	///< Head node
+	QueueNode *tail;	///< Tail node. Last added node
+	size_t data_size;	///< Size (in bytes) of the data type being stored
+	size_t n_elements;	///< Number of elements in the queue
+	comparator_function_t compare;		///< Comparator function pointer
+	destructor_function_t destructor;	///< Destructor function pointer
 };
 
 /// INITIALIZE ////////////////////////////////////////////////////////////////

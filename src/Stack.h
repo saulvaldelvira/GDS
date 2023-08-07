@@ -1,11 +1,16 @@
 /**
- *  Copyright (C) 2023 - Saúl Valdelvira
- *  License: BSD 3-Clause
- *  Email: saulvaldelvira@gmail.com
+ * @file Stack.h
+ * Definition of the Stack.
+ *
+ *  Copyright (C) 2023 - Saúl Valdelvira \n
+ *  License: BSD 3-Clause \n
+ *  Email: saul@saulv.es
  */
+/// @cond
 #pragma once
 #ifndef STACK_H
 #define STACK_H
+/// @endcond
 
 #ifdef __cplusplus
 extern "C" {
@@ -97,7 +102,7 @@ int stack_free(Stack *stack);
 
 /**
  * Frees multiple stacks at once.
- * @n number of pointers to free.
+ * @param n number of pointers to free.
 */
 void stack_free_all(unsigned int n, ...);
 

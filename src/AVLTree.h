@@ -1,11 +1,16 @@
 /**
- *  Copyright (C) 2023 - Saúl Valdelvira
- *  License: BSD 3-Clause
- *  Email: saulvaldelvira@gmail.com
+ * @file AVLTree.h
+ * Declaration of the AVLTree.
+ *
+ *  Copyright (C) 2023 - Saúl Valdelvira \n
+ *  License: BSD 3-Clause \n
+ *  Email: saul@saulv.es
  */
+/// @cond
 #pragma once
 #ifndef AVLTREE_H
 #define AVLTREE_H
+/// @endcond
 
 #ifdef __cplusplus
 extern "C" {
@@ -114,22 +119,32 @@ void* avl_postorder(AVLTree *tree);
 AVLTree* avl_join(AVLTree *tree_1, AVLTree *tree_2);
 
 /**
- * Copies the max value in the tree to dest
+ * Get the max value inside the tree
+ * @param[out] dest address to copy the element into
+ * @return dest pointer, or NULL if error
 */
 void* avl_max(AVLTree *tree, void *dest);
 
 /**
- * Copies the min value in the tree to dest
+ * Get the min value inside the tree
+ * @param[out] dest address to copy the element into
+ * @return dest pointer, or NULL if error
 */
 void* avl_min(AVLTree *tree, void *dest);
 
 /**
- * Copies to dest the max value in the tree, starting in [node]
+ * Get the max value inside the tree, starting in element
+ * @param element element to start the search from
+ * @param[out] dest address to copy the element into
+ * @return dest pointer, or NULL if error
 */
 void* avl_max_from(AVLTree *tree, void *element, void *dest);
 
 /**
- * Copies to dest the min value in the tree, starting in [node]
+ * Get the min value inside the tree, starting in element
+ * @param element element to start the search from
+ * @param[out] dest address to copy the element into
+ * @return dest pointer, or NULL if error
 */
 void* avl_min_from(AVLTree *tree, void *element, void *dest);
 
@@ -141,11 +156,11 @@ int avl_free(AVLTree *tree);
 
 /**
  * Frees multiple trees at once.
- * @n number of pointers to free.
+ * @param n number of pointers to free.
 */
 void avl_free_all(unsigned int n, ...);
 
-/***
+/**
  * Resets the tree to it's default state
  * @return the pointer. NULL if anything goes wrong.
 */

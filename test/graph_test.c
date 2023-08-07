@@ -164,7 +164,7 @@ void traverse_bf(void){
 	graph_add_edge(graph, &e, &c, 1.0f);
 	graph_add_edge(graph, &d, &f, 1.0f);
 	graph_add_edge(graph, &f, &g, 1.0f);
-	traverse_data_t result = graph_traverse_BF(graph, &a);
+	graph_traversal result = graph_traverse_BF(graph, &a);
 	assert(result.status == SUCCESS);
 
 	char expected[] = {'A', 'B', 'D', 'E', 'F', 'C', 'G'};
@@ -210,7 +210,7 @@ void traverse_df(void){
 	graph_add_edge(graph, &i, &f, 1.0f);
 
 #ifdef VERBOSE
-	traverse_data_t df = graph_traverse_DF(graph, &a);
+	graph_traversal df = graph_traverse_DF(graph, &a);
 	printf("DF: ");
 	for (int i=0; i < 10; i++){
 		void *tmp = void_offset(df.elements, i);
@@ -267,7 +267,6 @@ void destructor_test(void){
 int main(void){
 	intptr_t n = 1200;
 	print_test_start(Graph);
-
 
 	TIMESTAMP_START
 	Graph *g = graph_empty(sizeof(int) ,compare_int);

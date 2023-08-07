@@ -1,14 +1,14 @@
 # Generic Data Structures
-A set of "generic" Data Structures. <br>
+A set of Data Structures for the C programming language. <br>
 It includes: <br>
-- **Vector** <br>
-- **Linked List** <br>
-- **AVL Tree** <br>
-- **Graph** <br>
-- **Dictionary** <br>
-- **Heap** <br>
-- **Stack** <br>
-- **Queue** <br>
+- **Vector.h** <br>
+- **LinkedList.h** <br>
+- **AVLTree.h** <br>
+- **Graph.h** <br>
+- **Dictionary.h** <br>
+- **Heap.h** <br>
+- **Stack.h** <br>
+- **Queue.h** <br>
 
 
 These structures are "generic" in the sense that they can store any kind of data type, by only knowing the size of it. <br>
@@ -95,9 +95,8 @@ You can use the Makefile to build and install the library. <br>
 - `make install`: installs the library on the computer.<br>
           The default installation path is /usr/local, but it
           can be overriden by defining INSTALL_PATH (e.g. `make install INSTALL_PATH=/lib`) <br>
-- `make uninstall`: removes the library from the computer.<br>
-          Remember to set INSTALL_PATH to the same value as in installation.
-          If you don't remember it, run `find / -name 'libGDS.so'`. <br>
+- `make uninstall`: removes the library from the computer. Remember to set INSTALL_PATH to the same value as in installation. <br>
+- `make doxygen`: Builds the doxygen documentation. The output folder <br>
 - `make clean`: Removes the binaries. <br>
 
 To use the library, just include the header(s) and remember to compile with the **-lGDS** or **-lGDS-static** flags. <br>
@@ -141,3 +140,5 @@ int main(){
     vector_free(vector);
 }
 ```
+Documentation: <https://wiki.saulv.es/GDS> <br>
+Source Code: <https://git.saulv.es/Generic-Data-Structures>

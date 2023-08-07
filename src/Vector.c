@@ -1,7 +1,10 @@
 /**
- *  Copyright (C) 2023 - Saúl Valdelvira
- *  License: BSD 3-Clause
- *  Email: saulvaldelvira@gmail.com
+ * Vector.c
+ * Implementation of the Vector.
+ *
+ *  Copyright (C) 2023 - Saúl Valdelvira \n
+ *  License: BSD 3-Clause \n
+ *  Email: saul@saulv.es
  */
 #include <stdlib.h>
 #include <stdio.h>
@@ -16,12 +19,17 @@
 
 #define VECTOR_DEFAULT_SIZE 12
 
+/**
+ * Vector struct
+ * @headerfile Vector.h <GDS/Vector.h>
+ * @see Vector.h
+*/
 struct Vector {
-	size_t n_elements;
-	size_t max_elements;
-	size_t data_size;
-	comparator_function_t compare;
-	destructor_function_t destructor;
+	size_t n_elements;			///< Number of elements in the vector
+	size_t max_elements;			///< Current capacity of the vector
+	size_t data_size;			///< Size (in bytes) of the data type being stored
+	comparator_function_t compare;		///< Comparator function pointer
+	destructor_function_t destructor;	///< Destructor function pointer
 	void *elements;
 };
 
@@ -228,7 +236,7 @@ int vector_insert_at(Vector *vector, ptrdiff_t index, void *element){
 	if (index >= 0 && (size_t)index == vector->n_elements){
 		void *dst = void_offset(vector->elements, vector->n_elements * vector->data_size);
 		memcpy(dst, element, vector->data_size);
-	}else {	
+	}else {
 		int status = check_and_transform_index(&index, NULL, vector->n_elements);
 		if (status != SUCCESS)
 			return status;
@@ -237,7 +245,7 @@ int vector_insert_at(Vector *vector, ptrdiff_t index, void *element){
 		int n = vector->n_elements - index; // number of elements to shift
 		memmove(dst, src, n * vector->data_size); // Shift elements to the right
 		memcpy(src, element, vector->data_size); // Insert the element
-	}       
+	}
 	vector->n_elements++;
 	return SUCCESS;
 }
@@ -529,7 +537,7 @@ int vector_swap(Vector *vector, ptrdiff_t index_1, ptrdiff_t index_2){
 	}
 	int status = check_and_transform_index(&index_1, &index_2, vector->n_elements);
 	if (status != SUCCESS)
-		return status;	
+		return status;
 	void *tmp = malloc(vector->data_size);
 	assert(tmp);
 	if (!vector_get_at(vector, index_1, tmp))
@@ -551,7 +559,7 @@ int vector_compare(Vector *vector, ptrdiff_t index_1, ptrdiff_t index_2){
 	}
 	int status = check_and_transform_index(&index_1, &index_2, vector->n_elements);
 	if (status != SUCCESS)
-		return status;	
+		return status;
 	void *e1 = void_offset(vector->elements, index_1 * vector->data_size);
 	void *e2 = void_offset(vector->elements, index_2 * vector->data_size);
 	return vector->compare(e1, e2);

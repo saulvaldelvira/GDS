@@ -1,9 +1,11 @@
 /**
- *  Doubly Linked List implementation.
+ * LinkedList.c
+ * Implementation of the Linked List.
+ * This is a Doubly Linked List.
  *
- *  Copyright (C) 2023 - Saúl Valdelvira
- *  License: BSD 3-Clause
- *  Email: saulvaldelvira@gmail.com
+ *  Copyright (C) 2023 - Saúl Valdelvira \n
+ *  License: BSD 3-Clause \n
+ *  Email: saul@saulv.es
  */
 #include "LinkedList.h"
 #include <stdlib.h>
@@ -17,6 +19,7 @@
 #include <assert.h>
 
 /**
+ * @cond
  * Node of a Linked List
 */
 typedef struct LLNode {
@@ -24,14 +27,22 @@ typedef struct LLNode {
 	struct LLNode *prev;
 	byte info[];
 }LLNode;
+/// @endcond
 
+/**
+ * Linked List struct.
+ * This is a doubly linked list, which means every node has
+ * a pointer to both its successor and predecessor
+ * @headerfile LinkedList.h <GDS/LinkedList.h>
+ * @see LinkedList.h
+*/
 struct LinkedList {
-	LLNode *head;
-	LLNode *tail;
-	size_t n_elements;
-	size_t data_size;
-	comparator_function_t compare;
-	destructor_function_t destructor;
+	LLNode *head;	///< Head node
+	LLNode *tail;	///< Tail node. Last added node
+	size_t n_elements;	///< Number of elements in the list
+	size_t data_size;	///< Size (in bytes) of the data type
+	comparator_function_t compare;		///< Comparator function pointer
+	destructor_function_t destructor;	///< Destructor function pointer
 };
 
 /// INITIALIZE ////////////////////////////////////////////////////////////////

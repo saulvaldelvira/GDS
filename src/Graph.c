@@ -1,7 +1,10 @@
 /**
- *  Copyright (C) 2023 - Saúl Valdelvira
- *  License: BSD 3-Clause
- *  Email: saulvaldelvira@gmail.com
+ * Graph.c
+ * Implementation of the Graph.
+ *
+ *  Copyright (C) 2023 - Saúl Valdelvira \n
+ *  License: BSD 3-Clause \n
+ *  Email: saul@saulv.es
  */
 #include "Graph.h"
 #define GDS_ENABLE_ERROR_MACROS
@@ -15,16 +18,23 @@
 #include <stdarg.h>
 #include <assert.h>
 
+/**
+ * Graph struct
+ * @headerfile Graph.h <GDS/Graph.h>
+ * @see Graph.h
+*/
 struct Graph {
-	size_t n_elements;
-	size_t max_elements;
-	size_t data_size;
-	comparator_function_t compare;
-	destructor_function_t destructor;
-	float **weights;
-	int8_t **edges;
-	void *vertices;
+	size_t n_elements;	///< Number of elements in the Graph
+	size_t max_elements;	///< Current capacity of the graph
+	size_t data_size;	///< Size (in bytes) of the data type
+	comparator_function_t compare;		///< Comparator function pointer
+	destructor_function_t destructor;	///< Destructor function pointer
+	float **weights;	///< Weights matrix
+	int8_t **edges;		///< Edges matrix
+	void *vertices;		///< Vertices matrix
 };
+
+#define GRAPH_DEFAULT_SIZE 8
 
 /// CONSTRUCTORS //////////////////////////////////////////////////////////////
 
@@ -593,8 +603,8 @@ void graph_free_floyd_data(FloydData_t *data){
 
 //// OTHER ALGORITHMS ////////////////////////////////////////////////////////
 
-vertexDegree_t graph_get_degree(Graph *graph, void *vertex){
-	vertexDegree_t degree = {0, 0, 0, NULL_PARAMETER_ERROR};
+graph_degree graph_get_degree(Graph *graph, void *vertex){
+	graph_degree degree = {0, 0, 0, NULL_PARAMETER_ERROR};
 	if (!graph || !vertex){
 		printerr_null_param();
 		return degree;
@@ -618,7 +628,7 @@ vertexDegree_t graph_get_degree(Graph *graph, void *vertex){
 }
 
 bool graph_is_source_vertex(Graph *graph, void *vertex){
-	vertexDegree_t degree = graph_get_degree(graph, vertex);
+	graph_degree degree = graph_get_degree(graph, vertex);
 	if (degree.status != SUCCESS){
 		return false;
 	}
@@ -626,7 +636,7 @@ bool graph_is_source_vertex(Graph *graph, void *vertex){
 }
 
 bool graph_is_drain_vertex(Graph *graph, void *vertex){
-	vertexDegree_t degree = graph_get_degree(graph, vertex);
+	graph_degree degree = graph_get_degree(graph, vertex);
 	if (degree.status != SUCCESS){
 		return false;
 	}
@@ -634,7 +644,7 @@ bool graph_is_drain_vertex(Graph *graph, void *vertex){
 }
 
 bool graph_is_isolated_vertex(Graph *graph, void *vertex){
-	vertexDegree_t degree = graph_get_degree(graph, vertex);
+	graph_degree degree = graph_get_degree(graph, vertex);
 	if (degree.status != SUCCESS){
 		return false;
 	}
@@ -666,7 +676,7 @@ float graph_eccentricity(Graph *graph, void *vertex){
 
 ////// Traverse ///////////////////////////////////////////////////////////////
 
-static int traverse_df_rec(traverse_data_t *data, size_t index, uint8_t *visited, Graph *graph){
+static int traverse_df_rec(graph_traversal *data, size_t index, uint8_t *visited, Graph *graph){
 	visited[index] = 1;
 	void *dst = void_offset(data->elements, data->elements_size * graph->data_size);
 	void *src = void_offset(graph->vertices, index * graph->data_size);
@@ -684,8 +694,8 @@ static int traverse_df_rec(traverse_data_t *data, size_t index, uint8_t *visited
 	return SUCCESS;
 }
 
-traverse_data_t graph_traverse_DF(Graph *graph, void *vertex){
-	traverse_data_t df = {NULL, 0, NULL_PARAMETER_ERROR};
+graph_traversal graph_traverse_DF(Graph *graph, void *vertex){
+	graph_traversal df = {NULL, 0, NULL_PARAMETER_ERROR};
 	if (!graph){
 		printerr_null_param();
 		return df;
@@ -714,8 +724,8 @@ traverse_data_t graph_traverse_DF(Graph *graph, void *vertex){
 	return df;
 }
 
-traverse_data_t graph_traverse_BF(Graph *graph, void *vertex){
-	traverse_data_t bf = {NULL, 0, NULL_PARAMETER_ERROR};
+graph_traversal graph_traverse_BF(Graph *graph, void *vertex){
+	graph_traversal bf = {NULL, 0, NULL_PARAMETER_ERROR};
 	if (!graph){
 		printerr_null_param();
 		return bf;

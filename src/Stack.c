@@ -1,7 +1,10 @@
 /**
- *  Copyright (C) 2023 - Saúl Valdelvira
- *  License: BSD 3-Clause
- *  Email: saulvaldelvira@gmail.com
+ * Stack.c
+ * Implementation of the Stack.
+ *
+ *  Copyright (C) 2023 - Saúl Valdelvira \n
+ *  License: BSD 3-Clause \n
+ *  Email: saul@saulv.es
  */
 #include "Stack.h"
 #include <stdlib.h>
@@ -13,17 +16,24 @@
 #include <stdarg.h>
 #include <assert.h>
 
+/// @cond
 typedef struct StackNode {
 	struct StackNode *next;
 	byte info[];
 } StackNode;
+/// @endcond
 
+/**
+ * Stack struct
+ * @headerfile Stack.h <GDS/Stack.h>
+ * @see Stack.h
+*/
 struct Stack {
-	StackNode *head;
-	comparator_function_t compare;
-	destructor_function_t destructor;
-	size_t data_size;
-	size_t n_elements;
+	StackNode *head;			///< Head node
+	comparator_function_t compare;		///< Comparator function pointer
+	destructor_function_t destructor;	///< Destructor function pointer
+	size_t data_size;			///< Size (in bytes) of the data type being stored
+	size_t n_elements;			///< Number of elements in the stack
 };
 
 /// INITIALIZE ////////////////////////////////////////////////////////////////
@@ -65,7 +75,7 @@ void stack_set_destructor(Stack *stack, destructor_function_t destructor){
 
 static StackNode* init_node(void *element, size_t size){
 	StackNode *node = malloc(offsetof(StackNode, info) + size);
-	assert(node);	
+	assert(node);
 	memcpy(node->info, element, size);
 	node->next = NULL;
 	return node;

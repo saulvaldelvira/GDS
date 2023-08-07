@@ -1,11 +1,16 @@
 /**
- *  Copyright (C) 2023 - Saúl Valdelvira
- *  License: BSD 3-Clause
- *  Email: saulvaldelvira@gmail.com
+ * @file Dictionary.h
+ * Definition of the Dictionary.
+ *
+ *  Copyright (C) 2023 - Saúl Valdelvira \n
+ *  License: BSD 3-Clause \n
+ *  Email: saul@saulv.es
  */
+/// @cond
 #pragma once
 #ifndef DICTIONARY_H
 #define DICTIONARY_H
+/// @endcond
 
 #ifdef __cplusplus
 extern "C" {
@@ -15,7 +20,7 @@ extern "C" {
 #include <stdbool.h>
 #include "./util/hash.h"
 #include "./util/comparator.h"
-	
+
 typedef struct Dictionary Dictionary;
 
 enum Redispersion{
@@ -55,7 +60,7 @@ int dict_configure(Dictionary *dict, enum Redispersion redispersion, double min_
  * A NULL parameter means there's no destructor.
 */
 void dict_set_destructor(Dictionary *dict, destructor_function_t value_destructor);
-	
+
 /**
  * Puts the a key-value pair in the dictionary
 */
@@ -84,7 +89,7 @@ int dict_free(Dictionary *dict);
 
 /**
  * Frees multiple dictionaries at once.
- * @n number of pointers to free.
+ * @param n number of pointers to free.
 */
 void dict_free_all(unsigned int n, ...);
 
