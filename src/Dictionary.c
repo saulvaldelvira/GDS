@@ -2,8 +2,8 @@
  * Dictionary.c
  * Implementation of the Dictionary.
  *
- *  Copyright (C) 2023 - Saúl Valdelvira \n
- *  License: BSD 3-Clause \n
+ *  Copyright (C) 2023 - Saúl Valdelvira
+ *  License: BSD 3-Clause
  *  Email: saul@saulv.es
  */
 #include "Dictionary.h"
