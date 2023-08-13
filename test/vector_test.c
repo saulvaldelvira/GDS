@@ -22,6 +22,19 @@ void joins_test(void){
 	vector_free_all(4, a1, a2, diff_size, vec_joint);
 }
 
+void dup_test(void){
+	Vector *v = vector_init(sizeof(int), compare_int);
+
+	for (int i = 0; i < 10; i++)
+		vector_append(v, &i);
+	
+	Vector *dup = vector_dup(v);
+	for (int i = 0; i < 10; i++)
+		assert(vector_exists(dup, &i));
+
+	vector_free_all(2, v, dup);
+}
+
 void destructor_test(void){
 	Vector *vector = vector_init(sizeof(int*), compare_lesser);
 	vector_set_destructor(vector, destroy_ptr);
@@ -147,6 +160,7 @@ int main(void){
 
 	destructor_test();
 	joins_test();
+	dup_test();
 	reserve_shrink_test();
 
 	TIMESTAMP_STOP

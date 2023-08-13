@@ -291,6 +291,11 @@ void* vector_pop_back(Vector *vector, void *dest);
 */
 void* vector_pop_array(Vector *vector, void *array, size_t array_length, void *dest);
 
+/**
+ * Creates a copy of the vector
+ * @return the copy, or NULL if error
+*/
+Vector* vector_dup(Vector *vector);
 
 /**
  * Combines the elements of two vectors into one

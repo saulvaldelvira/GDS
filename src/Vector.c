@@ -601,6 +601,18 @@ int vector_shrink(Vector *vector){
 	return SUCCESS;
 }
 
+Vector* vector_dup(Vector *vector){
+	if (!vector){
+		printerr_null_param();
+		return NULL;
+	}
+	Vector *dup = vector_init(vector->data_size, vector->compare);
+	vector_set_destructor(dup, vector->destructor);
+	vector_reserve(dup, vector->n_elements); // vector_reserve also sets dup->n_elements to vector->n_elements
+	memcpy(dup->elements, vector->elements, vector->n_elements * vector->data_size);
+	return dup;
+}
+
 Vector* vector_join(Vector *vector_1, Vector *vector_2){
 	if (!vector_1 || !vector_2){
 		printerr_null_param();
