@@ -633,32 +633,17 @@ Vector* vector_join(Vector *vector_1, Vector *vector_2){
 	}
 	vector_reserve(vector_joint, n_elements);
 
-	int status;
-
-	// Get the elements of the first vector
-	void *tmp = vector_get_array(vector_1, vector_1->n_elements);
-	if (tmp != NULL){
-		// Add the elements of the first vector
-		status = vector_append_array(vector_joint, tmp, vector_1->n_elements);
-		free(tmp);
-		if (status != SUCCESS){
-			goto exit_err;
-		}
+	int status = vector_append_array(vector_joint, vector_1->elements, vector_1->n_elements);
+	if (status != SUCCESS){
+		vector_free(vector_joint);
+		return NULL;
 	}
-
-	// Get the elements of the second vector
-	tmp = vector_get_array(vector_2, vector_2->n_elements);
-	if (tmp != NULL){
-		// Add the elements of the second vector
-		status = vector_append_array(vector_joint, tmp, vector_2->n_elements);
-		free(tmp);
-		if (status != SUCCESS){
-			exit_err:
-			free(vector_joint);
-			return NULL;
-		}
+	status = vector_append_array(vector_joint, vector_2->elements, vector_2->n_elements);
+	if (status != SUCCESS){
+		vector_free(vector_joint);
+		return NULL;
 	}
-
+	
 	return vector_joint;
 }
 
