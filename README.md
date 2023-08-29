@@ -140,5 +140,3 @@ int main(){
     vector_free(vector);
 }
 ```
-Documentation: <https://wiki.saulv.es/GDS> <br>
-Source Code: <https://git.saulv.es/Generic-Data-Structures>
