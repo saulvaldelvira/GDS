@@ -613,6 +613,11 @@ Vector* vector_dup(Vector *vector){
 	return dup;
 }
 
+inline void vector_clear(Vector *vector){
+	if (vector)
+		vector->n_elements = 0;
+}
+
 Vector* vector_join(Vector *vector_1, Vector *vector_2){
 	if (!vector_1 || !vector_2){
 		printerr_null_param();
@@ -643,7 +648,7 @@ Vector* vector_join(Vector *vector_1, Vector *vector_2){
 		vector_free(vector_joint);
 		return NULL;
 	}
-	
+
 	return vector_joint;
 }
 

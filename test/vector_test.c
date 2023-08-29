@@ -27,7 +27,7 @@ void dup_test(void){
 
 	for (int i = 0; i < 10; i++)
 		vector_append(v, &i);
-	
+
 	Vector *dup = vector_dup(v);
 	for (int i = 0; i < 10; i++)
 		assert(vector_exists(dup, &i));
@@ -55,6 +55,18 @@ void reserve_shrink_test(void){
 	assert(vector_capacity(vector) > 100);
 	assert(vector_shrink(vector));
 	assert(vector_capacity(vector) == 100);
+	vector_free(vector);
+}
+
+void clear_test(void){
+	Vector *vector = vector_init(sizeof(int), compare_int);
+	for (int i = 0; i < 100; i++)
+		vector_append(vector, &i);
+	assert(vector_capacity(vector) > 100);
+	assert(vector_size(vector) == 100);
+	vector_clear(vector);
+	assert(vector_capacity(vector) > 100);
+	assert(vector_size(vector) == 0);
 	vector_free(vector);
 }
 
@@ -162,6 +174,7 @@ int main(void){
 	joins_test();
 	dup_test();
 	reserve_shrink_test();
+	clear_test();
 
 	TIMESTAMP_STOP
 	print_test_end(Vector);

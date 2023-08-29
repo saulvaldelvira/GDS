@@ -298,6 +298,12 @@ void* vector_pop_array(Vector *vector, void *array, size_t array_length, void *d
 Vector* vector_dup(Vector *vector);
 
 /**
+ * Removes all the elements in the vector, without
+ * freeing the internal buffer.
+*/
+void vector_clear(Vector *vector);
+
+/**
  * Combines the elements of two vectors into one
  * @return a new Vector with the elements of the two given vectors.
  * @note No particular order of elements is guaranteed. \n
