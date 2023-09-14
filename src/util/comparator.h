@@ -19,9 +19,9 @@ extern "C" {
 /**
  * Type of a comparator function.
  * It receives 2 pointers (e_1 and e_2), and returns.
- * - 1 if e_1 > e_2
- * - 0 if e_1 == e_2
- * - -1 if e_1 < e_2
+ * - <= -1 if e_1 < e_2
+ * - 0     if e_1 == e_2
+ * - >= 1  if e_1 > e_2
 */
 typedef int (*comparator_function_t) (const void*,const void*);
 

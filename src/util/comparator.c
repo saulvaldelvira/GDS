@@ -7,31 +7,18 @@
  */
 #include "comparator.h"
 #include <stdlib.h>
-#include <stdint.h>
 
 // COMPARATORS
 int compare_int(const void *e_1, const void *e_2){
-	int n_1 = * (int *) e_1;
-	int n_2 = * (int *) e_2;
-	if (n_1 > n_2){
-		return 1;
-	}else if (n_2 > n_1){
-		return -1;
-	}else{
-		return 0;
-	}
+	int i_1 = * (int *) e_1;
+	int i_2 = * (int *) e_2;
+	return i_1 - i_2;
 }
 
 int compare_char(const void *e_1, const void *e_2){
 	char c_1 = * (char *) e_1;
 	char c_2 = * (char *) e_2;
-	if (c_1 > c_2){
-		return 1;
-	}else if (c_2 > c_1){
-		return -1;
-	}else{
-		return 0;
-	}
+	return c_1 - c_2;
 }
 
 int compare_long(const void *e_1, const void *e_2){
@@ -100,6 +87,12 @@ int compare_greater(const void *e_1, const void *e_2){
 	return 1;
 }
 
+/*
+ * This is tricky. The vector will allways pass elements as void*.
+ * Since in this case the element itself is also a void*, we could
+ * commit a mistake, and directly free e. But in a vector of pointers,
+ * e would be a pointer to the actual pointer element (the one we have to free).
+ */
 void destroy_ptr(void *e){
 	if (e){
 		void *ptr = * (void**) e;
