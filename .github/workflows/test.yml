@@ -14,7 +14,9 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Install valgrind
-      run: sudo apt install valgrind
+      run: |
+           sudo apt-get update -y
+           sudo apt-get install valgrind -y
     - name: Test
       run: make test
     - name: Memory Leaks
