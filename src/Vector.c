@@ -613,11 +613,6 @@ Vector* vector_dup(Vector *vector){
 	return dup;
 }
 
-inline void vector_clear(Vector *vector){
-	if (vector)
-		vector->n_elements = 0;
-}
-
 Vector* vector_join(Vector *vector_1, Vector *vector_2){
 	if (!vector_1 || !vector_2){
 		printerr_null_param();
@@ -663,6 +658,13 @@ static void destroy_content(Vector *vector){
 			vector->destructor(tmp);
 			tmp = void_offset(tmp, vector->data_size);
 		}
+	}
+}
+
+void vector_clear(Vector *vector){
+	if (vector){
+		destroy_content(vector);
+		vector->n_elements = 0;
 	}
 }
 

@@ -68,6 +68,16 @@ void clear_test(void){
 	assert(vector_capacity(vector) > 100);
 	assert(vector_size(vector) == 0);
 	vector_free(vector);
+
+	// Make sure the destructor is called
+	vector = vector_init(sizeof(void*), compare_equal);
+	vector_set_destructor(vector, destroy_ptr);
+	for (int i = 0; i < 100; i++){
+		void *ptr = malloc(1024);
+		vector_append(vector, &ptr);
+	}
+	vector_clear(vector); // Should free the memory, else valgrind will complain
+	vector_free(vector);
 }
 
 int main(void){
