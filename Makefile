@@ -54,8 +54,15 @@ test: $(TESTFILES) libs | $(BIN)/
 	  $(CC) $(CCFLAGS) -o $(BIN)/$(patsubst %.c,%.out, $(notdir $(T))) $(T) -L./$(BIN)/ -lGDS-static; \
 	  $(NO-RUN) || $(BIN)/$(patsubst %.c,%.out, $(notdir $(T))) || exit 1;)
 
-doxygen: ./doxygen
+doxygen: ./doxygen/
+	@ echo "/**" > doxygen/doc.doxy
+	@ find ./src -name '*.h' -exec bash -c ' \
+		name={} ; base=$$(basename $$name) ; \
+		echo -n " * @file $$name " >> doxygen/doc.doxy ; \
+		cat $$name | grep $$base | sed "s/.*$$base -//"' >> doxygen/doc.doxy \;
+	@ echo "*/" >> doxygen/doc.doxy
 	doxygen .doxyfile
+	@ rm -f doxygen/doc.doxy
 
 .c.o:
 	$(CC) $(CCFLAGS) -o $@ -c $<

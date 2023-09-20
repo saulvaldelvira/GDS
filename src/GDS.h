@@ -1,10 +1,6 @@
-/**
- * @file GDS.h
- * Main header file, includes all the modules.
- *
- *  Copyright (C) 2023 - Saúl Valdelvira \n
- *  License: BSD 3-Clause \n
- *  Email: saul@saulv.es
+/*
+ * GDS.h - Main header file, includes all the modules.
+ * Author: Saúl Valdelvira (2023)
  */
 #pragma once
 

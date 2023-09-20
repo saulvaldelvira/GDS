@@ -1,16 +1,10 @@
-/**
- * @file Heap.h
- * Definition of the Heap.
- *
- *  Copyright (C) 2023 - Saúl Valdelvira \n
- *  License: BSD 3-Clause \n
- *  Email: saul@saulv.es
+/*
+ * Heap.h - Binary Heap definition.
+ * Author: Saúl Valdelvira (2023)
  */
-/// @cond
 #pragma once
 #ifndef HEAP_H
 #define HEAP_H
-/// @endcond
 
 #ifdef __cplusplus
 extern "C" {

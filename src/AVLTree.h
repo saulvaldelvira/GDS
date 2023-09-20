@@ -1,16 +1,10 @@
-/**
- * @file AVLTree.h
- * Declaration of the AVLTree.
- *
- *  Copyright (C) 2023 - Saúl Valdelvira \n
- *  License: BSD 3-Clause \n
- *  Email: saul@saulv.es
+/*
+ * AVLTree.h - AVLTree definition.
+ * Author: Saúl Valdelvira (2023)
  */
-/// @cond
 #pragma once
 #ifndef AVLTREE_H
 #define AVLTREE_H
-/// @endcond
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,16 +1,10 @@
-/**
- * @file comparator.h
- * Defines functions to compare different data types.
- *
- *  Copyright (C) 2023 - Saúl Valdelvira \n
- *  License: BSD 3-Clause \n
- *  Email: saul@saulv.es
+/*
+ * comparator.h - Functions to compare common data types.
+ * Author: Saúl Valdelvira (2023)
  */
-/// @cond
 #pragma once
 #ifndef COMPARATOR_H
 #define COMPARATOR_H
-/// @endcond
 
 #ifdef __cplusplus
 extern "C" {

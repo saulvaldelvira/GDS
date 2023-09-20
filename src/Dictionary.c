@@ -1,10 +1,6 @@
-/**
- * Dictionary.c
- * Implementation of the Dictionary.
- *
- *  Copyright (C) 2023 - Saúl Valdelvira
- *  License: BSD 3-Clause
- *  Email: saul@saulv.es
+/*
+ * Dictionary.c - Dictionary implementation.
+ * Author: Saúl Valdelvira (2023)
  */
 #include "Dictionary.h"
 #define GDS_ENABLE_ERROR_MACROS
@@ -17,7 +13,6 @@
 #include <stdarg.h>
 #include <assert.h>
 
-/// @cond
 typedef struct DictionaryNode {
         void *key;
         void *value;
@@ -25,7 +20,6 @@ typedef struct DictionaryNode {
                 EMPTY, FULL, DELETED
         } state;
 } DictionaryNode;
-/// @endcond
 
 /**
  * Dictionary struct

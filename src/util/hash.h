@@ -1,16 +1,10 @@
-/**
- * @file hash.h
- * Defines functions to hash different data types.
- *
- *  Copyright (C) 2023 - Saúl Valdelvira \n
- *  License: BSD 3-Clause \n
- *  Email: saul@saulv.es
+/*
+ * hash.h - Defines functions to hash common data types.
+ * Author: Saúl Valdelvira (2023)
  */
-/// @cond
 #pragma once
 #ifndef HASH_H
 #define HASH_H
-/// @endcond
 
 #ifdef __cplusplus
 extern "C" {

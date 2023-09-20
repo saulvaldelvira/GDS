@@ -1,16 +1,10 @@
-/**
- * @file Graph.h
- * Definition of the Graph.
- *
- *  Copyright (C) 2023 - Saúl Valdelvira \n
- *  License: BSD 3-Clause \n
- *  Email: saul@saulv.es
+/*
+ * Graph.h - Graph definition.
+ * Author: Saúl Valdelvira (2023)
  */
-/// @cond
 #pragma once
 #ifndef GRAPH_H
 #define GRAPH_H
-/// @endcond
 
 #ifdef __cplusplus
 extern "C" {

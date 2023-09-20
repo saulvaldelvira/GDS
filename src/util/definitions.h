@@ -1,16 +1,10 @@
-/**
- * @file definitions.h
- * Common macros and typedefs
- *
- *  Copyright (C) 2023 - Saúl Valdelvira \n
- *  License: BSD 3-Clause \n
- *  Email: saul@saulv.es
+/*
+ * definitions.h - Util macros and typedefs
+ * Author: Saúl Valdelvira (2023)
  */
-/// @cond
 #pragma once
 #ifndef DEFINITIONS_H
 #define DEFINITIONS_H
-/// @endcond
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,9 +1,6 @@
 /*
- * Implements functions to compare different data types.
- *
- *  Copyright (C) 2023 - Saúl Valdelvira
- *  License: BSD 3-Clause
- *  Email: saul@saulv.es
+ * comparator.c - Functions to compare common data types.
+ * Author: Saúl Valdelvira (2023)
  */
 #include "comparator.h"
 #include <stdlib.h>

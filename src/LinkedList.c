@@ -1,11 +1,6 @@
-/**
- * LinkedList.c
- * Implementation of the Linked List.
- * This is a Doubly Linked List.
- *
- *  Copyright (C) 2023 - Saúl Valdelvira
- *  License: BSD 3-Clause
- *  Email: saul@saulv.es
+/*
+ * LinkedList.c - Doubly Linked List implementation.
+ * Author: Saúl Valdelvira (2023)
  */
 #include "LinkedList.h"
 #include <stdlib.h>
@@ -18,8 +13,7 @@
 #include <stdarg.h>
 #include <assert.h>
 
-/**
- * @cond
+/*
  * Node of a Linked List
 */
 typedef struct LLNode {
@@ -27,7 +21,6 @@ typedef struct LLNode {
 	struct LLNode *prev;
 	byte info[];
 }LLNode;
-/// @endcond
 
 /**
  * Linked List struct.

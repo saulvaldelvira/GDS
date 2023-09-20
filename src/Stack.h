@@ -1,16 +1,10 @@
-/**
- * @file Stack.h
- * Definition of the Stack.
- *
- *  Copyright (C) 2023 - Saúl Valdelvira \n
- *  License: BSD 3-Clause \n
- *  Email: saul@saulv.es
+/*
+ * Stack.h - Stack definition.
+ * Author: Saúl Valdelvira (2023)
  */
-/// @cond
 #pragma once
 #ifndef STACK_H
 #define STACK_H
-/// @endcond
 
 #ifdef __cplusplus
 extern "C" {

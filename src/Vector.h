@@ -1,16 +1,10 @@
-/**
- * @file Vector.h
- * Definition of the Vector.
- *
- *  Copyright (C) 2023 - Saúl Valdelvira \n
- *  License: BSD 3-Clause \n
- *  Email: saul@saulv.es
+/*
+ * Vector.h - Vector definition.
+ * Author: Saúl Valdelvira (2023)
  */
-/// @cond
 #pragma once
 #ifndef VECTOR_H
 #define VECTOR_H
-/// @endcond
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,10 +1,6 @@
-/**
- * Graph.c
- * Implementation of the Graph.
- *
- *  Copyright (C) 2023 - Saúl Valdelvira
- *  License: BSD 3-Clause
- *  Email: saul@saulv.es
+/*
+ * Graph.c - Graph implementation.
+ * Author: Saúl Valdelvira (2023)
  */
 #include "Graph.h"
 #define GDS_ENABLE_ERROR_MACROS

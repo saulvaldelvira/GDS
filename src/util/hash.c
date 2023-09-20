@@ -1,9 +1,6 @@
 /*
- * Implements functions to hash different data types.
- *
- *  Copyright (C) 2023 - Saúl Valdelvira
- *  License: BSD 3-Clause
- *  Email: saul@saulv.es
+ * hash.c - Implements functions to hash common data types.
+ * Author: Saúl Valdelvira (2023)
  */
 #include "hash.h"
 
@@ -19,7 +16,7 @@ int64_t hash_long(const void *arg){
         return (int64_t) * (long*) arg;
 }
 
-/**
+/*
  * djb2 algorithm
  * see: <http://www.cse.yorku.ca/~oz/hash.html>
 */

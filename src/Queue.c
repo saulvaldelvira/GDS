@@ -1,10 +1,6 @@
-/**
- * Queue.c
- * Implementation of the Queue.
- *
- *  Copyright (C) 2023 - Saúl Valdelvira
- *  License: BSD 3-Clause
- *  Email: saul@saulv.es
+/*
+ * Queue.c - Queue implementation.
+ * Author: Saúl Valdelvira (2023)
  */
 #include "Queue.h"
 #include <stdlib.h>
@@ -16,12 +12,10 @@
 #include <stdarg.h>
 #include <assert.h>
 
-/// @cond
 typedef struct QueueNode {
 	struct QueueNode *next;
 	byte info[];
 } QueueNode;
-/// @endcond
 
 /**
  * Queue struct

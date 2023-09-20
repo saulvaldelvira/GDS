@@ -1,10 +1,6 @@
-/**
- * Stack.c
- * Implementation of the Stack.
- *
- *  Copyright (C) 2023 - Saúl Valdelvira
- *  License: BSD 3-Clause
- *  Email: saul@saulv.es
+/*
+ * Stack.c - Stack Implementation
+ * Author: Saúl Valdelvira (2023)
  */
 #include "Stack.h"
 #include <stdlib.h>
@@ -16,12 +12,10 @@
 #include <stdarg.h>
 #include <assert.h>
 
-/// @cond
 typedef struct StackNode {
 	struct StackNode *next;
 	byte info[];
 } StackNode;
-/// @endcond
 
 /**
  * Stack struct

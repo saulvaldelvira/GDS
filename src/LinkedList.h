@@ -1,16 +1,10 @@
-/**
- * @file LinkedList.h
- * Definition of the Linked List.
- *
- *  Copyright (C) 2023 - Saúl Valdelvira \n
- *  License: BSD 3-Clause \n
- *  Email: saul@saulv.es
+/*
+ * LinkedList.h - Doubly Linked List definition.
+ * Author: Saúl Valdelvira (2023)
  */
-/// @cond
 #pragma once
 #ifndef LINKED_LIST_H
 #define LINKED_LIST_H
-/// @endcond
 
 #ifdef __cplusplus
 extern "C" {

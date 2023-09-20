@@ -1,16 +1,10 @@
-/**
- * @file error.h
- * Defines error codes and macros to print error mesages.
- *
- *  Copyright (C) 2023 - Saúl Valdelvira \n
- *  License: BSD 3-Clause \n
- *  Email: saul@saulv.es
+/*
+ * error.h - Defines error codes and macros to print error mesages.
+ * Author: Saúl Valdelvira (2023)
  */
-/// @cond
 #pragma once
 #ifndef ERROR_H
 #define ERROR_H
-/// @endcond
 
 #ifdef __cplusplus
 extern "C" {

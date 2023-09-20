@@ -1,16 +1,10 @@
-/**
- * @file Dictionary.h
- * Definition of the Dictionary.
- *
- *  Copyright (C) 2023 - Saúl Valdelvira \n
- *  License: BSD 3-Clause \n
- *  Email: saul@saulv.es
+/*
+ * Dictionary.h - Dictionary definition.
+ * Author: Saúl Valdelvira (2023)
  */
-/// @cond
 #pragma once
 #ifndef DICTIONARY_H
 #define DICTIONARY_H
-/// @endcond
 
 #ifdef __cplusplus
 extern "C" {

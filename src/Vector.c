@@ -1,10 +1,6 @@
-/**
- * Vector.c
- * Implementation of the Vector.
- *
- *  Copyright (C) 2023 - Saúl Valdelvira
- *  License: BSD 3-Clause
- *  Email: saul@saulv.es
+/*
+ * Vector.c - Vector implementation.
+ * Author: Saúl Valdelvira (2023)
  */
 #include <stdlib.h>
 #include <stdio.h>

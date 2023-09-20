@@ -1,10 +1,6 @@
-/**
- * Heap.c
- * Implementation of the Heap.
- *
- *  Copyright (C) 2023 - Saúl Valdelvira
- *  License: BSD 3-Clause
- *  Email: saul@saulv.es
+/*
+ * Heap.c - Binary Heap implementation.
+ * Author: Saúl Valdelvira (2023)
  */
 #include "Heap.h"
 #define GDS_ENABLE_ERROR_MACROS

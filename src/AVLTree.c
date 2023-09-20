@@ -1,10 +1,6 @@
-/**
- * AVLTree.c
- * Implementation of the AVLTree.
- *
- *  Copyright (C) 2023 - Saúl Valdelvira
- *  License: BSD 3-Clause
- *  Email: saul@saulv.es
+/*
+ * AVLTree.c - AVLTree implementation.
+ * Author: Saúl Valdelvira (2023)
  */
 #include "AVLTree.h"
 #define GDS_ENABLE_ERROR_MACROS
@@ -18,7 +14,6 @@
 
 #define MAX_DISBALANCE 2
 
-/// @cond
 typedef struct AVLNode {
         struct AVLNode *left;
         struct AVLNode *right;
@@ -26,18 +21,6 @@ typedef struct AVLNode {
         int height;
         byte info[];
 } AVLNode;
-
-struct add_rec_ret
-{
-	AVLNode* node;
-	int status;
-};
-
-struct remove_rec_ret {
-	AVLNode* node;
-	int status;
-};
-/// @endcond
 
 /**
  * AVL Tree struct
@@ -195,6 +178,11 @@ static AVLNode* update_bf(AVLNode *node){
 
 //// ADD ///////////////////////////////////////////////////////////////////////
 
+struct add_rec_ret{
+	AVLNode* node;
+	int status;
+};
+
 /**
  * Adds the element to the node.
  * 1) Compares the element with the node's info.
@@ -282,6 +270,11 @@ static AVLNode* get_min(AVLNode *node){
 ///////////////////////////////////////////////////////////////////////////////
 
 //// REMOVE ////////////////////////////////////////////////////////////////////
+
+struct remove_rec_ret {
+	AVLNode* node;
+	int status;
+};
 
 /**
  * This fucntion works like the add.
@@ -429,13 +422,11 @@ int avl_height(AVLTree *tree){
 
 ///////////////////////////////////////////////////////////////////////////////
 
-/// @cond
-/// Auxiliar structure to use in the traversal methods
+// Auxiliar structure to use in the traversal methods
 struct traversal_ret {
 	void* elements;
 	size_t elements_size;
 };
-/// @endcond
 
 // Auxliar enum to specify the type of traversal for "traversal_rec" function
 enum Traversal {
