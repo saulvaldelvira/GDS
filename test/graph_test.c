@@ -4,7 +4,7 @@
 #include "../src/Graph.h"
 
 void dijkstra_test(void){
-	Graph *g = graph_empty(sizeof(char) , compare_char);
+	Graph *g = graph_init(sizeof(char) , compare_char);
 
 	char a = 'A', b = 'B', c = 'C', d = 'D' , e = 'E';
 
@@ -80,8 +80,7 @@ void dijkstra_test(void){
 	assert(dijkstra.status == ELEMENT_NOT_FOUND_ERROR);
 	graph_free_dijkstra_data(&dijkstra);
 
-	Ignore_Error(dijkstra = graph_dijkstra(NULL, NULL),15)
-
+	dijkstra = graph_dijkstra(NULL, NULL);
 	assert(dijkstra.status == NULL_PARAMETER_ERROR);
 
 	graph_free(g);
@@ -89,7 +88,7 @@ void dijkstra_test(void){
 }
 
 void floyd_test(void){
-	Graph *g = graph_empty(sizeof(char), compare_char);
+	Graph *g = graph_init(sizeof(char), compare_char);
 	char a = 'A', b = 'B', c = 'C', d = 'D', e = 'E', f = 'F';
 	assert(graph_add_vertex(g, &a));
 	assert(graph_add_vertex(g, &b));
@@ -121,7 +120,7 @@ void floyd_test(void){
 }
 
 void drain_source(void){
-	Graph *g = graph_empty(sizeof(char), compare_char);
+	Graph *g = graph_init(sizeof(char), compare_char);
 	char a = 'A', b = 'B', c = 'C', d = 'D';
 
 	graph_add_vertex(g, &a);
@@ -146,7 +145,7 @@ void drain_source(void){
 }
 
 void traverse_bf(void){
-	Graph *graph = graph_empty(sizeof(char), compare_char);
+	Graph *graph = graph_init(sizeof(char), compare_char);
 	char a = 'A', b = 'B', c = 'C', d = 'D', e= 'E', f ='F', g = 'G';
 	graph_add_vertex(graph, &a);
 	graph_add_vertex(graph, &b);
@@ -174,7 +173,7 @@ void traverse_bf(void){
 }
 
 void traverse_df(void){
-	Graph *graph = graph_empty(sizeof(char), compare_char);
+	Graph *graph = graph_init(sizeof(char), compare_char);
 	char a = 'A', b = 'B', c = 'C', d = 'D',
 		e = 'E', f = 'F', g = 'G', h = 'H', i = 'I', j = 'J';
 
@@ -223,7 +222,7 @@ void traverse_df(void){
 }
 
 void eccentricity_test(void){
-	Graph *g = graph_empty(sizeof(char), compare_char);
+	Graph *g = graph_init(sizeof(char), compare_char);
 	char a = 'A', b = 'B', c = 'C', d = 'D', e = 'E';
 	graph_add_vertex(g, &a);
 	graph_add_vertex(g, &b);
@@ -243,7 +242,7 @@ void eccentricity_test(void){
 	graph_add_edge(g, &c, &b, 5.0f);
 	assert(graph_eccentricity(g, &b) == 8.0f);
 
-	Ignore_Error(assert(graph_eccentricity(NULL, NULL) == NULL_PARAMETER_ERROR * 1.0f),19)
+	assert(graph_eccentricity(NULL, NULL) == NULL_PARAMETER_ERROR * 1.0f);
 
 	assert(graph_eccentricity(g, &(char){'J'}) == ELEMENT_NOT_FOUND_ERROR * 1.0f);
 
@@ -255,7 +254,7 @@ void eccentricity_test(void){
 }
 
 void destructor_test(void){
-	Graph *g = graph_init(sizeof(int*), 100, compare_lesser);
+	Graph *g = graph_init(sizeof(int*), compare_lesser);
 	graph_set_destructor(g, destroy_ptr);
 	for (int i = 0; i < 1024; i++){
 		int *ptr = malloc(sizeof(int));
@@ -269,7 +268,7 @@ int main(void){
 	print_test_start(Graph);
 
 	TIMESTAMP_START
-	Graph *g = graph_empty(sizeof(int) ,compare_int);
+	Graph *g = graph_init(sizeof(int) ,compare_int);
 	for(int i = 0; i < n; i++){
 		assert(graph_add_vertex(g, &i));
 		assert(graph_size(g) == (size_t) i+1);
@@ -312,7 +311,7 @@ int main(void){
 
 	destructor_test();
 
-	g = graph_reset(g);
+	graph_clear(g);
 	int vertices [] = {1, 2, 3, 4, 5};
 	int sources [] = {1, 3, 4, 2, 5};
 	int targets [] = {2, 1, 3, 2, 1};

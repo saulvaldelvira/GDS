@@ -73,6 +73,11 @@ void* heap_peek(Heap *heap, void *dest);
 int heap_remove(Heap *heap, void *element);
 
 /**
+ * Removes all the elements from the heap.
+*/
+void heap_clear(Heap *heap);
+
+/**
  * Changes the priority of element to replacement
 */
 int heap_change_priority(Heap *heap, void *element, void *replacement);
@@ -94,21 +99,14 @@ bool heap_isempty(Heap *heap);
 
 /**
  * Frees the memory asociated with the heap
- * @return 1 if the operation is successful
 */
-int heap_free(Heap *heap);
+void heap_free(Heap *heap);
 
 /**
  * Frees multiple heaps at once.
  * @param n number of pointers to free.
 */
 void heap_free_all(unsigned int n, ...);
-
-/**
- * Resets the heap to its original state.
- * @return heap, or NULL if error.
-*/
-Heap* heap_reset(Heap *heap);
 
 #ifdef __cplusplus
 }

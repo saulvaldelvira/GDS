@@ -79,7 +79,7 @@ int dict_remove(Dictionary *dict, void *key);
 /**
  * Frees the dictionary
 */
-int dict_free(Dictionary *dict);
+void dict_free(Dictionary *dict);
 
 /**
  * Frees multiple dictionaries at once.
@@ -88,9 +88,9 @@ int dict_free(Dictionary *dict);
 void dict_free_all(unsigned int n, ...);
 
 /**
- * Resets the dictionary
+ * Removes all elements from the dictionary
 */
-Dictionary* dict_reset(Dictionary *dict);
+void dict_clear(Dictionary *dict);
 
 #ifdef __cplusplus
 }

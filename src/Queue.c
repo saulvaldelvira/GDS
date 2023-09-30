@@ -5,7 +5,6 @@
 #include "Queue.h"
 #include <stdlib.h>
 #include <stdio.h>
-#define GDS_ENABLE_ERROR_MACROS
 #include "./util/error.h"
 #include "./util/definitions.h"
 #include <string.h>
@@ -34,14 +33,8 @@ struct Queue {
 /// INITIALIZE ////////////////////////////////////////////////////////////////
 
 Queue* queue_init(size_t data_size, comparator_function_t cmp){
-	if (!cmp){
-		printerr_null_param();
+	if (!cmp || data_size == 0)
 		return NULL;
-	}
-	if (data_size == 0){
-		printerr_data_size();
-		return NULL;
-	}
 	// Allocate queue
 	Queue *queue = malloc(sizeof(*queue));
 	assert(queue);
@@ -56,16 +49,12 @@ Queue* queue_init(size_t data_size, comparator_function_t cmp){
 }
 
 void queue_set_comparator(Queue *queue, comparator_function_t cmp){
-	if (!queue || !cmp)
-		printerr_null_param();
-	else
+	if (queue && cmp)
 		queue->compare = cmp;
 }
 
 void queue_set_destructor(Queue *queue, destructor_function_t destructor){
-	if (!queue)
-		printerr_null_param();
-	else
+	if (queue)
 		queue->destructor = destructor;
 }
 
@@ -82,10 +71,8 @@ static QueueNode* queue_init_node(void *element, size_t size){
 /// ENQUEUE ///////////////////////////////////////////////////////////////////
 
 int queue_enqueue(Queue *queue, void *element){
-	if (!queue || !element){
-		printerr_null_param();
+	if (!queue || !element)
 		return NULL_PARAMETER_ERROR;
-	}
 	QueueNode *node = queue_init_node(element, queue->data_size);
 	if (!queue->head){
 		queue->head = node;
@@ -99,10 +86,8 @@ int queue_enqueue(Queue *queue, void *element){
 }
 
 int queue_enqueue_array(Queue *queue, void *array, size_t array_length){
-	if (!queue || !array){
-		printerr_null_param();
+	if (!queue || !array)
 		return NULL_PARAMETER_ERROR;
-	}
 	while (array_length-- > 0){
 		int status = queue_enqueue(queue, array);
 		if (status != SUCCESS)
@@ -117,10 +102,8 @@ int queue_enqueue_array(Queue *queue, void *array, size_t array_length){
 /// DEQUEUE ///////////////////////////////////////////////////////////////////
 
 void* queue_dequeue(Queue *queue, void *dest){
-	if (!queue || !dest){
-		printerr_null_param();
+	if (!queue || !dest)
 		return NULL;
-	}
 	if (queue->head == NULL)
 		return NULL;
 	QueueNode *aux = queue->head;
@@ -132,10 +115,8 @@ void* queue_dequeue(Queue *queue, void *dest){
 }
 
 int queue_dequeue_array(Queue *queue, void *array, size_t array_length){
-	if (!queue || !array){
-		printerr_null_param();
+	if (!queue || !array)
 		return NULL_PARAMETER_ERROR;
-	}
 	while (array_length-- > 0) {
 		if (!queue_dequeue(queue, array))
 			break;
@@ -149,10 +130,8 @@ int queue_dequeue_array(Queue *queue, void *array, size_t array_length){
 /// PEEK-EXISTS-SIZE //////////////////////////////////////////////////////////
 
 void* queue_peek(Queue *queue, void *dest){
-	if (!queue || !dest){
-		printerr_null_param();
+	if (!queue || !dest)
 		return NULL;
-	}
 	if (queue->head == NULL)
 		return NULL;
 	else
@@ -160,10 +139,8 @@ void* queue_peek(Queue *queue, void *dest){
 }
 
 bool queue_exists(Queue *queue, void *element){
-	if (!queue || !element){
-		printerr_null_param();
+	if (!queue || !element)
 		return false;
-	}
 	QueueNode *aux = queue->head;
 	while (aux != NULL){
 		if(queue->compare(aux->info, element) == 0)
@@ -174,10 +151,8 @@ bool queue_exists(Queue *queue, void *element){
 }
 
 int queue_remove(Queue *queue, void *element){
-	if(!queue || !element){
-		printerr_null_param();
+	if(!queue || !element)
 		return NULL_PARAMETER_ERROR;
-	}
 	QueueNode** aux = &queue->head;
 	while (*aux != NULL && queue->compare((*aux)->info, element) != 0)
 		aux = &(*aux)->next;
@@ -191,19 +166,11 @@ int queue_remove(Queue *queue, void *element){
 }
 
 size_t queue_size(Queue *queue){
-	if (!queue){
-		printerr_null_param();
-		return 0;
-	}
-	return queue->n_elements;
+	return queue ? queue->n_elements : 0;
 }
 
 bool queue_isempty(Queue *queue){
-	if (!queue){
-		printerr_null_param();
-		return false;
-	}
-	return queue->head == NULL;
+	return queue ? queue->head == NULL : true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -214,20 +181,16 @@ static void queue_free_node(QueueNode *node, destructor_function_t destructor){
 	if (node == NULL)
 		return;
 	if (destructor)
-
 		destructor(node->info);
 	queue_free_node(node->next, destructor);
 	free(node);
 }
 
-int queue_free(Queue *queue){
-	if (!queue){
-		printerr_null_param();
-		return NULL_PARAMETER_ERROR;
+void queue_free(Queue *queue){
+	if (queue){
+		queue_free_node(queue->head, queue->destructor);
+		free(queue);
 	}
-	queue_free_node(queue->head, queue->destructor);
-	free(queue);
-	return SUCCESS;
 }
 
 void queue_free_all(unsigned int n, ...){
@@ -240,13 +203,10 @@ void queue_free_all(unsigned int n, ...){
 	va_end(arg);
 }
 
-Queue* queue_reset(Queue *queue){
+void queue_clear(Queue *queue){
 	if (!queue){
-		printerr_null_param();
-		return NULL;
+		queue_free_node(queue->head, queue->destructor);
+		queue->head = NULL;
+		queue->tail = NULL;
 	}
-	queue_free_node(queue->head, queue->destructor);
-	queue->head = NULL;
-	queue->tail = NULL;
-	return queue;
 }

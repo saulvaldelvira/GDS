@@ -19,9 +19,6 @@ extern "C" {
 #define REPEATED_ELEMENT_ERROR  -0xE004
 #define INVALID_PARAMETER_ERROR -0xE005
 
-// Print error macros
-#ifdef GDS_ENABLE_ERROR_MACROS
-
 // If it's not already defined, define a macro for the base name of the file
 // Example: If __FILE__ is "/path/to/proyect/main.c" __FILE_NAME__ is "main.c"
 #ifndef __FILE_NAME__
@@ -33,18 +30,27 @@ extern "C" {
         #endif
 #endif
 
-#define _context_str "In %s, line %d (%s)\n"
-#define _context_args __FILE_NAME__, __LINE__, __func__
-
-#define printerr(msg, ...) fprintf(stderr, "ERROR: " msg  ".\n"_context_str __VA_ARGS__, _context_args)  // C23 will add __VA_OPT__(,)
-
-#define printerr_null_param() fprintf(stderr, "ERROR: NULL parameter(s).\n" _context_str, _context_args)
-
-#define printerr_out_of_bounds(index, min, max) fprintf(stderr, "ERROR: Index %lld out of bounds for [%lld, %lld).\n" _context_str, (long long)index, (long long)min, (long long)max, _context_args)
-
-#define printerr_data_size() fprintf(stderr, "ERROR: Data size must be > 0.\n" _context_str, _context_args)
-
-#endif //__GDS_ENABLE_ERROR_MACROS
+/**
+ * Prints to stderr a descriptive message of the given error code.
+*/
+#define gds_print_error_msg(errcode) do {\
+                        fprintf(stderr, "[GDS] ");\
+                        switch (errcode){\
+                        case INDEX_BOUNDS_ERROR:\
+                                fprintf(stderr, "Index out ouf bounds."); break;\
+                        case NULL_PARAMETER_ERROR:\
+                                fprintf(stderr, "NULL parameter."); break;\
+                        case ELEMENT_NOT_FOUND_ERROR:\
+                                fprintf(stderr, "Element not found."); break;\
+                        case REPEATED_ELEMENT_ERROR:\
+                                fprintf(stderr, "Repeated element."); break;\
+                        case INVALID_PARAMETER_ERROR:\
+                                fprintf(stderr, "Invalid parameter."); break;\
+                        default:\
+                                fprintf(stderr, "Unknow error code: %d.", errcode); break;\
+                        }\
+                        fprintf(stderr, " In %s, line %d (%s)\n", __FILE_NAME__, __LINE__, __func__);\
+                }while (0)
 
 #ifdef __cplusplus
 }

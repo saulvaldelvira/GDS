@@ -309,9 +309,8 @@ Vector* vector_join(Vector *vector_1, Vector *vector_2);
 
 /**
  * Frees the vector from memory
- * @return 1 if the operation is successful
  */
-int vector_free(Vector *vector);
+void vector_free(Vector *vector);
 
 /**
  * Frees multiple vector at once.
@@ -321,9 +320,8 @@ void vector_free_all(unsigned int n, ...);
 
 /**
  * Frees the vector from memory and resets it to it's original state
- * @return the same pointer if sucess, NULL if the operation fails
  */
-Vector* vector_reset(Vector *vector);
+void vector_reset(Vector *vector);
 
 #ifdef __cplusplus
 }

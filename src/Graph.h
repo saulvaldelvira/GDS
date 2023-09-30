@@ -17,19 +17,11 @@ extern "C" {
 typedef struct Graph Graph;
 
 /**
- * Returns an empty graph with a default initial size.
+ * Initializes an empty graph.
  * @param data_size size of the data being stored
  * @param cmp comparator function for two elements on the graph
 */
-Graph* graph_empty(size_t data_size, comparator_function_t cmp);
-
-/**
- * Returns an empty graph with the given initial size.
- * @param data_size size of the data being stored
- * @param n_elements the initial size of the graph
- * @param cmp comparator function for two elements on the graph
-*/
-Graph* graph_init(size_t data_size, size_t n_elements, comparator_function_t cmp);
+Graph* graph_init(size_t data_size, comparator_function_t cmp);
 
 /**
  * Sets the comparator function of the graph
@@ -273,9 +265,8 @@ graph_traversal graph_traverse_BF(Graph *graph, void *vertex);
 
 /**
  * Frees the graph
- * @return 1 if SUCESS
 */
-int graph_free(Graph *graph);
+void graph_free(Graph *graph);
 
 /**
  * Frees multiple graphs at once.
@@ -285,9 +276,8 @@ void graph_free_all(unsigned int n, ...);
 
 /**
  * Resets the graph to it's original state.
- * @return the given graph, or NULL if something goes wrong
 */
-Graph* graph_reset(Graph *graph);
+void graph_clear(Graph *graph);
 
 #ifdef __cplusplus
 }

@@ -144,9 +144,8 @@ void* avl_min_from(AVLTree *tree, void *element, void *dest);
 
 /**
  * Frees the memory allocated for the tree
- * @return 1 if the operation is successful
 */
-int avl_free(AVLTree *tree);
+void avl_free(AVLTree *tree);
 
 /**
  * Frees multiple trees at once.
@@ -155,10 +154,9 @@ int avl_free(AVLTree *tree);
 void avl_free_all(unsigned int n, ...);
 
 /**
- * Resets the tree to it's default state
- * @return the pointer. NULL if anything goes wrong.
+ * Removes all elements from the tree
 */
-AVLTree* avl_reset(AVLTree *tree);
+void avl_clear(AVLTree *tree);
 
 #ifdef __cplusplus
 }

@@ -50,14 +50,13 @@ int main(void){
 	}
 	assert(stack_isempty(stack));
 
-	stack = stack_reset(stack);
+	stack_clear(stack);
 	int nums[] = {1, 2, 3, 4, 5, 6, 7, 8};
 	int pop[8];
 	assert(stack_push_array(stack, nums, 8));
 	assert(8UL == stack_size(stack));
 	assert(stack_pop_array(stack, pop, 8));
 	assert(stack_isempty(stack));
-
 
 	stack_free(stack);
 

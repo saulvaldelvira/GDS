@@ -3,7 +3,6 @@
  * Author: Saúl Valdelvira (2023)
  */
 #include "AVLTree.h"
-#define GDS_ENABLE_ERROR_MACROS
 #include "./util/error.h"
 #include "./util/definitions.h" // void_offset macro and byte_t typedef
 #include <stdlib.h> // malloc
@@ -49,28 +48,18 @@ static AVLNode* init_node(void *element, size_t data_size){
 }
 
 void avl_set_comparator(AVLTree *tree, comparator_function_t cmp){
-	if (!tree || !cmp)
-		printerr_null_param();
-	else
+	if (tree && cmp)
 		tree->compare = cmp;
 }
 
 void avl_set_destructor(AVLTree *tree, destructor_function_t destructor){
-	if (!tree)
-		printerr_null_param();
-	else
+	if (tree)
 		tree->destructor = destructor;
 }
 
 AVLTree* avl_init(size_t data_size, comparator_function_t cmp){
-        if (!cmp){
-                printerr_null_param();
-                return NULL;
-        }
-	if (data_size == 0){
-		printerr_data_size();
+        if (!cmp || data_size == 0)
 		return NULL;
-	}
         AVLTree *tree = malloc(sizeof(*tree));
 	assert(tree);
         tree->compare = cmp;
@@ -219,24 +208,19 @@ static struct add_rec_ret add_rec(AVLNode *node, void *element, comparator_funct
 }
 
 int avl_add(AVLTree *tree, void *element){
-        if (!tree || !element){
-                printerr_null_param();
+        if (!tree || !element)
                 return NULL_PARAMETER_ERROR;
-        }
         struct add_rec_ret ret = add_rec(tree->root, element, tree->compare, tree->data_size);
-        if (ret.status != SUCCESS){
+        if (ret.status != SUCCESS)
                 return ret.status;
-        }
         tree->root = ret.node;
 	tree->n_elements++;
         return SUCCESS;
 }
 
 int avl_add_array(AVLTree *tree, void *array, size_t array_length){
-	if (!tree || !array){
-                printerr_null_param();
+	if (!tree || !array)
                 return NULL_PARAMETER_ERROR;
-        }
 	while (array_length-- > 0){
 		int status = avl_add(tree, array);
 		if (status != SUCCESS){
@@ -291,7 +275,6 @@ struct remove_rec_ret {
 static struct remove_rec_ret remove_rec(AVLNode *node, void *element, comparator_function_t cmp, size_t size){
 	if (node == NULL)
 		return (struct remove_rec_ret){NULL, ELEMENT_NOT_FOUND_ERROR};
-
 	int c = (*cmp) (element, node->info);
 	struct remove_rec_ret ret;
 	if (c > 0){
@@ -322,10 +305,8 @@ static struct remove_rec_ret remove_rec(AVLNode *node, void *element, comparator
 }
 
 int avl_remove(AVLTree *tree, void *element){
-	if (!tree || !element){
-		printerr_null_param();
+	if (!tree || !element)
 		return NULL_PARAMETER_ERROR;
-	}
 	struct remove_rec_ret ret = remove_rec(tree->root, element, tree->compare, tree->data_size);
 	if (ret.status == SUCCESS){
 		tree->root = ret.node;
@@ -335,10 +316,8 @@ int avl_remove(AVLTree *tree, void *element){
 }
 
 int avl_remove_array(AVLTree *tree, void *array, size_t array_length){
-	if (!tree || !array){
-                printerr_null_param();
+	if (!tree || !array)
                 return NULL_PARAMETER_ERROR;
-        }
 	while (array_length-- > 0){
 		avl_remove(tree, array);
 		array = void_offset(array, tree->data_size);
@@ -363,10 +342,8 @@ static bool exists_rec(AVLNode *node, void *element, comparator_function_t compa
 }
 
 bool avl_exists(AVLTree *tree, void *element){
-	if (!tree || !element){
-		printerr_null_param();
+	if (!tree || !element)
 		return false;
-	}
 	return exists_rec(tree->root, element, tree->compare);
 }
 
@@ -383,10 +360,8 @@ static AVLNode* get_rec(AVLNode *node, void *element, comparator_function_t comp
 }
 
 void* avl_get(AVLTree *tree, void *element, void *dest){
-	if (!tree || !element || !dest){
-		printerr_null_param();
+	if (!tree || !element || !dest)
 		return NULL;
-	}
 	AVLNode *node = get_rec(tree->root, element, tree->compare);
 	if (!node)
 		return NULL;
@@ -395,26 +370,16 @@ void* avl_get(AVLTree *tree, void *element, void *dest){
 }
 
 size_t avl_size(AVLTree *tree){
-	if (!tree){
-		printerr_null_param();
-		return 0;
-	}
-	return tree->n_elements;
+	return tree ? tree->n_elements : 0;
 }
 
 bool avl_isempty(AVLTree *tree){
-	if (!tree){
-		printerr_null_param();
-		return 0;
-	}
-	return tree->root == NULL;
+	return tree ? tree->root == NULL : true;
 }
 
 int avl_height(AVLTree *tree){
-	if (!tree){
-		printerr_null_param();
+	if (!tree)
 		return NULL_PARAMETER_ERROR;
-	}
 	if (tree->root == NULL)
 		return -1;
 	return tree->root->height;
@@ -503,28 +468,22 @@ static struct traversal_ret traversal_rec(AVLNode *node, enum Traversal order, s
 }
 
 void* avl_preorder(AVLTree *tree){
-	if (!tree){
-		printerr_null_param();
+	if (!tree)
 		return NULL;
-	}
 	struct traversal_ret result = traversal_rec(tree->root, PRE_ORDER, tree->data_size);
 	return result.elements;
 }
 
 void* avl_inorder(AVLTree *tree){
-	if (!tree){
-		printerr_null_param();
+	if (!tree)
 		return NULL;
-	}
 	struct traversal_ret result = traversal_rec(tree->root, IN_ORDER, tree->data_size);
 	return result.elements;
 }
 
 void* avl_postorder(AVLTree *tree){
-	if (!tree){
-		printerr_null_param();
+	if (!tree)
 		return NULL;
-	}
 	struct traversal_ret result = traversal_rec(tree->root, POST_ORDER, tree->data_size);
 
 	return result.elements;
@@ -533,26 +492,17 @@ void* avl_postorder(AVLTree *tree){
 ///////////////////////////////////////////////////////////////////////////////
 
 AVLTree* avl_join(AVLTree *tree_1, AVLTree *tree_2){
-	if (!tree_1 || !tree_2){
-		printerr_null_param();
+	if (!tree_1 || !tree_2 || tree_1->data_size != tree_2->data_size)
 		return NULL;
-	}
-	if (tree_1->data_size != tree_2->data_size){
-		printerr("The trees have different data sizes (%zu and %zu)",, tree_1->data_size, tree_2->data_size);
-		return NULL;
-	}
 	AVLTree *tree_joint = avl_init(tree_1->data_size, tree_1->compare);
-	if (!tree_joint){
-		return NULL;
-	}
-
 	int status;
 	void *tmp = avl_preorder(tree_1);
 	if (tmp != NULL){
 		status = avl_add_array(tree_joint, tmp, tree_1->n_elements);
 		free(tmp);
 		if (status != SUCCESS){
-			goto exit_err;
+			free(tree_joint);
+			return NULL;
 		}
 	}
 
@@ -561,7 +511,6 @@ AVLTree* avl_join(AVLTree *tree_1, AVLTree *tree_2){
 		status = avl_add_array(tree_joint, tmp, tree_2->n_elements);
 		free(tmp);
 		if (status != SUCCESS){
-			exit_err:
 			free(tree_joint);
 			return NULL;
 		}
@@ -573,26 +522,20 @@ AVLTree* avl_join(AVLTree *tree_1, AVLTree *tree_2){
 ///// MAX-MIN /////////////////////////////////////////////////////////////////
 
 void* avl_max(AVLTree *tree, void *dest){
-	if (!tree || !dest){
-		printerr_null_param();
+	if (!tree || !dest)
 		return NULL;
-	}
 	return avl_max_from(tree, tree->root->info, dest);
 }
 
 void* avl_min(AVLTree *tree, void *dest){
-	if (!tree || !dest){
-		printerr_null_param();
+	if (!tree || !dest)
 		return NULL;
-	}
 	return avl_min_from(tree, tree->root->info, dest);
 }
 
 void* avl_max_from(AVLTree *tree, void *element, void *dest){
-	if (!tree || !element || !dest){
-		printerr_null_param();
+	if (!tree || !element || !dest)
 		return NULL;
-	}
 	AVLNode *tmp = get_rec(tree->root, element, tree->compare);
 	if (!tmp)
 		return NULL;
@@ -602,10 +545,8 @@ void* avl_max_from(AVLTree *tree, void *element, void *dest){
 }
 
 void* avl_min_from(AVLTree *tree, void *element, void *dest){
-	if (!tree || !element || !dest){
-		printerr_null_param();
+	if (!tree || !element || !dest)
 		return NULL;
-	}
 	AVLNode *tmp = get_rec(tree->root, element, tree->compare);
 	if (!tmp)
 		return NULL;
@@ -628,12 +569,11 @@ static void free_node(AVLNode *node, destructor_function_t destructor){
 	free(node);
 }
 
-int avl_free(AVLTree *tree){
-	if (!tree)
-		return NULL_PARAMETER_ERROR;
-	free_node(tree->root, tree->destructor);
-	free(tree);
-	return SUCCESS;
+void avl_free(AVLTree *tree){
+	if (tree){
+		free_node(tree->root, tree->destructor);
+		free(tree);
+	}
 }
 
 void avl_free_all(unsigned int n, ...){
@@ -646,11 +586,10 @@ void avl_free_all(unsigned int n, ...){
 	va_end(arg);
 }
 
-AVLTree* avl_reset(AVLTree *tree){
-	if (!tree)
-		return NULL;
-	free_node(tree->root, tree->destructor);
-	tree->root = NULL;
-	tree->n_elements = 0;
-	return tree;
+void avl_clear(AVLTree *tree){
+	if (tree){
+		free_node(tree->root, tree->destructor);
+		tree->root = NULL;
+		tree->n_elements = 0;
+	}
 }

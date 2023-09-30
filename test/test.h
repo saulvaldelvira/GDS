@@ -93,16 +93,6 @@ void shuffle_array(int *arr, int length){
 
 //////////////////////////////////////
 
-#define Clear_Line	"\033[2K\033[1A"
-#define Move_Line(n)	"\33["#n"C"
-
-#define Ignore_Error(call,n) 	do {\
-				fprintf(stderr, "\n");\
-				call;\
-				fprintf(stderr, Clear_Line Clear_Line Clear_Line Move_Line(n));\
-				fflush(stderr);\
-				}while(0);
-
 #ifdef __cplusplus
 }
 #endif

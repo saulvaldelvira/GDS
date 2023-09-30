@@ -103,7 +103,7 @@ int main(void){
 	}
 	assert(list_size(lnked) == 0);
 
-	lnked = list_reset(lnked);
+list_clear(lnked);
 
 	int nums[] = {1, 2, 3, 4, 5};
 	assert(list_append_array(lnked, nums, 5UL));

@@ -3,7 +3,6 @@
  * Author: Saúl Valdelvira (2023)
  */
 #include "Dictionary.h"
-#define GDS_ENABLE_ERROR_MACROS
 #include "./util/error.h"
 #include "./Vector.h"
 #include "./util/definitions.h"
@@ -102,14 +101,8 @@ static int free_node(void *node, void *args){
 }
 
 Dictionary* dict_init(size_t key_size, size_t value_size, hash_function_t hash_func){
-        if (!hash_func){
-                printerr_null_param();
+        if (!hash_func || key_size == 0 || value_size == 0)
                 return NULL;
-        }
-        if (key_size == 0 || value_size == 0){
-                printerr_data_size();
-                return NULL;
-        }
         Dictionary *dict = malloc(sizeof(*dict));
         assert(dict);
         dict->value_size = value_size;
@@ -135,10 +128,8 @@ Dictionary* dict_init(size_t key_size, size_t value_size, hash_function_t hash_f
 }
 
 int dict_configure(Dictionary *dict, enum Redispersion redispersion, double min_lf, double max_lf, hash_function_t hash_func){
-        if (!dict){
-                printerr_null_param();
+        if (!dict)
                 return NULL_PARAMETER_ERROR;
-        }
         float min, max;
         if (min_lf > 0.0f || min_lf == DICT_NO_SHRINKING)
                 min = min_lf;
@@ -150,10 +141,8 @@ int dict_configure(Dictionary *dict, enum Redispersion redispersion, double min_
         else
                 max = dict->max_lf;
 
-        if (min >= max){
-                printerr("Invalid values for min_lf (%f) and max_lf (%f). min_lf must be lower than max_lf",, min, max);
+        if (min >= max)
                 return INVALID_PARAMETER_ERROR;
-        }
 
         dict->min_lf = min;
         dict->max_lf = max;
@@ -167,9 +156,7 @@ int dict_configure(Dictionary *dict, enum Redispersion redispersion, double min_
 }
 
 void dict_set_destructor(Dictionary *dict, destructor_function_t value_destructor){
-	if (!dict)
-		printerr_null_param();
-	else
+	if (dict)
 		dict->destructor = value_destructor;
 }
 //// REDISPERSE ///////////////////////////////////////////////////////////////
@@ -213,10 +200,8 @@ static int dict_redisperse(Dictionary *dict, size_t new_size){
         /// Reset the vector
         if (new_size < dict->vec_size) {
                 destructor_function_t destructor = vector_get_destructor(dict->elements);
-                status = vector_free(dict->elements);
+                vector_free(dict->elements);
                 dict->elements = vector_init(sizeof(DictionaryNode), compare_equal);
-                if (!dict->elements || status != SUCCESS)
-                        return ERROR;
                 vector_reserve(dict->elements, new_size);
                 vector_set_destructor(dict->elements, destructor);
         }
@@ -287,10 +272,8 @@ static size_t dict_get_pos(Dictionary *dict, void *key, size_t n_it){
 }
 
 int dict_put(Dictionary *dict, void *key, void *value){
-        if (!dict || !key || !value){
-                printerr_null_param();
+        if (!dict || !key || !value)
                 return NULL_PARAMETER_ERROR;
-        }
         size_t pos = 0;
         DictionaryNode node = {0};
 
@@ -337,10 +320,8 @@ int dict_put(Dictionary *dict, void *key, void *value){
         if (LF(dict->n_elements, dict->vec_size) >= dict->max_lf){
                 size_t new_size = get_next_prime(dict->vec_size * 2);
                 int status = dict_redisperse(dict, new_size);
-                if (status != SUCCESS){
-                        printerr("Could not redisperse", );
+                if (status != SUCCESS)
                         return status;
-                }
         }
         return SUCCESS;
 }
@@ -348,10 +329,8 @@ int dict_put(Dictionary *dict, void *key, void *value){
 //// GET_EXISTS ///////////////////////////////////////////////////////////////
 
 void* dict_get(Dictionary *dict, void *key, void *dest){
-        if (!dict || !key){
-                printerr_null_param();
+        if (!dict || !key)
                 return NULL;
-        }
         size_t pos;
         size_t i = 0;
         DictionaryNode node;
@@ -373,10 +352,8 @@ void* dict_get(Dictionary *dict, void *key, void *dest){
 }
 
 bool dict_exists(Dictionary *dict, void *key){
-        if (!dict || !key){
-                printerr_null_param();
+        if (!dict || !key)
                 return NULL_PARAMETER_ERROR;
-        }
         size_t pos;
         size_t i = 0;
         DictionaryNode node;
@@ -408,19 +385,15 @@ static int dict_delete_node(Dictionary *dict, size_t pos, DictionaryNode node){
         if (dict->min_lf > 0 && LF(dict->n_elements, dict->vec_size) <= dict->min_lf){
                 size_t new_size = get_prev_prime(dict->vec_size / 2);
                 int status = dict_redisperse(dict, new_size);
-                if (status != SUCCESS){
-                        printerr("Could not redisperse",);
+                if (status != SUCCESS)
                         return status;
-                }
         }
         return SUCCESS;
 }
 
 int dict_remove(Dictionary *dict, void *key){
-        if (!dict || !key){
-                printerr_null_param();
+        if (!dict || !key)
                 return NULL_PARAMETER_ERROR;
-        }
 	size_t n_try = 0;
         size_t pos = dict_get_pos(dict, key, 0);
 	size_t start_pos = pos;
@@ -440,13 +413,12 @@ int dict_remove(Dictionary *dict, void *key){
 
 //// FREE //////////////////////////////////////////////////////////////////////
 
-int dict_free(Dictionary *dict){
+void dict_free(Dictionary *dict){
         if (!dict)
-                return NULL_PARAMETER_ERROR;
+                return;
         vector_process(dict->elements, free_node, &dict->destructor);
         vector_free(dict->elements);
         free(dict);
-        return SUCCESS;
 }
 
 void dict_free_all(unsigned int n, ...){
@@ -459,13 +431,12 @@ void dict_free_all(unsigned int n, ...){
 	va_end(arg);
 }
 
-Dictionary* dict_reset(Dictionary *dict){
+void dict_clear(Dictionary *dict){
         if (!dict)
-                return NULL;
+                return;
         vector_process(dict->elements, free_node, &dict->destructor);
         vector_reserve(dict->elements, DICT_INITIAL_SIZE);
         dict->n_elements = 0;
         dict->vec_size = DICT_INITIAL_SIZE;
         dict->prev_vec_size = get_prev_prime(DICT_INITIAL_SIZE);
-        return dict;
 }

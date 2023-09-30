@@ -116,7 +116,7 @@ int main(void){
 	int exp9 [] = {7, 2, 1, 14, 12, 15};
 	assert_preord(t, exp9);
 
-	t = avl_reset(t);
+	avl_clear(t);
 
 	assert(avl_add_array(t, nums, 11UL));
 	assert(avl_remove_array(t, nums, 11UL));

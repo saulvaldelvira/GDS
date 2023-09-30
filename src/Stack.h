@@ -79,9 +79,14 @@ bool stack_exists(Stack *stack, void *element);
 int stack_remove(Stack *stack, void *element);
 
 /**
+ * Removes all the elements from the stack
+*/
+void stack_clear(Stack *stack);
+
+/**
  * @return the number of elements in the Stack
 */
-size_t stack_size(Stack *queue);
+size_t stack_size(Stack *stack);
 
 /**
  * @return true if the stack is empty
@@ -90,21 +95,14 @@ bool stack_isempty(Stack *stack);
 
 /**
  * Frees the memory allocated for the stack.
- * @return true 1 if he operation is successful
 */
-int stack_free(Stack *stack);
+void stack_free(Stack *stack);
 
 /**
  * Frees multiple stacks at once.
  * @param n number of pointers to free.
 */
 void stack_free_all(unsigned int n, ...);
-
-/**
- * Frees the memory allocated for the stack AND resets it to the initial state of a stack
- * @return the same pointer if sucess, NULL if the operation fails
-*/
-Stack* stack_reset(Stack *stack);
 
 #ifdef __cplusplus
 }

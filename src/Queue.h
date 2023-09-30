@@ -77,6 +77,12 @@ bool queue_exists(Queue *queue, void *element);
 int queue_remove(Queue *queue, void *element);
 
 /**
+ * Removes all the elements from the queue
+*/
+void queue_clear(Queue *queue);
+
+
+/**
  * @return the number of elements in the Queue
 */
 size_t queue_size(Queue *queue);
@@ -88,21 +94,14 @@ bool queue_isempty(Queue *queue);
 
 /**
  * Frees the memory allocated for the queue.
- * @return 1 if the operation is successful
 */
-int queue_free(Queue *queue);
+void queue_free(Queue *queue);
 
 /**
  * Frees multiple queues at once.
  * @param n number of pointers to free.
 */
 void queue_free_all(unsigned int n, ...);
-
-/**
- * Frees the memory allocated for the queue AND resets it to the initial state of a Queue
- * @return the same pointer if sucess, NULL if the operation fails
-*/
-Queue* queue_reset(Queue *queue);
 
 #ifdef __cplusplus
 }

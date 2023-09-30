@@ -45,7 +45,7 @@ int main(void){
 	}
 	assert(queue_isempty(q));
 
-	q  = queue_reset(q);
+queue_clear(q);
 	int nums[] = {1, 2, 3, 4, 5, 6, 7, 8};
 	int dest[8];
 	assert(queue_enqueue_array(q, nums, 8));

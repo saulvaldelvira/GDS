@@ -12,7 +12,7 @@ void joins_test(void){
 	for (int i = 10; i < 20; i++)
 		vector_append(a2, &i);
 
-	Ignore_Error(assert(!vector_join(a1, diff_size)), -1);
+	assert(!vector_join(a1, diff_size));
 
 	Vector *vec_joint = vector_join(a1, a2);
 	assert(vec_joint != NULL);
@@ -148,7 +148,7 @@ int main(void){
 	assert(vector_set(vec, &(int){2}, &(int){3}) != ELEMENT_NOT_FOUND_ERROR);
 	assert(3 == * (int*) vector_get_at(vec, 0, &tmp));
 	/////////////////////////////////////////////////////
-	vec = vector_reset(vec);
+vector_clear(vec);
 	int nums[] = {1, 2, 3, 4, 5};
 	assert(vector_append_array(vec, nums, 5));
 	assert(5UL == vector_size(vec));
@@ -158,8 +158,8 @@ int main(void){
 	assert(SUCCESS == vector_set_at(vec, -2, &(int){-123}));
 	assert(-123 == * (int*) vector_get_at(vec, -2, &tmp));
 	assert(SUCCESS == vector_set_at(vec, -2, &(int){4}));
-	Ignore_Error(assert(SUCCESS != vector_set_at(vec, -50, &(int){-50})), 0);
-	Ignore_Error(assert(NULL == vector_get_at(vec, -12, &tmp)), 0);
+	assert(SUCCESS != vector_set_at(vec, -50, &(int){-50}));
+	assert(NULL == vector_get_at(vec, -12, &tmp));
 
 	assert(vector_insert_at(vec, 1, &(int){120}));
 	assert(vector_exists(vec, &(int){120}));

@@ -7,15 +7,12 @@
 void change_priority(void){
 	print_test_step("Change Priority");
 	Heap *min = heap_init(sizeof(int), compare_int);
-
-	//Ignore_Error(assert(heap_change_priority(min, &(int){12}, &(int){16}) != SUCCESS), 0);
-
 	int elements[] = {12 ,14, 15, 20, 16, 17, 19, 24, 30};
 	heap_add_array(min, elements, 9);
 
 	assert(heap_change_priority(min, &(int){-78}, &(int){90}) != SUCCESS);
-	Ignore_Error(assert(heap_change_priority(min, NULL, NULL) != SUCCESS), 0);
-	Ignore_Error(assert(heap_change_priority(min, &elements[0], NULL) != SUCCESS), 24);
+	assert(heap_change_priority(min, NULL, NULL) != SUCCESS);
+	assert(heap_change_priority(min, &elements[0], NULL) != SUCCESS);
 
 	// Change priority of 20 to 5
 	assert(heap_change_priority(min, &elements[3], &(int){5}));
@@ -170,7 +167,7 @@ int main(void){
 	assert_array_int(res, exp1, 10);
 	free(res);
 
-	min = heap_reset(min);
+heap_clear(min);
 
 	int nums2[] = {10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0};
 	heap_add_array(min, nums2, 11);

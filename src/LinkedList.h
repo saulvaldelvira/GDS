@@ -112,6 +112,11 @@ size_t list_size(LinkedList *list);
 bool list_isempty(LinkedList *list);
 
 /**
+ * Removes all the elements from the list
+*/
+void list_clear(LinkedList *list);
+
+/**
  * Removes the specified element.
  * @note If defined, the destructor will be called on the removed element.
  * @note If you don't want that, see list_pop
@@ -188,19 +193,13 @@ LinkedList* list_join(LinkedList *list_1, LinkedList *list_2);
 /**
  * Frees the memory allocated on the list.
 */
-int list_free(LinkedList *list);
+void list_free(LinkedList *list);
 
 /**
  * Frees multiple lists at once.
  * @param n number of pointers to free.
 */
 void list_free_all(unsigned int n, ...);
-
-/**
- * Frees the memory allocated on the list, and resets it to it's initial state
- * @return the same pointer if sucess, NULL if the operation fails
-*/
-LinkedList* list_reset(LinkedList *list);
 
 #ifdef __cplusplus
 }
