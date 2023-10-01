@@ -141,14 +141,14 @@ int vector_push_front_array(Vector *vector, void *array, size_t array_length){
 	return vector_insert_array(vector, 0, array, array_length);
 }
 
-int vector_set_at(Vector *vector, ptrdiff_t index, void *element){
-	if (!vector || !element)
+int vector_set_at(Vector *vector, ptrdiff_t index, void *replacement){
+	if (!vector || !replacement)
 		return NULL_PARAMETER_ERROR;
 	int status = check_and_transform_index(&index, NULL, vector->n_elements);
 	if (status != SUCCESS)
 		return status;
 	void *tmp = void_offset(vector->elements, index * vector->data_size);
-	memmove(tmp, element, vector->data_size);
+	memmove(tmp, replacement, vector->data_size);
 	return SUCCESS;
 }
 
@@ -337,7 +337,7 @@ void* vector_pop_array(Vector *vector, void *array, size_t array_length, void *d
 
 ///////////////////////////////////////////////////////////////////////////////
 
-/// SEARCH-GET ////////////////////////////////////////////////////////////////
+/// GET ////////////////////////////////////////////////////////////////
 
 ptrdiff_t vector_indexof(Vector *vector, void *element){
 	if (!vector || !element)
@@ -360,7 +360,7 @@ bool vector_isempty(Vector *vector){
 	return vector ? vector->n_elements == 0 : true;
 }
 
-void* vector_get_at(Vector *vector, ptrdiff_t index, void *dest){
+void* vector_at(Vector *vector, ptrdiff_t index, void *dest){
 	if (!vector || !dest)
 		return NULL;
 	int status = check_and_transform_index(&index, NULL, vector->n_elements);
@@ -376,23 +376,23 @@ void* vector_get(Vector *vector, void *element, void *dest){
 	ptrdiff_t index = vector_indexof(vector, element);
 	if (index < 0)
 		return NULL;
-	return vector_get_at(vector, index, dest);
+	return vector_at(vector, index, dest);
 }
 
-void* vector_get_front(Vector *vector, void *dest){
+void* vector_front(Vector *vector, void *dest){
 	if (!vector || !dest)
 		return NULL;
 	if (vector->n_elements > 0)
-		return vector_get_at(vector, 0, dest);
+		return vector_at(vector, 0, dest);
 	else
 		return NULL;
 }
 
-void* vector_get_back(Vector *vector, void *dest){
+void* vector_back(Vector *vector, void *dest){
 	if (!vector || !dest)
 		return NULL;
 	if (vector->n_elements > 0)
-		return vector_get_at(vector, vector->n_elements - 1, dest);
+		return vector_at(vector, vector->n_elements - 1, dest);
 	else
 		return NULL;
 }
@@ -435,7 +435,7 @@ int vector_swap(Vector *vector, ptrdiff_t index_1, ptrdiff_t index_2){
 		return status;
 	void *tmp = malloc(vector->data_size);
 	assert(tmp);
-	if (!vector_get_at(vector, index_1, tmp))
+	if (!vector_at(vector, index_1, tmp))
 		return ERROR;
 
 	void *e1 = void_offset(vector->elements, index_1 * vector->data_size);
@@ -475,11 +475,9 @@ int vector_reserve(Vector *vector, size_t n_elements){
 	return SUCCESS;
 }
 
-int vector_shrink(Vector *vector){
-	if (!vector)
-		return NULL_PARAMETER_ERROR;
-	vector_resize(vector, vector->n_elements);
-	return SUCCESS;
+void vector_shrink(Vector *vector){
+	if (vector)
+		vector_resize(vector, vector->n_elements);
 }
 
 Vector* vector_dup(Vector *vector){

@@ -279,7 +279,7 @@ int dict_put(Dictionary *dict, void *key, void *value){
 
         for (size_t i = 0; i < dict->vec_size; ++i){
                 pos = dict_get_pos(dict, key, i);
-                vector_get_at(dict->elements, pos, &node);
+                vector_at(dict->elements, pos, &node);
 
                 if (node.state == FULL){
                         int64_t h1 = dict->hash(key);
@@ -336,7 +336,7 @@ void* dict_get(Dictionary *dict, void *key, void *dest){
         DictionaryNode node;
         do {
                 pos = dict_get_pos(dict, key, i);
-                vector_get_at(dict->elements, pos, &node);
+                vector_at(dict->elements, pos, &node);
                 if (node.state == EMPTY)
                         break;
                 if (node.state != DELETED){
@@ -360,7 +360,7 @@ bool dict_exists(Dictionary *dict, void *key){
         do {
                 pos = dict_get_pos(dict, key, i);
 
-                vector_get_at(dict->elements, pos, &node);
+                vector_at(dict->elements, pos, &node);
                 if (node.state == EMPTY)
                         break;
                 if (node.state != DELETED){
@@ -399,7 +399,7 @@ int dict_remove(Dictionary *dict, void *key){
 	size_t start_pos = pos;
         DictionaryNode node;
 	do{
-		vector_get_at(dict->elements, pos, &node);
+		vector_at(dict->elements, pos, &node);
                 if (node.state == FULL){
 			int64_t h1 = dict->hash(key);
 			int64_t h2 = dict->hash(node.key);

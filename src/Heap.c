@@ -149,7 +149,7 @@ int heap_add_array(Heap *heap, void *array, size_t array_length){
 void* heap_pop_min(Heap *heap, void *dest){
 	if (!heap || !dest)
 		return NULL;
-	dest = vector_get_front(heap->elements, dest);
+	dest = vector_front(heap->elements, dest);
 	if (dest != NULL){
 		size_t last_pos = vector_size(heap->elements) - 1;
 		int status = vector_swap(heap->elements, 0, last_pos);
@@ -201,7 +201,7 @@ void* heap_get_into_array(Heap *heap, void *array, size_t array_length){
 void* heap_peek(Heap *heap, void *dest){
 	if (!heap || !dest)
 		return NULL;
-	return vector_get_at(heap->elements, 0, dest);
+	return vector_at(heap->elements, 0, dest);
 }
 
 void heap_clear(Heap *heap){

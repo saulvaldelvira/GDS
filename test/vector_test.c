@@ -53,7 +53,7 @@ void reserve_shrink_test(void){
 	for (int i = 0; i < 100; i++)
 		vector_append(vector, &i);
 	assert(vector_capacity(vector) > 100);
-	assert(vector_shrink(vector));
+	vector_shrink(vector);
 	assert(vector_capacity(vector) == 100);
 	vector_free(vector);
 }
@@ -100,8 +100,8 @@ int main(void){
 	/////////
 
 	assert(!vector_isempty(vec));
-	assert(n-1 == * (int*) vector_get_back(vec, &tmp));
-	assert(0 == * (int*) vector_get_front(vec, &tmp));
+	assert(n-1 == * (int*) vector_back(vec, &tmp));
+	assert(0 == * (int*) vector_front(vec, &tmp));
 	assert(vector_indexof(vec, &(int){-20}) == ELEMENT_NOT_FOUND_ERROR);
 
 	assert(vector_indexof(vec, &(int){30}) == (size_t) 30);
@@ -119,9 +119,9 @@ int main(void){
 	size_t size = vector_size(vec);
 	assert(vector_push_front(vec, &(int){123}));
 	assert(vector_append(vec, &(int){456}));
-	assert(123 == * (int*) vector_get_front(vec, &tmp));
+	assert(123 == * (int*) vector_front(vec, &tmp));
 	assert(vector_remove_front(vec));
-	assert(456 == * (int*) vector_get_back(vec, &tmp));
+	assert(456 == * (int*) vector_back(vec, &tmp));
 	assert(vector_remove_back(vec));
 	assert(size == vector_size(vec));
 
@@ -133,7 +133,7 @@ int main(void){
 	for(int i=n-1; i >= 0; i--){
 		assert(vector_exists(vec, &i));
 		assert(vector_indexof(vec, &i) == (ptrdiff_t) i);
-		assert(i == * (int*) vector_get_at(vec, i, &tmp));
+		assert(i == * (int*) vector_at(vec, i, &tmp));
 		assert(i == * (int*) vector_get(vec, &i, &tmp));
 		assert(vector_remove(vec, &i));
 	}
@@ -143,10 +143,10 @@ int main(void){
 	assert(vector_append(vec, &(int){1}));
 	assert(vector_set_at(vec, 0, &(int){2}));
 
-	assert(2 == * (int*) vector_get_at(vec, 0, &tmp));
+	assert(2 == * (int*) vector_at(vec, 0, &tmp));
 
 	assert(vector_set(vec, &(int){2}, &(int){3}) != ELEMENT_NOT_FOUND_ERROR);
-	assert(3 == * (int*) vector_get_at(vec, 0, &tmp));
+	assert(3 == * (int*) vector_at(vec, 0, &tmp));
 	/////////////////////////////////////////////////////
 vector_clear(vec);
 	int nums[] = {1, 2, 3, 4, 5};
@@ -154,12 +154,12 @@ vector_clear(vec);
 	assert(5UL == vector_size(vec));
 
 	// Negative indexing
-	assert(5 == * (int*) vector_get_at(vec, -1, &tmp));
+	assert(5 == * (int*) vector_at(vec, -1, &tmp));
 	assert(SUCCESS == vector_set_at(vec, -2, &(int){-123}));
-	assert(-123 == * (int*) vector_get_at(vec, -2, &tmp));
+	assert(-123 == * (int*) vector_at(vec, -2, &tmp));
 	assert(SUCCESS == vector_set_at(vec, -2, &(int){4}));
 	assert(SUCCESS != vector_set_at(vec, -50, &(int){-50}));
-	assert(NULL == vector_get_at(vec, -12, &tmp));
+	assert(NULL == vector_at(vec, -12, &tmp));
 
 	assert(vector_insert_at(vec, 1, &(int){120}));
 	assert(vector_exists(vec, &(int){120}));
@@ -177,7 +177,7 @@ vector_clear(vec);
 	vector_push_front(vec, &(int){0});
 	assert(vector_push_front_array(vec, nums, 5));
 	assert(6UL == vector_size(vec));
-	assert(0 == * (int*) vector_get_at(vec, 5, &tmp));
+	assert(0 == * (int*) vector_at(vec, 5, &tmp));
 	vector_free(vec);
 
 	destructor_test();

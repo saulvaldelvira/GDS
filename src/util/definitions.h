@@ -13,6 +13,7 @@ extern "C" {
 #include <stdint.h>
 
 typedef int8_t byte;
+
 #define void_offset(ptr, bytes) ((void*)((byte*)ptr + (bytes)))
 
 #define MAX(x,y) ((x) > (y) ? (x) : (y))

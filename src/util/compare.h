@@ -32,9 +32,9 @@ int compare_long_long(const void *e_1, const void *e_2);        ///< Compares tw
  * inside a structure (e.g. in a stack, if you
  * only need to push and pop)
 */
-int compare_equal(const void *e_1, const void *e_2); ///< Allways returns 0
-int compare_lesser(const void *e_1, const void *e_2); ///< Allways returns -1
-int compare_greater(const void *e_1, const void *e_2); ///< Allways returns 1
+int compare_equal(const void *e_1, const void *e_2); ///< Always returns 0
+int compare_lesser(const void *e_1, const void *e_2); ///< Always returns -1
+int compare_greater(const void *e_1, const void *e_2); ///< Always returns 1
 
 // Destructor functions
 
@@ -49,4 +49,4 @@ void destroy_ptr(void *e);
 }
 #endif
 
-#endif
+#endif // COMPARE_H
