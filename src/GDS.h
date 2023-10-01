@@ -20,7 +20,7 @@ extern "C" {
 #include "Stack.h"
 #include "Vector.h"
 
-#include "util/comparator.h"
+#include "util/compare.h"
 #include "util/definitions.h"
 #include "util/error.h"
 #include "util/hash.h"

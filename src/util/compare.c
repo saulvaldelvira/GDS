@@ -1,8 +1,8 @@
 /*
- * comparator.c - Functions to compare common data types.
+ * compare.c - Functions to compare common data types.
  * Author: Saúl Valdelvira (2023)
  */
-#include "comparator.h"
+#include "compare.h"
 #include <stdlib.h>
 
 // COMPARATORS

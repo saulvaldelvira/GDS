@@ -1,10 +1,10 @@
 /*
- * comparator.h - Functions to compare common data types.
+ * compare.h - Functions to compare common data types.
  * Author: Saúl Valdelvira (2023)
  */
 #pragma once
-#ifndef COMPARATOR_H
-#define COMPARATOR_H
+#ifndef COMPARE_H
+#define COMPARE_H
 
 #ifdef __cplusplus
 extern "C" {

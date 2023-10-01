@@ -12,7 +12,7 @@ extern "C" {
 
 #include <stddef.h>
 #include <stdbool.h>
-#include "./util/comparator.h"
+#include "./util/compare.h"
 
 /**
  * The Stack works in a similar way to a LinkedList. But in this case, the elements are allways added in the head.

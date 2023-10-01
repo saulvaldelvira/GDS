@@ -12,7 +12,7 @@ extern "C" {
 
 #include <stddef.h>
 #include <stdbool.h>
-#include "./util/comparator.h"
+#include "./util/compare.h"
 
 typedef struct Graph Graph;
 

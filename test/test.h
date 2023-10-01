@@ -12,7 +12,7 @@ extern "C" {
 #include <stdint.h>
 #include <time.h>
 
-#include "../src/util/comparator.h"
+#include "../src/util/compare.h"
 #include "../src/util/error.h"
 #include "../src/util/definitions.h"
 
