@@ -303,6 +303,13 @@ int graph_remove_edges_array(Graph *graph, void *array_sources, void *array_targ
 	return SUCCESS;
 }
 
+void* graph_vertex_at(Graph *graph, ptrdiff_t index, void *dest){
+	if (!graph || !dest || index < 0 || (size_t)index >= graph->n_elements)
+		return NULL;
+	void *src = void_offset(graph->vertices, index * graph->data_size);
+	return memcpy(dest, src, graph->data_size);
+}
+
 float graph_get_edge(Graph *graph, void *source, void *target){
 	if (!graph || !source || !target)
 		return NULL_PARAMETER_ERROR;
@@ -427,7 +434,7 @@ DijkstraData_t graph_dijkstra(Graph *graph, void *source){
 			// Calculate the cost to i through this pivot
 			float w = dijkstra.D[pivot] + graph->weights[pivot][i];
 
-			// If the cost is < that the actual cost AND it exists an edge between the pivot and i
+			// If the cost is < than the actual cost AND it exists an edge between the pivot and i
 			if (dijkstra.D[i] > w && graph->edges[pivot][i]){
 				dijkstra.D[i] = w;
 				dijkstra.P[i] = pivot;
@@ -437,7 +444,7 @@ DijkstraData_t graph_dijkstra(Graph *graph, void *source){
 		S[pivot] = 1;
 		pivot = graph_get_pivot(S, dijkstra.D, graph->n_elements);
 	}
-	free(S); // Free the visited array
+	free(S);
 	return dijkstra;
 }
 

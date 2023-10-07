@@ -95,6 +95,12 @@ int graph_remove_edge(Graph *graph, void *source, void *target);
 int graph_remove_edges_array(Graph *graph, void *array_sources, void *array_targets, size_t arrays_length);
 
 /**
+ * Copies into dest the element at the given index
+ * in the vertices array
+*/
+void* graph_vertex_at(Graph *graph, ptrdiff_t index, void *dest);
+
+/**
  * @return the weight of the edge between source and target
 */
 float graph_get_edge(Graph *graph, void *source, void *target);
@@ -119,7 +125,7 @@ bool graph_isempty(Graph *graph);
 /////// DIJKSTRA ///////
 
 /// Struct to return the result of dijkstra's algorithm
-typedef struct DijkstraData {
+typedef struct {
 	float     *D; 		///< Array of weights
 	ptrdiff_t *P; 		///< Array of pivots
 	size_t     n_elements; 	///< Number of elements in the D and P arrays
@@ -154,7 +160,7 @@ void graph_free_dijkstra_data(DijkstraData_t *data);
 /////// FLOYD ///////
 
 /// Struct to return the result of floyd's algorithm
-typedef struct FloydData {
+typedef struct {
 	float     **A; 		///< Weights matrix
 	ptrdiff_t **P; 		///< Pivots matrix
 	size_t    n_elements; 	///< Dimension of the D and P matrices
@@ -182,7 +188,7 @@ void graph_free_floyd_data(FloydData_t *data);
 //// OTHER ALGORITHMS ////
 
 /// Represents the Degree of a vertex
-typedef struct graph_degree {
+typedef struct {
 	size_t deg_in; ///< Degree in the vertex
 	size_t deg_out; ///< Degree out the vertex
 	size_t deg; ///< Total degree of the vertex
@@ -232,7 +238,7 @@ float graph_eccentricity(Graph *graph, void *vertex);
 /**
  * Struct that hold the result of a graph traversal
 */
-typedef struct graph_traversal {
+typedef struct {
 	void *elements; 	///< Array of elements
 	size_t elements_size; 	///< Number of elements in the array
 	int status; 		///< return status of the traversal

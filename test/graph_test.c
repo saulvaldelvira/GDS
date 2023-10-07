@@ -265,6 +265,7 @@ void destructor_test(void){
 
 int main(void){
 	intptr_t n = 1200;
+	int tmp;
 	print_test_start(Graph);
 
 	TIMESTAMP_START
@@ -272,6 +273,9 @@ int main(void){
 	for(int i = 0; i < n; i++){
 		assert(graph_add_vertex(g, &i));
 		assert(graph_size(g) == (size_t) i+1);
+		ptrdiff_t index = graph_indexof(g, &i);
+		graph_vertex_at(g, index, &tmp);
+		assert(tmp == i);
 	}
 
 	assert(graph_add_edge(g, &(int){12}, &(int){15}, 0.2f));
