@@ -2,7 +2,7 @@
  * Prints the fibonacci sequence, using
  * a Vector to cache the values.
  *
- * $ gcc fib.c ../src/Vector.c ../src/util/comparator.c -o fib
+ * $ gcc fib.c ../src/Vector.c ../src/util/compare.c -o fib
  * $ ./fib 12
  *   144
  * $ ./fib 3 8
@@ -21,13 +21,13 @@ Vector *fib_cache;
 double fib(int n){
 	double f;
 	if (vector_size(fib_cache) > n){
-		vector_get_at(fib_cache, n, &f);
+		vector_at(fib_cache, n, &f);
 	}else{
 		for (size_t i = vector_size(fib_cache); i <= n; i++){
 			double tmp;
-			vector_get_at(fib_cache, i - 1, &tmp);
+			vector_at(fib_cache, i - 1, &tmp);
 			f = tmp;
-			vector_get_at(fib_cache, i - 2, &tmp);
+			vector_at(fib_cache, i - 2, &tmp);
 			f += tmp;
 			vector_append(fib_cache, &f);
 		}

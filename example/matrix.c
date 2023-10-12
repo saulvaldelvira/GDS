@@ -1,7 +1,7 @@
 /**
  * Prints a matrix filled with random numbers.
  * The dimension can be given as a command line parameter (default: 10)
- * $ gcc matrix.c ../src/Vector.c ../src/util/comparator.c -o matrix
+ * $ gcc matrix.c ../src/Vector.c ../src/util/compare.c -o matrix
  * $ ./matrix 7
  * Output:
  *      83 86 77 15 93 35 86
@@ -43,7 +43,7 @@ int main(int argc, char *argv[]){
 
         Vector *row;
         for (int i = 0; i < dim; i++){
-                vector_get_at(matrix, i, &row);
+                vector_at(matrix, i, &row);
                 for (int j = 0; j < dim; j++){
                         int value = rand() % 100;
                         vector_set_at(row, j, &value);
@@ -52,7 +52,7 @@ int main(int argc, char *argv[]){
 
         int *values = malloc(dim * sizeof(int));
         for (int i = 0; i < dim; i++){
-                vector_get_at(matrix, i, &row);
+                vector_at(matrix, i, &row);
                 vector_get_into_array(row, values, dim);
                 for (int j = 0; j < dim; j++)
                         printf("%2d ", values[j]);

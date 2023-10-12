@@ -1,6 +1,5 @@
 /**
  * Example of using an AVL Tree as a map of Key-Value pairs.
- * The cool thing is: you don't need to change the code in AVLTree.c AT ALL.
 */
 #include "../src/AVLTree.h"
 #include <stdio.h>
