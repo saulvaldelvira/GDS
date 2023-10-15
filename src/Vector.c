@@ -196,12 +196,12 @@ int vector_insert_at(Vector *vector, ptrdiff_t index, void *element){
 	return SUCCESS;
 }
 
-int vector_populate(Vector *vector, void *template){
-	if (!vector || !template)
+int vector_populate(Vector *vector, void *templ){
+	if (!vector || !templ)
 		return NULL_PARAMETER_ERROR;
 	void *tmp = vector->elements;
 	for (size_t i = 0; i < vector->max_elements; i++){
-		memcpy(tmp, template, vector->data_size);
+		memcpy(tmp, templ, vector->data_size);
 		tmp = void_offset(tmp, vector->data_size);
 	}
 	vector->n_elements = vector->max_elements;
