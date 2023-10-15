@@ -2,7 +2,6 @@
 
 SRC = src
 BIN = bin
-INCLUDE = include
 
 CFILES = $(wildcard $(SRC)/*.c) $(wildcard $(SRC)/*/*.c)
 OFILES = $(patsubst %.c,%.o,$(CFILES))
@@ -19,16 +18,13 @@ endif
 AR = ar
 ARFLAGS = rcs
 
+INSTALL_PATH ?= /usr/local
+
 default: libs
 
-INSTALL_PATH ?= /usr/local
-HEADER_MSG = "// Source code: https://git.saulv.es/Generic-Data-Structures"
-
-libs: $(OFILES) | $(BIN)/  $(INCLUDE)/ $(INCLUDE)/util/
+libs: $(OFILES) | $(BIN)/
 	@ $(CC) $(CCFLAGS) -shared -o ./$(BIN)/libGDS.so $(OFILES)
 	@ $(AR) $(ARFLAGS) ./$(BIN)/libGDS-static.a $(OFILES)
-	@ $(foreach H,$(wildcard $(SRC)/*.h), echo $(HEADER_MSG) | cat - $(H) | cat - > $(INCLUDE)/$(notdir $(H));)
-	@ $(foreach H,$(wildcard $(SRC)/util/*.h), echo $(HEADER_MSG) | cat - $(H) | cat - > $(INCLUDE)/util/$(notdir $(H));)
 
 install: libs
 	@ sudo su -c '\
@@ -37,8 +33,8 @@ install: libs
 	  install -m 644 $(BIN)/libGDS* $(INSTALL_PATH)/lib ;\
 	  install -d $(INSTALL_PATH)/include/GDS ;\
 	  install -d $(INSTALL_PATH)/include/GDS/util ;\
-	  install -m 644 $(INCLUDE)/*.h $(INSTALL_PATH)/include/GDS ;\
-	  install -m 644 $(INCLUDE)/util/*.h $(INSTALL_PATH)/include/GDS/util ;\
+	  install -m 644 $(SRC)/*.h $(INSTALL_PATH)/include/GDS ;\
+	  install -m 644 $(SRC)/util/*.h $(INSTALL_PATH)/include/GDS/util ;\
 	  ldconfig $(INSTALL_PATH)/lib '
 
 uninstall:
@@ -73,5 +69,4 @@ doxygen: ./doxygen/
 clean:
 	@ find . -type f -name '*.o' -delete
 	@ rm -rf $(BIN)/
-	@ rm -rf $(INCLUDE)/
 	@ rm -rf doxygen
