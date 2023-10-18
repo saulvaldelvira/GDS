@@ -5,16 +5,11 @@
 #include "Stack.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include "./util/error.h"
+#include "./Vector.h"
 #include "./util/definitions.h"
 #include <string.h>
 #include <stdarg.h>
 #include <assert.h>
-
-typedef struct StackNode {
-	struct StackNode *next;
-	byte info[];
-} StackNode;
 
 /**
  * Stack struct
@@ -22,11 +17,7 @@ typedef struct StackNode {
  * @see Stack.h
 */
 struct Stack {
-	StackNode *head;			///< Head node
-	comparator_function_t compare;		///< Comparator function pointer
-	destructor_function_t destructor;	///< Destructor function pointer
-	size_t data_size;			///< Size (in bytes) of the data type being stored
-	size_t n_elements;			///< Number of elements in the stack
+	Vector *elements; ///< Elements of the Stack
 };
 
 /// INITIALIZE ////////////////////////////////////////////////////////////////
@@ -35,30 +26,20 @@ Stack* stack_init(size_t data_size, comparator_function_t cmp){
 	assert(cmp && data_size > 0);
 	Stack *stack = malloc(sizeof(*stack));
 	if (!stack) return NULL;
-	stack->head = NULL;
-	stack->compare = cmp;
-	stack->data_size = data_size;
-	stack->n_elements = 0;
-	stack->destructor = NULL;
+	stack->elements = vector_init(data_size,cmp);
+	if (!stack->elements){
+		free(stack);
+		return NULL;
+	}
 	return stack;
 }
 
 void stack_set_comparator(Stack *stack, comparator_function_t cmp){
-	if (stack && cmp)
-		stack->compare = cmp;
+	vector_set_comparator(stack->elements, cmp);
 }
 
 void stack_set_destructor(Stack *stack, destructor_function_t destructor){
-	if (stack)
-		stack->destructor = destructor;
-}
-
-static StackNode* init_node(void *element, size_t size){
-	StackNode *node = malloc(offsetof(StackNode, info) + size);
-	if (!node) return NULL;
-	memcpy(node->info, element, size);
-	node->next = NULL;
-	return node;
+	vector_set_destructor(stack->elements, destructor);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -67,46 +48,27 @@ static StackNode* init_node(void *element, size_t size){
 
 int stack_push(Stack *stack, void *element){
 	assert(stack && element);
-	StackNode *old_head = stack->head;
-	StackNode *new_head = init_node(element, stack->data_size);
-	if (!new_head) return ERROR;
-	stack->head = new_head;
-	stack->head->next = old_head;
-	stack->n_elements++;
-	return SUCCESS;
+	return vector_append(stack->elements, element);
 }
 
 int stack_push_array(Stack *stack, void *array, size_t array_length){
 	assert(stack && array);
-	int status;
-	while (array_length-- > 0){
-		status = stack_push(stack, array);
-		if (status != SUCCESS)
-			return status;
-		array = void_offset(array, stack->data_size);
-	}
-	return SUCCESS;
+	return vector_append_array(stack->elements, array, array_length);
 }
 
 void* stack_pop(Stack *stack, void *dest){
 	assert(stack && dest);
-	if(!stack->head)
-		return NULL;
-	StackNode* aux = stack->head;
-	stack->head = stack->head->next;
-	memcpy(dest, aux->info, stack->data_size);
-	free(aux);
-	stack->n_elements--;
-	return dest;
+	return vector_pop_back(stack->elements, dest);
 }
 
 size_t stack_pop_array(Stack *stack, void *array, size_t array_length){
 	assert(stack && array);
+	size_t data_size = vector_get_data_size(stack->elements);
 	for (size_t i = 0; i < array_length; i++){
 		// When the stack is empty, return
-		if (!stack_pop(stack, array))
+		if (!vector_pop_back(stack->elements, array))
 			return i;
-		array = void_offset(array, stack->data_size);
+		array = void_offset(array, data_size);
 	}
 	return array_length;
 }
@@ -117,61 +79,34 @@ size_t stack_pop_array(Stack *stack, void *array, size_t array_length){
 
 void* stack_peek(Stack *stack, void *dest){
 	assert(stack && dest);
-	if(stack->head == NULL)
-		return NULL;
-	else
-		return memcpy(dest, stack->head->info, stack->data_size);
+	return vector_back(stack->elements, dest);
 }
 
 bool stack_exists(Stack *stack, void *element){
 	assert(stack && element);
-	StackNode *aux = stack->head;
-	while (aux != NULL){
-		if((*stack->compare) (element, aux) == 0)
-			return true;
-		aux = aux->next;
-	}
-	return false;
+	return vector_exists(stack->elements, element);
 }
 
 int stack_remove(Stack *stack, void *element){
 	assert(stack && element);
-	StackNode** aux = &stack->head;
-	while (*aux != NULL && stack->compare((*aux)->info, element) != 0)
-		aux = &(*aux)->next;
-	if (!*aux)
-		return ELEMENT_NOT_FOUND_ERROR;
-	StackNode *del = *aux;
-	*aux = (*aux)->next;
-	free(del);
-	stack->n_elements--;
-	return SUCCESS;
+	return vector_remove(stack->elements, element);
 }
 
 size_t stack_size(Stack *stack){
-	return stack ? stack->n_elements : 0;
+	return vector_size(stack->elements);
 }
 
 bool stack_isempty(Stack *stack){
-	return stack ? stack->head == NULL : true;
+	return vector_isempty(stack->elements);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 
 /// FREE //////////////////////////////////////////////////////////////////////
 
-static void free_node(StackNode *node, destructor_function_t destructor){
-	if (node == NULL)
-		return;
-	if (destructor)
-		destructor(node->info);
-	free_node(node->next, destructor);
-	free(node);
-}
-
 void stack_free(Stack *stack){
 	if (stack){
-		free_node(stack->head, stack->destructor);
+		vector_free(stack->elements);
 		free(stack);
 	}
 }
@@ -187,8 +122,6 @@ void stack_free_all(unsigned int n, ...){
 }
 
 void stack_clear(Stack *stack){
-	if (stack){
-		free_node(stack->head, stack->destructor);
-		stack->head = NULL;
-	}
+	if (stack)
+		vector_clear(stack->elements);
 }
