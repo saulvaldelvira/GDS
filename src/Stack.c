@@ -32,12 +32,9 @@ struct Stack {
 /// INITIALIZE ////////////////////////////////////////////////////////////////
 
 Stack* stack_init(size_t data_size, comparator_function_t cmp){
-	if (!cmp || data_size == 0)
-		return NULL;
-	// Allocate stack
+	assert(cmp && data_size > 0);
 	Stack *stack = malloc(sizeof(*stack));
-	assert(stack);
-	// Initialize stack
+	if (!stack) return NULL;
 	stack->head = NULL;
 	stack->compare = cmp;
 	stack->data_size = data_size;
@@ -58,7 +55,7 @@ void stack_set_destructor(Stack *stack, destructor_function_t destructor){
 
 static StackNode* init_node(void *element, size_t size){
 	StackNode *node = malloc(offsetof(StackNode, info) + size);
-	assert(node);
+	if (!node) return NULL;
 	memcpy(node->info, element, size);
 	node->next = NULL;
 	return node;
@@ -69,18 +66,18 @@ static StackNode* init_node(void *element, size_t size){
 /// PUSH-POP //////////////////////////////////////////////////////////////////////
 
 int stack_push(Stack *stack, void *element){
-	if(!stack || !element)
-		return NULL_PARAMETER_ERROR;
+	assert(stack && element);
 	StackNode *old_head = stack->head;
-	stack->head = init_node(element, stack->data_size);
+	StackNode *new_head = init_node(element, stack->data_size);
+	if (!new_head) return ERROR;
+	stack->head = new_head;
 	stack->head->next = old_head;
 	stack->n_elements++;
 	return SUCCESS;
 }
 
 int stack_push_array(Stack *stack, void *array, size_t array_length){
-	if (!stack || !array)
-		return NULL_PARAMETER_ERROR;
+	assert(stack && array);
 	int status;
 	while (array_length-- > 0){
 		status = stack_push(stack, array);
@@ -92,8 +89,7 @@ int stack_push_array(Stack *stack, void *array, size_t array_length){
 }
 
 void* stack_pop(Stack *stack, void *dest){
-	if(!stack || !dest)
-		return NULL;
+	assert(stack && dest);
 	if(!stack->head)
 		return NULL;
 	StackNode* aux = stack->head;
@@ -105,8 +101,7 @@ void* stack_pop(Stack *stack, void *dest){
 }
 
 size_t stack_pop_array(Stack *stack, void *array, size_t array_length){
-	if(!stack || !array)
-		return NULL_PARAMETER_ERROR;
+	assert(stack && array);
 	for (size_t i = 0; i < array_length; i++){
 		// When the stack is empty, return
 		if (!stack_pop(stack, array))
@@ -121,8 +116,7 @@ size_t stack_pop_array(Stack *stack, void *array, size_t array_length){
 /// PEEK //////////////////////////////////////////////////////////////////////
 
 void* stack_peek(Stack *stack, void *dest){
-	if(!stack || !dest)
-		return NULL;
+	assert(stack && dest);
 	if(stack->head == NULL)
 		return NULL;
 	else
@@ -130,8 +124,7 @@ void* stack_peek(Stack *stack, void *dest){
 }
 
 bool stack_exists(Stack *stack, void *element){
-	if(!stack || !element)
-		return false;
+	assert(stack && element);
 	StackNode *aux = stack->head;
 	while (aux != NULL){
 		if((*stack->compare) (element, aux) == 0)
@@ -142,8 +135,7 @@ bool stack_exists(Stack *stack, void *element){
 }
 
 int stack_remove(Stack *stack, void *element){
-	if(!stack || !element)
-		return NULL_PARAMETER_ERROR;
+	assert(stack && element);
 	StackNode** aux = &stack->head;
 	while (*aux != NULL && stack->compare((*aux)->info, element) != 0)
 		aux = &(*aux)->next;

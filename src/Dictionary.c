@@ -103,17 +103,19 @@ static int free_node(void *node, void *args){
 }
 
 Dictionary* dict_init(size_t key_size, size_t value_size, hash_function_t hash_func){
-        if (!hash_func || key_size == 0 || value_size == 0)
-                return NULL;
+        assert(hash_func && key_size > 0 && value_size > 0);
         Dictionary *dict = malloc(sizeof(*dict));
-        assert(dict);
+        if (!dict) return NULL;
         dict->value_size = value_size;
         dict->key_size = key_size;
         dict->min_lf = DICT_DEF_MIN_LF;
         dict->max_lf = DICT_DEF_MAX_LF;
 	dict->destructor = NULL;
         dict->elements = vector_init(sizeof(DictionaryNode), compare_equal);
-        assert(dict->elements);
+        if (!dict->elements){
+		free(dict);
+		return NULL;
+	}
         vector_reserve(dict->elements, DICT_INITIAL_SIZE);
         dict->n_elements = 0;
         int status = vector_process(dict->elements, init_node, NULL);
@@ -130,8 +132,7 @@ Dictionary* dict_init(size_t key_size, size_t value_size, hash_function_t hash_f
 }
 
 int dict_configure(Dictionary *dict, enum Redispersion redispersion, double min_lf, double max_lf, hash_function_t hash_func){
-        if (!dict)
-                return NULL_PARAMETER_ERROR;
+        assert(dict);
         float min, max;
         if (min_lf > 0.0f || min_lf == DICT_NO_SHRINKING)
                 min = min_lf;
@@ -274,8 +275,7 @@ static size_t dict_get_pos(Dictionary *dict, void *key, size_t n_it){
 }
 
 int dict_put(Dictionary *dict, void *key, void *value){
-        if (!dict || !key || !value)
-                return NULL_PARAMETER_ERROR;
+        assert(dict && key && value);
         size_t pos = 0;
         DictionaryNode node = {0};
 
@@ -331,8 +331,7 @@ int dict_put(Dictionary *dict, void *key, void *value){
 //// GET_EXISTS ///////////////////////////////////////////////////////////////
 
 void* dict_get(Dictionary *dict, void *key, void *dest){
-        if (!dict || !key)
-                return NULL;
+        assert(dict && key);
         size_t pos;
         size_t i = 0;
         DictionaryNode node;
@@ -354,8 +353,7 @@ void* dict_get(Dictionary *dict, void *key, void *dest){
 }
 
 bool dict_exists(Dictionary *dict, void *key){
-        if (!dict || !key)
-                return NULL_PARAMETER_ERROR;
+        assert(dict && key);
         size_t pos;
         size_t i = 0;
         DictionaryNode node;
@@ -394,8 +392,7 @@ static int dict_delete_node(Dictionary *dict, size_t pos, DictionaryNode node){
 }
 
 int dict_remove(Dictionary *dict, void *key){
-        if (!dict || !key)
-                return NULL_PARAMETER_ERROR;
+        assert(dict && key);
 	size_t n_try = 0;
         size_t pos = dict_get_pos(dict, key, 0);
 	size_t start_pos = pos;

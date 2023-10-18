@@ -42,70 +42,64 @@ struct Graph {
  * 4) Frees the old spaces
  * 5) Sets the graphs vertices, weights and edges to be this new spaces. Also update max_elements value to new_size
 */
-static void expand_memory(Graph *graph, size_t new_size){
-	// Allocate vertices
+static int expand_memory(Graph *graph, size_t new_size){
 	void *vertices = malloc(new_size * graph->data_size);
-	// Allocate weights
 	float **weights = malloc(new_size * sizeof(*weights));
-        // Allocate edges
 	int8_t **edges = malloc(new_size * sizeof(*edges));
-	assert(vertices && weights && edges);
+	if (!vertices || !weights || !edges){
+		free(vertices);
+		free(weights);
+		free(edges);
+		return ERROR;
+	}
 
-	// Copy old vertex values in the range [0, oldSize) and free the old one
 	memcpy(vertices, graph->vertices, graph->max_elements * graph->data_size);
-	free(graph->vertices);
 
-	// Initialize the columns for edges and weights.
-	// We divide the loop in two ranges [0 - oldSize) and [oldSize - newSize)
-	// In the first one, we allocate the new memmory and copy the old values.
-	for (size_t i = 0; i < graph->max_elements; i++){
-		// Allocate weights[i] and copy old values
+	for (size_t i = 0; i < new_size; i++){
 		weights[i] = malloc(new_size * sizeof(*weights[i]));
-		assert(weights[i]);
-		memcpy(weights[i], graph->weights[i], sizeof(*weights[i])*graph->max_elements);
-
-		// Allocate edges[i] and copy old values
 		edges[i] = calloc(new_size, sizeof(*edges[i]));
-		assert(edges[i]);
-		memcpy(edges[i], graph->edges[i], sizeof(*edges[i])*graph->max_elements);
+
+		if (!weights[i] || !edges[i]){
+			for (size_t j = 0; j <= i; j++){
+				free(weights[j]);
+				free(edges[j]);
+			}
+			free(vertices);
+			free(weights);
+			free(edges);
+			return ERROR;
+		}
+
+		if (i < graph->max_elements){
+			memcpy(weights[i], graph->weights[i], sizeof(*weights[i])*graph->max_elements);
+			memcpy(edges[i], graph->edges[i], sizeof(*edges[i])*graph->max_elements);
+		}
 
 		// Set the new rows to INFINITY. Edges are already 0 because of calloc.
 		for (size_t j = graph->max_elements; j < new_size; j++)
 			weights[i][j] = INFINITY;
+	}
 
-		// Free the old pointers
+	// Free old pointers
+	for (size_t i = 0; i < graph->max_elements; i++){
 		free(graph->weights[i]);
 		free(graph->edges[i]);
 	}
-
-	// In the second one [oldSize, newSize), we also allocate memory
-	// but, since there are no old values to copy, we just set the default values
-	for (size_t i = graph->max_elements; i < new_size; i++){
-		weights[i] = malloc(new_size * sizeof(*weights[i]));
-		assert(weights[i]);
-
-		edges[i] = calloc(new_size, sizeof(*edges[i]));
-		assert(edges[i]);
-
-		for (size_t j = 0; j < new_size; j++){
-			weights[i][j] = INFINITY;
-		}
-	}
-	// Free old pointers
-	free(graph->weights);
+	free(graph->vertices);
+        free(graph->weights);
 	free(graph->edges);
 
 	graph->vertices = vertices;
 	graph->weights = weights;
 	graph->edges = edges;
 	graph->max_elements = new_size;
+	return SUCCESS;
 }
 
 Graph* graph_init(size_t data_size, comparator_function_t cmp){
-	if (!cmp || data_size == 0)
-		return NULL;
+	assert(cmp && data_size > 0);
 	Graph *graph = malloc(sizeof(*graph));
-	assert(graph);
+	if (!graph) return NULL;
 	graph->n_elements = 0;
 	graph->max_elements = 0;
 	graph->compare = cmp;
@@ -114,10 +108,10 @@ Graph* graph_init(size_t data_size, comparator_function_t cmp){
 	graph->edges = NULL;
 	graph->vertices = NULL;
 	graph->data_size = data_size;
-
-	// "Expanding" from 0 to n_elements turns means initializing
-	// weights, edges and vertices to their default size and state.
-	expand_memory(graph, GRAPH_DEFAULT_SIZE);
+	if (expand_memory(graph, GRAPH_DEFAULT_SIZE) == ERROR){
+		free(graph);
+		return NULL;
+	}
 	return graph;
 }
 
@@ -135,8 +129,7 @@ int graph_fill(Graph *graph, void *array_vertices,
 	       void *array_sources, void *array_targets, float *array_weights,
 	       size_t vertices_length, size_t edges_length
 ){
-	if (!graph || !array_vertices || !array_sources || !array_targets || !array_weights)
-		return NULL_PARAMETER_ERROR;
+	assert(graph && array_vertices && array_sources && array_targets && array_weights);
 	graph_add_vertices_array(graph, array_vertices, vertices_length);
 	graph_add_edges_array(graph, array_sources, array_targets, array_weights, edges_length);
 	return SUCCESS;
@@ -146,10 +139,11 @@ int graph_fill(Graph *graph, void *array_vertices,
 
 /// vertices /////////////////////////////////////////////////////////////////////
 int graph_add_vertex(Graph *graph, void *vertex){
-	if (!graph || !vertex)
-		return NULL_PARAMETER_ERROR;
-	if (graph->n_elements == graph->max_elements)
-		expand_memory(graph, graph->max_elements * 2);
+	assert(graph && vertex);
+	if (graph->n_elements == graph->max_elements){
+		if (expand_memory(graph, graph->max_elements * 2) == ERROR)
+			return ERROR;
+	}
 	void *tmp = void_offset(graph->vertices, graph->n_elements * graph->data_size);
 	memcpy(tmp, vertex, graph->data_size);
 	graph->n_elements++;
@@ -157,8 +151,7 @@ int graph_add_vertex(Graph *graph, void *vertex){
 }
 
 int graph_add_vertices_array(Graph *graph, void *array, size_t array_length){
-	if (!graph || !array)
-		return NULL_PARAMETER_ERROR;
+	assert(graph && array);
 	while (array_length-- > 0){
 		int status = graph_add_vertex(graph, array);
 		if (status != SUCCESS){
@@ -176,8 +169,7 @@ int graph_add_vertices_array(Graph *graph, void *array, size_t array_length){
  * After decrementing the n_elements values, the old (now "removed") vertex becomes garbage memory to be overwritten in the next add
 */
 int graph_remove_vertex(Graph *graph, void *vertex){
-	if (!graph || !vertex)
-		return NULL_PARAMETER_ERROR;
+	assert(graph && vertex);
 	ptrdiff_t index = graph_indexof(graph, vertex); // Get the index of the vertex
 	if (index < 0)
 		return index;
@@ -223,8 +215,7 @@ int graph_remove_vertex(Graph *graph, void *vertex){
 }
 
 int graph_remove_vertices_array(Graph *graph, void *array, size_t array_length){
-	if (!graph || !array)
-		return NULL_PARAMETER_ERROR;
+	assert(graph && array);
 	while (array_length-- > 0){
 		graph_remove_vertex(graph, array);
 		array = void_offset(array, graph->data_size);
@@ -233,8 +224,7 @@ int graph_remove_vertices_array(Graph *graph, void *array, size_t array_length){
 }
 
 bool graph_exists_vertex(Graph *graph, void *vertex){
-	if (!graph || !vertex)
-		return false;
+	assert(graph && vertex);
 	void *tmp;
 	for (size_t i = 0; i < graph->n_elements; i++){
 		tmp = void_offset(graph->vertices, graph->data_size * i);
@@ -250,8 +240,7 @@ bool graph_exists_vertex(Graph *graph, void *vertex){
 ///// EDGES ///////////////////////////////////////////////////////////////////
 
 int graph_add_edge(Graph *graph, void *source, void *target, float weight){
-	if (!graph || !source || !target)
-		return NULL_PARAMETER_ERROR;
+	assert(graph && source && target);
 	ptrdiff_t index_src = graph_indexof(graph, source);
 	if (index_src < 0)
 		return index_src;
@@ -264,8 +253,7 @@ int graph_add_edge(Graph *graph, void *source, void *target, float weight){
 }
 
 int graph_add_edges_array(Graph *graph, void *array_sources, void *array_targets, float *array_weights, size_t arrays_length){
-	if (!graph || !array_sources || !array_targets || !array_weights)
-		return NULL_PARAMETER_ERROR;
+	assert(graph && array_sources && array_targets && array_weights);
 	while (arrays_length-- > 0){
 		int status = graph_add_edge(graph, array_sources, array_targets, *array_weights);
 		if (status != SUCCESS){
@@ -279,8 +267,7 @@ int graph_add_edges_array(Graph *graph, void *array_sources, void *array_targets
 }
 
 int graph_remove_edge(Graph *graph, void *source, void *target){
-	if (!graph || !source || !target)
-		return NULL_PARAMETER_ERROR;
+	assert(graph && source && target);
 	ptrdiff_t index_src = graph_indexof(graph, source);
 	if (index_src < 0)
 		return index_src;
@@ -293,8 +280,7 @@ int graph_remove_edge(Graph *graph, void *source, void *target){
 }
 
 int graph_remove_edges_array(Graph *graph, void *array_sources, void *array_targets, size_t arrays_length){
-	if (!graph || !array_sources || !array_targets)
-		return NULL_PARAMETER_ERROR;
+	assert(graph && array_sources && array_targets);
 	while (arrays_length-- > 0){
 		graph_remove_edge(graph, array_sources, array_targets);
 		array_sources = void_offset(array_sources, graph->data_size);
@@ -304,15 +290,15 @@ int graph_remove_edges_array(Graph *graph, void *array_sources, void *array_targ
 }
 
 void* graph_vertex_at(Graph *graph, ptrdiff_t index, void *dest){
-	if (!graph || !dest || index < 0 || (size_t)index >= graph->n_elements)
+	assert(graph && dest);
+	if (index < 0 || (size_t)index >= graph->n_elements)
 		return NULL;
 	void *src = void_offset(graph->vertices, index * graph->data_size);
 	return memcpy(dest, src, graph->data_size);
 }
 
 float graph_get_edge(Graph *graph, void *source, void *target){
-	if (!graph || !source || !target)
-		return NULL_PARAMETER_ERROR;
+	assert(graph && source && target);
 	ptrdiff_t index_src = graph_indexof(graph, source);
 	if (index_src < 0)
 		return index_src;
@@ -323,8 +309,7 @@ float graph_get_edge(Graph *graph, void *source, void *target){
 }
 
 bool graph_exists_edge(Graph *graph, void *source, void *target){
-	if (!graph || !source || !target)
-		return NULL_PARAMETER_ERROR;
+	assert(graph && source && target);
 	ptrdiff_t index_src = graph_indexof(graph, source);
 	if (index_src < 0)
 		return index_src;
@@ -400,11 +385,8 @@ static ptrdiff_t graph_get_pivot(uint8_t *S, float *D, size_t n_elements){
 }
 
 DijkstraData_t graph_dijkstra(Graph *graph, void *source){
+	assert(graph && source);
 	DijkstraData_t dijkstra = {.D = NULL, .P = NULL, .n_elements = 0, .status = SUCCESS};
-	if (!graph || !source){
-		dijkstra.status = NULL_PARAMETER_ERROR;
-		return dijkstra;
-	}
 	ptrdiff_t source_index = graph_indexof(graph, source);
 	if (source_index < 0 || graph->n_elements <= 0){
 		dijkstra.status = source_index;
@@ -495,11 +477,8 @@ static void graph_init_floyd(FloydData_t *floyd, Graph *graph){
 }
 
 FloydData_t graph_floyd(Graph *graph){
+	assert(graph);
 	FloydData_t floyd = {.A = NULL, .P = NULL, .n_elements = 0, .status = SUCCESS};
-	if (!graph){
-		floyd.status = NULL_PARAMETER_ERROR;
-		return floyd;
-	}
 	graph_init_floyd(&floyd, graph);
 	for (size_t pivot = 0; pivot < graph->n_elements; pivot++){
 		for (size_t i = 0; i < graph->n_elements; i++){
@@ -553,15 +532,13 @@ void graph_free_floyd_data(FloydData_t *data){
 //// OTHER ALGORITHMS ////////////////////////////////////////////////////////
 
 graph_degree graph_get_degree(Graph *graph, void *vertex){
-	graph_degree degree = {0, 0, 0, NULL_PARAMETER_ERROR};
-	if (!graph || !vertex)
-		return degree;
+	assert(graph && vertex);
+	graph_degree degree = {0, 0, 0, SUCCESS};
 	ptrdiff_t index = graph_indexof(graph, vertex);
 	if (index < 0){
 		degree.status = index;
 		return degree;
 	}
-	degree.status = SUCCESS;
 	for (size_t i = 0; i < graph->n_elements; i++){
 		if (graph->edges[i][index] == 1){
 			degree.deg_in++;
@@ -599,8 +576,7 @@ bool graph_is_isolated_vertex(Graph *graph, void *vertex){
 }
 
 float graph_eccentricity(Graph *graph, void *vertex){
-	if (!graph || !vertex)
-		return NULL_PARAMETER_ERROR * 1.0f;
+	assert(graph && vertex);
 	ptrdiff_t index = graph_indexof(graph, vertex);
 	if (index < 0){
 		return index * 1.0f;
@@ -640,15 +616,13 @@ static int traverse_df_rec(graph_traversal *data, size_t index, uint8_t *visited
 }
 
 graph_traversal graph_traverse_DF(Graph *graph, void *vertex){
-	graph_traversal df = {NULL, 0, NULL_PARAMETER_ERROR};
-	if (!graph)
-		return df;
+	assert(graph);
+	graph_traversal df = {NULL, 0, SUCCESS};
 	ptrdiff_t index = graph_indexof(graph, vertex);
 	if (index < 0){
 		df.status = index;
 		return df;
 	}
-	df.status = SUCCESS;
 	df.elements_size = 0;
 	df.elements = calloc(graph->n_elements , graph->data_size);
 
@@ -668,9 +642,8 @@ graph_traversal graph_traverse_DF(Graph *graph, void *vertex){
 }
 
 graph_traversal graph_traverse_BF(Graph *graph, void *vertex){
-	graph_traversal bf = {NULL, 0, NULL_PARAMETER_ERROR};
-	if (!graph)
-		return bf;
+	assert(graph);
+	graph_traversal bf = {NULL, 0, SUCCESS};
 	// Get index of the starting vertex
 	ptrdiff_t index = graph_indexof(graph, vertex);
 	if (index < 0){
@@ -678,7 +651,6 @@ graph_traversal graph_traverse_BF(Graph *graph, void *vertex){
 		return bf;
 	}
 	// Initialize result and temporary structures.
-	bf.status = SUCCESS;
 	bf.elements_size = 0;
 	bf.elements = malloc(graph->n_elements * graph->data_size);
 	uint8_t *visited = calloc(graph->n_elements, sizeof(*visited));

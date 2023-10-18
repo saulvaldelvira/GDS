@@ -23,11 +23,14 @@ struct Heap {
 /// INITIALIZE ////////////////////////////////////////////////////////////////
 
 Heap* heap_init(size_t data_size, comparator_function_t cmp){
-	if (!cmp || data_size == 0)
-		return NULL;
+	assert(cmp && data_size > 0);
 	Heap *heap = malloc(sizeof(*heap));
-	assert(heap);
+	if (!heap) return NULL;
 	heap->elements = vector_init(data_size, cmp);
+	if (!heap->elements){
+		free(heap);
+		return NULL;
+	}
 	return heap;
 }
 
@@ -107,8 +110,7 @@ static void filter_down(Vector *list, size_t pos){
 //// ADD-REMOVE ///////////////////////////////////////////////////////////////
 
 int heap_add(Heap *heap, void *element){
-	if (!heap || !element)
-		return NULL_PARAMETER_ERROR;
+	assert(heap && element);
 	int status = vector_append(heap->elements, element);
 	if (status != SUCCESS)
 		return status;
@@ -117,8 +119,7 @@ int heap_add(Heap *heap, void *element){
 }
 
 int heap_add_array(Heap *heap, void *array, size_t array_length){
-	if (!heap || !array)
-		return NULL_PARAMETER_ERROR;
+	assert(heap && array);
 	// If the heap is empty, we use this piece of code because it
 	// uses half as much "filter_down" calls than the other one
 	if (vector_size(heap->elements) == 0){
@@ -147,8 +148,7 @@ int heap_add_array(Heap *heap, void *array, size_t array_length){
 }
 
 void* heap_pop_min(Heap *heap, void *dest){
-	if (!heap || !dest)
-		return NULL;
+	assert(heap && dest);
 	dest = vector_front(heap->elements, dest);
 	if (dest != NULL){
 		size_t last_pos = vector_size(heap->elements) - 1;
@@ -162,8 +162,7 @@ void* heap_pop_min(Heap *heap, void *dest){
 }
 
 int heap_change_priority(Heap *heap, void *element, void *replacement){
-	if (!heap || !element || !replacement)
-		return NULL_PARAMETER_ERROR;
+	assert(heap && element && replacement);
 	// Get pos of the element
 	ptrdiff_t pos = vector_indexof(heap->elements, element);
 	if (pos < 0)
@@ -187,20 +186,17 @@ int heap_change_priority(Heap *heap, void *element, void *replacement){
 /// GET-EXISTS-SIZE ///////////////////////////////////////////////////////////
 
 void* heap_get_array(Heap *heap, size_t array_length){
-	if (!heap)
-		return NULL;
+	assert(heap);
 	return vector_get_array(heap->elements, array_length);
 }
 
 void* heap_get_into_array(Heap *heap, void *array, size_t array_length){
-	if (!heap)
-		return NULL;
+	assert(heap);
 	return vector_get_into_array(heap->elements, array, array_length);
 }
 
 void* heap_peek(Heap *heap, void *dest){
-	if (!heap || !dest)
-		return NULL;
+	assert(heap && dest);
 	return vector_at(heap->elements, 0, dest);
 }
 
@@ -210,8 +206,7 @@ void heap_clear(Heap *heap){
 }
 
 int heap_remove(Heap *heap, void *element){
-	if (!heap || !element)
-		return NULL_PARAMETER_ERROR;
+	assert(heap && element);
 	ptrdiff_t index = vector_indexof(heap->elements, element);
 	if (index < 0)
 		return index;
@@ -226,8 +221,7 @@ int heap_remove(Heap *heap, void *element){
 }
 
 bool heap_exists(Heap *heap, void *element){
-	if (!heap || !element)
-		return false;
+	assert(heap && element);
 	return vector_exists(heap->elements, element);
 }
 

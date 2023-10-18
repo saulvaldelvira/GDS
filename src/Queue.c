@@ -33,11 +33,10 @@ struct Queue {
 /// INITIALIZE ////////////////////////////////////////////////////////////////
 
 Queue* queue_init(size_t data_size, comparator_function_t cmp){
-	if (!cmp || data_size == 0)
-		return NULL;
+	assert(cmp && data_size > 0);
 	// Allocate queue
 	Queue *queue = malloc(sizeof(*queue));
-	assert(queue);
+	if (!queue) return NULL;
 	// Initialize queue
 	queue->head = NULL;
 	queue->tail = NULL;
@@ -60,7 +59,7 @@ void queue_set_destructor(Queue *queue, destructor_function_t destructor){
 
 static QueueNode* queue_init_node(void *element, size_t size){
 	QueueNode *node = malloc(offsetof(QueueNode, info) + size);
-	assert(node);
+	if (!node) return NULL;
 	memcpy(node->info, element, size);
 	node->next = NULL;
 	return node;
@@ -71,9 +70,9 @@ static QueueNode* queue_init_node(void *element, size_t size){
 /// ENQUEUE ///////////////////////////////////////////////////////////////////
 
 int queue_enqueue(Queue *queue, void *element){
-	if (!queue || !element)
-		return NULL_PARAMETER_ERROR;
+	assert(queue && element);
 	QueueNode *node = queue_init_node(element, queue->data_size);
+	if (!node) return ERROR;
 	if (!queue->head){
 		queue->head = node;
 		queue->tail = node;
@@ -86,8 +85,7 @@ int queue_enqueue(Queue *queue, void *element){
 }
 
 int queue_enqueue_array(Queue *queue, void *array, size_t array_length){
-	if (!queue || !array)
-		return NULL_PARAMETER_ERROR;
+	assert(queue && array);
 	while (array_length-- > 0){
 		int status = queue_enqueue(queue, array);
 		if (status != SUCCESS)
@@ -102,8 +100,7 @@ int queue_enqueue_array(Queue *queue, void *array, size_t array_length){
 /// DEQUEUE ///////////////////////////////////////////////////////////////////
 
 void* queue_dequeue(Queue *queue, void *dest){
-	if (!queue || !dest)
-		return NULL;
+	assert(queue && dest);
 	if (queue->head == NULL)
 		return NULL;
 	QueueNode *aux = queue->head;
@@ -115,8 +112,7 @@ void* queue_dequeue(Queue *queue, void *dest){
 }
 
 int queue_dequeue_array(Queue *queue, void *array, size_t array_length){
-	if (!queue || !array)
-		return NULL_PARAMETER_ERROR;
+	assert(queue && array);
 	while (array_length-- > 0) {
 		if (!queue_dequeue(queue, array))
 			break;
@@ -130,8 +126,7 @@ int queue_dequeue_array(Queue *queue, void *array, size_t array_length){
 /// PEEK-EXISTS-SIZE //////////////////////////////////////////////////////////
 
 void* queue_peek(Queue *queue, void *dest){
-	if (!queue || !dest)
-		return NULL;
+	assert(queue && dest);
 	if (queue->head == NULL)
 		return NULL;
 	else
@@ -139,8 +134,7 @@ void* queue_peek(Queue *queue, void *dest){
 }
 
 bool queue_exists(Queue *queue, void *element){
-	if (!queue || !element)
-		return false;
+	assert(queue && element);
 	QueueNode *aux = queue->head;
 	while (aux != NULL){
 		if(queue->compare(aux->info, element) == 0)
@@ -151,8 +145,7 @@ bool queue_exists(Queue *queue, void *element){
 }
 
 int queue_remove(Queue *queue, void *element){
-	if(!queue || !element)
-		return NULL_PARAMETER_ERROR;
+	assert(queue && element);
 	QueueNode** aux = &queue->head;
 	while (*aux != NULL && queue->compare((*aux)->info, element) != 0)
 		aux = &(*aux)->next;

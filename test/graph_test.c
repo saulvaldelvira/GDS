@@ -80,9 +80,6 @@ void dijkstra_test(void){
 	assert(dijkstra.status == ELEMENT_NOT_FOUND_ERROR);
 	graph_free_dijkstra_data(&dijkstra);
 
-	dijkstra = graph_dijkstra(NULL, NULL);
-	assert(dijkstra.status == NULL_PARAMETER_ERROR);
-
 	graph_free(g);
 	graph_free_dijkstra_data(&dijkstra);
 }
@@ -241,8 +238,6 @@ void eccentricity_test(void){
 	graph_add_edge(g, &a, &d, 2.0f);
 	graph_add_edge(g, &c, &b, 5.0f);
 	assert(graph_eccentricity(g, &b) == 8.0f);
-
-	assert(graph_eccentricity(NULL, NULL) == NULL_PARAMETER_ERROR * 1.0f);
 
 	assert(graph_eccentricity(g, &(char){'J'}) == ELEMENT_NOT_FOUND_ERROR * 1.0f);
 

@@ -11,8 +11,6 @@ void change_priority(void){
 	heap_add_array(min, elements, 9);
 
 	assert(heap_change_priority(min, &(int){-78}, &(int){90}) != SUCCESS);
-	assert(heap_change_priority(min, NULL, NULL) != SUCCESS);
-	assert(heap_change_priority(min, &elements[0], NULL) != SUCCESS);
 
 	// Change priority of 20 to 5
 	assert(heap_change_priority(min, &elements[3], &(int){5}));

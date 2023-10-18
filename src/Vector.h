@@ -124,7 +124,7 @@ int vector_reserve(Vector *vector, size_t n_elements);
 /**
  * Shrinks the vector to fit exactly it's content.
 */
-void vector_shrink(Vector *vector);
+int vector_shrink(Vector *vector);
 
 /**
  * Fills the vector with copies of a template element.

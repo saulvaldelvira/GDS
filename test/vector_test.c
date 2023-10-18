@@ -12,8 +12,6 @@ void joins_test(void){
 	for (int i = 10; i < 20; i++)
 		vector_append(a2, &i);
 
-	assert(!vector_join(a1, diff_size));
-
 	Vector *vec_joint = vector_join(a1, a2);
 	assert(vec_joint != NULL);
 	for (int i = 0; i < 20; i++)
