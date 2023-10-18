@@ -78,19 +78,18 @@ static int get_next_prime(int n){
 /**
  * Initializes a node.
  */
-static int init_node(void *node, void *args){
+static void init_node(void *node, void *args){
         (void) args;
         DictionaryNode *n = (DictionaryNode*) node;
         n->key = NULL;
         n->value = NULL;
         n->state = EMPTY;
-        return SUCCESS;
 }
 
 /**
  * Frees the memory allocated for a node.
  */
-static int free_node(void *node, void *args){
+static void free_node(void *node, void *args){
         destructor_function_t destructor = * (destructor_function_t*) args;
         DictionaryNode *n = (DictionaryNode*) node;
 	if (destructor && n->value)
@@ -99,7 +98,6 @@ static int free_node(void *node, void *args){
         free(n->value);
         n->key = NULL;
         n->value = NULL;
-        return SUCCESS;
 }
 
 Dictionary* dict_init(size_t key_size, size_t value_size, hash_function_t hash_func){
@@ -118,12 +116,7 @@ Dictionary* dict_init(size_t key_size, size_t value_size, hash_function_t hash_f
 	}
         vector_reserve(dict->elements, DICT_INITIAL_SIZE);
         dict->n_elements = 0;
-        int status = vector_process(dict->elements, init_node, NULL);
-        if (status != SUCCESS){
-                vector_free(dict->elements);
-                free(dict);
-                return NULL;
-        }
+        vector_map(dict->elements, init_node, NULL);
         dict->hash = hash_func;
         dict->redispersion = DICT_DEF_REDISPERSION;
         dict->vec_size = DICT_INITIAL_SIZE;
@@ -167,7 +160,7 @@ void dict_set_destructor(Dictionary *dict, destructor_function_t value_destructo
 /**
  * Helper function for redisperse method
  */
-static int copy_elements(void *element, void *args){
+static void copy_elements(void *element, void *args){
         DictionaryNode *e = (DictionaryNode*) element;
 	void **argv = (void**) args;
 	DictionaryNode **tail = (DictionaryNode**) argv[0];
@@ -182,7 +175,6 @@ static int copy_elements(void *element, void *args){
 		free(e->key);
                 free(e->value);
         }
-        return SUCCESS;
 }
 
 /**
@@ -196,9 +188,7 @@ static int dict_redisperse(Dictionary *dict, size_t new_size){
         if (!elements){
                 return ERROR;
         }
-        int status = vector_process(dict->elements, copy_elements, (void*[]){&tail, &dict->destructor});
-        if (status != SUCCESS)
-                return status;
+        vector_map(dict->elements, copy_elements, (void*[]){&tail, &dict->destructor});
 
         /// Reset the vector
         if (new_size < dict->vec_size) {
@@ -208,13 +198,11 @@ static int dict_redisperse(Dictionary *dict, size_t new_size){
                 vector_reserve(dict->elements, new_size);
                 vector_set_destructor(dict->elements, destructor);
         }
-        status = vector_reserve(dict->elements, new_size);
+        int status = vector_reserve(dict->elements, new_size);
         if (status != SUCCESS)
                 return status;
 
-        status = vector_process(dict->elements, init_node, NULL);
-        if (status != SUCCESS)
-                return status;
+        vector_map(dict->elements, init_node, NULL);
 
         // Change vec_size and n_elements
         size_t n_elements = dict->n_elements;
@@ -415,7 +403,7 @@ int dict_remove(Dictionary *dict, void *key){
 void dict_free(Dictionary *dict){
         if (!dict)
                 return;
-        vector_process(dict->elements, free_node, &dict->destructor);
+        vector_map(dict->elements, free_node, &dict->destructor);
         vector_free(dict->elements);
         free(dict);
 }
@@ -433,7 +421,7 @@ void dict_free_all(unsigned int n, ...){
 void dict_clear(Dictionary *dict){
         if (!dict)
                 return;
-        vector_process(dict->elements, free_node, &dict->destructor);
+        vector_map(dict->elements, free_node, &dict->destructor);
         vector_reserve(dict->elements, DICT_INITIAL_SIZE);
         dict->n_elements = 0;
         dict->vec_size = DICT_INITIAL_SIZE;

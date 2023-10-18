@@ -16,8 +16,6 @@ extern "C" {
 #include "../src/util/error.h"
 #include "../src/util/definitions.h"
 
-#include "color.h"
-
 #ifndef TIMESTAMP_DISABLE
 	static long timestamp;
 
@@ -44,6 +42,7 @@ static inline int rand_range(int min, int max){
 
 // Colored output ///////////////////
 #ifndef NO_COLOR
+	#include "color.h"
 	#define print_test_step(name) 	printf("* " Color_Yellow "%s" Color_Reset " ... ", #name); fflush(stdout);
 	#define print_test_ok() 	printf(Color_Green "OK\n" Color_Reset)
 	#define print_test_end(name) 	printf("[" #name " test finished in" Color_BCyan " %ld " Color_Reset "milliseconds]\n\n", timestamp);
@@ -57,9 +56,9 @@ static inline int rand_range(int min, int max){
 
 ///// Assert  //////////////////////
 #ifndef NO_COLOR
-	#define assert(expr) if (!(expr)){ fprintf(stderr, Color_BRed "[%d] ASSERT FAILED: " Color_Reset #expr "\n", __LINE__); abort(); }
+#define assert(expr) if (!(expr)){ fprintf(stderr, Color_BRed "[%d] ASSERT FAILED: %s" Color_Reset "\n", __LINE__, #expr); abort(); }
 #else
-	#define assert(expr) if (!(expr)){ fprintf(stderr, "[%d] ASSERT FAILED: " #expr "\n", __LINE__); abort(); }
+#define assert(expr) if (!(expr)){ fprintf(stderr, "[%d] ASSERT FAILED: %s\n", __LINE__, #expr); abort(); }
 #endif
 
 void assert_array_int(int *arr, int *exp, int size){

@@ -206,16 +206,36 @@ int vector_populate(Vector *vector, void *templ){
 	return SUCCESS;
 }
 
-int vector_process(Vector *vector, int (*func) (void *,void*), void *args){
+void vector_map(Vector *vector, void (*func) (void *,void*), void *args){
 	assert(vector && func);
 	void *tmp = vector->elements;
 	for (size_t i = 0; i < vector->n_elements; ++i){
-		int status = func(tmp, args);
-		if (status != SUCCESS)
-			return status;
+		func(tmp, args);
 		tmp = void_offset(tmp, vector->data_size);
 	}
-	return SUCCESS;
+}
+
+Vector* vector_filter(Vector *vector, bool (*func) (void*)){
+	assert(vector && func);
+	Vector *result = vector_init(vector->data_size, vector->compare);
+	if (!result) return NULL;
+	void *tmp = vector->elements;
+	for (size_t i = 0; i < vector->n_elements; ++i){
+		if (func(tmp))
+			vector_append(result, tmp);
+		tmp = void_offset(tmp, vector->data_size);
+	}
+	return result;
+}
+
+void* vector_reduce(Vector *vector, void (*func) (const void*,void*), void *dest){
+	assert(vector && func && dest);
+	void *tmp = vector->elements;
+	for (size_t i = 0; i < vector->n_elements; ++i){
+		func(tmp,dest);
+		tmp = void_offset(tmp, vector->data_size);
+	}
+	return dest;
 }
 
 ///////////////////////////////////////////////////////////////////////////////

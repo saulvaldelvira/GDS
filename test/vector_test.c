@@ -78,6 +78,81 @@ void clear_test(void){
 	vector_free(vector);
 }
 
+static void multiply_by(void *e, void *arg){
+	int *n = (int*) e;
+	int mult = * (int*) arg;
+	*n *= mult;
+}
+
+void map_test(void){
+	print_test_step(Map);
+	Vector *vector = vector_init(sizeof(int), compare_int);
+
+	int arr[] = {1,2,3,4,5};
+
+	vector_append_array(vector, arr, 5);
+	int n = 2;
+	vector_map(vector, multiply_by, &n);
+
+	int tmp;
+	for (int i = 0; i < 5; i++){
+		vector_at(vector, i, &tmp);
+		assert(tmp == n * arr[i]);
+	}
+	vector_free(vector);
+	print_test_ok();
+}
+
+static bool filter_even(void *e){
+	int n = * (int*) e ;
+	return n % 2 == 0;
+}
+
+void filter_test(void){
+	print_test_step(Filter);
+	Vector *vector = vector_init(sizeof(int), compare_int);
+
+	int arr[] = {1,2,3,4,5,6,7};
+
+	vector_append_array(vector, arr, 7);
+	Vector *filtered = vector_filter(vector, filter_even);
+
+
+	size_t size = vector_size(filtered);
+	assert(size == 3);
+
+	int tmp;
+	for (size_t i = 0; i < size; i++){
+		vector_at(filtered, i, &tmp);
+		assert(tmp % 2 == 0);
+	}
+
+	vector_free_all(2, vector, filtered);
+	print_test_ok();
+}
+
+void addition(const void* e, void *acc){
+	int *iacc = (int*) acc;
+	int n = * (int*) e;
+	*iacc += n;
+}
+
+void reduce_test(void){
+	print_test_step(Reduce);
+	Vector *vector = vector_init(sizeof(int), compare_int);
+
+	int arr[] = {1,2,3,4,5};
+
+	vector_append_array(vector, arr, 5);
+	int n = 0;
+	vector_reduce(vector, addition, &n);
+
+	assert(n == 15);
+
+	vector_free(vector);
+	print_test_ok();
+}
+
 int main(void){
         int n = 2400;
 	int tmp;
@@ -183,6 +258,9 @@ vector_clear(vec);
 	dup_test();
 	reserve_shrink_test();
 	clear_test();
+	map_test();
+	filter_test();
+	reduce_test();
 
 	TIMESTAMP_STOP
 	print_test_end(Vector);

@@ -132,13 +132,29 @@ int vector_shrink(Vector *vector);
 int vector_populate(Vector *vector, void *templ);
 
 /**
- * Calls func for every element in the vector.
- * @param func a function that will be called upon every element
- *        in the vector. It's first argument is the element, and the second
- *        is args. Returns 1 for success.
- * @param args will be passed to func. It can be NULL.
+ * Applies 'func' to every element in the vector
+ * @param func function to apply
+ * @param args (optional) passed to func as the second parameter
 */
-int vector_process(Vector *vector, int (*func) (void *,void *), void *args);
+void vector_map(Vector *vector, void (*func) (void *,void *), void *args);
+
+/**
+* Returns a new Vector containing all the elements that match the
+* a given predicate.
+* @param func a function that receives an element and returns
+*        true if it must be added to the result vector.
+*/
+Vector* vector_filter(Vector *vector, bool (*func) (void*));
+
+/**
+ * Reduces all element of the vector into a single element.
+ * @param func function that receives an element as first parameter and
+ *             the accumulated element (i.e. the result of calling func
+ *	       on all the previous elements) as it's second parameter.
+ * @param dest address to store the result into
+ * @return the dest pointer
+ */
+void* vector_reduce(Vector *vector, void (*func) (const void*,void*), void *dest);
 
 /**
  * Replaces the element at the given index with replacement.
