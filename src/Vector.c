@@ -93,11 +93,8 @@ static int check_and_transform_index(ptrdiff_t *index_1, ptrdiff_t *index_2, siz
 
 static void vector_resize(Vector *vector, size_t new_size){
 	assert(vector->n_elements <= new_size);
-	void *tmp = calloc(new_size, vector->data_size);
-	assert(tmp);
-	memcpy(tmp, vector->elements, vector->n_elements * vector->data_size);
-	free(vector->elements);
-	vector->elements = tmp;
+	vector->elements = realloc(vector->elements, new_size * vector->data_size);
+	assert(vector->elements);
 	vector->max_elements = new_size;
 }
 
