@@ -16,10 +16,6 @@ typedef int8_t byte;
 
 #define void_offset(ptr, bytes) ((void*)((byte*)ptr + (bytes)))
 
-#define MAX(x,y) ((x) > (y) ? (x) : (y))
-#define MIN(x,y) ((x) < (y) ? (x) : (y))
-#define ABS(x) ((x) < 0 ? (-1 * (x)) : (x))
-
 #ifdef __cplusplus
 }
 #endif

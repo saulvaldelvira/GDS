@@ -47,6 +47,8 @@ struct Dictionary{
 #define LF(x,B) ((x) * 1.0 / (B))
 #define DICT_INITIAL_SIZE 11
 
+static inline int64_t abs_i64(int64_t n) { return n < 0 ? -n : n; }
+
 /// PRIME //////////////////////////////////////////////////////////////////////
 
 static bool is_prime(int n){
@@ -257,13 +259,13 @@ static size_t dict_get_pos(Dictionary *dict, void *key, size_t n_it){
         size_t pos = 0;
         switch (dict->redispersion){
         case LINEAR:
-                pos = ABS(dict->hash(key)) + n_it;
+                pos = abs_i64(dict->hash(key)) + n_it;
                 break;
         case QUADRATIC:
-                pos =  ABS(dict->hash(key)) + n_it * n_it;
+                pos =  abs_i64(dict->hash(key)) + n_it * n_it;
                 break;
         case DOUBLE_HASHING: ;
-                int h1 = ABS(dict->hash(key));
+                int h1 = abs_i64(dict->hash(key));
                 int h2 = dict->prev_vec_size - h1 % dict->prev_vec_size;
                 pos = h1 + n_it * h2;
                 break;

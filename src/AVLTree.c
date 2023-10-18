@@ -74,6 +74,8 @@ AVLTree* avl_init(size_t data_size, comparator_function_t cmp){
 
 //// NODE UPDATE FUNCTIONS /////////////////////////////////////////////////////
 
+static inline int max_int(int a, int b) { return a >= b ? a : b; }
+
 /**
  * Updates the node's height.
  * An AVL Node's heigth is the highest of it's son's heights plus one.
@@ -90,7 +92,7 @@ static void node_update_height(AVLNode *node){
         else if (node->right == NULL)
                 node->height = node->left->height + 1;
         else
-		node->height = MAX(node->left->height, node->right->height) + 1;
+		node->height = max_int(node->left->height, node->right->height) + 1;
 }
 
 static int node_bf(AVLNode *node){
