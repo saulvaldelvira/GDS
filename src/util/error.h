@@ -37,8 +37,6 @@ extern "C" {
                         switch (errcode){\
                         case INDEX_BOUNDS_ERROR:\
                                 fprintf(stderr, "Index out ouf bounds."); break;\
-                        case NULL_PARAMETER_ERROR:\
-                                fprintf(stderr, "NULL parameter."); break;\
                         case ELEMENT_NOT_FOUND_ERROR:\
                                 fprintf(stderr, "Element not found."); break;\
                         case REPEATED_ELEMENT_ERROR:\
