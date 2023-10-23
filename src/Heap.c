@@ -132,7 +132,7 @@ int heap_add_array(Heap *heap, void *array, size_t array_length){
 			// the max size_t value (since it is unsigned)
 			if (i > 1)
 				i -=2;
-			else if(i == 1)
+			else
 				i--;
 		}
 	} else {

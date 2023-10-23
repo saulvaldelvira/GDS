@@ -4,6 +4,7 @@
  */
 #include "compare.h"
 #include <stdlib.h>
+#include <string.h>
 
 // COMPARATORS
 int compare_int(const void *e_1, const void *e_2){
@@ -92,7 +93,8 @@ int compare_greater(const void *e_1, const void *e_2){
  */
 void destroy_ptr(void *e){
 	if (e){
-		void *ptr = * (void**) e;
+		void *ptr;
+		memcpy(&ptr, e, sizeof(void*));
 		free(ptr);
 	}
 }

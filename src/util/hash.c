@@ -22,7 +22,7 @@ int64_t hash_long(const void *arg){
 */
 int64_t hash_string(const void *arg){
         int64_t hash = 5381;
-        char *str = (char*) arg;
+        const char *str = (char*) arg;
         int c;
         while ((c = *str++)){
             hash = ((hash << 5) + hash) + c; // hash * 33 + c

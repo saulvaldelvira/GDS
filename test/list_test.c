@@ -6,13 +6,6 @@
 
 #include <stdint.h>
 
-#include <memory.h>
-struct test {
-	int a;
-	int b;
-	char ch[];
-};
-
 void joins_test(void){
 	LinkedList *l1 = list_init(sizeof(int), compare_int);
 	LinkedList *l2 = list_init(sizeof(int), compare_int);

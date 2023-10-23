@@ -197,7 +197,7 @@ void queue_free_all(unsigned int n, ...){
 }
 
 void queue_clear(Queue *queue){
-	if (!queue){
+	if (queue){
 		queue_free_node(queue->head, queue->destructor);
 		queue->head = NULL;
 		queue->tail = NULL;

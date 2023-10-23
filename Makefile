@@ -8,7 +8,7 @@ OFILES = $(patsubst %.c,%.o,$(CFILES))
 TESTFILES = $(wildcard test/*)
 
 CC = gcc
-CCFLAGS = -Wall -Wextra -Werror -pedantic -g -fPIC -O3
+CCFLAGS = -Wall -Wextra -pedantic -std=c99 -Wstrict-prototypes -g -fPIC -O3
 
 # User's custom flags
 ifdef FLAGS

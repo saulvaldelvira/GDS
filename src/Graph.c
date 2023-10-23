@@ -53,7 +53,8 @@ static int expand_memory(Graph *graph, size_t new_size){
 		return ERROR;
 	}
 
-	memcpy(vertices, graph->vertices, graph->max_elements * graph->data_size);
+	if (graph->vertices)
+		memcpy(vertices, graph->vertices, graph->max_elements * graph->data_size);
 
 	for (size_t i = 0; i < new_size; i++){
 		weights[i] = malloc(new_size * sizeof(*weights[i]));
@@ -225,9 +226,8 @@ int graph_remove_vertices_array(Graph *graph, void *array, size_t array_length){
 
 bool graph_exists_vertex(Graph *graph, void *vertex){
 	assert(graph && vertex);
-	void *tmp;
 	for (size_t i = 0; i < graph->n_elements; i++){
-		tmp = void_offset(graph->vertices, graph->data_size * i);
+		void *tmp = void_offset(graph->vertices, graph->data_size * i);
 		if((*graph->compare) (vertex, tmp) == 0){
 			return true;
 		}
@@ -311,11 +311,9 @@ float graph_get_edge(Graph *graph, void *source, void *target){
 bool graph_exists_edge(Graph *graph, void *source, void *target){
 	assert(graph && source && target);
 	ptrdiff_t index_src = graph_indexof(graph, source);
-	if (index_src < 0)
-		return index_src;
 	ptrdiff_t index_dst = graph_indexof(graph, target);
-	if (index_dst < 0)
-		return index_dst;
+	if (index_src < 0 || index_dst < 0)
+		return false;
 	return graph->edges[index_src][index_dst];
 }
 
@@ -388,7 +386,7 @@ DijkstraData_t graph_dijkstra(Graph *graph, void *source){
 	assert(graph && source);
 	DijkstraData_t dijkstra = {.D = NULL, .P = NULL, .n_elements = 0, .status = SUCCESS};
 	ptrdiff_t source_index = graph_indexof(graph, source);
-	if (source_index < 0 || graph->n_elements <= 0){
+	if (source_index < 0){
 		dijkstra.status = source_index;
 		return dijkstra;
 	}
@@ -401,7 +399,7 @@ DijkstraData_t graph_dijkstra(Graph *graph, void *source){
 
 	if ((size_t)source_index >= graph->n_elements){
 		dijkstra.status = INDEX_BOUNDS_ERROR;
-		return dijkstra;
+		goto cleanup;
 	}
 
 	// Mark the start vertex as visited (because of the initialization)
@@ -426,11 +424,13 @@ DijkstraData_t graph_dijkstra(Graph *graph, void *source){
 		S[pivot] = 1;
 		pivot = graph_get_pivot(S, dijkstra.D, graph->n_elements);
 	}
+cleanup:
 	free(S);
 	return dijkstra;
 }
 
 void graph_print_dijkstra_data(void *output, DijkstraData_t data){
+	assert(output);
 	FILE *_output = (FILE*) output;
 	fprintf(_output, "[DIJKSTRA]\n");
 	fprintf(_output, "i\tD\tP\n");
@@ -495,6 +495,7 @@ FloydData_t graph_floyd(Graph *graph){
 }
 
 void graph_print_floyd_data(void *output, FloydData_t data){
+	assert(output);
 	FILE *_output = (FILE*) output;
 	fprintf(_output, "[FLOYD]\nD:\n");
 	for (size_t i = 0; i < data.n_elements; i++){
@@ -627,7 +628,12 @@ graph_traversal graph_traverse_DF(Graph *graph, void *vertex){
 	df.elements = calloc(graph->n_elements , graph->data_size);
 
 	uint8_t *visited = calloc(graph->n_elements, sizeof(*visited));
-	assert(visited);
+	if (!visited){
+		free(df.elements);
+		df.elements = NULL;
+		df.status = ERROR;
+		return df;
+	}
 
 	int s = traverse_df_rec(&df, index, visited, graph);
 	if (s != SUCCESS){
@@ -655,7 +661,14 @@ graph_traversal graph_traverse_BF(Graph *graph, void *vertex){
 	bf.elements = malloc(graph->n_elements * graph->data_size);
 	uint8_t *visited = calloc(graph->n_elements, sizeof(*visited));
 	size_t *queue = malloc(graph->n_elements * sizeof(*queue));
-	assert(visited && queue);
+        if (!bf.elements || !visited || !queue){
+		free(queue);
+		free(visited);
+		free(bf.elements);
+		bf.elements = NULL;
+		bf.status = ERROR;
+		return bf;
+	}
 
 	// Add starting element to queue and set it as visited
 	size_t *start = queue;
@@ -663,7 +676,6 @@ graph_traversal graph_traverse_BF(Graph *graph, void *vertex){
 	*end++ = index;
 	visited[index] = 1;
 
-	void *src;
 	void *dst = bf.elements;
 
 	while (start < end){
@@ -671,7 +683,7 @@ graph_traversal graph_traverse_BF(Graph *graph, void *vertex){
 		size_t piv = *start++;
 
 		// Copy it into result array
-		src = void_offset(graph->vertices, piv * graph->data_size);
+		void *src = void_offset(graph->vertices, piv * graph->data_size);
 		memcpy(dst, src, graph->data_size);
 		dst = void_offset(dst, graph->data_size);
 		bf.elements_size++;

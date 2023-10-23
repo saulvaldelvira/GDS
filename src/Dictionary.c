@@ -319,12 +319,12 @@ int dict_put(Dictionary *dict, void *key, void *value){
 //// GET_EXISTS ///////////////////////////////////////////////////////////////
 
 void* dict_get(Dictionary *dict, void *key, void *dest){
-        assert(dict && key);
-        size_t pos;
-        size_t i = 0;
         DictionaryNode node;
+        assert(dict && key);
+	size_t i = 0;
         do {
-                pos = dict_get_pos(dict, key, i);
+		size_t pos;
+		pos = dict_get_pos(dict, key, i);
                 vector_at(dict->elements, pos, &node);
                 if (node.state == EMPTY)
                         break;
@@ -342,10 +342,10 @@ void* dict_get(Dictionary *dict, void *key, void *dest){
 
 bool dict_exists(Dictionary *dict, void *key){
         assert(dict && key);
-        size_t pos;
         size_t i = 0;
         DictionaryNode node;
         do {
+		size_t pos;
                 pos = dict_get_pos(dict, key, i);
 
                 vector_at(dict->elements, pos, &node);

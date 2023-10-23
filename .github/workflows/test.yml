@@ -13,16 +13,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Install valgrind
-      run: |
-           sudo apt-get update -y
-           sudo apt-get install valgrind -y
     - name: Test
       run: make test
     - name: Memory Leaks
       run: |
-           sudo chmod +x ./valgrind-test.sh
-           ./valgrind-test.sh
+           sudo apt-get update -y
+           sudo apt-get install valgrind -y
+           sudo chmod +x ./test/valgrind-test.sh
+           ./test/valgrind-test.sh
+    - name: Code sanitizer
+      run: |
+           sudo apt-get install cppcheck
+           sudo chmod +x ./test/sanitize-code.sh
+           ./test/sanitize-code.sh
+
 
   Test-Windows:
     runs-on: windows-latest

@@ -121,10 +121,6 @@ void string_test(void){
 struct key{
         int i;
         char c;
-        struct {
-                float f;
-                long l;
-        } s;
 };
 
 struct person{
@@ -134,7 +130,7 @@ struct person{
 
 int64_t hash_structs(const void *e_1){
         struct key *k = (struct key*) e_1;
-        int64_t hash = k->i << sizeof(k->c);
+        int64_t hash = (int64_t)k->i << sizeof(k->c);
         hash += k->c;
         return hash;
 }
@@ -166,11 +162,12 @@ void destructor_test(void){
 	Dictionary *dict = dict_init(sizeof(int), sizeof(char*), hash_int);
 	dict_set_destructor(dict, destroy_ptr);
 
-        char *tmp;
+        char *tmp = NULL;
         assert(dict_get(dict, &(int){12}, &tmp) == NULL);
 
 	for (int i = 0; i < 120; i++){
 		char *str = malloc(sizeof(char[12]));
+		assert(str);
 		sprintf(str, "%d", i);
 		dict_put(dict, &i, &str);
 	}

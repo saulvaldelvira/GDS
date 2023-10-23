@@ -383,6 +383,7 @@ int avl_height(AVLTree *tree){
 struct traversal_ret {
 	void* elements;
 	size_t elements_size;
+	int status;
 };
 
 // Auxliar enum to specify the type of traversal for "traversal_rec" function
@@ -407,27 +408,29 @@ static struct traversal_ret traversal_rec(AVLNode *node, enum Traversal order, s
 		return (struct traversal_ret){
 			.elements = NULL,
 			.elements_size = 0,
+			.status = SUCCESS
 		};
 	}
 
 	struct traversal_ret left = traversal_rec(node->left, order, size);
 	struct traversal_ret right = traversal_rec(node->right, order, size);
-	struct traversal_ret result;
+	struct traversal_ret result = {.status = SUCCESS};
 
 	// If the tarversals from the right returned with error statuses, propagate it.
-/*	if(left.status != SUCCESS || right.status != SUCCESS){
+	if(left.status != SUCCESS || right.status != SUCCESS){
 		result.status = left.status != SUCCESS ? left.status : right.status;
-		free(left.elements);
-		free(right.elements);
-		return result;
-		}*/
+		goto cleanup;
+	}
 
-	// Create a new struct traversal_ret to agregate the traversal from left and right and this current node all in one
-	result.elements_size = left.elements_size + right.elements_size + 1; // The +1 is for the element in this node
+	/* Create a new struct traversal_ret to aggregate the traversal
+	   from left and right and this current node all in one */
+	result.elements_size = left.elements_size + right.elements_size + 1;
 	result.elements = malloc(result.elements_size * size);
-	assert(result.elements);
+	if (!result.elements){
+		result.status = ERROR;
+		goto cleanup;
+	}
 
-	// Depending on the order paranmeter, the current node will be added before (pre order) in the middle (in order) or after (post order)
 	void *tmp = result.elements;
 
 	if(order == PRE_ORDER){
@@ -435,25 +438,25 @@ static struct traversal_ret traversal_rec(AVLNode *node, enum Traversal order, s
 		tmp = void_offset(tmp, size);
 	}
 
-	// Add the elements of the left
-	memcpy(tmp, left.elements, size * left.elements_size);
-	tmp = void_offset(tmp, size * left.elements_size);
+	if (left.elements){
+		memcpy(tmp, left.elements, size * left.elements_size);
+		tmp = void_offset(tmp, size * left.elements_size);
+	}
 
 	if(order == IN_ORDER){
 		memcpy(tmp, node->info, size);
 		tmp = void_offset(tmp, size);
 	}
 
-	// Add the elements of the right
-	memcpy(tmp, right.elements, size * right.elements_size);
-	tmp = void_offset(tmp, size * right.elements_size);
+	if (right.elements){
+		memcpy(tmp, right.elements, size * right.elements_size);
+		tmp = void_offset(tmp, size * right.elements_size);
+	}
 
 	if(order == POST_ORDER){
 		memcpy(tmp, node->info, size);
 	}
-
-	// Free the left and right arrays. Our result.data already
-	// stores the elements, so this two arrays are useless now.
+cleanup:
 	free(left.elements);
 	free(right.elements);
 	return result;

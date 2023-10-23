@@ -57,7 +57,7 @@ void destructor_test(void){
 int main(void){
 	print_test_start(AVL);
 	TIMESTAMP_START
-	int tmp;
+	int tmp = 0;
 
 	AVLTree *t = avl_init(sizeof(int), compare_int);
 	assert(avl_size(t) == 0UL);

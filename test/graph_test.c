@@ -208,8 +208,8 @@ void traverse_df(void){
 #ifdef VERBOSE
 	graph_traversal df = graph_traverse_DF(graph, &a);
 	printf("DF: ");
-	for (int i=0; i < 10; i++){
-		void *tmp = void_offset(df.elements, i);
+	for (int n=0; n < 10; n++){
+		void *tmp = void_offset(df.elements, n);
 		printf("%c-", * (char*) tmp);
 	}
 	printf("\n");

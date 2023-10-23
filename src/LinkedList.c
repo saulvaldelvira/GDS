@@ -117,8 +117,8 @@ int list_push_front(LinkedList *list, void *element){
 int list_push_front_array(LinkedList *list, void *array, size_t array_length){
 	assert(list && array);
 	void *tmp = array;
-	int status;
 	while (array_length-- > 0){
+		int status;
 		status = list_push_front(list, tmp);
 		if (status != SUCCESS)
 			return status;

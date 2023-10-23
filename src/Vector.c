@@ -71,18 +71,18 @@ size_t vector_get_data_size(Vector *vector){
 
 static int check_and_transform_index(ptrdiff_t *index_1, ptrdiff_t *index_2, size_t n_elements){
 	if (*index_1 < 0){
-		if ((size_t)(*index_1 * -1) > n_elements)
-			return INDEX_BOUNDS_ERROR;
 		*index_1 = n_elements + *index_1;
+		if ((size_t)*index_1 >= n_elements)
+			return INDEX_BOUNDS_ERROR;
 	}
 	if ((size_t)*index_1 >= n_elements)
 		return INDEX_BOUNDS_ERROR;
 	if (index_2 == NULL)
 		return SUCCESS;
 	if (*index_2 < 0){
-		if ((size_t)(*index_2 * -1) > n_elements)
-			return INDEX_BOUNDS_ERROR;
 		*index_2 = n_elements + *index_2;
+		if ((size_t)*index_2 >= n_elements)
+			return INDEX_BOUNDS_ERROR;
 	}
 	if ((size_t)*index_2 >= n_elements)
 		return INDEX_BOUNDS_ERROR;
@@ -135,6 +135,7 @@ int vector_insert_array(Vector *vector, ptrdiff_t index, void *array, size_t arr
 }
 
 int vector_append_array(Vector *vector, void *array, size_t array_length){
+	assert(vector);
 	return vector_insert_array(vector, vector->n_elements, array, array_length);
 }
 
@@ -433,12 +434,14 @@ int vector_swap(Vector *vector, ptrdiff_t index_1, ptrdiff_t index_2){
 	if (status != SUCCESS)
 		return status;
 	void *tmp = malloc(vector->data_size);
-	assert(tmp);
-	if (!vector_at(vector, index_1, tmp))
+	if (!tmp || !vector_at(vector, index_1, tmp)){
+		free(tmp);
 		return ERROR;
+	}
 
 	void *e1 = void_offset(vector->elements, index_1 * vector->data_size);
 	void *e2 = void_offset(vector->elements, index_2 * vector->data_size);
+	assert(e1 && e2);
 	memmove(e1, e2, vector->data_size);
 	memcpy(e2, tmp, vector->data_size);
 
@@ -490,10 +493,6 @@ Vector* vector_dup(Vector *vector){
 
 Vector* vector_join(Vector *vector_1, Vector *vector_2){
 	assert(vector_1 && vector_2 && vector_1->data_size == vector_2->data_size);
-	size_t n_elements = vector_1->n_elements + vector_2->n_elements;
-	if (n_elements < VECTOR_DEFAULT_SIZE){
-		n_elements = VECTOR_DEFAULT_SIZE;
-	}
 	Vector *vector_joint = vector_init(vector_1->data_size, vector_1->compare);
 
 	int status = vector_append_array(vector_joint, vector_1->elements, vector_1->n_elements);
