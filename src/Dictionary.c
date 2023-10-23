@@ -28,7 +28,7 @@ typedef struct DictionaryNode {
 struct Dictionary{
         size_t value_size;      ///< Size (in bytes) of the value data type
         size_t key_size;        ///< Size (in bytes) of the key data type
-        Vector *elements;       ///< Vector to store the elements
+        Vector *vec_elements;   ///< Vector to store the elements
         size_t n_elements;      ///< Number of elements in the Dictionary
         size_t vec_size;        ///< Capacity of the vector
         size_t prev_vec_size;   ///< Previous capacity of the vector
@@ -109,14 +109,14 @@ Dictionary* dict_init(size_t key_size, size_t value_size, hash_function_t hash_f
         dict->min_lf = DICT_DEF_MIN_LF;
         dict->max_lf = DICT_DEF_MAX_LF;
 	dict->destructor = NULL;
-        dict->elements = vector_init(sizeof(DictionaryNode), compare_equal);
-        if (!dict->elements){
+        dict->vec_elements = vector_init(sizeof(DictionaryNode), compare_equal);
+        if (!dict->vec_elements){
 		free(dict);
 		return NULL;
 	}
-        vector_reserve(dict->elements, DICT_INITIAL_SIZE);
+        vector_reserve(dict->vec_elements, DICT_INITIAL_SIZE);
         dict->n_elements = 0;
-        vector_map(dict->elements, init_node, NULL);
+        vector_map(dict->vec_elements, init_node, NULL);
         dict->hash = hash_func;
         dict->redispersion = DICT_DEF_REDISPERSION;
         dict->vec_size = DICT_INITIAL_SIZE;
@@ -188,21 +188,16 @@ static int dict_redisperse(Dictionary *dict, size_t new_size){
         if (!elements){
                 return ERROR;
         }
-        vector_map(dict->elements, copy_elements, (void*[]){&tail, &dict->destructor});
+        vector_map(dict->vec_elements, copy_elements, (void*[]){&tail, &dict->destructor});
 
         /// Reset the vector
-        if (new_size < dict->vec_size) {
-                destructor_function_t destructor = vector_get_destructor(dict->elements);
-                vector_free(dict->elements);
-                dict->elements = vector_init(sizeof(DictionaryNode), compare_equal);
-                vector_reserve(dict->elements, new_size);
-                vector_set_destructor(dict->elements, destructor);
-        }
-        int status = vector_reserve(dict->elements, new_size);
+        if (new_size < dict->vec_size)
+                vector_clear(dict->vec_elements);
+        int status = vector_reserve(dict->vec_elements, new_size);
         if (status != SUCCESS)
                 return status;
 
-        vector_map(dict->elements, init_node, NULL);
+        vector_map(dict->vec_elements, init_node, NULL);
 
         // Change vec_size and n_elements
         size_t n_elements = dict->n_elements;
@@ -214,11 +209,10 @@ static int dict_redisperse(Dictionary *dict, size_t new_size){
 
         dict->vec_size = new_size;
 
-        // Add the elements in the new dictionary
+        // Add the elements to the new dictionary
         for (size_t i = 0; i < n_elements; ++i){
                 DictionaryNode *n = elements + i;
                 status = dict_put(dict, n->key, n->value);
-                // If one fails we need to free the elements array before returning
                 if (status != SUCCESS){
                         while (i < n_elements){
                                 n = elements + i;
@@ -229,8 +223,8 @@ static int dict_redisperse(Dictionary *dict, size_t new_size){
                         free(elements);
                         return status;
                 }
-                // Allways free the key and value pointers of the
-                // nodes, since their values are COPIED to the new table
+                /* Always free the key and value pointers of the
+                   nodes, since their values are COPIED to the new table */
                 free(n->key);
                 free(n->value);
         }
@@ -269,14 +263,12 @@ int dict_put(Dictionary *dict, void *key, void *value){
 
         for (size_t i = 0; i < dict->vec_size; ++i){
                 pos = dict_get_pos(dict, key, i);
-                vector_at(dict->elements, pos, &node);
+                vector_at(dict->vec_elements, pos, &node);
 
                 if (node.state == FULL){
                         int64_t h1 = dict->hash(key);
                         int64_t h2 = dict->hash(node.key);
-                        if (h1 == h2){
-                                break;
-                        }
+                        if (h1 == h2) break;
                 }else {
                         break;
                 }
@@ -289,22 +281,29 @@ int dict_put(Dictionary *dict, void *key, void *value){
 		dict->n_elements++;
 	}
 
-        // If the node is empty, we need to allocate
-        // memory for the key and value.
-        if (!node.key)
+        /* if the node is empty, we need to allocate
+           memory for the key and value. */
+        if (!node.key){
                 node.key = malloc(dict->key_size);
-        if (!node.value)
-                node.value = malloc(dict->value_size);
-	assert(node.key && node.value);
+		if (!node.key)
+			return ERROR;
+	}
+        if (!node.value){
+		node.value = malloc(dict->value_size);
+		if (!node.value){
+			free(node.key);
+			return ERROR;
+		}
+	}
 
         memcpy(node.key, key, dict->key_size);
         memcpy(node.value, value, dict->value_size);
 
         node.state = FULL;
 
-        // Very important. We need to copy back the node to the vector.
-        // Remember, the get function returns a COPY of the element.
-        vector_set_at(dict->elements, pos, &node);
+        /* Very important!. We need to copy back the node into the vector.
+           Remember that the get function returns a COPY of the element. */
+        vector_set_at(dict->vec_elements, pos, &node);
 
         // Resize if needed
         if (LF(dict->n_elements, dict->vec_size) >= dict->max_lf){
@@ -319,13 +318,12 @@ int dict_put(Dictionary *dict, void *key, void *value){
 //// GET_EXISTS ///////////////////////////////////////////////////////////////
 
 void* dict_get(Dictionary *dict, void *key, void *dest){
-        DictionaryNode node;
         assert(dict && key);
+        DictionaryNode node;
 	size_t i = 0;
         do {
-		size_t pos;
-		pos = dict_get_pos(dict, key, i);
-                vector_at(dict->elements, pos, &node);
+		size_t pos = dict_get_pos(dict, key, i);
+                vector_at(dict->vec_elements, pos, &node);
                 if (node.state == EMPTY)
                         break;
                 if (node.state != DELETED){
@@ -345,10 +343,8 @@ bool dict_exists(Dictionary *dict, void *key){
         size_t i = 0;
         DictionaryNode node;
         do {
-		size_t pos;
-                pos = dict_get_pos(dict, key, i);
-
-                vector_at(dict->elements, pos, &node);
+                size_t pos = dict_get_pos(dict, key, i);
+                vector_at(dict->vec_elements, pos, &node);
                 if (node.state == EMPTY)
                         break;
                 if (node.state != DELETED){
@@ -368,7 +364,7 @@ static int dict_delete_node(Dictionary *dict, size_t pos, DictionaryNode node){
         node.state = DELETED;
 	if (dict->destructor)
 		dict->destructor(node.value);
-	vector_set_at(dict->elements, pos, &node);
+	vector_set_at(dict->vec_elements, pos, &node);
         dict->n_elements--;
         if (dict->min_lf > 0 && LF(dict->n_elements, dict->vec_size) <= dict->min_lf){
                 size_t new_size = get_prev_prime(dict->vec_size / 2);
@@ -386,7 +382,7 @@ int dict_remove(Dictionary *dict, void *key){
 	size_t start_pos = pos;
         DictionaryNode node;
 	do{
-		vector_at(dict->elements, pos, &node);
+		vector_at(dict->vec_elements, pos, &node);
                 if (node.state == FULL){
 			int64_t h1 = dict->hash(key);
 			int64_t h2 = dict->hash(node.key);
@@ -403,8 +399,8 @@ int dict_remove(Dictionary *dict, void *key){
 void dict_free(Dictionary *dict){
         if (!dict)
                 return;
-        vector_map(dict->elements, free_node, &dict->destructor);
-        vector_free(dict->elements);
+        vector_map(dict->vec_elements, free_node, &dict->destructor);
+        vector_free(dict->vec_elements);
         free(dict);
 }
 
@@ -421,8 +417,10 @@ void dict_free_all(unsigned int n, ...){
 void dict_clear(Dictionary *dict){
         if (!dict)
                 return;
-        vector_map(dict->elements, free_node, &dict->destructor);
-        vector_reserve(dict->elements, DICT_INITIAL_SIZE);
+        vector_map(dict->vec_elements, free_node, &dict->destructor);
+	vector_reset(dict->vec_elements);
+	vector_reserve(dict->vec_elements, DICT_INITIAL_SIZE);
+        vector_map(dict->vec_elements, init_node, NULL);
         dict->n_elements = 0;
         dict->vec_size = DICT_INITIAL_SIZE;
         dict->prev_vec_size = get_prev_prime(DICT_INITIAL_SIZE);
