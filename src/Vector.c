@@ -196,17 +196,6 @@ int vector_insert_at(Vector *vector, ptrdiff_t index, void *element){
 	return SUCCESS;
 }
 
-int vector_populate(Vector *vector, void *templ){
-	assert(vector && templ);
-	void *tmp = vector->elements;
-	for (size_t i = 0; i < vector->max_elements; i++){
-		memcpy(tmp, templ, vector->data_size);
-		tmp = void_offset(tmp, vector->data_size);
-	}
-	vector->n_elements = vector->max_elements;
-	return SUCCESS;
-}
-
 void vector_map(Vector *vector, void (*func) (void *,void*), void *args){
 	assert(vector && func);
 	void *tmp = vector->elements;

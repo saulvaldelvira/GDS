@@ -127,11 +127,6 @@ int vector_reserve(Vector *vector, size_t n_elements);
 int vector_shrink(Vector *vector);
 
 /**
- * Fills the vector with copies of a template element.
-*/
-int vector_populate(Vector *vector, void *templ);
-
-/**
  * Applies 'func' to every element in the vector
  * @param func function to apply
  * @param args (optional) passed to func as the second parameter
