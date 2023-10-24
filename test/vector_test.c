@@ -40,6 +40,12 @@ void destructor_test(void){
 		int *ptr = malloc(sizeof(int));
 		assert(vector_append(vector, &ptr) == SUCCESS);
 	}
+
+	/* Replacing an element is like removing it
+	   and inserting another in it's position. */
+	int *ptr = malloc(sizeof(int));
+	assert(vector_set_at(vector,12,&ptr));
+
 	vector_free(vector);
 }
 

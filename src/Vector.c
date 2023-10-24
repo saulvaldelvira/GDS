@@ -149,20 +149,18 @@ int vector_set_at(Vector *vector, ptrdiff_t index, void *replacement){
 	if (status != SUCCESS)
 		return status;
 	void *tmp = void_offset(vector->elements, index * vector->data_size);
+	if (vector->destructor)
+		vector->destructor(tmp);
 	memmove(tmp, replacement, vector->data_size);
 	return SUCCESS;
 }
 
 int vector_set(Vector *vector, void *element, void *replacement){
 	assert(vector && element && replacement);
-	for (size_t i=0; i < vector->n_elements; i++){
-		void *ptr = void_offset(vector->elements, i * vector->data_size);
-		if (vector->compare(ptr, element) == 0){
-			memmove(ptr, replacement, vector->data_size);
-			return SUCCESS;
-		}
-	}
-	return ELEMENT_NOT_FOUND_ERROR;
+	ptrdiff_t index = vector_indexof(vector, element);
+	if (index < 0) return index;
+	vector_set_at(vector, index, replacement);
+	return SUCCESS;
 }
 
 int vector_insert(Vector *vector, void *element, void *insert){
