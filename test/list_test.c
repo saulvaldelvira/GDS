@@ -27,10 +27,14 @@ void joins_test(void){
 void destructor_test(void){
 	LinkedList *list = list_init(sizeof(int*), compare_pointer);
 	list_set_destructor(list, destroy_ptr);
+	int *ptr;
 	for (int i = 0; i < 1024; i++){
-		int *ptr = malloc(sizeof(int));
+		ptr = malloc(sizeof(int));
 		assert(list_append(list, &ptr) == SUCCESS);
 	}
+
+	int *ptr2 = malloc(sizeof(int));
+	list_set(list, &ptr, &ptr2);
 	list_free(list);
 }
 

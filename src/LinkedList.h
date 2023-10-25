@@ -182,11 +182,8 @@ void* list_pop_back(LinkedList *list, void *dest);
 void* list_pop_array(LinkedList *list, void *array, size_t array_length, void *dest);
 
 /**
- * @return a new LinkedList with the elements of the two given lists.
- * @note No particular order of elements is guaranteed.
- * @note ATTENTION: The lists must store the same data. At least, they must have
- * the same data size. Also, the comparator function of list_1 will be taken,
- * because it is assumed that both list have the same comparator functions.
+ * @return a new LinkedList with the elements of the two given
+ *         lists, or NULL if the lists have different data_size.
 */
 LinkedList* list_join(LinkedList *list_1, LinkedList *list_2);
 

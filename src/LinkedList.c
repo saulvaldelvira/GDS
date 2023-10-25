@@ -130,11 +130,13 @@ int list_push_front_array(LinkedList *list, void *array, size_t array_length){
 int list_set(LinkedList *list, void *element, void *replacement){
 	assert(list && element && replacement);
 	LLNode *aux = list->head;
-	while ((*list->compare) (aux->info, element) != 0){
+	while (list->compare(aux->info, element) != 0){
 		aux = aux->next;
 		if(aux == NULL)
 			return ELEMENT_NOT_FOUND_ERROR;
 	}
+	if (list->destructor)
+		list->destructor(aux->info);
 	memcpy(aux->info, replacement, list->data_size);
 	return SUCCESS;
 }
@@ -146,9 +148,12 @@ int list_set(LinkedList *list, void *element, void *replacement){
 void* list_get(LinkedList *list, void *element, void *dest){
 	assert(list && element && dest);
 	LLNode *aux = list->head;
-	while (aux != NULL && (*list->compare) (aux->info, element) != 0)
+	while (aux != NULL){
+		if (list->compare(aux->info, element) == 0)
+			return memcpy(dest, aux->info, list->data_size);
 		aux = aux->next;
-	return aux == NULL ? NULL : memcpy(dest, aux->info, list->data_size);
+	}
+	return NULL;
 }
 
 void* list_get_front(LinkedList *list, void *dest){
@@ -201,15 +206,17 @@ int list_remove(LinkedList *list, void *element){
 	assert(list && element);
 	LLNode *tmp = list->head;
 	while(tmp){
-		if (list->compare (tmp->info, element) == 0){
+		if (list->compare(tmp->info, element) == 0){
 			if (list->tail == tmp)
 				list->tail = tmp->prev;
 			else
 				tmp->next->prev = tmp->prev;
+
 			if (list->head == tmp)
 				list->head = tmp->next;
 			else
 				tmp->prev->next = tmp->next;
+
 			if (list->destructor)
 				list->destructor(tmp->info);
 			free(tmp);
@@ -260,17 +267,17 @@ void* list_pop(LinkedList *list, void *element, void *dest){
 	assert(list && element && dest);
 	LLNode *tmp = list->head;
 	while(tmp){
-		if (list->compare (tmp->info, element) == 0){
-			if (list->tail == tmp){
+		if (list->compare(tmp->info, element) == 0){
+			if (list->tail == tmp)
 				list->tail = tmp->prev;
-			}else{
+			else
 				tmp->next->prev = tmp->prev;
-			}
-			if (list->head == tmp){
+
+			if (list->head == tmp)
 				list->head = tmp->next;
-			}else{
+			else
 				tmp->prev->next = tmp->next;
-			}
+
 			if (dest)
 				memcpy(dest, tmp->info, list->data_size);
 			free(tmp);
@@ -328,7 +335,7 @@ bool list_exists(LinkedList *list, void *element){
 		return false;
 	LLNode *aux = list->head;
 	while (aux != NULL){
-		if ((*list->compare) (aux->info, element) == 0)
+		if (list->compare(aux->info, element) == 0)
 			return true;
 		aux = aux->next;
 	}
@@ -344,30 +351,19 @@ bool list_isempty(LinkedList *list){
 }
 
 LinkedList* list_join(LinkedList *list_1, LinkedList *list_2){
-	assert(list_1 && list_2 && list_1->data_size == list_2->data_size);
+	assert(list_1 && list_2);
+	if (list_1->data_size != list_2->data_size)
+		return NULL;
 	LinkedList *list_joint = list_init(list_1->data_size, list_1->compare);
-	int status;
-	// Get the elements of the first list
-	void *tmp = list_get_array(list_1, list_1->n_elements);
-	if (tmp != NULL){
-		// Add the elements of the first list
-		status = list_append_array(list_joint, tmp, list_1->n_elements);
-		free(tmp);
-		if (status != SUCCESS){
-			free(list_joint);
-			return NULL;
-		}
+	LLNode *aux = list_1->head;
+	while (aux){
+		list_append(list_joint, aux->info);
+		aux = aux->next;
 	}
-	// Get the elements of the second list
-	tmp = list_get_array(list_2, list_2->n_elements);
-	if (tmp != NULL){
-		// Add the elements of the second list
-		status = list_append_array(list_joint, tmp, list_2->n_elements);
-		free(tmp);
-		if (status != SUCCESS){
-			free(list_joint);
-			return NULL;
-		}
+	aux = list_2->head;
+	while (aux){
+		list_append(list_joint, aux->info);
+		aux = aux->next;
 	}
 	return list_joint;
 }
