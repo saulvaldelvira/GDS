@@ -5,6 +5,7 @@
 #include "compare.h"
 #include <stdlib.h>
 #include <string.h>
+#include <stdint.h>
 
 // COMPARATORS
 int compare_int(const void *e_1, const void *e_2){
@@ -65,6 +66,17 @@ int compare_double(const void *e_1, const void *e_2){
 	}else{
 		return 0;
 	}
+}
+
+int compare_pointer(const void *e_1, const void *e_2){
+	void *ptr1, *ptr2;
+	memcpy(&ptr1, e_1, sizeof(void*));
+	memcpy(&ptr2, e_2, sizeof(void*));
+	uintptr_t i1 = (uintptr_t) ptr1;
+	uintptr_t i2 = (uintptr_t) ptr2;
+	if (i1 > i2) return 1;
+	else if (i1 < i2) return -1;
+	else return 0;
 }
 
 int compare_lesser(const void *e_1, const void *e_2){

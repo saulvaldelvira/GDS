@@ -25,7 +25,7 @@ void joins_test(void){
 }
 
 void destructor_test(void){
-	LinkedList *list = list_init(sizeof(int*), compare_lesser);
+	LinkedList *list = list_init(sizeof(int*), compare_pointer);
 	list_set_destructor(list, destroy_ptr);
 	for (int i = 0; i < 1024; i++){
 		int *ptr = malloc(sizeof(int));

@@ -25,6 +25,7 @@ int compare_float(const void *e_1, const void *e_2);            ///< Compares tw
 int compare_double(const void *e_1, const void *e_2);           ///< Compares two double pointers
 int compare_long(const void *e_1, const void *e_2);             ///< Compares two long pointers
 int compare_long_long(const void *e_1, const void *e_2);        ///< Compares two long long pointers
+int compare_pointer(const void *e_1, const void *e_2);          ///< Compares two pointers
 
 /*
  * Useless comparator functions.
