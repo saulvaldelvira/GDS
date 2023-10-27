@@ -14,6 +14,14 @@
 
 #define VECTOR_DEFAULT_SIZE 12
 
+#ifndef VECTOR_GROW_FACTOR
+#define VECTOR_GROW_FACTOR 2
+#endif
+
+#if VECTOR_GROW_FACTOR <= 1
+#error "VECTOR_GROW_FACTOR must be > 1"
+#endif
+
 /**
  * Vector struct
  * @headerfile Vector.h <GDS/Vector.h>
@@ -174,7 +182,7 @@ int vector_insert(Vector *vector, void *element, void *insert){
 int vector_insert_at(Vector *vector, ptrdiff_t index, void *element){
 	assert(vector && element);
 	if (vector->n_elements == vector->max_elements){
-		if (vector_resize(vector, vector->max_elements * 2) == ERROR)
+		if (vector_resize(vector, vector->max_elements * VECTOR_GROW_FACTOR) == ERROR)
 			return ERROR;
 	}
 	if (index >= 0 && (size_t)index == vector->n_elements){
