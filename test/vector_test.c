@@ -159,6 +159,26 @@ void reduce_test(void){
 	print_test_ok();
 }
 
+void sort_test(void){	
+	const int n = 1024;
+	Vector *vector = vector_init(sizeof(int), compare_int);
+
+	for (int i = 0; i < n; i++)
+		vector_append(vector, &(int){rand_range(0, n)});
+	
+	vector_sort(vector);
+	
+	int prev;
+	vector_front(vector, &prev);
+	for (int i = 1; i < n; i++){
+		int curr;
+		vector_at(vector, i, &curr);
+		assert(prev <= curr);
+	}
+
+	vector_free(vector);
+}
+
 int main(void){
         int n = 2400;
 	int tmp;
@@ -267,6 +287,7 @@ vector_clear(vec);
 	map_test();
 	filter_test();
 	reduce_test();
+	sort_test();
 
 	TIMESTAMP_STOP
 	print_test_end(Vector);

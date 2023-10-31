@@ -142,6 +142,11 @@ void vector_map(Vector *vector, void (*func) (void *,void *), void *args);
 Vector* vector_filter(Vector *vector, bool (*func) (void*));
 
 /**
+ * Performs the Quick Sort algorithm on the Vector.
+*/
+void vector_sort(Vector *vector);
+
+/**
  * Reduces all element of the vector into a single element.
  * @param func function that receives an element as first parameter and
  *             the accumulated element (i.e. the result of calling func

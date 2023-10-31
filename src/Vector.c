@@ -224,6 +224,11 @@ Vector* vector_filter(Vector *vector, bool (*func) (void*)){
 	return result;
 }
 
+void vector_sort(Vector *vector){
+	if (vector)
+		qsort(vector->elements, vector->n_elements, vector->data_size, vector->compare);
+}
+
 void* vector_reduce(Vector *vector, void (*func) (const void*,void*), void *dest){
 	assert(vector && func && dest);
 	void *tmp = vector->elements;
