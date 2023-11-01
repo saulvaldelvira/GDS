@@ -320,8 +320,7 @@ int dict_put(Dictionary *dict, void *key, void *value){
 void* dict_get(Dictionary *dict, void *key, void *dest){
         assert(dict && key);
         DictionaryNode node;
-	size_t i = 0;
-        do {
+	for (size_t i = 0; i < dict->vec_size; i++) {
 		size_t pos = dict_get_pos(dict, key, i);
                 vector_at(dict->vec_elements, pos, &node);
                 if (node.state == EMPTY)
@@ -332,17 +331,14 @@ void* dict_get(Dictionary *dict, void *key, void *dest){
                         if (h1 == h2)
                                 return memcpy(dest, node.value, dict->value_size);
                 }
-
-                i++;
-        }while (i < dict->vec_size);
+        }
         return NULL;
 }
 
 bool dict_exists(Dictionary *dict, void *key){
         assert(dict && key);
-        size_t i = 0;
         DictionaryNode node;
-        do {
+        for (size_t i = 0; i < dict->vec_size; i++) {
                 size_t pos = dict_get_pos(dict, key, i);
                 vector_at(dict->vec_elements, pos, &node);
                 if (node.state == EMPTY)
@@ -353,8 +349,7 @@ bool dict_exists(Dictionary *dict, void *key){
                         if (h1 == h2)
                                 return true;
                 }
-                i++;
-        }while (i < dict->vec_size);
+        }
         return false;
 }
 
@@ -377,10 +372,10 @@ static int dict_delete_node(Dictionary *dict, size_t pos, DictionaryNode node){
 
 int dict_remove(Dictionary *dict, void *key){
         assert(dict && key);
+        DictionaryNode node;
 	size_t n_try = 0;
         size_t pos = dict_get_pos(dict, key, 0);
 	size_t start_pos = pos;
-        DictionaryNode node;
 	do{
 		vector_at(dict->vec_elements, pos, &node);
                 if (node.state == FULL){
