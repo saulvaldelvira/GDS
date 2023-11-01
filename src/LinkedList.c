@@ -21,13 +21,6 @@ typedef struct LLNode {
 	byte info[];
 }LLNode;
 
-/**
- * Linked List struct.
- * This is a doubly linked list, which means every node has
- * a pointer to both its successor and predecessor
- * @headerfile LinkedList.h <GDS/LinkedList.h>
- * @see LinkedList.h
-*/
 struct LinkedList {
 	LLNode *head;	///< Head node
 	LLNode *tail;	///< Tail node. Last added node

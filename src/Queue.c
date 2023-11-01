@@ -16,11 +16,6 @@ typedef struct QueueNode {
 	byte info[];
 } QueueNode;
 
-/**
- * Queue struct
- * @headerfile Queue.h <GDS/Queue.h>
- * @see Queue.h
-*/
 struct Queue {
 	QueueNode *head;	///< Head node
 	QueueNode *tail;	///< Tail node. Last added node

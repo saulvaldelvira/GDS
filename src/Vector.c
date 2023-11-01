@@ -22,11 +22,6 @@
 #error "VECTOR_GROW_FACTOR must be > 1"
 #endif
 
-/**
- * Vector struct
- * @headerfile Vector.h <GDS/Vector.h>
- * @see Vector.h
-*/
 struct Vector {
 	size_t n_elements;			///< Number of elements in the vector
 	size_t max_elements;			///< Current capacity of the vector

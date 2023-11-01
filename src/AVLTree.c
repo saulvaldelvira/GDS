@@ -21,11 +21,6 @@ typedef struct AVLNode {
         byte info[];
 } AVLNode;
 
-/**
- * AVL Tree struct
- * @headerfile AVLTree.h <GDS/AVLTree.h>
- * @see AVLTree.h
-*/
 struct AVLTree {
         AVLNode *root;				///< Root node of the tree
         size_t data_size;			///< Size (in bytes) of the data type being stored

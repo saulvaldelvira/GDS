@@ -11,11 +11,6 @@
 #include <stdarg.h>
 #include <assert.h>
 
-/**
- * Heap struct
- * @headerfile Heap.h <GDS/Heap.h>
- * @see Heap.h
-*/
 struct Heap {
 	Vector *elements;	///< Vector to hold the elements of the heap
 };

@@ -13,11 +13,6 @@
 #include <stdarg.h>
 #include <assert.h>
 
-/**
- * Graph struct
- * @headerfile Graph.h <GDS/Graph.h>
- * @see Graph.h
-*/
 struct Graph {
 	size_t n_elements;	///< Number of elements in the Graph
 	size_t max_elements;	///< Current capacity of the graph

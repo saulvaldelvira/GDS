@@ -11,11 +11,6 @@
 #include <stdarg.h>
 #include <assert.h>
 
-/**
- * Stack struct
- * @headerfile Stack.h <GDS/Stack.h>
- * @see Stack.h
-*/
 struct Stack {
 	Vector *elements; ///< Elements of the Stack
 };

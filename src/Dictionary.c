@@ -20,11 +20,6 @@ typedef struct DictionaryNode {
         } state;
 } DictionaryNode;
 
-/**
- * Dictionary struct
- * @headerfile Dictionary.h <GDS/Dictionary.h>
- * @see Dictionary.h
-*/
 struct Dictionary{
         size_t value_size;      ///< Size (in bytes) of the value data type
         size_t key_size;        ///< Size (in bytes) of the key data type
