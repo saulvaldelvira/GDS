@@ -340,7 +340,12 @@ ptrdiff_t graph_indexof(Graph *graph, void *vertex){
 static void graph_init_dijkstra(DijkstraData_t *dijkstra, Graph *graph, size_t source){
 	dijkstra->D = malloc(graph->n_elements * sizeof(*dijkstra->D));
 	dijkstra->P = malloc(graph->n_elements * sizeof(*dijkstra->P));
-	assert(dijkstra->D && dijkstra->P);
+	if (!dijkstra->D || !dijkstra->P){
+		free(dijkstra->D);
+		free(dijkstra->P);
+		dijkstra->status = ERROR;
+		return;
+	}
 
 	for (size_t i = 0; i < graph->n_elements; i++){
 		dijkstra->D[i] = graph->weights[source][i];
@@ -369,7 +374,7 @@ static ptrdiff_t graph_get_pivot(uint8_t *S, float *D, size_t n_elements){
 	ptrdiff_t pivot = -1;
 	float min = INFINITY;
 	for (size_t i = 0; i < n_elements; i++){
-		if (!S[i] && D[i] < min){ // If not visited and weight < min
+		if (!S[i] && D[i] < min){
 			min = D[i];
 			pivot = i;
 		}
@@ -387,35 +392,33 @@ DijkstraData_t graph_dijkstra(Graph *graph, void *source){
 	}
 
 	graph_init_dijkstra(&dijkstra, graph, source_index);
+	if (dijkstra.status != SUCCESS) return dijkstra;
 
-	// Initialize the visited array
 	uint8_t *S = calloc(graph->n_elements, sizeof(*S));
-	assert(S);
+	if (!S){
+		free(dijkstra.D);
+		free(dijkstra.P);
+		dijkstra.status = ERROR;
+		return dijkstra;
+	}
 
 	if ((size_t)source_index >= graph->n_elements){
 		dijkstra.status = INDEX_BOUNDS_ERROR;
 		goto cleanup;
 	}
 
-	// Mark the start vertex as visited (because of the initialization)
 	S[source_index] = 1;
 
 	ptrdiff_t pivot = graph_get_pivot(S, dijkstra.D, graph->n_elements);
-	while (pivot != -1){ // While there's still pivots
+	while (pivot != -1){
 		for (size_t i = 0; i < graph->n_elements; i++){
-			if (S[i]){ // If already visited continue
-				continue;
-			}
-			// Calculate the cost to i through this pivot
+			if (S[i]) continue;
 			float w = dijkstra.D[pivot] + graph->weights[pivot][i];
-
-			// If the cost is < than the actual cost AND it exists an edge between the pivot and i
 			if (dijkstra.D[i] > w && graph->edges[pivot][i]){
 				dijkstra.D[i] = w;
 				dijkstra.P[i] = pivot;
 			}
 		}
-		// Mark the pivot as visited and get the next one
 		S[pivot] = 1;
 		pivot = graph_get_pivot(S, dijkstra.D, graph->n_elements);
 	}
@@ -454,18 +457,32 @@ void graph_free_dijkstra_data(DijkstraData_t *data){
 static void graph_init_floyd(FloydData_t *floyd, Graph *graph){
 	floyd->A = malloc(sizeof(*floyd->A) * graph->n_elements);
 	floyd->P = malloc(sizeof(*floyd->P) * graph->n_elements);
-	assert(floyd->A && floyd->P);
+	if (!floyd->A || !floyd->P){
+		free(floyd->A);
+		free(floyd->P);
+		floyd->status = ERROR;
+		return;
+	}
 
 	for (size_t i = 0; i < graph->n_elements; i++){
 		floyd->A[i] = malloc(sizeof(*floyd->A[i]) * graph->n_elements);
 		floyd->P[i] = malloc(sizeof(*floyd->P[i]) * graph->n_elements);
-		assert(floyd->A[i] && floyd->P[i]);
+		if (!floyd->A[i] || !floyd->P[i]){
+			for (size_t j = 0; j <= i; j++){
+				free(floyd->A[j]);
+				free(floyd->P[j]);
+			}
+			free(floyd->A);
+			free(floyd->P);
+			floyd->status = ERROR;
+			return;
+		}
 
 		for (size_t j = 0; j < graph->n_elements; j++){
 			floyd->A[i][j] = graph->weights[i][j];
-			floyd->P[i][j] = -1; // At the begining, all pivots are -1
+			floyd->P[i][j] = -1;
 		}
-		floyd->A[i][i] = 0.0f; // The cost from an elements to itself is always 0
+		floyd->A[i][i] = 0.0f;
 	}
 	floyd->n_elements = graph->n_elements;
 	floyd->status = SUCCESS;
@@ -475,11 +492,12 @@ FloydData_t graph_floyd(Graph *graph){
 	assert(graph);
 	FloydData_t floyd = {.A = NULL, .P = NULL, .n_elements = 0, .status = SUCCESS};
 	graph_init_floyd(&floyd, graph);
+	if (floyd.status != SUCCESS) return floyd;
 	for (size_t pivot = 0; pivot < graph->n_elements; pivot++){
 		for (size_t i = 0; i < graph->n_elements; i++){
 			for (size_t j = 0; j < graph->n_elements; j++){
-				float w = floyd.A[i][pivot] + floyd.A[pivot][j]; // Cost from i to j, going through the pivot
-				if (floyd.A[i][j] > w){ // If it's better that the cost of going directly from i to j
+				float w = floyd.A[i][pivot] + floyd.A[pivot][j];
+				if (floyd.A[i][j] > w){
 					floyd.A[i][j] = w;
 					floyd.P[i][j] = pivot;
 				}
