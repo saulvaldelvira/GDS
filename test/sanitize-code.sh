@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if ! type cppcheck &> /dev/null; then
+    echo "You need to install cppcheck"
+    exit 1
+fi
+
 make clean ; make CC=gcc FLAGS="-fsanitize=address,undefined,leak -Werror"
 
 failures=""

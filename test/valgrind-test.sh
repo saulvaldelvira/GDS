@@ -1,4 +1,10 @@
 #!/bin/bash
+
+if ! type valgrind &> /dev/null; then
+    echo "You need to install valgrind"
+    exit 1
+fi
+
 if ! ls ./bin/*.out &> /dev/null ; then
         make test NO-RUN=true
 fi
