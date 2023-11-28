@@ -117,9 +117,21 @@ size_t vector_capacity(Vector *vector);
 /**
  * Reserves space for a certain number of elements.
  * @param n_elements number of elements to reserve space for.
+ * @note It does NOT change the number of elements, it just reserves
+ *       the space. For that, use vector_resize
  * @note It does NOT shrink the vector. For that, use vector_shrink.
 */
 int vector_reserve(Vector *vector, size_t n_elements);
+
+/**
+ * Resizes the vector to the given number of elements.
+ * @param n_elements new number of elements.
+ * @note If a destructor is set, and the given n_elements is lower
+ *       than the current size of the vector, the destructor WON'T
+ *       be called. This is to avoid calling it on garbage elements.
+ * @note It does NOT shrink the vector. For that, use vector_shrink.
+*/
+int vector_resize(Vector *vector, size_t n_elements);
 
 /**
  * Shrinks the vector to fit exactly it's content.

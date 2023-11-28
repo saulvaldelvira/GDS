@@ -96,7 +96,7 @@ static int check_and_transform_index(ptrdiff_t *index_1, ptrdiff_t *index_2, siz
 
 /// ADD-SET ///////////////////////////////////////////////////////////////////////
 
-static int vector_resize(Vector *vector, size_t new_size){
+static int resize_buffer(Vector *vector, size_t new_size){
 	assert(vector->n_elements <= new_size);
 	void *ptr = realloc(vector->elements, new_size * vector->data_size);
 	if (!ptr) return ERROR;
@@ -117,7 +117,7 @@ int vector_push_front(Vector *vector, void *element){
 int vector_insert_array(Vector *vector, ptrdiff_t index, void *array, size_t array_length){
 	assert(vector && array);
 	if (vector->max_elements - vector->n_elements < array_length){
-		if (vector_resize(vector, vector->max_elements + array_length) == ERROR)
+		if (resize_buffer(vector, vector->max_elements + array_length) == ERROR)
 			return ERROR;
 	}
 	if (index >= 0 && (size_t)index == vector->n_elements){
@@ -177,7 +177,7 @@ int vector_insert(Vector *vector, void *element, void *insert){
 int vector_insert_at(Vector *vector, ptrdiff_t index, void *element){
 	assert(vector && element);
 	if (vector->n_elements == vector->max_elements){
-		if (vector_resize(vector, vector->max_elements * VECTOR_GROW_FACTOR) == ERROR)
+		if (resize_buffer(vector, vector->max_elements * VECTOR_GROW_FACTOR) == ERROR)
 			return ERROR;
 	}
 	if (index >= 0 && (size_t)index == vector->n_elements){
@@ -465,7 +465,16 @@ size_t vector_capacity(Vector *vector){
 int vector_reserve(Vector *vector, size_t n_elements){
 	assert(vector);
 	if (vector->max_elements < n_elements){
-		if (vector_resize(vector, n_elements) == ERROR)
+		if (resize_buffer(vector, n_elements) == ERROR)
+			return ERROR;
+	}
+	return SUCCESS;
+}
+
+int vector_resize(Vector *vector, size_t n_elements){
+	assert(vector);
+	if (vector->max_elements < n_elements){
+		if (resize_buffer(vector, n_elements) == ERROR)
 			return ERROR;
 	}
 	vector->n_elements = n_elements;
@@ -474,14 +483,14 @@ int vector_reserve(Vector *vector, size_t n_elements){
 
 int vector_shrink(Vector *vector){
 	assert(vector);
-	return vector_resize(vector, vector->n_elements);
+	return resize_buffer(vector, vector->n_elements);
 }
 
 Vector* vector_dup(Vector *vector){
 	assert(vector);
 	Vector *dup = vector_init(vector->data_size, vector->compare);
 	vector_set_destructor(dup, vector->destructor);
-	vector_reserve(dup, vector->n_elements); // vector_reserve also sets dup->n_elements to vector->n_elements
+	vector_resize(dup, vector->n_elements);
 	memcpy(dup->elements, vector->elements, vector->n_elements * vector->data_size);
 	return dup;
 }

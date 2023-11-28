@@ -109,7 +109,7 @@ Dictionary* dict_init(size_t key_size, size_t value_size, hash_function_t hash_f
 		free(dict);
 		return NULL;
 	}
-        vector_reserve(dict->vec_elements, DICT_INITIAL_SIZE);
+        vector_resize(dict->vec_elements, DICT_INITIAL_SIZE);
         dict->n_elements = 0;
         vector_map(dict->vec_elements, init_node, NULL);
         dict->hash = hash_func;
@@ -188,7 +188,7 @@ static int dict_redisperse(Dictionary *dict, size_t new_size){
         /// Reset the vector
         if (new_size < dict->vec_size)
                 vector_clear(dict->vec_elements);
-        int status = vector_reserve(dict->vec_elements, new_size);
+        int status = vector_resize(dict->vec_elements, new_size);
         if (status != SUCCESS)
                 return status;
 
@@ -409,7 +409,7 @@ void dict_clear(Dictionary *dict){
                 return;
         vector_map(dict->vec_elements, free_node, &dict->destructor);
 	vector_reset(dict->vec_elements);
-	vector_reserve(dict->vec_elements, DICT_INITIAL_SIZE);
+        vector_resize(dict->vec_elements, DICT_INITIAL_SIZE);
         vector_map(dict->vec_elements, init_node, NULL);
         dict->n_elements = 0;
         dict->vec_size = DICT_INITIAL_SIZE;
