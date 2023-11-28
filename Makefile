@@ -67,6 +67,5 @@ doxygen: ./doxygen/
 	@ mkdir $@
 
 clean:
-	@ find . -type f -name '*.o' -delete
-	@ rm -rf $(BIN)/
+	@ rm -f $(OFILES)
 	@ rm -rf doxygen
