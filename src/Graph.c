@@ -404,7 +404,10 @@ DijkstraData_t graph_dijkstra(Graph *graph, void *source){
 
 	if ((size_t)source_index >= graph->n_elements){
 		dijkstra.status = INDEX_BOUNDS_ERROR;
-		goto cleanup;
+		free(dijkstra.D);
+		free(dijkstra.P);
+		free(S);
+		return dijkstra;
 	}
 
 	S[source_index] = 1;
@@ -422,7 +425,6 @@ DijkstraData_t graph_dijkstra(Graph *graph, void *source){
 		S[pivot] = 1;
 		pivot = graph_get_pivot(S, dijkstra.D, graph->n_elements);
 	}
-cleanup:
 	free(S);
 	return dijkstra;
 }
