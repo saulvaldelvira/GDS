@@ -27,22 +27,18 @@ libs: $(OFILES) | $(BIN)/
 	@ $(AR) $(ARFLAGS) ./$(BIN)/libGDS-static.a $(OFILES)
 
 install: libs
-	@ sudo su -c '\
-	  echo "Installing GDS in $(INSTALL_PATH) ..." ;\
-	  install -d $(INSTALL_PATH)/lib ;\
-	  install -m 644 $(BIN)/libGDS* $(INSTALL_PATH)/lib ;\
-	  install -d $(INSTALL_PATH)/include/GDS ;\
-	  install -d $(INSTALL_PATH)/include/GDS/util ;\
-	  install -m 644 $(SRC)/*.h $(INSTALL_PATH)/include/GDS ;\
-	  install -m 644 $(SRC)/util/*.h $(INSTALL_PATH)/include/GDS/util ;\
-	  ldconfig $(INSTALL_PATH)/lib '
+	  install -d $(INSTALL_PATH)/lib
+	  install -m 644 $(BIN)/libGDS* $(INSTALL_PATH)/lib
+	  install -d $(INSTALL_PATH)/include/GDS
+	  install -d $(INSTALL_PATH)/include/GDS/util
+	  install -m 644 $(SRC)/*.h $(INSTALL_PATH)/include/GDS
+	  install -m 644 $(SRC)/util/*.h $(INSTALL_PATH)/include/GDS/util
+	  ldconfig $(INSTALL_PATH)/lib
 
 uninstall:
-	@ sudo su -c '\
-	  echo "Uninstalling GDS ..." ;\
-	  rm -f $(INSTALL_PATH)/lib/libGDS* ;\
-	  rm -rf $(INSTALL_PATH)/include/GDS ;\
-	  ldconfig $(INSTALL_PATH)/lib '
+	  rm -f $(INSTALL_PATH)/lib/libGDS*
+	  rm -rf $(INSTALL_PATH)/include/GDS
+	  ldconfig $(INSTALL_PATH)/lib
 
 NO-RUN?= false # If true, only builds the test, without running them
 test: $(TESTFILES) libs | $(BIN)/
