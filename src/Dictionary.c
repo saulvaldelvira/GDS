@@ -314,43 +314,43 @@ int dict_put(Dictionary *dict, void *key, void *value){
 
 void* dict_get(Dictionary *dict, void *key, void *dest){
         assert(dict && key);
-        DictionaryNode node;
 	for (size_t i = 0; i < dict->vec_size; i++) {
 		size_t pos = dict_get_pos(dict, key, i);
+		DictionaryNode node;
                 vector_at(dict->vec_elements, pos, &node);
-                if (node.state == EMPTY)
-                        break;
-                if (node.state != DELETED){
+                if (node.state == FULL){
                         int64_t h1 = dict->hash(key);
                         int64_t h2 = dict->hash(node.key);
                         if (h1 == h2)
                                 return memcpy(dest, node.value, dict->value_size);
                 }
+                if (node.state == EMPTY) break;
         }
         return NULL;
 }
 
 bool dict_exists(Dictionary *dict, void *key){
         assert(dict && key);
-        DictionaryNode node;
         for (size_t i = 0; i < dict->vec_size; i++) {
                 size_t pos = dict_get_pos(dict, key, i);
+		DictionaryNode node;
                 vector_at(dict->vec_elements, pos, &node);
-                if (node.state == EMPTY)
-                        break;
-                if (node.state != DELETED){
+                if (node.state == FULL){
                         int64_t h1 = dict->hash(key);
                         int64_t h2 = dict->hash(node.key);
                         if (h1 == h2)
                                 return true;
                 }
+                if (node.state == EMPTY) break;
         }
         return false;
 }
 
 /// REMOVE ////////////////////////////////////////////////////////////////////
 
-static int dict_delete_node(Dictionary *dict, size_t pos, DictionaryNode node){
+static int dict_delete_node(Dictionary *dict, size_t pos){
+	DictionaryNode node;
+	vector_at(dict->vec_elements, pos, &node);
         node.state = DELETED;
 	if (dict->destructor)
 		dict->destructor(node.value);
@@ -367,20 +367,18 @@ static int dict_delete_node(Dictionary *dict, size_t pos, DictionaryNode node){
 
 int dict_remove(Dictionary *dict, void *key){
         assert(dict && key);
-        DictionaryNode node;
-	size_t n_try = 0;
-        size_t pos = dict_get_pos(dict, key, 0);
-	size_t start_pos = pos;
-	do{
+	for (size_t i = 0; i < dict->vec_size; i++){
+		size_t pos = dict_get_pos(dict, key, i);
+		DictionaryNode node;
 		vector_at(dict->vec_elements, pos, &node);
                 if (node.state == FULL){
 			int64_t h1 = dict->hash(key);
 			int64_t h2 = dict->hash(node.key);
 			if (h1 == h2)
-				return dict_delete_node(dict, pos, node);
+				return dict_delete_node(dict, pos);
 		}
-		pos = dict_get_pos(dict, key, ++n_try);
-	} while (pos != start_pos);
+		if (node.state == EMPTY) break;
+	}
         return ELEMENT_NOT_FOUND_ERROR;
 }
 
