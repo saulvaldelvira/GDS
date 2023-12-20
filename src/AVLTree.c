@@ -16,7 +16,6 @@
 typedef struct AVLNode {
         struct AVLNode *left;
         struct AVLNode *right;
-        struct AVLNode *father;
         int height;
         byte info[];
 } AVLNode;
@@ -36,7 +35,6 @@ static AVLNode* init_node(void *element, size_t data_size){
         if (!node) return NULL;
         node->left = NULL;
         node->right = NULL;
-        node->father = NULL;
         node->height = 0;
         memcpy(node->info, element, data_size);
         return node;
@@ -196,7 +194,6 @@ static struct add_rec_ret add_rec(AVLNode *node, void *element, comparator_funct
 	}else{
 		return (struct add_rec_ret){node, REPEATED_ELEMENT_ERROR};
 	}
-	ret.node->father = node;
 	node = update_bf(node);
 	ret.node = node;
 	return ret;
