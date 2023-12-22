@@ -11,7 +11,7 @@ extern "C" {
 #endif
 
 // Error codes
-#define SUCCESS		         1
+#define SUCCESS                  1
 #define ERROR                    0
 #define INDEX_BOUNDS_ERROR      -0xE001
 #define ELEMENT_NOT_FOUND_ERROR -0xE002

@@ -18,7 +18,7 @@ extern "C" {
 typedef struct Dictionary Dictionary;
 
 enum Redispersion{
-	LINEAR, QUADRATIC, DOUBLE_HASHING
+        LINEAR, QUADRATIC, DOUBLE_HASHING
 };
 
 /**
@@ -26,14 +26,14 @@ enum Redispersion{
  * @param key_size size in bytes of the keys
  * @param value_size size in bytes of the values
  * @param hash_func hash fucntion for the keys. It takes a const void pointer
- * 		    and returns a 64 bit signed integer (int64_t).
+ *                     and returns a 64 bit signed integer (int64_t).
 */
 Dictionary* dict_init(size_t key_size, size_t value_size, hash_function_t hash_func);
 
-#define DICT_NO_SHRINKING	-1.0f
-#define DICT_DEF_REDISPERSION	DOUBLE_HASHING
-#define DICT_DEF_MAX_LF		0.2f
-#define DICT_DEF_MIN_LF		0.1f
+#define DICT_NO_SHRINKING        -1.0f
+#define DICT_DEF_REDISPERSION        DOUBLE_HASHING
+#define DICT_DEF_MAX_LF                0.2f
+#define DICT_DEF_MIN_LF                0.1f
 
 /**
  * Configures the Dictionary's behaviour.

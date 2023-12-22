@@ -162,7 +162,7 @@ void vector_sort(Vector *vector);
  * Reduces all element of the vector into a single element.
  * @param func function that receives an element as first parameter and
  *             the accumulated element (i.e. the result of calling func
- *	       on all the previous elements) as it's second parameter.
+ *               on all the previous elements) as it's second parameter.
  * @param dest address to store the result into
  * @return the dest pointer
  */
