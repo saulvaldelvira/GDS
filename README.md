@@ -1,17 +1,17 @@
 # Generic Data Structures
 A set of Data Structures for the C programming language. <br>
-It includes: <br>
-- **Vector.h** <br>
-- **LinkedList.h** <br>
-- **AVLTree.h** <br>
-- **Graph.h** <br>
-- **Dictionary.h** <br>
-- **Heap.h** <br>
-- **Stack.h** <br>
-- **Queue.h** <br>
+It includes:        <br>
+=> Vector.h         <br>
+=> LinkedList.h     <br>
+=> AVLTree.h        <br>
+=> Graph.h          <br>
+=> Dictionary.h     <br>
+=> Heap.h           <br>
+=> Stack.h          <br>
+=> Queue.h          <br>
 
-
-These structures are "generic" in the sense that they can store any kind of data type, by only knowing the size of it. <br>
+These structures are "generic" in the sense that they can store any kind
+of data type, by only knowing the size of it. <br>
 
 ```c
 int main(){
@@ -25,9 +25,12 @@ int main(){
 }
 ```
 
-In the example above, we create a vector to store integers. To do so, we pass sizeof(int) as a parameter when initializing it. <br>
-When calling vector_append, the function copies the size of an integer from the address of tmp into the vector. <br>
-Note that these structures store values, not references (i.e. they don't store the pointer we pass, but rather they copy the value that's inside)<br>
+In the example above, we create a vector of integers.
+To do so, we pass sizeof(int) as a parameter when initializing it.
+When calling vector_append, the function copies the size of an integer
+from the address of the variable 'tmp' into the vector. <br>
+Note that these structures store values, not references (i.e. they don't
+store the pointer we pass, but rather they copy the value that's inside) <br>
 
 Tip: you can use [compound literals](https://gcc.gnu.org/onlinedocs/gcc/Compound-Literals.html) to avoid having to declare a variable. <br>
 ```c
@@ -37,17 +40,18 @@ vector_append(vec, &(int){3});
 
 ## How are elements compared?
 Since we store "generic" data, there must be a way to compare it. <br>
-These structures require a comparator function to be passed as a parameter when they are constructed. <br>
-That function must be like this:<br>
+These structures require a comparator function to be passed as a
+parameter when they are initialized. <br>
+That function must be like this:
 ```c
 int func_name(const void* e_1, const void* e_2);
 ```
 And it must return: <br>
-- **<= -1&nbsp;** if e_1 is < than e_2 <br>
-- **0 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;**     if e_1 is == than e_2 <br>
-- **>= 1 &nbsp;**  if e_1 is > than e_2 <br>
+- <= -1 if e_1 is < than e_2 <br>
+- 0 if e_1 is == than e_2 <br>
+- >= 1  if e_1 is > than e_2 <br>
 
-For example:<br>
+For example:
 ```c
 int compare_int(const void* e_1, const void* e_2){
     int i_1 = * (int*) e_1;
@@ -85,15 +89,16 @@ void destructor_func(void *e); // e is a POINTER to the element to destroy
 
 // Example: destroy a malloc'd pointer
 void destroy_ptr(void *e){
-	if (e){
-		void *ptr = * (void**) e;
-		free(ptr);
-	}
+    if (e){
+        void *ptr;
+        memcpy(&ptr, e, sizeof(void*));
+        free(ptr);
+    }
 }
 
 // Example: destroy a struct
 struct buffer {
-    char *buf; // Dynamically allocated
+    char *buf; // malloc'd
     size_t capacity;
     size_t size;
 };
@@ -102,21 +107,21 @@ void destroy_buffer(void *e){
     struct buffer *buffer = (struct buffer*) e;
     free(buffer->buf);
 }
-
 ```
 
 ## Building
 You can use the Makefile to build and install the library. <br>
 - `make`: builds the library <br>
 - `make test`: builds and runs test programs <br>
-- `make install`: installs the library on the computer.<br>
-          The default installation path is /usr/local, but it
-          can be overriden by defining INSTALL_PATH (e.g. `make install INSTALL_PATH=/lib`) <br>
+- `make install`: installs the library on the computer.
+                  The default installation path is /usr/local, but it
+                  can be overriden by defining INSTALL_PATH (e.g. `make install INSTALL_PATH=~/.local`) <br>
 - `make uninstall`: removes the library from the computer. Remember to set INSTALL_PATH to the same value as in installation. <br>
 - `make doxygen`: Builds the doxygen documentation. <br>
 - `make clean`: Removes the binaries. <br>
 
-To use the library, just include the header(s) and add the **-lGDS** or **-lGDS-static** flags when compiling. <br>
+To use the library, just include the header(s) and add
+the `-lGDS` or `-lGDS-static` flags when compiling. <br>
 NOTE: The headers are installed in $(INSTALL_PATH)/include/GDS. <br>
 Example:
 ```c
