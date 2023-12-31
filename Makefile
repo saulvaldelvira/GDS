@@ -33,12 +33,10 @@ install: libs
 	  install -d $(INSTALL_PATH)/include/GDS/util
 	  install -m 644 $(SRC)/*.h $(INSTALL_PATH)/include/GDS
 	  install -m 644 $(SRC)/util/*.h $(INSTALL_PATH)/include/GDS/util
-	  ldconfig $(INSTALL_PATH)/lib
 
 uninstall:
 	  rm -f $(INSTALL_PATH)/lib/libGDS*
 	  rm -rf $(INSTALL_PATH)/include/GDS
-	  ldconfig $(INSTALL_PATH)/lib
 
 NO-RUN?= false # If true, only builds the test, without running them
 test: $(TESTFILES) libs | $(BIN)/
