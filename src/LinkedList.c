@@ -22,12 +22,12 @@ typedef struct LLNode {
 }LLNode;
 
 struct LinkedList {
-        LLNode *head;        ///< Head node
-        LLNode *tail;        ///< Tail node. Last added node
-        size_t n_elements;        ///< Number of elements in the list
-        size_t data_size;        ///< Size (in bytes) of the data type
-        comparator_function_t compare;                ///< Comparator function pointer
-        destructor_function_t destructor;        ///< Destructor function pointer
+        LLNode *head;   ///< Head node
+        LLNode *tail;   ///< Tail node. Last added node
+        size_t n_elements;      ///< Number of elements in the list
+        size_t data_size;       ///< Size (in bytes) of the data type
+        comparator_function_t compare;          ///< Comparator function pointer
+        destructor_function_t destructor;       ///< Destructor function pointer
 };
 
 /// INITIALIZE ////////////////////////////////////////////////////////////////

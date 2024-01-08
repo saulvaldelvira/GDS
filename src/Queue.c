@@ -19,10 +19,10 @@ typedef struct QueueNode {
 struct Queue {
         QueueNode *head;        ///< Head node
         QueueNode *tail;        ///< Tail node. Last added node
-        size_t data_size;        ///< Size (in bytes) of the data type being stored
-        size_t n_elements;        ///< Number of elements in the queue
-        comparator_function_t compare;                ///< Comparator function pointer
-        destructor_function_t destructor;        ///< Destructor function pointer
+        size_t data_size;       ///< Size (in bytes) of the data type being stored
+        size_t n_elements;      ///< Number of elements in the queue
+        comparator_function_t compare;          ///< Comparator function pointer
+        destructor_function_t destructor;       ///< Destructor function pointer
 };
 
 /// INITIALIZE ////////////////////////////////////////////////////////////////

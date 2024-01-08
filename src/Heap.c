@@ -12,7 +12,7 @@
 #include <assert.h>
 
 struct Heap {
-        Vector *elements;        ///< Vector to hold the elements of the heap
+        Vector *elements;       ///< Vector to hold the elements of the heap
 };
 
 /// INITIALIZE ////////////////////////////////////////////////////////////////

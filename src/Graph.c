@@ -14,14 +14,14 @@
 #include <assert.h>
 
 struct Graph {
-        size_t n_elements;        ///< Number of elements in the Graph
-        size_t max_elements;        ///< Current capacity of the graph
-        size_t data_size;        ///< Size (in bytes) of the data type
-        comparator_function_t compare;                ///< Comparator function pointer
-        destructor_function_t destructor;        ///< Destructor function pointer
+        size_t n_elements;      ///< Number of elements in the Graph
+        size_t max_elements;    ///< Current capacity of the graph
+        size_t data_size;       ///< Size (in bytes) of the data type
+        comparator_function_t compare;          ///< Comparator function pointer
+        destructor_function_t destructor;       ///< Destructor function pointer
         float **weights;        ///< Weights matrix
-        int8_t **edges;                ///< Edges matrix
-        void *vertices;                ///< Vertices matrix
+        int8_t **edges;         ///< Edges matrix
+        void *vertices;         ///< Vertices matrix
 };
 
 #define GRAPH_DEFAULT_SIZE 8

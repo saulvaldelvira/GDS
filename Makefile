@@ -7,13 +7,8 @@ CFILES = $(wildcard $(SRC)/*.c) $(wildcard $(SRC)/*/*.c)
 OFILES = $(patsubst %.c,%.o,$(CFILES))
 TESTFILES = $(wildcard test/*)
 
-CC = gcc
-CCFLAGS = -Wall -Wextra -pedantic -std=c99 -Wstrict-prototypes -g -fPIC -O3
-
-# User's custom flags
-ifdef FLAGS
-CCFLAGS += $(FLAGS)
-endif
+CC = cc
+CCFLAGS += -Wall -Wextra -pedantic -std=c99 -Wstrict-prototypes -g -fPIC -O3
 
 AR = ar
 ARFLAGS = rcs

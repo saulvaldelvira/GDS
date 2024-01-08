@@ -21,11 +21,11 @@ typedef struct AVLNode {
 } AVLNode;
 
 struct AVLTree {
-        AVLNode *root;                                ///< Root node of the tree
-        size_t data_size;                        ///< Size (in bytes) of the data type being stored
-        size_t n_elements;                        ///< Number of elements in the tree
-        comparator_function_t compare;                ///< Comparator function pointer
-        destructor_function_t destructor;        ///< Destructor function pointer
+        AVLNode *root;                          ///< Root node of the tree
+        size_t data_size;                       ///< Size (in bytes) of the data type being stored
+        size_t n_elements;                      ///< Number of elements in the tree
+        comparator_function_t compare;          ///< Comparator function pointer
+        destructor_function_t destructor;       ///< Destructor function pointer
 };
 
 //// INITIALIZE ////////////////////////////////////////////////////////////////

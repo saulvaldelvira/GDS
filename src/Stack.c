@@ -12,7 +12,7 @@
 #include <assert.h>
 
 struct Stack {
-        Vector *elements; ///< Elements of the Stack
+        Vector *elements;       ///< Elements of the Stack
 };
 
 /// INITIALIZE ////////////////////////////////////////////////////////////////

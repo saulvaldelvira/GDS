@@ -23,11 +23,11 @@
 #endif
 
 struct Vector {
-        size_t n_elements;                        ///< Number of elements in the vector
-        size_t max_elements;                        ///< Current capacity of the vector
-        size_t data_size;                        ///< Size (in bytes) of the data type being stored
-        comparator_function_t compare;                ///< Comparator function pointer
-        destructor_function_t destructor;        ///< Destructor function pointer
+        size_t n_elements;                      ///< Number of elements in the vector
+        size_t max_elements;                    ///< Current capacity of the vector
+        size_t data_size;                       ///< Size (in bytes) of the data type being stored
+        comparator_function_t compare;          ///< Comparator function pointer
+        destructor_function_t destructor;       ///< Destructor function pointer
         void *elements;
 };
 
