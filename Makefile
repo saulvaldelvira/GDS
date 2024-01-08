@@ -1,4 +1,4 @@
-.PHONY: default clean purge libs test install uninstall doxygen
+.PHONY: default clean libs test install uninstall doxygen
 
 SRC = src
 BIN = bin
