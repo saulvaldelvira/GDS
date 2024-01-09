@@ -1,8 +1,5 @@
 #include "../src/Stack.h"
-
-#define QUIET_DISABLE
 #include "test.h"
-#undef QUIET_DISABLE
 
 void destructor_test(void){
 	Stack *stack = stack_init(sizeof(int*), compare_lesser);
@@ -17,7 +14,7 @@ void destructor_test(void){
 int main(void){
 	int n = 10000, tmp;
 	print_test_start(Stack);
-	TIMESTAMP_START
+	TIMESTAMP_START();
 
 	Stack *stack = stack_init(sizeof(int), compare_int);
 	assert(stack_isempty(stack));
@@ -62,6 +59,6 @@ int main(void){
 
 	destructor_test();
 
-	TIMESTAMP_STOP
+	TIMESTAMP_STOP();
 	print_test_end(Stack);
 }

@@ -1,7 +1,4 @@
-#define QUIET_DISABLE
 #include "test.h"
-#undef QUIET_DISABLE
-
 #include "../src/AVLTree.h"
 
 void print_preord(AVLTree *tree){
@@ -56,7 +53,7 @@ void destructor_test(void){
 
 int main(void){
 	print_test_start(AVL);
-	TIMESTAMP_START
+	TIMESTAMP_START();
 	int tmp = 0;
 
 	AVLTree *t = avl_init(sizeof(int), compare_int);
@@ -128,9 +125,7 @@ int main(void){
 
 	destructor_test();
 
-	TIMESTAMP_STOP
-
+	TIMESTAMP_STOP();
 	print_test_end(AVLTree);
-
 	return 0;
 }

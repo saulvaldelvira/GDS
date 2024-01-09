@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 if ! type cppcheck &> /dev/null; then
     echo "You need to install cppcheck"
@@ -22,7 +22,7 @@ find . -name '*.c' |
 	     --std=c99 \
 	     $file
 	  if [ $? -ne 0 ] ; then
-	      failures += "$file,"
+	      failures+="$file,"
 	  fi
     done
 

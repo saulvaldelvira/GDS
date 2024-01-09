@@ -11,27 +11,24 @@ extern "C" {
 #include <stdbool.h>
 #include <stdint.h>
 #include <time.h>
-
 #include "../src/util/compare.h"
 #include "../src/util/error.h"
 #include "../src/util/definitions.h"
 
 #ifndef TIMESTAMP_DISABLE
-	static long timestamp;
-
-	#define TIMESTAMP_START timestamp = get_time_millis();
-
-	#define TIMESTAMP_STOP timestamp = get_time_millis() - timestamp;
+static long timestamp;
+#define TIMESTAMP_START() (timestamp = get_time_millis())
+#define TIMESTAMP_STOP() (timestamp = get_time_millis() - timestamp)
 #endif
 
-/**
+/*
  * Returns a timestamp of the current time in milliseconds.
 */
 static inline long get_time_millis(void){
 	return clock() * 1000.0 / CLOCKS_PER_SEC;
 }
 
-/**
+/*
  * Returns a random number between min and max
 */
 static inline int rand_range(int min, int max){
@@ -42,23 +39,28 @@ static inline int rand_range(int min, int max){
 
 // Colored output ///////////////////
 #ifndef NO_COLOR
-	#include "color.h"
-	#define print_test_step(name) 	printf("* " Color_Yellow "%s" Color_Reset " ... ", #name); fflush(stdout);
-	#define print_test_ok() 	printf(Color_Green "OK\n" Color_Reset)
-	#define print_test_end(name) 	printf("[" #name " test finished in" Color_BCyan " %ld " Color_Reset "milliseconds]\n\n", timestamp);
+#define Color_Reset  "\033[0m"
+#define Color_Green  "\033[0;32m"
+#define Color_Yellow "\033[0;33m"
+#define Color_BRed   "\033[1;31m"
+#define Color_BCyan  "\033[1;36m"
+
+#define print_test_step(name) 	printf("* " Color_Yellow "%s" Color_Reset " ... ", #name); fflush(stdout);
+#define print_test_ok() 	printf(Color_Green "OK\n" Color_Reset)
+#define print_test_end(name) 	printf("[" #name " test finished in" Color_BCyan " %ld " Color_Reset "milliseconds]\n\n", timestamp);
 #else
-	#define print_test_step(name) 	printf("* %s ... ", #name); fflush(stdout);
-	#define print_test_ok() 	printf("OK\n")
-	#define print_test_end(name) 	printf("[" #name " test finished in %ld milliseconds]\n\n", timestamp);
+#define print_test_step(name) 	printf("* %s ... ", #name); fflush(stdout);
+#define print_test_ok() 	printf("OK\n")
+#define print_test_end(name) 	printf("[" #name " test finished in %ld milliseconds]\n\n", timestamp);
 #endif
 
 #define print_test_start(name) 	printf("[Starting " #name " test]\n")
 
 ///// Assert  //////////////////////
 #ifndef NO_COLOR
-#define assert(expr) if (!(expr)){ fprintf(stderr, Color_BRed "[%d] ASSERT FAILED: %s" Color_Reset "\n", __LINE__, #expr); abort(); }
+#define assert(expr) do { if (!(expr)){ fprintf(stderr, Color_BRed "[%d] ASSERT FAILED: %s" Color_Reset "\n", __LINE__, #expr); abort(); } } while(0)
 #else
-#define assert(expr) if (!(expr)){ fprintf(stderr, "[%d] ASSERT FAILED: %s\n", __LINE__, #expr); abort(); }
+#define assert(expr) do { if (!(expr)){ fprintf(stderr, "[%d] ASSERT FAILED: %s\n", __LINE__, #expr); abort(); } } while(0)
 #endif
 
 void assert_array_int(int *arr, int *exp, int size){

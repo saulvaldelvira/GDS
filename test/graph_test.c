@@ -1,6 +1,4 @@
-#define TIMESTAMP_ENABLE
 #include "test.h"
-#undef TIMESTAMP_ENABLE
 #include "../src/Graph.h"
 
 void dijkstra_test(void){
@@ -263,7 +261,7 @@ int main(void){
 	int tmp;
 	print_test_start(Graph);
 
-	TIMESTAMP_START
+	TIMESTAMP_START();
 	Graph *g = graph_init(sizeof(int) ,compare_int);
 	for(int i = 0; i < n; i++){
 		assert(graph_add_vertex(g, &i));
@@ -325,7 +323,7 @@ int main(void){
 	assert(graph_isempty(g));
 
 	graph_free(g);
-	TIMESTAMP_STOP
+	TIMESTAMP_STOP();
 	print_test_end(Graph);
 	return 0;
 }

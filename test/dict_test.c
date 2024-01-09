@@ -1,9 +1,5 @@
 #include "../src/Dictionary.h"
-
-#define QUIET_DISABLE
 #include "test.h"
-#undef QUIET_DISABLE
-
 #include <string.h>
 
 void test_simple(void){
@@ -182,7 +178,7 @@ void destructor_test(void){
 
 int main(void){
 	print_test_start(Dictionary);
-        TIMESTAMP_START
+        TIMESTAMP_START();
 
         test_simple();
         brute();
@@ -192,7 +188,7 @@ int main(void){
         struct_test();
 	destructor_test();
 
-	TIMESTAMP_STOP
+	TIMESTAMP_STOP();
 	print_test_end(Dictionary);
         return 0;
 }

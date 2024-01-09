@@ -159,15 +159,15 @@ void reduce_test(void){
 	print_test_ok();
 }
 
-void sort_test(void){	
+void sort_test(void){
 	const int n = 1024;
 	Vector *vector = vector_init(sizeof(int), compare_int);
 
 	for (int i = 0; i < n; i++)
 		vector_append(vector, &(int){rand_range(0, n)});
-	
+
 	vector_sort(vector);
-	
+
 	int prev;
 	vector_front(vector, &prev);
 	for (int i = 1; i < n; i++){
@@ -183,7 +183,7 @@ int main(void){
         int n = 2400;
 	int tmp;
         print_test_start(Vector);
-	TIMESTAMP_START
+	TIMESTAMP_START();
         Vector *vec = vector_init(sizeof(int), compare_int);
 
 	assert(vector_isempty(vec));
@@ -247,7 +247,7 @@ int main(void){
 	assert(vector_set(vec, &(int){2}, &(int){3}) != ELEMENT_NOT_FOUND_ERROR);
 	assert(3 == * (int*) vector_at(vec, 0, &tmp));
 	/////////////////////////////////////////////////////
-vector_clear(vec);
+        vector_clear(vec);
 	int nums[] = {1, 2, 3, 4, 5};
 	assert(vector_append_array(vec, nums, 5));
 	assert(5UL == vector_size(vec));
@@ -289,6 +289,6 @@ vector_clear(vec);
 	reduce_test();
 	sort_test();
 
-	TIMESTAMP_STOP
+        TIMESTAMP_STOP();
 	print_test_end(Vector);
 }

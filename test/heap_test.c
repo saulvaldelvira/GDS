@@ -1,7 +1,4 @@
-#define QUIET_DISABLE
 #include "test.h"
-#undef QUIET_DISABLE
-
 #include "../src/Heap.h"
 
 void change_priority(void){
@@ -150,7 +147,7 @@ void destructor_test(void){
 
 int main(void){
 	print_test_start(Heap);
-	TIMESTAMP_START
+	TIMESTAMP_START();
 	int tmp;
 
 	Heap *min = heap_init(sizeof(int), compare_int);
@@ -184,7 +181,7 @@ heap_clear(min);
 	change_priority();
 	destructor_test();
 
-	TIMESTAMP_STOP
+	TIMESTAMP_STOP();
 	print_test_end(Heap);
 	return 0;
 }

@@ -1,8 +1,5 @@
 #include "../src/Queue.h"
-
-#define QUIET_DISABLE
 #include "test.h"
-#undef QUIET_DISABLE
 
 void destructor_test(void){
 	Queue *queue = queue_init(sizeof(int*), compare_lesser);
@@ -18,7 +15,7 @@ int main(void){
 	int n = 10000, tmp;
 
 	print_test_start(Queue);
-	TIMESTAMP_START
+	TIMESTAMP_START();
 
 	Queue *q = queue_init(sizeof(int), compare_int);
 	assert(queue_isempty(q));
@@ -60,6 +57,6 @@ queue_clear(q);
 
 	destructor_test();
 
-	TIMESTAMP_STOP
+	TIMESTAMP_STOP();
 	print_test_end(Queue);
 }

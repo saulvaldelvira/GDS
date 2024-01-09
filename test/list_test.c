@@ -1,10 +1,5 @@
 #include "../src/LinkedList.h"
-
-#define QUIET_DISABLE
 #include "test.h"
-#undef QUIET_DISABLE
-
-#include <stdint.h>
 
 void joins_test(void){
 	LinkedList *l1 = list_init(sizeof(int), compare_int);
@@ -66,7 +61,7 @@ int main(void){
 	int n = 2400;
 	int tmp;
 	print_test_start(LinkedList);
-	TIMESTAMP_START
+	TIMESTAMP_START();
 
 	LinkedList *lnked = list_init(sizeof(int), compare_int);
 
@@ -140,7 +135,7 @@ int main(void){
 	joins_test();
 	destructor_test();
 
-	TIMESTAMP_STOP
+	TIMESTAMP_STOP();
 	print_test_end(LinkedList);
 	return 0;
 }
