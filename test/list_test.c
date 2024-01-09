@@ -38,6 +38,30 @@ void destructor_test(void){
 	list_free(list);
 }
 
+/* Make sure that, when removing elements from the
+   back and front, the edge case in which the head
+   and tail are the same is correctly handled */
+void remove_back_and_front(void){
+        int tmpdest;
+	LinkedList *list = list_init(sizeof(int), compare_pointer);
+        list_append(list, &(int){1});
+        list_remove_front(list);
+        assert(list_get_back(list, &tmpdest) == NULL);
+
+        list_append(list, &(int){1});
+        list_remove_back(list);
+        assert(list_get_front(list, &tmpdest) == NULL);
+
+        list_append(list, &(int){1});
+        list_pop_front(list, NULL);
+        assert(list_get_back(list, &tmpdest) == NULL);
+
+        list_append(list, &(int){1});
+        list_pop_back(list, NULL);
+        assert(list_get_front(list, &tmpdest) == NULL);
+        list_free(list);
+}
+
 int main(void){
 	int n = 2400;
 	int tmp;
@@ -100,7 +124,7 @@ int main(void){
 	}
 	assert(list_size(lnked) == 0);
 
-list_clear(lnked);
+        list_clear(lnked);
 
 	int nums[] = {1, 2, 3, 4, 5};
 	assert(list_append_array(lnked, nums, 5UL));
@@ -112,6 +136,7 @@ list_clear(lnked);
 
 	list_free(lnked);
 
+        remove_back_and_front();
 	joins_test();
 	destructor_test();
 

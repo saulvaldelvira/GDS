@@ -226,6 +226,8 @@ int list_remove_front(LinkedList *list){
         if (list->head == NULL)
                 return SUCCESS;
         LLNode *del = list->head;
+        if (list->tail == list->head)
+                list->tail = NULL;
         list->head = list->head->next;
         if (list->destructor)
                 list->destructor(del->info);
@@ -239,6 +241,8 @@ int list_remove_back(LinkedList *list){
         if (list->tail == NULL)
                 return SUCCESS;
         LLNode *del = list->tail;
+        if (list->tail == list->head)
+                list->head = NULL;
         list->tail = list->tail->prev;
         if (list->destructor)
                 list->destructor(del->info);
@@ -257,7 +261,7 @@ int list_remove_array(LinkedList *list, void *array, size_t array_length){
 }
 
 void* list_pop(LinkedList *list, void *element, void *dest){
-        assert(list && element && dest);
+        assert(list && element);
         LLNode *tmp = list->head;
         while(tmp){
                 if (list->compare(tmp->info, element) == 0){
@@ -283,10 +287,12 @@ void* list_pop(LinkedList *list, void *element, void *dest){
 }
 
 void* list_pop_front(LinkedList *list, void *dest){
-        assert(list && dest);
+        assert(list);
         if (list->head == NULL)
                 return NULL;
         LLNode *del = list->head;
+        if (list->tail == list->head)
+                list->tail = NULL;
         list->head = list->head->next;
         if (dest)
                 memcpy(dest, del->info, list->data_size);
@@ -296,10 +302,12 @@ void* list_pop_front(LinkedList *list, void *dest){
 }
 
 void* list_pop_back(LinkedList *list, void *dest){
-        assert(list && dest);
+        assert(list);
         if (list->tail == NULL)
                 return NULL;
         LLNode *del = list->tail;
+        if (list->tail == list->head)
+                list->head = NULL;
         list->tail = list->tail->prev;
         if (dest)
                 memcpy(dest, del->info, list->data_size);
@@ -309,7 +317,7 @@ void* list_pop_back(LinkedList *list, void *dest){
 }
 
 void* list_pop_array(LinkedList *list, void *array, size_t array_length, void *dest){
-        assert(list && array && dest);
+        assert(list && array);
         while (array_length-- > 0){
                 list_pop(list, array, dest);
                 array = void_offset(array, list->data_size);
