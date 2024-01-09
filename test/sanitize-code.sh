@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if ! type cppcheck &> /dev/null; then
+if ! which cppcheck &> /dev/null ; then
     echo "You need to install cppcheck"
     exit 1
 fi

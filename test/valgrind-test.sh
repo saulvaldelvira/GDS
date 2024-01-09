@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 if ! type valgrind &> /dev/null; then
     echo "You need to install valgrind"

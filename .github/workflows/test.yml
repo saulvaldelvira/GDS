@@ -20,12 +20,12 @@ jobs:
            sudo apt-get update -y
            sudo apt-get install valgrind -y
            sudo chmod +x ./test/valgrind-test.sh
-           ./test/valgrind-test.sh
+           bash ./test/valgrind-test.sh
     - name: Code sanitizer
       run: |
            sudo apt-get install cppcheck
            sudo chmod +x ./test/sanitize-code.sh
-           ./test/sanitize-code.sh
+           bash ./test/sanitize-code.sh
 
 
   Test-Windows:
