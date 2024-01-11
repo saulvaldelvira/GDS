@@ -22,7 +22,7 @@ void test_simple(void){
 }
 
 void brute(void){
-        print_test_step(Brute);
+        test_step("Brute");
         int n = 1000;
         Dictionary *dic = dict_init(sizeof(int), sizeof(int), hash_int);
         assert(dic);
@@ -46,7 +46,7 @@ void brute(void){
                 assert(!dict_exists(dic, &i));
         }
         dict_free(dic);
-        print_test_ok();
+        test_ok();
 }
 
 void config(void){
@@ -59,7 +59,7 @@ void config(void){
 }
 
 void random_test(void){
-        print_test_step(Random);
+        test_step("Random");
         int n = 2048;
         srand(time(0));
 
@@ -91,11 +91,11 @@ void random_test(void){
         free(keys);
         free(values);
         dict_free(dic);
-        print_test_ok();
+        test_ok();
 }
 
 void string_test(void){
-        print_test_step(String);
+        test_step("String");
         Dictionary *dic = dict_init(sizeof(char*), sizeof(int), hash_string);
         char *str[] = {"Hello world!", "this is a dictionary", ":p"};
         int strc = 3;
@@ -109,7 +109,7 @@ void string_test(void){
                 assert(tmp == i);
         }
         dict_free(dic);
-        print_test_ok();
+        test_ok();
 }
 
 // Struct test
@@ -132,7 +132,7 @@ int64_t hash_structs(const void *e_1){
 }
 
 void struct_test(void){
-        print_test_step(Struct);
+        test_step("Struct");
         struct key k = {
                 .i = 12,
                 .c = 2
@@ -151,7 +151,7 @@ void struct_test(void){
         assert(strcmp(per.name, p.name) == 0);
 
         dict_free(d);
-        print_test_ok();
+        test_ok();
 }
 
 void destructor_test(void){
@@ -177,8 +177,8 @@ void destructor_test(void){
 }
 
 int main(void){
-	print_test_start(Dictionary);
-        TIMESTAMP_START();
+	test_start("Dictionary.c");
+
 
         test_simple();
         brute();
@@ -188,7 +188,7 @@ int main(void){
         struct_test();
 	destructor_test();
 
-	TIMESTAMP_STOP();
-	print_test_end(Dictionary);
+
+	test_end(Dictionary);
         return 0;
 }

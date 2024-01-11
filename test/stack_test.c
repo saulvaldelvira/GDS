@@ -13,8 +13,8 @@ void destructor_test(void){
 
 int main(void){
 	int n = 10000, tmp;
-	print_test_start(Stack);
-	TIMESTAMP_START();
+	test_start("Stack.c");
+
 
 	Stack *stack = stack_init(sizeof(int), compare_int);
 	assert(stack_isempty(stack));
@@ -59,6 +59,6 @@ int main(void){
 
 	destructor_test();
 
-	TIMESTAMP_STOP();
-	print_test_end(Stack);
+
+	test_end(Stack);
 }

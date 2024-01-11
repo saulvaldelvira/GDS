@@ -2,7 +2,7 @@
 #include "../src/Heap.h"
 
 void change_priority(void){
-	print_test_step("Change Priority");
+	test_step("Change Priority");
 	Heap *min = heap_init(sizeof(int), compare_int);
 	int elements[] = {12 ,14, 15, 20, 16, 17, 19, 24, 30};
 	heap_add_array(min, elements, 9);
@@ -22,7 +22,7 @@ void change_priority(void){
 	int expected2[] = {5, 14 ,15, 21, 16, 17, 19, 24, 30};
 	assert_array_int(res, expected2, 9);
 	heap_free(min);
-	print_test_ok();
+	test_ok();
 }
 
 void filter_up(void){
@@ -146,8 +146,8 @@ void destructor_test(void){
 }
 
 int main(void){
-	print_test_start(Heap);
-	TIMESTAMP_START();
+	test_start("Heap.c");
+
 	int tmp;
 
 	Heap *min = heap_init(sizeof(int), compare_int);
@@ -181,7 +181,7 @@ heap_clear(min);
 	change_priority();
 	destructor_test();
 
-	TIMESTAMP_STOP();
-	print_test_end(Heap);
+
+	test_end(Heap);
 	return 0;
 }

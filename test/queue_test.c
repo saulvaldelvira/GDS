@@ -14,8 +14,8 @@ void destructor_test(void){
 int main(void){
 	int n = 10000, tmp;
 
-	print_test_start(Queue);
-	TIMESTAMP_START();
+	test_start("Queue.c");
+
 
 	Queue *q = queue_init(sizeof(int), compare_int);
 	assert(queue_isempty(q));
@@ -57,6 +57,6 @@ queue_clear(q);
 
 	destructor_test();
 
-	TIMESTAMP_STOP();
-	print_test_end(Queue);
+
+	test_end(Queue);
 }

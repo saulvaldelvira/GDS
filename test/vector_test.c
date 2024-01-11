@@ -91,7 +91,7 @@ static void multiply_by(void *e, void *arg){
 }
 
 void map_test(void){
-	print_test_step(Map);
+	test_step("Map");
 	Vector *vector = vector_init(sizeof(int), compare_int);
 
 	int arr[] = {1,2,3,4,5};
@@ -106,7 +106,7 @@ void map_test(void){
 		assert(tmp == n * arr[i]);
 	}
 	vector_free(vector);
-	print_test_ok();
+	test_ok();
 }
 
 static bool filter_even(void *e){
@@ -115,7 +115,7 @@ static bool filter_even(void *e){
 }
 
 void filter_test(void){
-	print_test_step(Filter);
+	test_step("Filter");
 	Vector *vector = vector_init(sizeof(int), compare_int);
 
 	int arr[] = {1,2,3,4,5,6,7};
@@ -134,7 +134,7 @@ void filter_test(void){
 	}
 
 	vector_free_all(2, vector, filtered);
-	print_test_ok();
+	test_ok();
 }
 
 void addition(const void* e, void *acc){
@@ -144,7 +144,7 @@ void addition(const void* e, void *acc){
 }
 
 void reduce_test(void){
-	print_test_step(Reduce);
+	test_step("Reduce");
 	Vector *vector = vector_init(sizeof(int), compare_int);
 
 	int arr[] = {1,2,3,4,5};
@@ -156,7 +156,7 @@ void reduce_test(void){
 	assert(n == 15);
 
 	vector_free(vector);
-	print_test_ok();
+	test_ok();
 }
 
 void sort_test(void){
@@ -182,8 +182,8 @@ void sort_test(void){
 int main(void){
         int n = 2400;
 	int tmp;
-        print_test_start(Vector);
-	TIMESTAMP_START();
+        test_start("Vector.c");
+
         Vector *vec = vector_init(sizeof(int), compare_int);
 
 	assert(vector_isempty(vec));
@@ -289,6 +289,5 @@ int main(void){
 	reduce_test();
 	sort_test();
 
-        TIMESTAMP_STOP();
-	print_test_end(Vector);
+	test_end(Vector);
 }

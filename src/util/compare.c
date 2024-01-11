@@ -29,49 +29,89 @@ int compare_short(const void *e_1, const void *e_2){
 int compare_long(const void *e_1, const void *e_2){
         long l_1 = * (long *) e_1;
         long l_2 = * (long *) e_2;
-        if (l_1 > l_2){
+        if (l_1 > l_2)
                 return 1;
-        }else if (l_2 > l_1){
+        else if (l_2 > l_1)
                 return -1;
-        }else{
+        else
                 return 0;
-        }
 }
 
 int compare_long_long(const void *e_1, const void *e_2){
         long long l_1 = * (long long *) e_1;
         long long l_2 = * (long long *) e_2;
-        if (l_1 > l_2){
+        if (l_1 > l_2)
                 return 1;
-        }else if (l_2 > l_1){
+        else if (l_2 > l_1)
                 return -1;
-        }else{
+        else
                 return 0;
-        }
+}
+
+/* Unsigned versions */
+int compare_unsigned_int(const void *e_1, const void *e_2){
+        unsigned int i_1 = * (unsigned int *) e_1;
+        unsigned int i_2 = * (unsigned int *) e_2;
+        if (i_1 == i_2) return 0;
+        return i_1 > i_2 ? 1 : -1;
+}
+
+int compare_unsigned_char(const void *e_1, const void *e_2){
+        unsigned char c_1 = * (unsigned char *) e_1;
+        unsigned char c_2 = * (unsigned char *) e_2;
+        if (c_1 == c_2) return 0;
+        return c_1 > c_2 ? 1 : -1;
+}
+
+int compare_unsigned_short(const void *e_1, const void *e_2){
+        unsigned short s_1 = * (unsigned short *) e_1;
+        unsigned short s_2 = * (unsigned short *) e_2;
+        if (s_1 == s_2) return 0;
+        return s_1 > s_2 ? 1 : -1;
+}
+
+int compare_unsigned_long(const void *e_1, const void *e_2){
+        unsigned long l_1 = * (unsigned long *) e_1;
+        unsigned long l_2 = * (unsigned long *) e_2;
+        if (l_1 > l_2)
+                return 1;
+        else if (l_2 > l_1)
+                return -1;
+        else
+                return 0;
+}
+
+int compare_unsigned_long_long(const void *e_1, const void *e_2){
+        unsigned long long l_1 = * (unsigned long long *) e_1;
+        unsigned long long l_2 = * (unsigned long long *) e_2;
+        if (l_1 > l_2)
+                return 1;
+        else if (l_2 > l_1)
+                return -1;
+        else
+                return 0;
 }
 
 int compare_float(const void *e_1, const void *e_2){
         float f_1 = * (float *) e_1;
         float f_2 = * (float *) e_2;
-        if (f_1 > f_2){
+        if (f_1 > f_2)
                 return 1;
-        }else if (f_2 > f_1){
+        else if (f_2 > f_1)
                 return -1;
-        }else{
+        else
                 return 0;
-        }
 }
 
 int compare_double(const void *e_1, const void *e_2){
         double d_1 = * (double *) e_1;
         double d_2 = * (double *) e_2;
-        if (d_1 > d_2){
+        if (d_1 > d_2)
                 return 1;
-        }else if (d_2 > d_1){
+        else if (d_2 > d_1)
                 return -1;
-        }else{
+        else
                 return 0;
-        }
 }
 
 int compare_pointer(const void *e_1, const void *e_2){

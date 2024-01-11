@@ -15,12 +15,6 @@ extern "C" {
 #include "../src/util/error.h"
 #include "../src/util/definitions.h"
 
-#ifndef TIMESTAMP_DISABLE
-static long timestamp;
-#define TIMESTAMP_START() (timestamp = get_time_millis())
-#define TIMESTAMP_STOP() (timestamp = get_time_millis() - timestamp)
-#endif
-
 /*
  * Returns a timestamp of the current time in milliseconds.
 */
@@ -45,16 +39,16 @@ static inline int rand_range(int min, int max){
 #define Color_BRed   "\033[1;31m"
 #define Color_BCyan  "\033[1;36m"
 
-#define print_test_step(name) 	printf("* " Color_Yellow "%s" Color_Reset " ... ", #name); fflush(stdout);
-#define print_test_ok() 	printf(Color_Green "OK\n" Color_Reset)
-#define print_test_end(name) 	printf("[" #name " test finished in" Color_BCyan " %ld " Color_Reset "milliseconds]\n\n", timestamp);
+#define test_step(name) do { printf("* " Color_Yellow "%s" Color_Reset " ... ", name); fflush(stdout); } while(0)
+#define test_ok() 	printf(Color_Green "OK\n" Color_Reset)
+#define test_end(name) 	printf("[" #name " test finished in" Color_BCyan " %ld " Color_Reset "milliseconds]\n\n", get_time_millis() - timestamp)
 #else
-#define print_test_step(name) 	printf("* %s ... ", #name); fflush(stdout);
-#define print_test_ok() 	printf("OK\n")
-#define print_test_end(name) 	printf("[" #name " test finished in %ld milliseconds]\n\n", timestamp);
+#define test_step(name) do { printf("* %s ... ", name); fflush(stdout); } while(0)
+#define test_ok() 	printf("OK\n")
+#define test_end(name) 	printf("[" #name " test finished in %ld milliseconds]\n\n", get_time_millis() - timestamp)
 #endif
 
-#define print_test_start(name) 	printf("[Starting " #name " test]\n")
+#define test_start(name) long timestamp = get_time_millis() ; printf("[Starting %s test]\n", name);
 
 ///// Assert  //////////////////////
 #ifndef NO_COLOR

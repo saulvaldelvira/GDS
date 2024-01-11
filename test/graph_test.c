@@ -259,9 +259,9 @@ void destructor_test(void){
 int main(void){
 	intptr_t n = 1200;
 	int tmp;
-	print_test_start(Graph);
+	test_start("Graph.c");
 
-	TIMESTAMP_START();
+
 	Graph *g = graph_init(sizeof(int) ,compare_int);
 	for(int i = 0; i < n; i++){
 		assert(graph_add_vertex(g, &i));
@@ -284,27 +284,27 @@ int main(void){
 		assert(graph_remove_vertex(g, &i));
 	}
 
-	print_test_step(Dijkstra);
+	test_step("Dijkstra");
 	dijkstra_test();
-	print_test_ok();
+	test_ok();
 
-	print_test_step(Floyd);
+	test_step("Floyd");
 	floyd_test();
-	print_test_ok();
+	test_ok();
 
-	print_test_step(Traverse BF);
+	test_step("Traverse BF");
 	traverse_bf();
-	print_test_ok();
+	test_ok();
 
 	drain_source();
 
-	print_test_step(Traverse DF);
+	test_step("Traverse DF");
 	traverse_df();
-	print_test_ok();
+	test_ok();
 
-	print_test_step(Eccentricity);
+	test_step("Eccentricity");
 	eccentricity_test();
-	print_test_ok();
+	test_ok();
 
 	destructor_test();
 
@@ -323,7 +323,7 @@ int main(void){
 	assert(graph_isempty(g));
 
 	graph_free(g);
-	TIMESTAMP_STOP();
-	print_test_end(Graph);
+
+	test_end(Graph);
 	return 0;
 }
