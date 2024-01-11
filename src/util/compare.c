@@ -20,6 +20,12 @@ int compare_char(const void *e_1, const void *e_2){
         return c_1 - c_2;
 }
 
+int compare_short(const void *e_1, const void *e_2){
+        short s_1 = * (short *) e_1;
+        short s_2 = * (short *) e_2;
+        return s_1 - s_2;
+}
+
 int compare_long(const void *e_1, const void *e_2){
         long l_1 = * (long *) e_1;
         long l_2 = * (long *) e_2;

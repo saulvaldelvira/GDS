@@ -8,6 +8,10 @@ int64_t hash_int(const void *arg){
         return (int64_t) * (int*) arg;
 }
 
+int64_t hash_short(const void *arg){
+        return (int64_t) * (short*) arg;
+}
+
 int64_t hash_char(const void *arg){
         return (int64_t) * (char*) arg;
 }

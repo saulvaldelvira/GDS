@@ -16,6 +16,8 @@ typedef int64_t (*hash_function_t) (const void*);
 
 int64_t hash_int(const void *arg);
 
+int64_t hash_short(const void *arg);
+
 int64_t hash_char(const void *arg);
 
 int64_t hash_long(const void *arg);

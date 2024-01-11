@@ -21,6 +21,7 @@ typedef int (*comparator_function_t) (const void*,const void*);
 
 int compare_int(const void *e_1, const void *e_2);              ///< Compares two int pointers
 int compare_char(const void *e_1, const void *e_2);             ///< Compares two char pointers
+int compare_short(const void *e_1, const void *e_2);            ///< Compares two short pointers
 int compare_float(const void *e_1, const void *e_2);            ///< Compares two float pointers
 int compare_double(const void *e_1, const void *e_2);           ///< Compares two double pointers
 int compare_long(const void *e_1, const void *e_2);             ///< Compares two long pointers
