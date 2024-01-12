@@ -182,6 +182,6 @@ heap_clear(min);
 	destructor_test();
 
 
-	test_end(Heap);
+	test_end("Heap.c");
 	return 0;
 }

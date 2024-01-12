@@ -136,6 +136,6 @@ int main(void){
 	destructor_test();
 
 
-	test_end(LinkedList);
+	test_end("LinkedList.c");
 	return 0;
 }

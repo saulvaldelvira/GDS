@@ -58,5 +58,5 @@ queue_clear(q);
 	destructor_test();
 
 
-	test_end(Queue);
+	test_end("Queue.c");
 }

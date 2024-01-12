@@ -126,6 +126,6 @@ int main(void){
 	destructor_test();
 
 
-	test_end(AVLTree);
+	test_end("AVLTree.c");
 	return 0;
 }

@@ -1,5 +1,6 @@
 #include "test.h"
 #include "../src/Vector.h"
+#include <string.h>
 
 void joins_test(void){
 	Vector *a1 = vector_init(sizeof(int), compare_int);
@@ -179,6 +180,30 @@ void sort_test(void){
 	vector_free(vector);
 }
 
+void string_test(void){
+	Vector *vector = vector_init(sizeof(char*), compare_string);
+
+        char* arr[] = {
+                "[1] Hello world!",
+                "[2] This is a string array!",
+                "[3] :-)",
+                NULL
+        };
+
+        for (char **str = arr; *str; str++){
+                vector_append(vector, str);
+        }
+
+        for (char **str = arr; *str; str++){
+                assert(vector_exists(vector, str));
+                char *tmp;
+                vector_pop_front(vector, &tmp);
+                assert(strcmp(tmp,*str) == 0);
+        }
+
+        vector_free(vector);
+}
+
 int main(void){
         int n = 2400;
 	int tmp;
@@ -288,6 +313,7 @@ int main(void){
 	filter_test();
 	reduce_test();
 	sort_test();
+        string_test();
 
-	test_end(Vector);
+	test_end("Vector.c");
 }

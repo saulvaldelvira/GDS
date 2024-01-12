@@ -17,5 +17,5 @@ int main(void){
         assert(cmpl(0,0) == 0);
         assert(cmpl(-1, 0) > 0);
 
-        test_end();
+        test_end("compare.c");
 }

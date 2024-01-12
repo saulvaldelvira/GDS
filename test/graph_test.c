@@ -324,6 +324,6 @@ int main(void){
 
 	graph_free(g);
 
-	test_end(Graph);
+	test_end("Graph.c");
 	return 0;
 }

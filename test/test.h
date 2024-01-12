@@ -41,11 +41,11 @@ static inline int rand_range(int min, int max){
 
 #define test_step(name) do { printf("* " Color_Yellow "%s" Color_Reset " ... ", name); fflush(stdout); } while(0)
 #define test_ok() 	printf(Color_Green "OK\n" Color_Reset)
-#define test_end(name) 	printf("[" #name " test finished in" Color_BCyan " %ld " Color_Reset "milliseconds]\n\n", get_time_millis() - timestamp)
+#define test_end(name) 	printf("[%s test finished in" Color_BCyan " %ld " Color_Reset "milliseconds]\n\n", name, get_time_millis() - timestamp)
 #else
 #define test_step(name) do { printf("* %s ... ", name); fflush(stdout); } while(0)
 #define test_ok() 	printf("OK\n")
-#define test_end(name) 	printf("[" #name " test finished in %ld milliseconds]\n\n", get_time_millis() - timestamp)
+#define test_end(name) 	printf("[%s test finished in %ld milliseconds]\n\n", name, get_time_millis() - timestamp)
 #endif
 
 #define test_start(name) long timestamp = get_time_millis() ; printf("[Starting %s test]\n", name);

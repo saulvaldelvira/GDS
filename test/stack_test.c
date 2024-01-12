@@ -60,5 +60,5 @@ int main(void){
 	destructor_test();
 
 
-	test_end(Stack);
+	test_end("Stack.c");
 }

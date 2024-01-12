@@ -48,6 +48,10 @@ int compare_long_long(const void *e_1, const void *e_2){
                 return 0;
 }
 
+int compare_string(const void *e_1, const void *e_2){
+        return strcmp(e_1, e_2);
+}
+
 /* Unsigned versions */
 int compare_unsigned_int(const void *e_1, const void *e_2){
         unsigned int i_1 = * (unsigned int *) e_1;

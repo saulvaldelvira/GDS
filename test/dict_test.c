@@ -189,6 +189,6 @@ int main(void){
 	destructor_test();
 
 
-	test_end(Dictionary);
+	test_end("Dictionary.c");
         return 0;
 }

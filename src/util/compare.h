@@ -27,6 +27,7 @@ int compare_double(const void *e_1, const void *e_2);           ///< Compares tw
 int compare_long(const void *e_1, const void *e_2);             ///< Compares two long pointers
 int compare_long_long(const void *e_1, const void *e_2);        ///< Compares two long long pointers
 int compare_pointer(const void *e_1, const void *e_2);          ///< Compares two pointers
+int compare_string(const void *e_1, const void *e_2);           ///< Compares two strings
 
 // Unsigned versions
 int compare_unsigned_int(const void *e_1, const void *e_2);
