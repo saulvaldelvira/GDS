@@ -28,15 +28,6 @@ struct Graph {
 
 /// CONSTRUCTORS //////////////////////////////////////////////////////////////
 
-/**
- * Expands the graph's number of elements to new_size. This means:
- * 1) Allocates new spaces for vertices, weights and edges.
- * 2) Copies old values into these new, bigger spaces.
- * 3) Fills rest of the new spaces with the default values (0 for edges and INFINITY for weights)
- *      In the case of edges, since we allocate them with calloc, the values are already 0 by default.
- * 4) Frees the old spaces
- * 5) Sets the graphs vertices, weights and edges to be this new spaces. Also update max_elements value to new_size
-*/
 static int expand_memory(Graph *graph, size_t new_size){
         void *vertices = malloc(new_size * graph->data_size);
         float **weights = malloc(new_size * sizeof(*weights));
@@ -53,7 +44,7 @@ static int expand_memory(Graph *graph, size_t new_size){
 
         for (size_t i = 0; i < new_size; i++){
                 weights[i] = malloc(new_size * sizeof(*weights[i]));
-                edges[i] = calloc(new_size, sizeof(*edges[i]));
+                edges[i] = malloc(new_size * sizeof(*edges[i]));
 
                 if (!weights[i] || !edges[i]){
                         for (size_t j = 0; j <= i; j++){
@@ -70,10 +61,6 @@ static int expand_memory(Graph *graph, size_t new_size){
                         memcpy(weights[i], graph->weights[i], sizeof(*weights[i])*graph->max_elements);
                         memcpy(edges[i], graph->edges[i], sizeof(*edges[i])*graph->max_elements);
                 }
-
-                // Set the new rows to INFINITY. Edges are already 0 because of calloc.
-                for (size_t j = graph->max_elements; j < new_size; j++)
-                        weights[i][j] = INFINITY;
         }
 
         // Free old pointers
@@ -142,6 +129,14 @@ int graph_add_vertex(Graph *graph, void *vertex){
         }
         void *tmp = void_offset(graph->vertices, graph->n_elements * graph->data_size);
         memcpy(tmp, vertex, graph->data_size);
+        /* Clear the edges and weights arrays, since they could
+           contain garbage from a previously removed vertex */
+        for (size_t i = 0; i < graph->max_elements; i++){
+                graph->edges[i][graph->n_elements] = 0;
+                graph->edges[graph->n_elements][i] = 0;
+                graph->weights[i][graph->n_elements] = INFINITY;
+                graph->weights[graph->n_elements][i] = INFINITY;
+        }
         graph->n_elements++;
         return SUCCESS;
 }
@@ -158,55 +153,30 @@ int graph_add_vertices_array(Graph *graph, void *array, size_t array_length){
         return SUCCESS;
 }
 
-/**
- * Removes a vertex from the graph. This means
- * To do so it swaps the elements to delete with the last elements in the array of vertices.
- * It also has to swap the edges and weights values.
- * After decrementing the n_elements values, the old (now "removed") vertex becomes garbage memory to be overwritten in the next add
-*/
 int graph_remove_vertex(Graph *graph, void *vertex){
         assert(graph && vertex);
-        ptrdiff_t index = graph_indexof(graph, vertex); // Get the index of the vertex
+        ptrdiff_t index = graph_indexof(graph, vertex);
         if (index < 0)
                 return index;
-        // Move latest vertex to this position (only if it is not already the last)
-        if ((size_t)index != graph->n_elements-1){
-                // Set vertex at index to the last vertex in the array
-                void *target = void_offset(graph->vertices, index * graph->data_size);
-                void *source = void_offset(graph->vertices, (graph->n_elements-1) * graph->data_size);
-                memmove(target, source, graph->data_size);
-
-                // Swap the weights columns of the vertex to be removed and the last one
-                target = (void*) (graph->weights[index]);
-                source = (void*) (graph->weights[graph->n_elements-1]);
-                memmove(target, source, graph->max_elements * sizeof(*graph->weights[0]));
-
-                // Swap the edges columns of the vertex to be removed and the last one
-                target = (void*) (graph->edges[index]);
-                source = (void*) (graph->edges[graph->n_elements-1]);
-                memmove(target, source, graph->max_elements * sizeof(*graph->edges[0]));
-
-                // Swap rows of the vertex to be removed and the last one
-                for (size_t i = 0; i < graph->max_elements; i++){
-                        graph->edges[i][index] = graph->edges[i][graph->n_elements-1];
-                        graph->weights[i][index] = graph->weights[i][graph->n_elements-1];
-
-                        // We also have to set the edges and weights to default to guarantee that in the next add, those edges and weights will not hold garbage
-                        graph->edges[i][graph->n_elements-1] = 0;
-                        graph->edges[graph->n_elements-1][i] = 0;
-                        graph->weights[i][graph->n_elements-1] = INFINITY;
-                        graph->weights[graph->n_elements-1][i] = INFINITY;
-                }
-        }else{
-                for (size_t i = 0; i < graph->max_elements; i++){
-                        graph->edges[i][graph->n_elements-1] = 0;
-                        graph->edges[graph->n_elements-1][i] = 0;
-                        graph->weights[i][graph->n_elements-1] = INFINITY;
-                        graph->weights[graph->n_elements-1][i] = INFINITY;
-                }
-        }
-
         graph->n_elements--;
+        if ((size_t)index == graph->n_elements)
+                return SUCCESS;
+        void *target = void_offset(graph->vertices, index * graph->data_size);
+        void *source = void_offset(graph->vertices, graph->n_elements * graph->data_size);
+        memmove(target, source, graph->data_size);
+
+        target = graph->weights[index];
+        source = graph->weights[graph->n_elements];
+        memmove(target, source, graph->max_elements * sizeof(*graph->weights[0]));
+
+        target = graph->edges[index];
+        source = graph->edges[graph->n_elements];
+        memmove(target, source, graph->max_elements * sizeof(*graph->edges[0]));
+
+        for (size_t i = 0; i < graph->max_elements; i++){
+                graph->edges[i][index] = graph->edges[i][graph->n_elements];
+                graph->weights[i][index] = graph->weights[i][graph->n_elements];
+        }
         return SUCCESS;
 }
 

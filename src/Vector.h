@@ -18,8 +18,8 @@ typedef struct Vector Vector;
 
 /**
  * Creates a Vector.
- * @param data_size the size (in bytes of the data stored)
- * @param comp pointer to a function that receives two void pointers and returns 1 if the first one is greater than the
+ * @param data_size the size (in bytes) of the data stored
+ * @param cmp pointer to a function that receives two void pointers and returns 1 if the first one is greater than the
  *              second, 0 if they are equal and -1 if the first one is smaller than the second one
  */
 Vector* vector_init(size_t data_size, comparator_function_t cmp);
@@ -37,7 +37,7 @@ comparator_function_t vector_get_comparator(Vector *vector);
 
 /**
  * Changes the destructor function of the vector
- * @param cmp the new destructor function. NULL means no destructor.
+ * @param destructor the new destructor function. NULL means no destructor.
 */
 void vector_set_destructor(Vector *vector, destructor_function_t destructor);
 
