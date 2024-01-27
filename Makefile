@@ -51,7 +51,10 @@ test: $(TESTFILES) libs | $(BIN)/
 	  $(NO-RUN) || $(BIN)/$(patsubst %.c,%.out, $(notdir $(T))) || exit 1;)
 
 doxygen: ./doxygen/
-	@ echo "/**" > doxygen/doc.doxy
+	@ echo -e "\
+	/** @mainpage \n \
+		@verbinclude README.adoc */" > ./doxygen/doc.doxy
+	@ echo "/**" >> doxygen/doc.doxy
 	@ find ./src -name '*.h' -exec bash -c ' \
 		name={} ; base=$$(basename $$name) ; \
 		echo -n " * @file $$name " >> doxygen/doc.doxy ; \

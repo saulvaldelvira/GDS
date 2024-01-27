@@ -4,14 +4,14 @@ A set of Data Structures for the C programming language.
 
 It includes:
 
-* Vector.h
-* LinkedList.h
-* AVLTree.h
-* Graph.h
-* Dictionary.h
-* Heap.h
-* Stack.h
-* Queue.h
+* Vector
+* LinkedList
+* AVLTree
+* Graph
+* Dictionary
+* Heap
+* Stack
+* Queue
 
 These structures are "generic" in the sense that they can store any kind
 of data type, by only knowing the size of it.
