@@ -24,7 +24,7 @@
 
 struct Vector {
         size_t n_elements;                      ///< Number of elements in the vector
-        size_t max_elements;                    ///< Current capacity of the vector
+        size_t capacity;                        ///< Current capacity of the vector
         size_t data_size;                       ///< Size (in bytes) of the data type being stored
         comparator_function_t compare;          ///< Comparator function pointer
         destructor_function_t destructor;       ///< Destructor function pointer
@@ -44,7 +44,7 @@ Vector* vector_init(size_t data_size, comparator_function_t cmp){
         }
         vector->data_size = data_size;
         vector->n_elements = 0;
-        vector->max_elements = VECTOR_DEFAULT_SIZE;
+        vector->capacity = VECTOR_DEFAULT_SIZE;
         vector->compare = cmp;
         vector->destructor = NULL;
         return vector;
@@ -101,7 +101,7 @@ static int resize_buffer(Vector *vector, size_t new_size){
         void *ptr = realloc(vector->elements, new_size * vector->data_size);
         if (!ptr) return ERROR;
         vector->elements = ptr;
-        vector->max_elements = new_size;
+        vector->capacity = new_size;
         return SUCCESS;
 }
 
@@ -116,8 +116,8 @@ int vector_push_front(Vector *vector, void *element){
 
 int vector_insert_array(Vector *vector, ptrdiff_t index, void *array, size_t array_length){
         assert(vector && array);
-        if (vector->max_elements - vector->n_elements < array_length){
-                if (resize_buffer(vector, vector->max_elements + array_length) == ERROR)
+        if (vector->capacity - vector->n_elements < array_length){
+                if (resize_buffer(vector, vector->capacity + array_length) == ERROR)
                         return ERROR;
         }
         if (index >= 0 && (size_t)index == vector->n_elements){
@@ -176,8 +176,8 @@ int vector_insert(Vector *vector, void *element, void *insert){
 
 int vector_insert_at(Vector *vector, ptrdiff_t index, void *element){
         assert(vector && element);
-        if (vector->n_elements == vector->max_elements){
-                if (resize_buffer(vector, vector->max_elements * VECTOR_GROW_FACTOR) == ERROR)
+        if (vector->n_elements == vector->capacity){
+                if (resize_buffer(vector, vector->capacity * VECTOR_GROW_FACTOR) == ERROR)
                         return ERROR;
         }
         if (index >= 0 && (size_t)index == vector->n_elements){
@@ -459,12 +459,12 @@ size_t vector_size(Vector *vector){
 }
 
 size_t vector_capacity(Vector *vector){
-        return vector ? vector->max_elements : 0;
+        return vector ? vector->capacity : 0;
 }
 
 int vector_reserve(Vector *vector, size_t n_elements){
         assert(vector);
-        if (vector->max_elements < n_elements){
+        if (vector->capacity < n_elements){
                 if (resize_buffer(vector, n_elements) == ERROR)
                         return ERROR;
         }
@@ -473,7 +473,7 @@ int vector_reserve(Vector *vector, size_t n_elements){
 
 int vector_resize(Vector *vector, size_t n_elements){
         assert(vector);
-        if (vector->max_elements < n_elements){
+        if (vector->capacity < n_elements){
                 if (resize_buffer(vector, n_elements) == ERROR)
                         return ERROR;
         }
@@ -559,5 +559,5 @@ void vector_reset(Vector *vector){
         vector->elements = malloc(VECTOR_DEFAULT_SIZE * vector->data_size);
         assert(vector->elements);
         vector->n_elements = 0;
-        vector->max_elements = VECTOR_DEFAULT_SIZE;
+        vector->capacity = VECTOR_DEFAULT_SIZE;
 }
