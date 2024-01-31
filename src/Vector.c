@@ -18,10 +18,6 @@
 #define VECTOR_GROW_FACTOR 2
 #endif
 
-#if VECTOR_GROW_FACTOR <= 1
-#error "VECTOR_GROW_FACTOR must be > 1"
-#endif
-
 struct Vector {
         size_t n_elements;                      ///< Number of elements in the vector
         size_t capacity;                        ///< Current capacity of the vector
