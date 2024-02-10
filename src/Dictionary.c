@@ -5,7 +5,6 @@
 #include "Dictionary.h"
 #include "./util/error.h"
 #include "./Vector.h"
-#include "./util/definitions.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

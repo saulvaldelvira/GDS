@@ -5,7 +5,6 @@
 #include "LinkedList.h"
 #include <stdlib.h>
 #include <stdio.h>
-#include <math.h>
 #include "./util/error.h"
 #include "./util/definitions.h"
 #include <string.h>
