@@ -268,13 +268,6 @@ int dict_put(Dictionary *dict, void *key, void *value){
                 }
         }
 
-        if (node.state == FULL){
-                if (node.value && dict->destructor)
-                        dict->destructor(node.value);
-        }else{
-                dict->n_elements++;
-        }
-
         /* if the node is empty, we need to allocate
            memory for the key and value. */
         if (!node.key){
@@ -288,6 +281,13 @@ int dict_put(Dictionary *dict, void *key, void *value){
                         free(node.key);
                         return ERROR;
                 }
+        }
+
+        if (node.state == FULL || node.state == DELETED){
+                if (node.value && dict->destructor)
+                        dict->destructor(node.value);
+        }else{
+                dict->n_elements++;
         }
 
         memcpy(node.key, key, dict->key_size);
@@ -351,8 +351,6 @@ static int dict_delete_node(Dictionary *dict, size_t pos){
         DictionaryNode node;
         vector_at(dict->vec_elements, pos, &node);
         node.state = DELETED;
-        if (dict->destructor)
-                dict->destructor(node.value);
         vector_set_at(dict->vec_elements, pos, &node);
         dict->n_elements--;
         if (dict->min_lf > 0 && LF(dict->n_elements, dict->vec_size) <= dict->min_lf){
