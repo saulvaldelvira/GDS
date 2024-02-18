@@ -22,12 +22,11 @@ void destroy_vec(void *arg){
         vector_free(v);
 }
 
-int matrix_init(void *element, void *args){
+void matrix_init(void *element, void *args){
         Vector **v = (Vector**) element;
         *v = vector_init(sizeof(int), compare_int);
         int size = * (int*) args;
         vector_reserve(*v, size);
-        return 1;
 }
 
 int main(int argc, char *argv[]){
@@ -39,7 +38,7 @@ int main(int argc, char *argv[]){
         Vector *matrix = vector_init(sizeof(Vector*), compare_equal);
         vector_set_destructor(matrix, destroy_vec);
         vector_reserve(matrix, dim);
-        vector_process(matrix, matrix_init, &dim);
+        vector_map(matrix, matrix_init, &dim);
 
         Vector *row;
         for (int i = 0; i < dim; i++){
