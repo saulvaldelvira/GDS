@@ -145,12 +145,6 @@ typedef struct {
 DijkstraData_t graph_dijkstra(Graph *graph, void *source);
 
 /**
- * Prints a DijkstraData_t struct to output.
- * @param output Should be a FILE pointer
-*/
-void graph_print_dijkstra_data(void *output, DijkstraData_t data);
-
-/**
  * Frees the allocated memory for the given DijkstraData_t's D and P arrays
 */
 void graph_free_dijkstra_data(DijkstraData_t *data);
@@ -171,12 +165,6 @@ typedef struct {
  * Performs the Floyd–Warshall algorithm to find the cheapest path for all vertices of the graph.
 */
 FloydData_t graph_floyd(Graph *graph);
-
-/**
- * Prints to output the given FloydData_t
- * @param output Should be a FILE pointer
-*/
-void graph_print_floyd_data(void *output, FloydData_t data);
 
 /**
  * Frees all memory allocated for the given FloydData_t

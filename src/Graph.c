@@ -9,7 +9,6 @@
 #include <math.h>
 #include <string.h>
 #include <stdint.h>
-#include <stdio.h>
 #include <stdarg.h>
 #include <assert.h>
 
@@ -399,19 +398,6 @@ DijkstraData_t graph_dijkstra(Graph *graph, void *source){
         return dijkstra;
 }
 
-void graph_print_dijkstra_data(void *output, DijkstraData_t data){
-        assert(output);
-        FILE *_output = (FILE*) output;
-        fprintf(_output, "[DIJKSTRA]\n");
-        fprintf(_output, "i\tD\tP\n");
-        for (size_t i = 0; i < data.n_elements; i++){
-                if (data.P[i] >= 0)
-                        fprintf(_output, "%-3llu\t%.3f\t%llu\n", (unsigned long long) i, data.D[i], (unsigned long long) data.P[i]);
-                else
-                        fprintf(_output, "%-3llu\t%.3f\t-\n", (unsigned long long) i, data.D[i]);
-        }
-}
-
 void graph_free_dijkstra_data(DijkstraData_t *data){
         free(data->D);
         free(data->P);
@@ -477,29 +463,6 @@ FloydData_t graph_floyd(Graph *graph){
                 }
         }
         return floyd;
-}
-
-void graph_print_floyd_data(void *output, FloydData_t data){
-        assert(output);
-        FILE *_output = (FILE*) output;
-        fprintf(_output, "[FLOYD]\nD:\n");
-        for (size_t i = 0; i < data.n_elements; i++){
-                for (size_t j = 0; j < data.n_elements; j++){
-                        fprintf(_output, "%.2f\t", data.A[i][j]);
-                }
-                fprintf(_output, "\n");
-        }
-        fprintf(_output, "P:\n");
-        for (size_t i = 0; i < data.n_elements; i++){
-                for (size_t j = 0; j < data.n_elements; j++){
-                        if (data.P[i][j] >= 0){
-                                fprintf(_output, "%llu\t", (unsigned long long) data.P[i][j]);
-                        }else{
-                                fprintf(_output, "-\t");
-                        }
-                }
-                fprintf(_output, "\n");
-        }
 }
 
 void graph_free_floyd_data(FloydData_t *data){

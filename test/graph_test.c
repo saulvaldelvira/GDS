@@ -31,19 +31,11 @@ void dijkstra_test(void){
 
 	DijkstraData_t dijkstra = graph_dijkstra(g, &a);
 
-#ifdef VERBOSE
-	graph_print_dijkstra_data(stdout, dijkstra);
-#endif
-
 	graph_free_dijkstra_data(&dijkstra);
 
 	dijkstra = graph_dijkstra(g, &b);
 
-#ifdef VERBOSE
-	graph_print_dijkstra_data(stdout, dijkstra);
-#endif
-
-	assert(dijkstra.P[0] == -1);
+        assert(dijkstra.P[0] == -1);
 	assert(dijkstra.P[1] != -1);
 	assert(dijkstra.P[2] != -1);
 	assert(dijkstra.P[3] == -1);
@@ -52,25 +44,13 @@ void dijkstra_test(void){
 
 	dijkstra = graph_dijkstra(g, &c);
 
-#ifdef VERBOSE
-	graph_print_dijkstra_data(stdout, dijkstra);
-#endif
-
 	graph_free_dijkstra_data(&dijkstra);
 
 	dijkstra = graph_dijkstra(g, &d);
 
-#ifdef VERBOSE
-	graph_print_dijkstra_data(stdout, dijkstra);
-#endif
-
 	graph_free_dijkstra_data(&dijkstra);
 
 	dijkstra = graph_dijkstra(g, &e);
-
-#ifdef VERBOSE
-	graph_print_dijkstra_data(stdout, dijkstra);
-#endif
 
 	graph_free_dijkstra_data(&dijkstra);
 
@@ -107,9 +87,6 @@ void floyd_test(void){
 
 	FloydData_t floyd = graph_floyd(g);
 	assert(floyd.status == SUCCESS);
-	#ifdef VERBOSE
-	graph_print_floyd_data(stdout, floyd);
-	#endif
 	graph_free_floyd_data(&floyd);
 	graph_free(g);
 }
