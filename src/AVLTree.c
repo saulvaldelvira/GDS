@@ -4,10 +4,9 @@
  */
 #include "AVLTree.h"
 #include "./util/error.h"
-#include "./util/definitions.h" // void_offset macro and byte_t typedef
+#include "./util/definitions.h"
 #include <stdlib.h> // malloc
 #include <string.h> // memcpy
-#include <stdio.h> // fprintf
 #include <stdarg.h>
 #include <assert.h>
 

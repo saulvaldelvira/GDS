@@ -4,7 +4,6 @@
  */
 #include "Queue.h"
 #include <stdlib.h>
-#include <stdio.h>
 #include "./util/error.h"
 #include "./util/definitions.h"
 #include <string.h>

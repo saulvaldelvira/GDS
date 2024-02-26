@@ -4,7 +4,6 @@
  */
 #include "Stack.h"
 #include <stdlib.h>
-#include <stdio.h>
 #include "./Vector.h"
 #include "./util/definitions.h"
 #include <string.h>
