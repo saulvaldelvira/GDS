@@ -150,20 +150,22 @@ void dict_set_destructor(Dictionary *dict, destructor_function_t value_destructo
 }
 //// REDISPERSE ///////////////////////////////////////////////////////////////
 
+struct pair { void *key, *value; };
+
 /**
  * Helper function for redisperse method
  */
 static void copy_elements(void *element, void *args){
         DictionaryNode *e = (DictionaryNode*) element;
         void **argv = (void**) args;
-        DictionaryNode **tail = (DictionaryNode**) argv[0];
-        if (e->state == FULL && e->key && e->value){
-                (*tail)->key = e->key;
-                (*tail)->value = e->value;
-                (*tail)++;
+        struct pair **tail = (struct pair**) argv[0];
+        if (e->state == FULL){
+                tail[0]->key = e->key;
+                tail[0]->value = e->value;
+                tail[0] += 1;
         }else{
                 destructor_function_t destructor = * (destructor_function_t*) argv[1];
-                if (destructor)
+                if (destructor && e->value)
                         destructor(e->value);
                 free(e->key);
                 free(e->value);
@@ -175,12 +177,12 @@ static void copy_elements(void *element, void *args){
  * Can be used to expand or shrink the table.
  */
 static int dict_redisperse(Dictionary *dict, size_t new_size){
-        // Save the current elements (only the nodes with info, FULL)
-        DictionaryNode *elements = (DictionaryNode*) calloc(dict->n_elements, sizeof(*elements));
-        DictionaryNode *tail = elements;
-        if (!elements){
+        assert(dict->n_elements < new_size);
+        // Save the current elements
+        struct pair *elements = (struct pair*) calloc(dict->n_elements, sizeof(*elements));
+        struct pair *tail = elements;
+        if (!elements)
                 return ERROR;
-        }
         vector_map(dict->vec_elements, copy_elements, (void*[]){&tail, &dict->destructor});
 
         /// Reset the vector
@@ -204,25 +206,13 @@ static int dict_redisperse(Dictionary *dict, size_t new_size){
 
         // Add the elements to the new dictionary
         for (size_t i = 0; i < n_elements; ++i){
-                DictionaryNode *n = elements + i;
-                status = dict_put(dict, n->key, n->value);
-                if (status != SUCCESS){
-                        while (i < n_elements){
-                                n = elements + i;
-                                free(n->key);
-                                free(n->value);
-                                ++i;
-                        }
-                        free(elements);
-                        return status;
-                }
-                /* Always free the key and value pointers of the
-                   nodes, since their values are COPIED to the new table */
-                free(n->key);
-                free(n->value);
+                if (status == SUCCESS)
+                        status = dict_put(dict, elements[i].key, elements[i].value);
+                free(elements[i].key);
+                free(elements[i].value);
         }
         free(elements);
-        return SUCCESS;
+        return status;
 }
 
 //// PUT //////////////////////////////////////////////////////////////////////
