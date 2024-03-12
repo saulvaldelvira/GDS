@@ -69,20 +69,14 @@ size_t vector_get_data_size(Vector *vector){
 }
 
 static int check_and_transform_index(ptrdiff_t *index_1, ptrdiff_t *index_2, size_t n_elements){
-        if (*index_1 < 0){
+        if (*index_1 < 0)
                 *index_1 = n_elements + *index_1;
-                if ((size_t)*index_1 >= n_elements)
-                        return INDEX_BOUNDS_ERROR;
-        }
         if ((size_t)*index_1 >= n_elements)
                 return INDEX_BOUNDS_ERROR;
         if (index_2 == NULL)
                 return SUCCESS;
-        if (*index_2 < 0){
+        if (*index_2 < 0)
                 *index_2 = n_elements + *index_2;
-                if ((size_t)*index_2 >= n_elements)
-                        return INDEX_BOUNDS_ERROR;
-        }
         if ((size_t)*index_2 >= n_elements)
                 return INDEX_BOUNDS_ERROR;
         return SUCCESS;

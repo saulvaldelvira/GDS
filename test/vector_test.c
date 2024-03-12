@@ -2,6 +2,17 @@
 #include "../src/Vector.h"
 #include <string.h>
 
+void assert_index(Vector *v, int i, int val){
+        int tmp;
+        assert(vector_at(v, i, &tmp));
+        assert(tmp == val);
+}
+
+void assert_noindex(Vector *v, int i){
+        int tmp;
+        assert(!vector_at(v, i, &tmp));
+}
+
 void joins_test(void){
 	Vector *a1 = vector_init(sizeof(int), compare_int);
 	Vector *a2 = vector_init(sizeof(int), compare_int);
@@ -204,6 +215,27 @@ void string_test(void){
         vector_free(vector);
 }
 
+void index_test(void) {
+	Vector *vector = vector_init(sizeof(int), compare_int);
+
+        vector_append_array(vector, &(int[]){1,2,3,4,5}, 5);
+
+        assert_index(vector, 0, 1);
+        assert_index(vector, 2, 3);
+        assert_index(vector, 4, 5);
+
+        assert_index(vector, -1, 5);
+        assert_index(vector, -2, 4);
+        assert_index(vector, -5, 1);
+
+        assert_noindex(vector, -6);
+        assert_noindex(vector, -10);
+        assert_noindex(vector, 5);
+        assert_noindex(vector, 10);
+
+        vector_free(vector);
+}
+
 int main(void){
         int n = 2400;
 	int tmp;
@@ -314,6 +346,7 @@ int main(void){
 	reduce_test();
 	sort_test();
         string_test();
+        index_test();
 
 	test_end("Vector.c");
 }
