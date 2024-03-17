@@ -275,9 +275,10 @@ int dict_put(Dictionary *dict, void *key, void *value){
         if (node.state == FULL || node.state == DELETED){
                 if (node.value && dict->destructor)
                         dict->destructor(node.value);
-        }else{
-                dict->n_elements++;
         }
+
+        if (node.state != FULL)
+                dict->n_elements++;
 
         memcpy(node.key, key, dict->key_size);
         memcpy(node.value, value, dict->value_size);
