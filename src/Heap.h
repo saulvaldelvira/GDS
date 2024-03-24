@@ -97,16 +97,12 @@ size_t heap_size(Heap *heap);
 */
 bool heap_isempty(Heap *heap);
 
-/**
- * Frees the memory asociated with the heap
-*/
-void heap_free(Heap *heap);
+void heap_free(Heap *h, ...);
 
 /**
- * Frees multiple heaps at once.
- * @param n number of pointers to free.
-*/
-void heap_free_all(unsigned int n, ...);
+ * Frees all the given heaps.
+ */
+#define heap_free(...) heap_free(__VA_ARGS__, NULL)
 
 #ifdef __cplusplus
 }

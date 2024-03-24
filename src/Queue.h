@@ -92,10 +92,12 @@ size_t queue_size(Queue *queue);
 */
 bool queue_isempty(Queue *queue);
 
+void queue_free(Queue *v, ...);
+
 /**
- * Frees the memory allocated for the queue.
-*/
-void queue_free(Queue *queue);
+ * Frees all the given queues.
+ */
+#define queue_free(...) queue_free(__VA_ARGS__, NULL)
 
 /**
  * Frees multiple queues at once.

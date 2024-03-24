@@ -173,20 +173,22 @@ static void queue_free_node(QueueNode *node, destructor_function_t destructor){
         free(node);
 }
 
-void queue_free(Queue *queue){
+static void _queue_free(Queue *queue){
         if (queue){
                 queue_free_node(queue->head, queue->destructor);
                 free(queue);
         }
 }
 
-void queue_free_all(unsigned int n, ...){
+void (queue_free)(Queue *q, ...){
+        if (!q)
+                return;
         va_list arg;
-        va_start(arg, n);
-        for (unsigned int i = 0; i < n; i++){
-                Queue *ptr = va_arg(arg, Queue*);
-                queue_free(ptr);
-        }
+        va_start(arg, q);
+        do {
+                _queue_free(q);
+                q = va_arg(arg, Queue*);
+        } while (q);
         va_end(arg);
 }
 

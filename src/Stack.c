@@ -98,20 +98,22 @@ bool stack_isempty(Stack *stack){
 
 /// FREE //////////////////////////////////////////////////////////////////////
 
-void stack_free(Stack *stack){
+static void _stack_free(Stack *stack){
         if (stack){
                 vector_free(stack->elements);
                 free(stack);
         }
 }
 
-void stack_free_all(unsigned int n, ...){
+void (stack_free)(Stack *s, ...){
+        if (!s)
+                return;
         va_list arg;
-        va_start(arg, n);
-        for (unsigned int i = 0; i < n; i++){
-                Stack *ptr = va_arg(arg, Stack*);
-                stack_free(ptr);
-        }
+        va_start(arg, s);
+        do {
+                _stack_free(s);
+                s = va_arg(arg, Stack*);
+        } while (s);
         va_end(arg);
 }
 

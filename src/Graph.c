@@ -670,20 +670,22 @@ static void free_contents(Graph *graph){
         free(graph->weights);
 }
 
-void graph_free(Graph *graph){
+static void _graph_free(Graph *graph){
         if (graph){
                 free_contents(graph);
                 free(graph);
         }
 }
 
-void graph_free_all(unsigned int n, ...){
+void (graph_free)(Graph *g, ...){
+        if (!g)
+                return;
         va_list arg;
-        va_start(arg, n);
-        for (unsigned int i = 0; i < n; i++){
-                Graph *ptr = va_arg(arg, Graph*);
-                graph_free(ptr);
-        }
+        va_start(arg, g);
+        do {
+                _graph_free(g);
+                g = va_arg(arg, Graph*);
+        } while (g);
         va_end(arg);
 }
 

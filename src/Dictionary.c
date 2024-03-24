@@ -371,7 +371,7 @@ int dict_remove(Dictionary *dict, void *key){
 
 //// FREE //////////////////////////////////////////////////////////////////////
 
-void dict_free(Dictionary *dict){
+static void _dict_free(Dictionary *dict){
         if (!dict)
                 return;
         vector_map(dict->vec_elements, free_node, &dict->destructor);
@@ -379,13 +379,15 @@ void dict_free(Dictionary *dict){
         free(dict);
 }
 
-void dict_free_all(unsigned int n, ...){
+void (dict_free)(Dictionary *d, ...){
+        if (!d)
+                return;
         va_list arg;
-        va_start(arg, n);
-        for (unsigned int i = 0; i < n; i++){
-                Dictionary *ptr = va_arg(arg, Dictionary*);
-                dict_free(ptr);
-        }
+        va_start(arg, d);
+        do {
+                _dict_free(d);
+                d = va_arg(arg, Dictionary*);
+        } while (d);
         va_end(arg);
 }
 

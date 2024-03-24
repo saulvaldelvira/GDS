@@ -5,7 +5,8 @@ if ! which cppcheck &> /dev/null ; then
     exit 1
 fi
 
-make clean ; make CC=gcc FLAGS="-fsanitize=address,undefined,leak -Werror"
+make clean
+make CC=gcc FLAGS="-fsanitize=address,undefined,leak -Werror"
 
 failures=""
 export failures

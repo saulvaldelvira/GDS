@@ -187,16 +187,12 @@ void* list_pop_array(LinkedList *list, void *array, size_t array_length, void *d
 */
 LinkedList* list_join(LinkedList *list_1, LinkedList *list_2);
 
-/**
- * Frees the memory allocated on the list.
-*/
-void list_free(LinkedList *list);
+void list_free(LinkedList *h, ...);
 
 /**
- * Frees multiple lists at once.
- * @param n number of pointers to free.
-*/
-void list_free_all(unsigned int n, ...);
+ * Frees all the given lists.
+ */
+#define list_free(...) list_free(__VA_ARGS__, NULL)
 
 #ifdef __cplusplus
 }

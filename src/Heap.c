@@ -231,19 +231,21 @@ bool heap_isempty(Heap *heap){
 
 //// FREE /////////////////////////////////////////////////////////////////////
 
-void heap_free(Heap *heap){
+static void _heap_free(Heap *heap){
         if (heap){
                 vector_free(heap->elements);
                 free(heap);
         }
 }
 
-void heap_free_all(unsigned int n, ...){
+void (heap_free)(Heap *h, ...){
+        if (!h)
+                return;
         va_list arg;
-        va_start(arg, n);
-        for (unsigned int i = 0; i < n; i++){
-                Heap *ptr = va_arg(arg, Heap*);
-                heap_free(ptr);
-        }
+        va_start(arg, h);
+        do {
+                _heap_free(h);
+                h = va_arg(arg, Heap*);
+        } while (h);
         va_end(arg);
 }

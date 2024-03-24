@@ -16,7 +16,7 @@ void joins_test(void){
 	for (int i = 0; i < 20; i++)
 		assert(list_exists(lnkd_joint, &i));
 
-	list_free_all(3, l1, l2, lnkd_joint);
+	list_free(l1, l2, lnkd_joint);
 }
 
 void destructor_test(void){

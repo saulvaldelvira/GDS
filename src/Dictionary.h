@@ -76,16 +76,12 @@ bool dict_exists(Dictionary *dict, void *key);
 */
 int dict_remove(Dictionary *dict, void *key);
 
-/**
- * Frees the dictionary
-*/
-void dict_free(Dictionary *dict);
+void dict_free(Dictionary *d, ...);
 
 /**
- * Frees multiple dictionaries at once.
- * @param n number of pointers to free.
-*/
-void dict_free_all(unsigned int n, ...);
+ * Frees all the given dicts.
+ */
+#define dict_free(...) dict_free(__VA_ARGS__, NULL)
 
 /**
  * Removes all elements from the dictionary

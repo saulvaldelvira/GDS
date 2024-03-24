@@ -29,7 +29,7 @@ void joins_test(void){
 	for (int i = 0; i < 20; i++)
 		assert(vector_exists(vec_joint, &i));
 
-	vector_free_all(4, a1, a2, diff_size, vec_joint);
+	vector_free(a1, a2, diff_size, vec_joint);
 }
 
 void dup_test(void){
@@ -42,7 +42,7 @@ void dup_test(void){
 	for (int i = 0; i < 10; i++)
 		assert(vector_exists(dup, &i));
 
-	vector_free_all(2, v, dup);
+	vector_free(v, dup);
 }
 
 void destructor_test(void){
@@ -145,7 +145,7 @@ void filter_test(void){
 		assert(tmp % 2 == 0);
 	}
 
-	vector_free_all(2, vector, filtered);
+	vector_free(vector, filtered);
 	test_ok();
 }
 

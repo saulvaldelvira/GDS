@@ -523,7 +523,7 @@ void vector_clear(Vector *vector){
         }
 }
 
-void vector_free(Vector *vector){
+static void _vector_free(Vector *vector){
         if (!vector)
                 return;
         destroy_content(vector);
@@ -531,13 +531,15 @@ void vector_free(Vector *vector){
         free(vector);
 }
 
-void vector_free_all(unsigned int n, ...){
+void (vector_free)(Vector *v, ...){
+        if (!v)
+                return;
         va_list arg;
-        va_start(arg, n);
-        for (unsigned int i = 0; i < n; i++){
-                Vector *ptr = va_arg(arg, Vector*);
-                vector_free(ptr);
-        }
+        va_start(arg, v);
+        do {
+                _vector_free(v);
+                v = va_arg(arg, Vector*);
+        } while (v);
         va_end(arg);
 }
 

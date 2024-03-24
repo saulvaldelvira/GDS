@@ -93,16 +93,12 @@ size_t stack_size(Stack *stack);
 */
 bool stack_isempty(Stack *stack);
 
-/**
- * Frees the memory allocated for the stack.
-*/
-void stack_free(Stack *stack);
+void stack_free(Stack *v, ...);
 
 /**
- * Frees multiple stacks at once.
- * @param n number of pointers to free.
-*/
-void stack_free_all(unsigned int n, ...);
+ * Frees all the given stacks.
+ */
+#define stack_free(...) stack_free(__VA_ARGS__, NULL)
 
 #ifdef __cplusplus
 }

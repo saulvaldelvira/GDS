@@ -142,16 +142,12 @@ void* avl_max_from(AVLTree *tree, void *element, void *dest);
 */
 void* avl_min_from(AVLTree *tree, void *element, void *dest);
 
-/**
- * Frees the memory allocated for the tree
-*/
-void avl_free(AVLTree *tree);
+void avl_free(AVLTree *t, ...);
 
 /**
- * Frees multiple trees at once.
- * @param n number of pointers to free.
-*/
-void avl_free_all(unsigned int n, ...);
+ * Frees all the given trees.
+ */
+#define avl_free(...) avl_free(__VA_ARGS__, NULL)
 
 /**
  * Removes all elements from the tree

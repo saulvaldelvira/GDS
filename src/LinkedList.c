@@ -380,20 +380,22 @@ static void list_free_node(LLNode *node, destructor_function_t destructor){
         free(node);
 }
 
-void list_free(LinkedList *list){
+static void _list_free(LinkedList *list){
         if (list){
                 list_free_node(list->head, list->destructor);
                 free(list);
         }
 }
 
-void list_free_all(unsigned int n, ...){
+void (list_free)(LinkedList *l, ...){
+        if (!l)
+                return;
         va_list arg;
-        va_start(arg, n);
-        for (unsigned int i = 0; i < n; i++){
-                LinkedList *ptr = va_arg(arg, LinkedList*);
-                list_free(ptr);
-        }
+        va_start(arg, l);
+        do {
+                _list_free(l);
+                l = va_arg(arg, LinkedList*);
+        } while (l);
         va_end(arg);
 }
 

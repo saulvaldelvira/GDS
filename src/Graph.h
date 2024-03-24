@@ -257,16 +257,12 @@ graph_traversal graph_traverse_BF(Graph *graph, void *vertex);
 
 /////////////////////////////////////////////////////////
 
-/**
- * Frees the graph
-*/
-void graph_free(Graph *graph);
+void graph_free(Graph *g, ...);
 
 /**
- * Frees multiple graphs at once.
- * @param n number of pointers to free.
-*/
-void graph_free_all(unsigned int n, ...);
+ * Frees all the given graphs.
+ */
+#define graph_free(...) graph_free(__VA_ARGS__, NULL)
 
 /**
  * Resets the graph to it's original state.

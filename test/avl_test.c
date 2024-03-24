@@ -38,7 +38,7 @@ void join_test(void){
 		assert(avl_exists(joint, &i));
 	}
 
-	avl_free_all(3, t1, t2, joint);
+	avl_free(t1, t2, joint);
 }
 
 void destructor_test(void){

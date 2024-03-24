@@ -547,20 +547,22 @@ static void free_node(AVLNode *node, destructor_function_t destructor){
         free(node);
 }
 
-void avl_free(AVLTree *tree){
+static void _avl_free(AVLTree *tree){
         if (tree){
                 free_node(tree->root, tree->destructor);
                 free(tree);
         }
 }
 
-void avl_free_all(unsigned int n, ...){
+void (avl_free)(AVLTree *t, ...){
+        if (!t)
+                return;
         va_list arg;
-        va_start(arg, n);
-        for (unsigned int i = 0; i < n; i++){
-                AVLTree *ptr = va_arg(arg, AVLTree*);
-                avl_free(ptr);
-        }
+        va_start(arg, t);
+        do {
+                _avl_free(t);
+                t = va_arg(arg, AVLTree*);
+        } while (t);
         va_end(arg);
 }
 

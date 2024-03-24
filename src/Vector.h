@@ -347,16 +347,12 @@ void vector_clear(Vector *vector);
 */
 Vector* vector_join(Vector *vector_1, Vector *vector_2);
 
-/**
- * Frees the vector.
- */
-void vector_free(Vector *vector);
+void vector_free(Vector *v, ...);
 
 /**
- * Frees multiple vectors at once.
- * @param n number of vectors to free.
-*/
-void vector_free_all(unsigned int n, ...);
+ * Frees all the given vectors.
+ */
+#define vector_free(...) vector_free(__VA_ARGS__, NULL)
 
 /**
  * Frees the vector and resets it to it's original state.
