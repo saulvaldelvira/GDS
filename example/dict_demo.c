@@ -7,6 +7,8 @@
    */
 #include <stdio.h>
 #include <ctype.h>
+#include <string.h>
+#include <stdlib.h>
 #include "../src/Dictionary.h"
 
 int main(void){
@@ -30,7 +32,9 @@ int main(void){
 		case 'a':
 			printf("Age: ");
 			scanf("%d", &age);
-			dict_put(dict, &name, &age);
+                        char *k = malloc(1024);
+                        strcpy(k,name);
+			dict_put(dict, &k, &age);
 			break;
 		case 'r':
 			dict_remove(dict, &name);

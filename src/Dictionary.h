@@ -14,6 +14,7 @@ extern "C" {
 #include <stdbool.h>
 #include "./util/hash.h"
 #include "./util/compare.h"
+#include "Vector.h"
 
 typedef struct Dictionary Dictionary;
 
@@ -29,6 +30,16 @@ enum Redispersion{
  *                     and returns a 64 bit signed integer (int64_t).
 */
 Dictionary* dict_init(size_t key_size, size_t value_size, hash_function_t hash_func);
+
+/**
+ * Initializes a dictionary with an initial capacity
+ * @param key_size size in bytes of the keys
+ * @param value_size size in bytes of the values
+ * @param hash_func hash fucntion for the keys. It takes a const void pointer
+ *                     and returns a 64 bit signed integer (int64_t).
+ * @param capacity initial capacity of the vector
+*/
+Dictionary* dict_with_capacity(size_t key_size, size_t value_size, hash_function_t hash_func, size_t capacity);
 
 #define DICT_NO_SHRINKING        -1.0f
 #define DICT_DEF_REDISPERSION        DOUBLE_HASHING
@@ -65,6 +76,14 @@ int dict_put(Dictionary *dict, void *key, void *value);
  * doesn't exist in the dictionary
 */
 void* dict_get(Dictionary *dict, void *key, void *dest);
+
+/**
+ * Returns a vector with all the keys to the Dictionary
+ * The vector is of the same type as the keys in the table.
+ * This means, if we call this method on a Dictionary of int to char,
+ * the vector will be a Vector of ints
+ */
+Vector* dict_keys(Dictionary *dict);
 
 /**
  * Returns true if the key exists in the dictionary

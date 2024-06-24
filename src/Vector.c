@@ -29,18 +29,22 @@ struct Vector {
 
 /// INITIALIZE ////////////////////////////////////////////////////////////////
 
-Vector* vector_init(size_t data_size, comparator_function_t cmp){
+inline Vector* vector_init(size_t data_size, comparator_function_t cmp){
+        return vector_with_capacity(data_size, cmp, VECTOR_DEFAULT_SIZE);
+}
+
+Vector* vector_with_capacity(size_t data_size, comparator_function_t cmp, size_t capacity) {
         assert(cmp && data_size > 0);
         Vector *vector = malloc(sizeof(*vector));
         if (!vector) return NULL;
-        vector->elements = malloc(VECTOR_DEFAULT_SIZE * data_size);
+        vector->elements = malloc(capacity * data_size);
         if (!vector->elements){
                 free(vector);
                 return NULL;
         }
         vector->data_size = data_size;
         vector->n_elements = 0;
-        vector->capacity = VECTOR_DEFAULT_SIZE;
+        vector->capacity = capacity;
         vector->compare = cmp;
         vector->destructor = NULL;
         return vector;

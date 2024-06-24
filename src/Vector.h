@@ -25,6 +25,15 @@ typedef struct Vector Vector;
 Vector* vector_init(size_t data_size, comparator_function_t cmp);
 
 /**
+ * Creates a Vector with the given initial capacity.
+ * @param data_size the size (in bytes) of the data stored
+ * @param cmp pointer to a function that receives two void pointers and returns 1 if the first one is greater than the
+ *              second, 0 if they are equal and -1 if the first one is smaller than the second one
+ * @param capacity initial capacity of the Vector.
+ */
+Vector* vector_with_capacity(size_t data_size, comparator_function_t cmp, size_t capacity);
+
+/**
  * Changes the comparator function of the vector
  * @param cmp the new comparator function
 */
