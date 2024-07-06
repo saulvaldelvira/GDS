@@ -5,6 +5,7 @@
 #include "AVLTree.h"
 #include "./util/error.h"
 #include "./util/definitions.h"
+#include <stdint.h>
 #include <stdlib.h> // malloc
 #include <string.h> // memcpy
 #include <stdarg.h>
@@ -21,10 +22,10 @@ typedef struct AVLNode {
 
 struct AVLTree {
         AVLNode *root;                          ///< Root node of the tree
-        size_t data_size;                       ///< Size (in bytes) of the data type being stored
-        size_t n_elements;                      ///< Number of elements in the tree
         comparator_function_t compare;          ///< Comparator function pointer
         destructor_function_t destructor;       ///< Destructor function pointer
+        u32 n_elements;                    ///< Number of elements in the tree
+        u16 data_size;                     ///< Size (in bytes) of the data type being stored
 };
 
 //// INITIALIZE ////////////////////////////////////////////////////////////////
@@ -373,7 +374,7 @@ int avl_height(AVLTree *tree){
 // Auxiliar structure to use in the traversal methods
 struct traversal_ret {
         void* elements;
-        size_t elements_size;
+        u32 elements_size;
         int status;
 };
 

@@ -4,35 +4,36 @@
  */
 #include "Dictionary.h"
 #include "./util/error.h"
+#include "./util/definitions.h"
 #include "Vector.h"
 #include "util/compare.h"
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
 #include <assert.h>
-#include <time.h>
+
 
 typedef struct DictionaryNode {
         void *key;
         void *value;
-        enum {
+        enum NodeState {
                 EMPTY, FULL, DELETED
         } state;
 } DictionaryNode;
 
-struct Dictionary{
-        size_t value_size;      ///< Size (in bytes) of the value data type
-        size_t key_size;        ///< Size (in bytes) of the key data type
+struct Dictionary {
         Vector *vec_elements;   ///< Vector to store the elements
-        size_t n_elements;      ///< Number of elements in the Dictionary
-        size_t vec_size;        ///< Capacity of the vector
-        size_t prev_vec_size;   ///< Previous capacity of the vector
-        float min_lf;           ///< Minimun load factor before shrinking
-        float max_lf;           ///< Maximun load factor before redispersing
-        enum Redispersion redispersion;         ///< Type of redispersion to apply
         hash_function_t hash;                   ///< Hashing function pointer
         destructor_function_t destructor;       ///< Destructor function pointer
+        u32 n_elements;      ///< Number of elements in the Dictionary
+        u32 prev_vec_size;   ///< Previous capacity of the vector
+        u16 value_size;      ///< Size (in bytes) of the value data type
+        u16 key_size;        ///< Size (in bytes) of the key data type
+        float max_lf;   ///< Maximun load factor before redispersing
+        float min_lf;    ///< Minimun load factor before shrinking
+        enum Redispersion redispersion;   ///< Type of redispersion to apply
 };
 
 /**
@@ -42,6 +43,8 @@ struct Dictionary{
 */
 #define LF(x,B) ((x) * 1.0 / (B))
 #define DICT_INITIAL_SIZE 11
+
+#define VEC_SIZE(dict) vector_size(dict->vec_elements)
 
 static inline int64_t abs_i64(int64_t n) { return n < 0 ? -n : n; }
 
@@ -111,7 +114,6 @@ static int __init_dict(Dictionary *dict, size_t key_size, size_t value_size, has
         vector_map(dict->vec_elements, init_node, NULL);
         dict->hash = hash_func;
         dict->redispersion = DICT_DEF_REDISPERSION;
-        dict->vec_size = capacity;
         dict->prev_vec_size = get_prev_prime(capacity);
         return SUCCESS;
 }
@@ -184,7 +186,7 @@ static int dict_redisperse(Dictionary *dict, size_t new_size){
         __init_dict(&d, dict->key_size, dict->value_size, dict->hash, new_size);
         d.destructor = dict->destructor;
 
-        for (size_t i = 0; i < dict->vec_size; i++) {
+        for (size_t i = 0; i < VEC_SIZE(dict); i++) {
                 DictionaryNode node;
                 vector_at(dict->vec_elements, i, &node);
                 if (node.state == FULL) {
@@ -223,7 +225,7 @@ static size_t dict_get_pos(Dictionary *dict, void *key, size_t n_it){
                 pos = h1 + n_it * h2;
                 break;
         }
-        return pos % dict->vec_size;
+        return pos % VEC_SIZE(dict);
 }
 
 int dict_put(Dictionary *dict, void *key, void *value){
@@ -231,7 +233,7 @@ int dict_put(Dictionary *dict, void *key, void *value){
         size_t pos = 0;
         DictionaryNode node = {0};
 
-        for (size_t i = 0; i < dict->vec_size; ++i){
+        for (size_t i = 0; i < VEC_SIZE(dict); ++i){
                 pos = dict_get_pos(dict, key, i);
                 vector_at(dict->vec_elements, pos, &node);
 
@@ -276,8 +278,8 @@ int dict_put(Dictionary *dict, void *key, void *value){
         vector_set_at(dict->vec_elements, pos, &node);
 
         // Resize if needed
-        if (LF(dict->n_elements, dict->vec_size) >= dict->max_lf){
-                size_t new_size = get_next_prime(dict->vec_size * 2);
+        if (LF(dict->n_elements, VEC_SIZE(dict)) >= dict->max_lf){
+                size_t new_size = get_next_prime(VEC_SIZE(dict) * 2);
                 int status = dict_redisperse(dict, new_size);
                 if (status != SUCCESS)
                         return status;
@@ -289,7 +291,7 @@ int dict_put(Dictionary *dict, void *key, void *value){
 
 void* dict_get(Dictionary *dict, void *key, void *dest){
         assert(dict && key);
-        for (size_t i = 0; i < dict->vec_size; i++) {
+        for (size_t i = 0; i < VEC_SIZE(dict); i++) {
                 size_t pos = dict_get_pos(dict, key, i);
                 DictionaryNode node;
                 vector_at(dict->vec_elements, pos, &node);
@@ -306,7 +308,7 @@ void* dict_get(Dictionary *dict, void *key, void *dest){
 
 bool dict_exists(Dictionary *dict, void *key){
         assert(dict && key);
-        for (size_t i = 0; i < dict->vec_size; i++) {
+        for (size_t i = 0; i < VEC_SIZE(dict); i++) {
                 size_t pos = dict_get_pos(dict, key, i);
                 DictionaryNode node;
                 vector_at(dict->vec_elements, pos, &node);
@@ -326,7 +328,7 @@ Vector* dict_keys(Dictionary *dict) {
         Vector *v = vector_with_capacity(dict->key_size, compare_equal, dict->n_elements);
         if (!v) return NULL;
 
-        for (size_t i = 0; i < dict->vec_size; i++) {
+        for (size_t i = 0; i < VEC_SIZE(dict); i++) {
                 DictionaryNode node;
                 vector_at(dict->vec_elements, i, &node);
                 if (node.state == FULL) {
@@ -355,8 +357,8 @@ static int __delete_node(Dictionary *dict, size_t pos, bool redispersion, bool d
         dict->n_elements--;
         if (!redispersion)
                 return SUCCESS;
-        if (dict->min_lf > 0 && LF(dict->n_elements, dict->vec_size) <= dict->min_lf){
-                size_t new_size = get_prev_prime(dict->vec_size / 2);
+        if (dict->min_lf > 0 && LF(dict->n_elements, VEC_SIZE(dict)) <= dict->min_lf){
+                size_t new_size = get_prev_prime(VEC_SIZE(dict) / 2);
                 int status = dict_redisperse(dict, new_size);
                 if (status != SUCCESS)
                         return status;
@@ -366,7 +368,7 @@ static int __delete_node(Dictionary *dict, size_t pos, bool redispersion, bool d
 
 int dict_remove(Dictionary *dict, void *key){
         assert(dict && key);
-        for (size_t i = 0; i < dict->vec_size; i++){
+        for (size_t i = 0; i < VEC_SIZE(dict); i++){
                 size_t pos = dict_get_pos(dict, key, i);
                 DictionaryNode node;
                 vector_at(dict->vec_elements, pos, &node);
@@ -410,6 +412,5 @@ void dict_clear(Dictionary *dict){
         vector_resize(dict->vec_elements, DICT_INITIAL_SIZE);
         vector_map(dict->vec_elements, init_node, NULL);
         dict->n_elements = 0;
-        dict->vec_size = DICT_INITIAL_SIZE;
         dict->prev_vec_size = get_prev_prime(DICT_INITIAL_SIZE);
 }

@@ -12,7 +12,9 @@ extern "C" {
 
 #include <stddef.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include "./util/compare.h"
+#include "./util/definitions.h"
 
 typedef struct Graph Graph;
 
@@ -126,10 +128,10 @@ bool graph_isempty(Graph *graph);
 
 /// Struct to return the result of dijkstra's algorithm
 typedef struct {
-        float     *D;                 ///< Array of weights
-        ptrdiff_t *P;                 ///< Array of pivots
-        size_t     n_elements;         ///< Number of elements in the D and P arrays
-        int        status;         ///< Return status of the algorithm
+        float     *D;     ///< Array of weights
+        ptrdiff_t *P;     ///< Array of pivots
+        u32 n_elements;   ///< Number of elements in the D and P arrays
+        int status;       ///< Return status of the algorithm
 } DijkstraData_t;
 
 /**
@@ -155,10 +157,10 @@ void graph_free_dijkstra_data(DijkstraData_t *data);
 
 /// Struct to return the result of floyd's algorithm
 typedef struct {
-        float     **A;                 ///< Weights matrix
-        ptrdiff_t **P;                 ///< Pivots matrix
-        size_t    n_elements;         ///< Dimension of the D and P matrices
-        int       status;         ///< Return status of the algorithm
+        float     **A;   ///< Weights matrix
+        ptrdiff_t **P;   ///< Pivots matrix
+        u32 n_elements;  ///< Dimension of the D and P matrices
+        int status;      ///< Return status of the algorithm
 } FloydData_t;
 
 /**
@@ -177,10 +179,9 @@ void graph_free_floyd_data(FloydData_t *data);
 
 /// Represents the Degree of a vertex
 typedef struct {
-        size_t deg_in; ///< Degree in the vertex
-        size_t deg_out; ///< Degree out the vertex
-        size_t deg; ///< Total degree of the vertex
-        int status; ///< return status of the algorithm
+        u16 deg_in;   ///< Degree in the vertex
+        u16 deg_out;  ///< Degree out the vertex
+        i16 status;   ///< return status of the algorithm
 } graph_degree;
 
 /**
@@ -228,7 +229,7 @@ float graph_eccentricity(Graph *graph, void *vertex);
 */
 typedef struct {
         void *elements;         ///< Array of elements
-        size_t elements_size;         ///< Number of elements in the array
+        uint32_t elements_size;         ///< Number of elements in the array
         int status;                 ///< return status of the traversal
 }graph_traversal;
 

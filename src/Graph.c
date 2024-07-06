@@ -482,7 +482,7 @@ void graph_free_floyd_data(FloydData_t *data){
 
 graph_degree graph_get_degree(Graph *graph, void *vertex){
         assert(graph && vertex);
-        graph_degree degree = {0, 0, 0, SUCCESS};
+        graph_degree degree = {0, 0, SUCCESS};
         ptrdiff_t index = graph_indexof(graph, vertex);
         if (index < 0){
                 degree.status = index;
@@ -496,7 +496,6 @@ graph_degree graph_get_degree(Graph *graph, void *vertex){
                         degree.deg_out++;
                 }
         }
-        degree.deg = degree.deg_in + degree.deg_out;
         return degree;
 }
 
@@ -521,7 +520,7 @@ bool graph_is_isolated_vertex(Graph *graph, void *vertex){
         if (degree.status != SUCCESS){
                 return false;
         }
-        return degree.deg == 0;
+        return (degree.deg_in + degree.deg_out) == 0;
 }
 
 float graph_eccentricity(Graph *graph, void *vertex){
