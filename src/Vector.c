@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include "./util/error.h"
 #include "./util/definitions.h"
+#include "util/compare.h"
 #include <string.h>
 #include <stdarg.h>
 #include "Vector.h"
@@ -465,11 +466,27 @@ int vector_reserve(Vector *vector, size_t n_elements){
         return SUCCESS;
 }
 
-int vector_resize(Vector *vector, size_t n_elements){
+int vector_resize(Vector *vector, size_t n_elements, constructor_function_t constructor){
         assert(vector);
+        if (n_elements == vector->n_elements) return SUCCESS;
+
         if (vector->capacity < n_elements){
                 if (resize_buffer(vector, n_elements) == ERROR)
                         return ERROR;
+        }
+
+        #define foreach(start,end,f) \
+                void *ptr = void_offset(vector->elements, start * vector->data_size);\
+                for (size_t i = start; i < end; i++) {\
+                        f(ptr);\
+                        ptr = void_offset(ptr, vector->data_size);\
+                }
+
+        if (constructor && vector->n_elements < n_elements) {
+                foreach(vector->n_elements, n_elements, constructor);
+        }
+        if (vector->destructor && vector->n_elements > n_elements) {
+                foreach(n_elements, vector->n_elements, vector->destructor);
         }
         vector->n_elements = n_elements;
         return SUCCESS;
@@ -484,7 +501,7 @@ Vector* vector_dup(Vector *vector){
         assert(vector);
         Vector *dup = vector_init(vector->data_size, vector->compare);
         vector_set_destructor(dup, vector->destructor);
-        vector_resize(dup, vector->n_elements);
+        vector_resize(dup, vector->n_elements, NULL);
         memcpy(dup->elements, vector->elements, vector->n_elements * vector->data_size);
         return dup;
 }

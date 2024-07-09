@@ -19,17 +19,17 @@ INSTALL_PATH ?= /usr/local
 default: libs
 
 libs: $(OFILES) | $(BIN)/
-	@ echo "=> $(BIN)/libGDS.so"
+	@ echo " => $(BIN)/libGDS.so"
 	@ $(CC) $(CCFLAGS) -shared -o ./$(BIN)/libGDS.so $(OFILES)
-	@ echo "=> $(BIN)/libGDS-static.a"
+	@ echo " => $(BIN)/libGDS-static.a"
 	@ $(AR) $(ARFLAGS) ./$(BIN)/libGDS-static.a $(OFILES)
 
 install: $(BIN)/libGDS.so $(BIN)/libGDS-static.a
-	  @ echo "INSTALL $(INSTALL_PATH)/lib/libGDS.so"
-	  @ echo "INSTALL $(INSTALL_PATH)/lib/libGDS-static.a"
+	  @ echo " INSTALL $(INSTALL_PATH)/lib/libGDS.so"
+	  @ echo " INSTALL $(INSTALL_PATH)/lib/libGDS-static.a"
 	  @ install -d $(INSTALL_PATH)/lib
 	  @ install -m 644 $(BIN)/libGDS* $(INSTALL_PATH)/lib
-	  @ echo "INSTALL $(INSTALL_PATH)/include/GDS/"
+	  @ echo " INSTALL $(INSTALL_PATH)/include/GDS/"
 	  @ install -d $(INSTALL_PATH)/include/GDS
 	  @ install -d $(INSTALL_PATH)/include/GDS/util
 	  @ install -m 644 $(SRC)/*.h $(INSTALL_PATH)/include/GDS
@@ -39,10 +39,10 @@ $(BIN)/libGDS.so $(BIN)/libGDS-static.a:
 	@ $(MAKE) --no-print-directory libs
 
 uninstall:
-	  @ echo "RM $(INSTALL_PATH)/lib/libGDS.so"
-	  @ echo "RM $(INSTALL_PATH)/lib/libGDS-static.a"
+	  @ echo " RM $(INSTALL_PATH)/lib/libGDS.so"
+	  @ echo " RM $(INSTALL_PATH)/lib/libGDS-static.a"
 	  @ rm -f $(INSTALL_PATH)/lib/libGDS*
-	  @ echo "RM $(INSTALL_PATH)/include/GDS/"
+	  @ echo " RM $(INSTALL_PATH)/include/GDS/"
 	  @ rm -rf $(INSTALL_PATH)/include/GDS
 
 NO-RUN?= false # If true, only builds the test, without running them
@@ -70,7 +70,7 @@ doxygen: ./doxygen/
 	@ rm -f doxygen/doc.doxy
 
 .c.o:
-	@ echo "CC $@"
+	@ echo " CC $@"
 	@ $(CC) $(CCFLAGS) -o $@ -c $<
 
 %/:

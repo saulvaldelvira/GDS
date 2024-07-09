@@ -10,7 +10,7 @@ if ! ls ./bin/*.out &> /dev/null ; then
 fi
 for t in ./bin/*.out
 do
-        valgrind --leak-check=yes --error-exitcode=1  "$t"
+        valgrind --leak-check=yes --track-origins=yes --error-exitcode=1  "$t"
         if [ $? -ne 0 ] ; then
                 exit $?
         fi

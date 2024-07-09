@@ -135,12 +135,14 @@ int vector_reserve(Vector *vector, size_t n_elements);
 /**
  * Resizes the vector to the given number of elements.
  * @param n_elements new number of elements.
+ * @param [OPTIONAL] constructor. This function will set the
+ *                   new default values.
  * @note If a destructor is set, and the given n_elements is lower
  *       than the current size of the vector, the destructor WON'T
  *       be called. This is to avoid calling it on garbage elements.
  * @note It does NOT shrink the vector. For that, use vector_shrink.
 */
-int vector_resize(Vector *vector, size_t n_elements);
+int vector_resize(Vector *vector, size_t n_elements, constructor_function_t constructor);
 
 /**
  * Shrinks the vector to fit exactly it's content.

@@ -50,11 +50,16 @@ int compare_greater(const void *e_1, const void *e_2); ///< Always returns 1
 // Destructor functions
 
 /**
- * Type of a destructor function.
+ * Signature of a destructor function.
  * It receives the address of the element to destroy.
 */
 typedef void (*destructor_function_t) (void *);
 void destroy_ptr(void *e);
+
+/**
+ * Signature of a constructor function.
+*/
+typedef void (*constructor_function_t) (void *);
 
 #ifdef __cplusplus
 }

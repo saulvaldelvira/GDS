@@ -236,6 +236,39 @@ void index_test(void) {
         vector_free(vector);
 }
 
+static void init_int(void *e) {
+        int *i = (int*) e;
+        *i = 34;
+}
+
+void resize_test(void) {
+        test_step("Resize");
+
+        Vector *v = vector_init(sizeof(int), compare_int);
+        vector_resize(v, 1024, init_int);
+        for (int i = 0; i < 1024; i++) {
+                int tmp;
+                vector_at(v, i, &tmp);
+                /* Check that all elements are initialized to 34 */
+                assert(tmp == 34);
+        }
+        vector_free(v);
+
+        v = vector_init(sizeof(char*), compare_string);
+        vector_set_destructor(v, destroy_ptr);
+
+        for (int i = 0; i < 1024; i++) {
+                char *str = malloc(100);
+                vector_append(v, &str);
+        }
+        /* Valgrind will check that elements from
+           30 to 1024 will get freed */
+        vector_resize(v, 30, NULL);
+
+        vector_free(v);
+        test_ok();
+}
+
 int main(void){
         int n = 2400;
 	int tmp;
@@ -347,6 +380,7 @@ int main(void){
 	sort_test();
         string_test();
         index_test();
+        resize_test();
 
 	test_end("Vector.c");
 }

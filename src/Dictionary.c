@@ -13,6 +13,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include <assert.h>
+#include <time.h>
 
 
 typedef struct DictionaryNode {
@@ -77,8 +78,7 @@ static int get_next_prime(int n){
 /**
  * Initializes a node.
  */
-static void init_node(void *node, void *args){
-        (void) args;
+static void init_node(void *node){
         DictionaryNode *n = (DictionaryNode*) node;
         n->key = NULL;
         n->value = NULL;
@@ -109,9 +109,8 @@ static int __init_dict(Dictionary *dict, size_t key_size, size_t value_size, has
         if (!dict->vec_elements){
                 return ERROR;
         }
-        vector_resize(dict->vec_elements, capacity);
+        vector_resize(dict->vec_elements, capacity, init_node);
         dict->n_elements = 0;
-        vector_map(dict->vec_elements, init_node, NULL);
         dict->hash = hash_func;
         dict->redispersion = DICT_DEF_REDISPERSION;
         dict->prev_vec_size = get_prev_prime(capacity);
@@ -409,8 +408,7 @@ void dict_clear(Dictionary *dict){
                 return;
         vector_map(dict->vec_elements, free_node, &dict->destructor);
         vector_reset(dict->vec_elements);
-        vector_resize(dict->vec_elements, DICT_INITIAL_SIZE);
-        vector_map(dict->vec_elements, init_node, NULL);
+        vector_resize(dict->vec_elements, DICT_INITIAL_SIZE, init_node);
         dict->n_elements = 0;
         dict->prev_vec_size = get_prev_prime(DICT_INITIAL_SIZE);
 }
