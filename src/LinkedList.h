@@ -87,44 +87,44 @@ int list_set(LinkedList *list, void *element, void *replacement);
  * @param[out] dest adress to store the element into.
  * @return a pointer to the first element in the list that is equal to the parameter element.
 */
-void* list_get(LinkedList *list, void *element, void *dest);
+void* list_get(const LinkedList *list, void *element, void *dest);
 
 /**
  * @return The first element in the list, or NULL if it does not exists
 */
-void* list_get_front(LinkedList *list, void *dest);
+void* list_get_front(const LinkedList *list, void *dest);
 
 /**
  * @return The last element in the list, or NULL if it does not exists
 */
-void* list_get_back(LinkedList *list, void *dest);
+void* list_get_back(const LinkedList *list, void *dest);
 
 /**
  * Copies into the array the first [array_length] elements of the list
 */
-void* list_get_into_array(LinkedList *list, void *array, size_t array_length);
+void* list_get_into_array(const LinkedList *list, void *array, size_t array_length);
 
 /**
  * Creates an array with the first [array_length] elements of the list.
  * @param array_length the number of elements to get. Pass 0 to get all the elements in the list
  * @note Remember to free the array.
 */
-void* list_get_array(LinkedList *list, size_t array_length);
+void* list_get_array(const LinkedList *list, size_t array_length);
 
 /**
 * @return true if the element exists in the list
 */
-bool list_exists(LinkedList *list, void *element);
+bool list_exists(const LinkedList *list, void *element);
 
 /**
  * @return the number of elements in the list
 */
-size_t list_size(LinkedList *list);
+size_t list_size(const LinkedList *list);
 
 /**
 * @return true if the list is empty
 */
-bool list_isempty(LinkedList *list);
+bool list_isempty(const LinkedList *list);
 
 /**
  * Removes all the elements from the list
@@ -200,7 +200,7 @@ void* list_pop_array(LinkedList *list, void *array, size_t array_length, void *d
  * @return a new LinkedList with the elements of the two given
  *         lists, or NULL if the lists have different data_size.
 */
-LinkedList* list_join(LinkedList *list_1, LinkedList *list_2);
+LinkedList* list_join(const LinkedList *list_1, LinkedList *list_2);
 
 void list_free(LinkedList *h, ...);
 
@@ -225,15 +225,15 @@ typedef struct LinkedListIterator {
  * CAUTION:
  * DO NOT use this iterator after the original list has been freed.
  * */
-LinkedListIterator list_iterator(LinkedList *list);
-LinkedListIterator list_iterator_from_back(LinkedList *list);
+LinkedListIterator list_iterator(const LinkedList *list);
+LinkedListIterator list_iterator_from_back(const LinkedList *list);
 
 void* list_it_next(LinkedListIterator *it, void *dst);
 void* list_it_prev(LinkedListIterator *it, void *dst);
-void* list_it_peek_next(LinkedListIterator *it, void *dst);
-void* list_it_peek_prev(LinkedListIterator *it, void *dst);
-bool list_it_has_next(LinkedListIterator *it);
-bool list_it_has_prev(LinkedListIterator *it);
+void* list_it_peek_next(const LinkedListIterator *it, void *dst);
+void* list_it_peek_prev(const LinkedListIterator *it, void *dst);
+bool list_it_has_next(const LinkedListIterator *it);
+bool list_it_has_prev(const LinkedListIterator *it);
 
 #ifdef __cplusplus
 }

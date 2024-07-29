@@ -127,7 +127,7 @@ int list_set(LinkedList *list, void *element, void *replacement){
 
 /// GET ///////////////////////////////////////////////////////////////////////
 
-void* list_get(LinkedList *list, void *element, void *dest){
+void* list_get(const LinkedList *list, void *element, void *dest){
         assert(list && element && dest);
         LLNode *aux = list->head;
         while (aux != NULL){
@@ -138,21 +138,21 @@ void* list_get(LinkedList *list, void *element, void *dest){
         return NULL;
 }
 
-void* list_get_front(LinkedList *list, void *dest){
+void* list_get_front(const LinkedList *list, void *dest){
         assert(list && dest);
         if (list->head == NULL)
                 return NULL;
         return memcpy(dest, list->head->info, list->data_size);
 }
 
-void* list_get_back(LinkedList *list, void *dest){
+void* list_get_back(const LinkedList *list, void *dest){
         assert(list && dest);
         if (list->tail == NULL)
                 return NULL;
         return memcpy(dest, list->tail->info, list->data_size);
 }
 
-void* list_get_into_array(LinkedList *list, void *array, size_t array_length){
+void* list_get_into_array(const LinkedList *list, void *array, size_t array_length){
         assert(list && array);
         if (array_length > list->n_elements)
                 array_length = list->n_elements;
@@ -167,7 +167,7 @@ void* list_get_into_array(LinkedList *list, void *array, size_t array_length){
 
 }
 
-void* list_get_array(LinkedList *list, size_t array_length){
+void* list_get_array(const LinkedList *list, size_t array_length){
         assert(list);
         if (array_length == 0 || array_length > list->n_elements)
                 array_length = list->n_elements;
@@ -320,7 +320,7 @@ void* list_pop_array(LinkedList *list, void *array, size_t array_length, void *d
 
 /// OTHER /////////////////////////////////////////////////////////////////////
 
-bool list_exists(LinkedList *list, void *element){
+bool list_exists(const LinkedList *list, void *element){
         if (!list || !element)
                 return false;
         LLNode *aux = list->head;
@@ -332,15 +332,15 @@ bool list_exists(LinkedList *list, void *element){
         return false;
 }
 
-size_t list_size(LinkedList *list){
+size_t list_size(const LinkedList *list){
         return list ? list->n_elements : 0;
 }
 
-bool list_isempty(LinkedList *list){
+bool list_isempty(const LinkedList *list){
         return list ? list->n_elements == 0 : true;
 }
 
-LinkedList* list_join(LinkedList *list_1, LinkedList *list_2){
+LinkedList* list_join(const LinkedList *list_1, LinkedList *list_2){
         assert(list_1 && list_2);
         if (list_1->data_size != list_2->data_size)
                 return NULL;
@@ -401,7 +401,7 @@ void list_clear(LinkedList *list){
 
 /* ITERATOR  */
 
-inline LinkedListIterator list_iterator(LinkedList *list) {
+inline LinkedListIterator list_iterator(const LinkedList *list) {
         assert(list);
         return (LinkedListIterator){
                 .next = list->head,
@@ -409,7 +409,7 @@ inline LinkedListIterator list_iterator(LinkedList *list) {
         };
 }
 
-inline LinkedListIterator list_iterator_from_back(LinkedList *list) {
+inline LinkedListIterator list_iterator_from_back(const LinkedList *list) {
         assert(list);
         return (LinkedListIterator){
                 .prev = list->tail,
@@ -437,24 +437,24 @@ void* list_it_prev(LinkedListIterator *it, void *dst) {
         return NULL;
 }
 
-inline void* list_it_peek_next(LinkedListIterator *it, void *dst) {
+inline void* list_it_peek_next(const LinkedListIterator *it, void *dst) {
         assert(it && dst);
         return it->next ?
                 memcpy(dst, it->next->info, it->data_size) : NULL;
 }
 
-inline void* list_it_peek_prev(LinkedListIterator *it, void *dst) {
+inline void* list_it_peek_prev(const LinkedListIterator *it, void *dst) {
         assert(it && dst);
         return it->prev ?
                 memcpy(dst, it->prev->info, it->data_size) : NULL;
 }
 
-inline bool list_it_has_next(LinkedListIterator *it) {
+inline bool list_it_has_next(const LinkedListIterator *it) {
         assert(it);
         return it->next;
 }
 
-inline bool list_it_has_prev(LinkedListIterator *it) {
+inline bool list_it_has_prev(const LinkedListIterator *it) {
         assert(it);
         return it->prev;
 }

@@ -42,7 +42,7 @@ void vector_set_comparator(Vector *vector, comparator_function_t cmp);
 /**
  * @return the comparator function used by the vector
 */
-comparator_function_t vector_get_comparator(Vector *vector);
+comparator_function_t vector_get_comparator(const Vector *vector);
 
 /**
  * Changes the destructor function of the vector
@@ -54,12 +54,12 @@ void vector_set_destructor(Vector *vector, destructor_function_t destructor);
  * @return the destructor function used by the vector,
  *         or NULL if it doesn't have one
 */
-destructor_function_t vector_get_destructor(Vector *vector);
+destructor_function_t vector_get_destructor(const Vector *vector);
 
 /**
  * @return the data size of the vector
 */
-size_t vector_get_data_size(Vector *vector);
+size_t vector_get_data_size(const Vector *vector);
 
 /**
  * Adds the element to the end of the vector
@@ -101,27 +101,27 @@ int vector_push_front_array(Vector *vector, void *array, size_t array_length);
 /**
  * @return the index of the element in the vector.
  */
-ptrdiff_t vector_indexof(Vector *vector, void *element);
+ptrdiff_t vector_indexof(const Vector *vector, void *element);
 
 /**
  * @return true if the element exists inside the vector.
  */
-bool vector_exists(Vector *vector, void *element);
+bool vector_exists(const Vector *vector, void *element);
 
 /**
  * @return true if the vector is empty.
  */
-bool vector_isempty(Vector *vector);
+bool vector_isempty(const Vector *vector);
 
 /**
  * @return the number of elements in the vector.
  */
-size_t vector_size(Vector *vector);
+size_t vector_size(const Vector *vector);
 
 /**
  * @return the capacity of the vector.
 */
-size_t vector_capacity(Vector *vector);
+size_t vector_capacity(const Vector *vector);
 
 /**
  * Reserves space for a certain number of elements.
@@ -162,7 +162,7 @@ void vector_map(Vector *vector, void (*func) (void *,void *), void *args);
 * @param func a function that receives an element and returns
 *        true if it must be added to the result vector.
 */
-Vector* vector_filter(Vector *vector, bool (*func) (void*));
+Vector* vector_filter(const Vector *vector, bool (*func) (void*));
 
 /**
  * Performs the Quick Sort algorithm on the Vector.
@@ -177,7 +177,7 @@ void vector_sort(Vector *vector);
  * @param dest address to store the result into
  * @return the dest pointer
  */
-void* vector_reduce(Vector *vector, void (*func) (const void*,void*), void *dest);
+void* vector_reduce(const Vector *vector, void (*func) (const void*,void*), void *dest);
 
 /**
  * Replaces the element at the given index with replacement.
@@ -207,7 +207,7 @@ int vector_set(Vector *vector, void *element, void *replacement);
  * @param[out] dest the memory address to copy the value into.
  * @return the dest pointer, or NULL if error.
  */
-void* vector_at(Vector *vector, ptrdiff_t index, void *dest);
+void* vector_at(const Vector *vector, ptrdiff_t index, void *dest);
 
 /**
  * Same as:
@@ -215,24 +215,24 @@ void* vector_at(Vector *vector, ptrdiff_t index, void *dest);
  * @param[out] dest the memory address to copy the value into.
  * @return the dest pointer, or NULL if error.
  */
-void* vector_get(Vector *vector, void *element, void *dest);
+void* vector_get(const Vector *vector, void *element, void *dest);
 
 /**
  * Copies into dest the first element in the vector.
  * @return dest, or NULL if the vector is empty.
 */
-void* vector_front(Vector *vector, void *dest);
+void* vector_front(const Vector *vector, void *dest);
 
 /**
  * Copies into dest the last element in the vector.
  * @return dest, or NULL if the vector is empty.
 */
-void* vector_back(Vector *vector, void *dest);
+void* vector_back(const Vector *vector, void *dest);
 
 /**
  * Copies the first [array_length] elements from the vector into the array
 */
-void* vector_get_into_array(Vector *vector, void *array, size_t array_length);
+void* vector_get_into_array(const Vector *vector, void *array, size_t array_length);
 
 /**
  * Allocates an array of [array_length] elements and fills it with
@@ -240,7 +240,7 @@ void* vector_get_into_array(Vector *vector, void *array, size_t array_length);
  * @param array_length the number of elements to get.
  *        Pass 0 to get all the elements in the vector
 */
-void* vector_get_array(Vector *vector, size_t array_length);
+void* vector_get_array(const Vector *vector, size_t array_length);
 
 /**
  * Swaps the element at index_1 and index_2
@@ -251,7 +251,7 @@ int vector_swap(Vector *vector, ptrdiff_t index_1, ptrdiff_t index_2);
  * Compares the element at index_1 and index_2
  * @return the result of the comparison
 */
-int vector_compare(Vector *vector, ptrdiff_t index_1, ptrdiff_t index_2);
+int vector_compare(const Vector *vector, ptrdiff_t index_1, ptrdiff_t index_2);
 
 /*
  * Remove vs. Pop
@@ -345,7 +345,7 @@ void* vector_pop_array(Vector *vector, void *array, size_t array_length, void *d
 /**
  * @return A copy of the vector.
 */
-Vector* vector_dup(Vector *vector);
+Vector* vector_dup(const Vector *vector);
 
 /**
  * Removes all the elements in the vector, without freeing the
@@ -356,7 +356,7 @@ void vector_clear(Vector *vector);
 /**
  * @returns a new vector, with all the elements of vector_1 and vector_2.
 */
-Vector* vector_join(Vector *vector_1, Vector *vector_2);
+Vector* vector_join(const Vector *vector_1, const Vector *vector_2);
 
 void vector_free(Vector *v, ...);
 
@@ -372,7 +372,7 @@ void vector_reset(Vector *vector);
 
 /* ITERATOR */
 typedef struct VectorIterator {
-        Vector *vector;
+        const Vector *vector;
         ptrdiff_t next, prev;
 } VectorIterator;
 
@@ -381,15 +381,15 @@ typedef struct VectorIterator {
  * CAUTION:
  * DO NOT use this iterator after the original vector has been freed.
  * */
-VectorIterator vector_iterator(Vector *vector);
-VectorIterator vector_iterator_from_back(Vector *vector);
+VectorIterator vector_iterator(const Vector *vector);
+VectorIterator vector_iterator_from_back(const Vector *vector);
 
 void* vector_it_next(VectorIterator *it, void *dst);
 void* vector_it_prev(VectorIterator *it, void *dst);
-void* vector_it_peek_next(VectorIterator *it, void *dst);
-void* vector_it_peek_prev(VectorIterator *it, void *dst);
-bool vector_it_has_next(VectorIterator *it);
-bool vector_it_has_prev(VectorIterator *it);
+void* vector_it_peek_next(const VectorIterator *it, void *dst);
+void* vector_it_peek_prev(const VectorIterator *it, void *dst);
+bool vector_it_has_next(const VectorIterator *it);
+bool vector_it_has_prev(const VectorIterator *it);
 
 #ifdef __cplusplus
 }
