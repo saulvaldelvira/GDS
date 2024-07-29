@@ -11,6 +11,8 @@
 extern "C" {
 #endif
 
+#define GDS_VERSION 1.0
+
 #include "AVLTree.h"
 #include "Heap.h"
 #include "Dictionary.h"
