@@ -370,6 +370,27 @@ void vector_free(Vector *v, ...);
  */
 void vector_reset(Vector *vector);
 
+/* ITERATOR */
+typedef struct VectorIterator {
+        Vector *vector;
+        ptrdiff_t next, prev;
+} VectorIterator;
+
+/*
+ * Create an iterator of the given vector.
+ * CAUTION:
+ * DO NOT use this iterator after the original vector has been freed.
+ * */
+VectorIterator vector_iterator(Vector *vector);
+VectorIterator vector_iterator_from_back(Vector *vector);
+
+void* vector_it_next(VectorIterator *it, void *dst);
+void* vector_it_prev(VectorIterator *it, void *dst);
+void* vector_it_peek_next(VectorIterator *it, void *dst);
+void* vector_it_peek_prev(VectorIterator *it, void *dst);
+bool vector_it_has_next(VectorIterator *it);
+bool vector_it_has_prev(VectorIterator *it);
+
 #ifdef __cplusplus
 }
 #endif

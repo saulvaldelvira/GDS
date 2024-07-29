@@ -13,6 +13,21 @@ extern "C" {
 #include <stddef.h>
 #include <stdbool.h>
 #include "./util/compare.h"
+#include "util/definitions.h"
+
+#ifdef LINKED_LIST_IMPL
+
+        /*
+         * Node of a Linked List
+        */
+        typedef struct LLNode {
+                struct LLNode *next;
+                struct LLNode *prev;
+                byte info[];
+        }LLNode;
+
+#endif
+
 
 /**
  * Linked List structure.
@@ -193,6 +208,32 @@ void list_free(LinkedList *h, ...);
  * Frees all the given lists.
  */
 #define list_free(...) list_free(__VA_ARGS__, NULL)
+
+/* ITERATOR */
+typedef struct LinkedListIterator {
+#ifdef LINKED_LIST_IMPL
+        LLNode
+#else
+        void
+#endif
+        *next, *prev;
+        u16 data_size;
+} LinkedListIterator;
+
+/*
+ * Create an iterator of the given list.
+ * CAUTION:
+ * DO NOT use this iterator after the original list has been freed.
+ * */
+LinkedListIterator list_iterator(LinkedList *list);
+LinkedListIterator list_iterator_from_back(LinkedList *list);
+
+void* list_it_next(LinkedListIterator *it, void *dst);
+void* list_it_prev(LinkedListIterator *it, void *dst);
+void* list_it_peek_next(LinkedListIterator *it, void *dst);
+void* list_it_peek_prev(LinkedListIterator *it, void *dst);
+bool list_it_has_next(LinkedListIterator *it);
+bool list_it_has_prev(LinkedListIterator *it);
 
 #ifdef __cplusplus
 }

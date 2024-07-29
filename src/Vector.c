@@ -574,3 +574,62 @@ void vector_reset(Vector *vector){
         vector->n_elements = 0;
         vector->capacity = VECTOR_DEFAULT_SIZE;
 }
+
+/* ITERATOR */
+
+VectorIterator vector_iterator(Vector *vector) {
+        return (VectorIterator) {
+                .vector = vector,
+                .next = 0,
+                .prev = -1
+        };
+}
+
+VectorIterator vector_iterator_from_back(Vector *vector) {
+        return (VectorIterator) {
+                .vector = vector,
+                .prev = vector->n_elements > 0 ? vector->n_elements - 1 : 0,
+                .next = -1,
+        };
+}
+
+void* vector_it_next(VectorIterator *it, void *dst) {
+        assert(it && dst);
+        if ((size_t)it->next >= it->vector->n_elements)
+                return NULL;
+        it->prev = it->next;
+        it->next++;
+        return vector_at(it->vector, it->prev, dst);
+}
+
+void* vector_it_prev(VectorIterator *it, void *dst) {
+        assert(it && dst);
+        if (it->prev < 0)
+                return NULL;
+        it->next = it->prev;
+        it->prev--;
+        return vector_at(it->vector, it->next, dst);
+}
+
+void* vector_it_peek_next(VectorIterator *it, void *dst) {
+        assert(it && dst);
+        return vector_at(it->vector, it->next, dst);
+}
+
+void* vector_it_peek_prev(VectorIterator *it, void *dst) {
+        assert(it && dst);
+        if (it->prev < 0)
+                return NULL;
+        return vector_at(it->vector, it->prev, dst);
+}
+
+bool vector_it_has_next(VectorIterator *it) {
+        assert(it);
+        return (size_t)it->next < it->vector->n_elements;
+}
+
+bool vector_it_has_prev(VectorIterator *it) {
+        assert(it);
+        return it->prev >= 0;
+}
+

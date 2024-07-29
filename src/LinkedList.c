@@ -2,22 +2,13 @@
  * LinkedList.c - Doubly Linked List implementation.
  * Author: Saúl Valdelvira (2023)
  */
+#define LINKED_LIST_IMPL
 #include "LinkedList.h"
 #include <stdlib.h>
 #include "./util/error.h"
-#include "./util/definitions.h"
 #include <string.h>
 #include <stdarg.h>
 #include <assert.h>
-
-/*
- * Node of a Linked List
-*/
-typedef struct LLNode {
-        struct LLNode *next;
-        struct LLNode *prev;
-        byte info[];
-}LLNode;
 
 struct LinkedList {
         LLNode *head;   ///< Head node
@@ -407,3 +398,64 @@ void list_clear(LinkedList *list){
         list->tail = NULL;
         list->n_elements = 0;
 }
+
+/* ITERATOR  */
+
+inline LinkedListIterator list_iterator(LinkedList *list) {
+        assert(list);
+        return (LinkedListIterator){
+                .next = list->head,
+                .data_size = list->data_size,
+        };
+}
+
+inline LinkedListIterator list_iterator_from_back(LinkedList *list) {
+        assert(list);
+        return (LinkedListIterator){
+                .prev = list->tail,
+                .data_size = list->data_size,
+        };
+}
+
+void* list_it_next(LinkedListIterator *it, void *dst) {
+        assert(it && dst);
+        if (it->next) {
+                it->prev = it->next;
+                it->next = it->next->next;
+                return memcpy(dst, it->prev->info, it->data_size);
+        }
+        return NULL;
+}
+
+void* list_it_prev(LinkedListIterator *it, void *dst) {
+        assert(it && dst);
+        if (it->prev) {
+                it->next = it->prev;
+                it->prev = it->prev->prev;
+                return memcpy(dst, it->next->info, it->data_size);
+        }
+        return NULL;
+}
+
+inline void* list_it_peek_next(LinkedListIterator *it, void *dst) {
+        assert(it && dst);
+        return it->next ?
+                memcpy(dst, it->next->info, it->data_size) : NULL;
+}
+
+inline void* list_it_peek_prev(LinkedListIterator *it, void *dst) {
+        assert(it && dst);
+        return it->prev ?
+                memcpy(dst, it->prev->info, it->data_size) : NULL;
+}
+
+inline bool list_it_has_next(LinkedListIterator *it) {
+        assert(it);
+        return it->next;
+}
+
+inline bool list_it_has_prev(LinkedListIterator *it) {
+        assert(it);
+        return it->prev;
+}
+

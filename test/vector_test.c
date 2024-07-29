@@ -269,6 +269,59 @@ void resize_test(void) {
         test_ok();
 }
 
+void iterator(void) {
+        const int N = 1024;
+	Vector *v = vector_init(sizeof(int), compare_int);
+
+	for (int i = 0; i < N; i++)
+		vector_append(v, &i);
+
+        VectorIterator it = vector_iterator(v);
+        assert(!vector_it_has_prev(&it));
+        assert(vector_it_has_next(&it));
+        int tmp;
+        assert(vector_it_prev(&it, &tmp) == NULL);
+        for (int i = 0; i < N; i++) {
+                assert(vector_it_has_next(&it));
+                vector_it_peek_next(&it, &tmp);
+                assert(tmp == i);
+                vector_it_next(&it, &tmp);
+                assert(tmp == i);
+
+                assert(vector_it_has_prev(&it));
+                vector_it_peek_prev(&it, &tmp);
+                assert(tmp == i);
+        }
+        assert(vector_it_has_prev(&it));
+        assert(!vector_it_has_next(&it));
+        assert(vector_it_next(&it, &tmp) == NULL);
+        assert(vector_it_prev(&it, &tmp) != NULL);
+        assert(tmp == N - 1);
+
+        it = vector_iterator_from_back(v);
+        assert(vector_it_has_prev(&it));
+        assert(!vector_it_has_next(&it));
+        assert(vector_it_next(&it, &tmp) == NULL);
+        for (int i = N - 1; i >= 0; i--) {
+                assert(vector_it_has_prev(&it));
+                vector_it_peek_prev(&it, &tmp);
+                assert(tmp == i);
+                vector_it_prev(&it, &tmp);
+                assert(tmp == i);
+
+                assert(vector_it_has_next(&it));
+                vector_it_peek_next(&it, &tmp);
+                assert(tmp == i);
+        }
+        assert(!vector_it_has_prev(&it));
+        assert(vector_it_has_next(&it));
+        assert(vector_it_prev(&it, &tmp) == NULL);
+        assert(vector_it_next(&it, &tmp) != NULL);
+        assert(tmp == 0);
+
+	vector_free(v);
+}
+
 int main(void){
         int n = 2400;
 	int tmp;
@@ -381,6 +434,7 @@ int main(void){
         string_test();
         index_test();
         resize_test();
+        iterator();
 
 	test_end("Vector.c");
 }

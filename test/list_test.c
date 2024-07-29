@@ -1,5 +1,6 @@
 #include "../src/LinkedList.h"
 #include "test.h"
+#include <stdio.h>
 
 void joins_test(void){
 	LinkedList *l1 = list_init(sizeof(int), compare_int);
@@ -55,6 +56,59 @@ void remove_back_and_front(void){
         list_pop_back(list, NULL);
         assert(list_get_front(list, &tmpdest) == NULL);
         list_free(list);
+}
+
+void iterator(void) {
+        const int N = 1024;
+	LinkedList *l = list_init(sizeof(int), compare_int);
+
+	for (int i = 0; i < N; i++)
+		list_append(l, &i);
+
+        LinkedListIterator it = list_iterator(l);
+        assert(!list_it_has_prev(&it));
+        assert(list_it_has_next(&it));
+        int tmp;
+        assert(list_it_prev(&it, &tmp) == NULL);
+        for (int i = 0; i < N; i++) {
+                assert(list_it_has_next(&it));
+                list_it_peek_next(&it, &tmp);
+                assert(tmp == i);
+                list_it_next(&it, &tmp);
+                assert(tmp == i);
+
+                assert(list_it_has_prev(&it));
+                list_it_peek_prev(&it, &tmp);
+                assert(tmp == i);
+        }
+        assert(list_it_has_prev(&it));
+        assert(!list_it_has_next(&it));
+        assert(list_it_next(&it, &tmp) == NULL);
+        assert(list_it_prev(&it, &tmp) != NULL);
+        assert(tmp == N - 1);
+
+        it = list_iterator_from_back(l);
+        assert(list_it_has_prev(&it));
+        assert(!list_it_has_next(&it));
+        assert(list_it_next(&it, &tmp) == NULL);
+        for (int i = N - 1; i >= 0; i--) {
+                assert(list_it_has_prev(&it));
+                list_it_peek_prev(&it, &tmp);
+                assert(tmp == i);
+                list_it_prev(&it, &tmp);
+                assert(tmp == i);
+
+                assert(list_it_has_next(&it));
+                list_it_peek_next(&it, &tmp);
+                assert(tmp == i);
+        }
+        assert(!list_it_has_prev(&it));
+        assert(list_it_has_next(&it));
+        assert(list_it_prev(&it, &tmp) == NULL);
+        assert(list_it_next(&it, &tmp) != NULL);
+        assert(tmp == 0);
+
+	list_free(l);
 }
 
 int main(void){
@@ -134,7 +188,7 @@ int main(void){
         remove_back_and_front();
 	joins_test();
 	destructor_test();
-
+        iterator();
 
 	test_end("LinkedList.c");
 	return 0;
