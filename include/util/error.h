@@ -33,21 +33,11 @@ extern "C" {
  * Prints to stderr a descriptive message of the given error code.
 */
 #define gds_print_error_msg(errcode) do {\
-                        fprintf(stderr, "[GDS] ");\
-                        switch (errcode){\
-                        case INDEX_BOUNDS_ERROR:\
-                                fprintf(stderr, "Index out ouf bounds."); break;\
-                        case ELEMENT_NOT_FOUND_ERROR:\
-                                fprintf(stderr, "Element not found."); break;\
-                        case REPEATED_ELEMENT_ERROR:\
-                                fprintf(stderr, "Repeated element."); break;\
-                        case INVALID_PARAMETER_ERROR:\
-                                fprintf(stderr, "Invalid parameter."); break;\
-                        default:\
-                                fprintf(stderr, "Unknow error code: %d.", errcode); break;\
-                        }\
+                        fprintf(stderr, "[GDS] %s", gds_get_error_msg(errcode));\
                         fprintf(stderr, " In %s, line %d (%s)\n", __FILE_NAME__, __LINE__, __func__);\
                 }while (0)
+
+const char* gds_get_error_msg(int error_code);
 
 #ifdef __cplusplus
 }
