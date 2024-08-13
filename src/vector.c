@@ -19,6 +19,7 @@
 #ifndef VECTOR_GROW_FACTOR
 #define VECTOR_GROW_FACTOR 2
 #endif
+static_assert(VECTOR_GROW_FACTOR > 1, "VECTOR_GROW_FACTOR must be > 1");
 
 struct vector {
         size_t n_elements;                      ///< Number of elements in the vector
