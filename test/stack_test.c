@@ -1,4 +1,4 @@
-#include "../src/Stack.h"
+#include "../include/Stack.h"
 #include "test.h"
 
 void destructor_test(void){

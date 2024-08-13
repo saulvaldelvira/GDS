@@ -1,5 +1,5 @@
 #include "test.h"
-#include "../src/Vector.h"
+#include "../include/Vector.h"
 #include <string.h>
 
 void assert_index(Vector *v, int i, int val){

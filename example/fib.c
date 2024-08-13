@@ -12,7 +12,7 @@
  *   8
  *   13
  */
-#include "../src/Vector.h"
+#include "../include/Vector.h"
 #include <stdio.h>
 #include <stdlib.h> // atoi
 

@@ -1,5 +1,5 @@
 #include "test.h"
-#include "../src/Heap.h"
+#include "../include/Heap.h"
 
 void change_priority(void){
 	test_step("Change Priority");

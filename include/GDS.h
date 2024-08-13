@@ -23,7 +23,6 @@ extern "C" {
 #include "Vector.h"
 
 #include "util/compare.h"
-#include "util/definitions.h"
 #include "util/error.h"
 #include "util/hash.h"
 

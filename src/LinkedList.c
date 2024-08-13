@@ -2,13 +2,14 @@
  * LinkedList.c - Doubly Linked List implementation.
  * Author: Saúl Valdelvira (2023)
  */
-#define LINKED_LIST_IMPL
-#include "LinkedList.h"
 #include <stdlib.h>
-#include "./util/error.h"
 #include <string.h>
 #include <stdarg.h>
 #include <assert.h>
+#include "./util/error.h"
+#include "util/definitions.h"
+#define LINKED_LIST_IMPL
+#include "LinkedList.h"
 
 struct LinkedList {
         LLNode *head;   ///< Head node

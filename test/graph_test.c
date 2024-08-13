@@ -1,5 +1,5 @@
 #include "test.h"
-#include "../src/Graph.h"
+#include "../include/Graph.h"
 
 void dijkstra_test(void){
 	Graph *g = graph_init(sizeof(char) , compare_char);

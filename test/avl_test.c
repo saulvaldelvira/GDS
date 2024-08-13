@@ -1,5 +1,6 @@
 #include "test.h"
-#include "../src/AVLTree.h"
+#include "../include/AVLTree.h"
+#include "../src/util/definitions.h"
 
 void print_preord(AVLTree *tree){
 	void *preord = avl_preorder(tree);

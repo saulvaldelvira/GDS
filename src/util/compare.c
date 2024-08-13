@@ -2,10 +2,10 @@
  * compare.c - Functions to compare common data types.
  * Author: Saúl Valdelvira (2023)
  */
-#include "compare.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
+#include "util/compare.h"
 
 // COMPARATORS
 int compare_int(const void *e_1, const void *e_2){

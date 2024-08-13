@@ -9,7 +9,7 @@ TESTFILES = $(wildcard test/*)
 EXAMPLES = $(wildcard example/*.c)
 
 CC = cc
-CCFLAGS += -Wall -Wextra -pedantic -std=c99 -Wstrict-prototypes -g -fPIC -O3
+CCFLAGS += -Wall -Wextra -pedantic -std=c99 -Wstrict-prototypes -I./include -g -fPIC -O3
 
 AR = ar
 ARFLAGS = rcs
@@ -27,13 +27,14 @@ libs: $(OFILES) | $(BIN)/
 install: $(BIN)/libGDS.so $(BIN)/libGDS-static.a
 	  @ echo " INSTALL $(INSTALL_PATH)/lib/libGDS.so"
 	  @ echo " INSTALL $(INSTALL_PATH)/lib/libGDS-static.a"
-	  @ install -d $(INSTALL_PATH)/lib
-	  @ install -m 644 $(BIN)/libGDS* $(INSTALL_PATH)/lib
+	  @ mkdir -p -m 755 $(INSTALL_PATH)/lib
+	  @ cp $(BIN)/libGDS* $(INSTALL_PATH)/lib
+	  @ chmod 644 $(INSTALL_PATH)/lib/libGDS*
 	  @ echo " INSTALL $(INSTALL_PATH)/include/GDS/"
-	  @ install -d $(INSTALL_PATH)/include/GDS
-	  @ install -d $(INSTALL_PATH)/include/GDS/util
-	  @ install -m 644 $(SRC)/*.h $(INSTALL_PATH)/include/GDS
-	  @ install -m 644 $(SRC)/util/*.h $(INSTALL_PATH)/include/GDS/util
+	  @ mkdir -p -m 755 $(INSTALL_PATH)/include
+	  @ cp -r include $(INSTALL_PATH)/include/GDS
+	  @ chmod -R 644 $(INSTALL_PATH)/include/GDS
+	  @ find $(INSTALL_PATH)/include/GDS -type d -exec chmod 755 {} \;
 
 $(BIN)/libGDS.so $(BIN)/libGDS-static.a:
 	@ $(MAKE) --no-print-directory libs
@@ -75,6 +76,11 @@ doxygen: ./doxygen/
 
 %/:
 	@ mkdir $@
+
+clangd:
+	@ echo -e \
+		"CompileFlags: \n" \
+		"Add: [ -I$(shell pwd)/include/ , -xc ]" > .clangd
 
 clean:
 	@ rm -f $(OFILES)

@@ -1,4 +1,4 @@
-#include "../src/Queue.h"
+#include "../include/Queue.h"
 #include "test.h"
 
 void destructor_test(void){

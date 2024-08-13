@@ -10,10 +10,10 @@
 extern "C" {
 #endif
 
+#include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
 #include "./util/compare.h"
-#include "util/definitions.h"
 
 #ifdef LINKED_LIST_IMPL
 
@@ -217,7 +217,7 @@ typedef struct LinkedListIterator {
         void
 #endif
         *next, *prev;
-        u16 data_size;
+        uint16_t data_size;
 } LinkedListIterator;
 
 /*

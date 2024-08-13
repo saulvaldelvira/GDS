@@ -14,7 +14,6 @@ extern "C" {
 #include <stdbool.h>
 #include <stdint.h>
 #include "./util/compare.h"
-#include "./util/definitions.h"
 
 typedef struct Graph Graph;
 
@@ -130,7 +129,7 @@ bool graph_isempty(Graph *graph);
 typedef struct {
         float     *D;     ///< Array of weights
         ptrdiff_t *P;     ///< Array of pivots
-        u32 n_elements;   ///< Number of elements in the D and P arrays
+        uint32_t  n_elements;   ///< Number of elements in the D and P arrays
         int status;       ///< Return status of the algorithm
 } DijkstraData_t;
 
@@ -159,7 +158,7 @@ void graph_free_dijkstra_data(DijkstraData_t *data);
 typedef struct {
         float     **A;   ///< Weights matrix
         ptrdiff_t **P;   ///< Pivots matrix
-        u32 n_elements;  ///< Dimension of the D and P matrices
+        uint32_t   n_elements;  ///< Dimension of the D and P matrices
         int status;      ///< Return status of the algorithm
 } FloydData_t;
 
@@ -179,9 +178,9 @@ void graph_free_floyd_data(FloydData_t *data);
 
 /// Represents the Degree of a vertex
 typedef struct {
-        u16 deg_in;   ///< Degree in the vertex
-        u16 deg_out;  ///< Degree out the vertex
-        i16 status;   ///< return status of the algorithm
+        uint16_t deg_in;   ///< Degree in the vertex
+        uint16_t deg_out;  ///< Degree out the vertex
+        int16_t  status;   ///< return status of the algorithm
 } graph_degree;
 
 /**

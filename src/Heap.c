@@ -2,13 +2,14 @@
  * Heap.c - Binary Heap implementation.
  * Author: Saúl Valdelvira (2023)
  */
-#include "Heap.h"
-#include "./util/error.h"
-#include "./Vector.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
 #include <assert.h>
+#include "Heap.h"
+#include "./util/error.h"
+#include "./Vector.h"
+#include "util/definitions.h"
 
 struct Heap {
         Vector *elements;       ///< Vector to hold the elements of the heap

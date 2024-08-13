@@ -1,5 +1,5 @@
 #include "test.h"
-#include "../src/util/compare.h"
+#include "../include/util/compare.h"
 
 #define cmpi(a,b) compare_unsigned_int(&(unsigned int){a}, &(unsigned int){b})
 #define cmpl(a,b) compare_unsigned_long(&(unsigned long){a}, &(unsigned long){b})

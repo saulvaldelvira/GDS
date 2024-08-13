@@ -1,4 +1,4 @@
-#include "../src/Dictionary.h"
+#include "../include/Dictionary.h"
 #include "test.h"
 #include <stdio.h>
 #include <stdlib.h>

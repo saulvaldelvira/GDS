@@ -12,7 +12,7 @@
  *      67 93 56 11 42 29 73
  *      21 19 84 37 98 24 15
 */
-#include "../src/Vector.h"
+#include "../include/Vector.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
