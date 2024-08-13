@@ -47,7 +47,7 @@ void destructor_test(void){
 	avl_set_destructor(avl, destroy_ptr);
 	for (int i = 0; i < 1024; i++){
 		int *ptr = malloc(sizeof(int));
-		assert(avl_add(avl, &ptr) == SUCCESS);
+		assert(avl_add(avl, &ptr) == GDS_SUCCESS);
 	}
 	avl_free(avl);
 }

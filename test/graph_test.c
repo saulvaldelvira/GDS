@@ -1,3 +1,4 @@
+#include "error.h"
 #include "test.h"
 #include "../include/graph.h"
 
@@ -55,7 +56,7 @@ void dijkstra_test(void){
 	graph_free_dijkstra_data(&dijkstra);
 
 	dijkstra = graph_dijkstra(g, &(char){'F'});
-	assert(dijkstra.status == ELEMENT_NOT_FOUND_ERROR);
+	assert(dijkstra.status == GDS_ELEMENT_NOT_FOUND_ERROR);
 	graph_free_dijkstra_data(&dijkstra);
 
 	graph_free(g);
@@ -86,7 +87,7 @@ void floyd_test(void){
 	assert(graph_add_edge(g, &f, &d, 2.0f));
 
 	FloydData_t floyd = graph_floyd(g);
-	assert(floyd.status == SUCCESS);
+	assert(floyd.status == GDS_SUCCESS);
 	graph_free_floyd_data(&floyd);
 	graph_free(g);
 }
@@ -136,7 +137,7 @@ void traverse_bf(void){
 	graph_add_edge(graph, &d, &f, 1.0f);
 	graph_add_edge(graph, &f, &g, 1.0f);
 	graph_traversal result = graph_traverse_BF(graph, &a);
-	assert(result.status == SUCCESS);
+	assert(result.status == GDS_SUCCESS);
 
 	char expected[] = {'A', 'B', 'D', 'E', 'F', 'C', 'G'};
 	assert_array_char(result.elements, expected, result.elements_size);
@@ -214,7 +215,7 @@ void eccentricity_test(void){
 	graph_add_edge(g, &c, &b, 5.0f);
 	assert(graph_eccentricity(g, &b) == 8.0f);
 
-	assert(graph_eccentricity(g, &(char){'J'}) == ELEMENT_NOT_FOUND_ERROR * 1.0f);
+	assert(graph_eccentricity(g, &(char){'J'}) == GDS_ELEMENT_NOT_FOUND_ERROR * 1.0f);
 
 	graph_add_vertex(g, &e);
 	graph_add_edge(g, &b, &e, 2.0f);
@@ -228,7 +229,7 @@ void destructor_test(void){
 	graph_set_destructor(g, destroy_ptr);
 	for (int i = 0; i < 1024; i++){
 		int *ptr = malloc(sizeof(int));
-		assert(graph_add_vertex(g, &ptr) == SUCCESS);
+		assert(graph_add_vertex(g, &ptr) == GDS_SUCCESS);
 	}
 	graph_free(g);
 }

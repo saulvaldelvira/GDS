@@ -26,7 +26,7 @@ void destructor_test(void){
 	int *ptr;
 	for (int i = 0; i < 1024; i++){
 		ptr = malloc(sizeof(int));
-		assert(list_append(list, &ptr) == SUCCESS);
+		assert(list_append(list, &ptr) == GDS_SUCCESS);
 	}
 
 	int *ptr2 = malloc(sizeof(int));

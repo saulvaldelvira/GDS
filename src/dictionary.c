@@ -107,21 +107,21 @@ static int __init_dict(dictionary_t *dict, size_t key_size, size_t value_size, h
         dict->destructor = NULL;
         dict->vec_elements = vector_init(sizeof(dictionary_tNode), compare_equal);
         if (!dict->vec_elements){
-                return ERROR;
+                return GDS_ERROR;
         }
         vector_resize(dict->vec_elements, capacity, init_node);
         dict->n_elements = 0;
         dict->hash = hash_func;
         dict->redispersion = DICT_DEF_REDISPERSION;
         dict->prev_vec_size = get_prev_prime(capacity);
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 dictionary_t* dict_with_capacity(size_t key_size, size_t value_size, hash_function_t hash_func, size_t capacity) {
         assert(hash_func && key_size > 0 && value_size > 0);
         dictionary_t *dict = malloc(sizeof(*dict));
         if (!dict) return NULL;
-        if ( __init_dict(dict, key_size, value_size, hash_func, capacity) != SUCCESS) {
+        if ( __init_dict(dict, key_size, value_size, hash_func, capacity) != GDS_SUCCESS) {
                 free(dict);
                 return NULL;
         }
@@ -146,7 +146,7 @@ int dict_configure(dictionary_t *dict, enum Redispersion redispersion, double mi
                 max = dict->max_lf;
 
         if (min >= max)
-                return INVALID_PARAMETER_ERROR;
+                return GDS_INVALID_PARAMETER_ERROR;
 
         dict->min_lf = min;
         dict->max_lf = max;
@@ -156,7 +156,7 @@ int dict_configure(dictionary_t *dict, enum Redispersion redispersion, double mi
         if (hash_func)
                 dict->hash = hash_func;
 
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 void dict_set_destructor(dictionary_t *dict, destructor_function_t value_destructor){
@@ -190,7 +190,7 @@ static int dict_redisperse(dictionary_t *dict, size_t new_size){
                 vector_at(dict->vec_elements, i, &node);
                 if (node.state == FULL) {
                         int status = dict_put(&d, node.key, node.value);
-                        if (status != SUCCESS) {
+                        if (status != GDS_SUCCESS) {
                                 dict_free(&d);
                                 return status;
                         }
@@ -200,7 +200,7 @@ static int dict_redisperse(dictionary_t *dict, size_t new_size){
 
         dict_free_contents(dict);
         memcpy(dict, &d, sizeof(dictionary_t));
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 //// PUT //////////////////////////////////////////////////////////////////////
@@ -251,13 +251,13 @@ int dict_put(dictionary_t *dict, void *key, void *value){
         if (!node.key){
                 node.key = malloc(dict->key_size);
                 if (!node.key)
-                        return ERROR;
+                        return GDS_ERROR;
         }
         if (!node.value){
                 node.value = malloc(dict->value_size);
                 if (!node.value){
                         free(node.key);
-                        return ERROR;
+                        return GDS_ERROR;
                 }
         }
 
@@ -280,10 +280,10 @@ int dict_put(dictionary_t *dict, void *key, void *value){
         if (LF(dict->n_elements, VEC_SIZE(dict)) >= dict->max_lf){
                 size_t new_size = get_next_prime(VEC_SIZE(dict) * 2);
                 int status = dict_redisperse(dict, new_size);
-                if (status != SUCCESS)
+                if (status != GDS_SUCCESS)
                         return status;
         }
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 //// GET_EXISTS ///////////////////////////////////////////////////////////////
@@ -331,7 +331,7 @@ vector_t* dict_keys(dictionary_t *dict) {
                 dictionary_tNode node;
                 vector_at(dict->vec_elements, i, &node);
                 if (node.state == FULL) {
-                        if (vector_append(v, node.key) != SUCCESS) {
+                        if (vector_append(v, node.key) != GDS_SUCCESS) {
                                 vector_free(v);
                                 return NULL;
                         }
@@ -355,14 +355,14 @@ static int __delete_node(dictionary_t *dict, size_t pos, bool redispersion, bool
         vector_set_at(dict->vec_elements, pos, &node);
         dict->n_elements--;
         if (!redispersion)
-                return SUCCESS;
+                return GDS_SUCCESS;
         if (dict->min_lf > 0 && LF(dict->n_elements, VEC_SIZE(dict)) <= dict->min_lf){
                 size_t new_size = get_prev_prime(VEC_SIZE(dict) / 2);
                 int status = dict_redisperse(dict, new_size);
-                if (status != SUCCESS)
+                if (status != GDS_SUCCESS)
                         return status;
         }
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 int dict_remove(dictionary_t *dict, void *key){
@@ -379,7 +379,7 @@ int dict_remove(dictionary_t *dict, void *key){
                 }
                 else if (node.state == EMPTY) break;
         }
-        return ELEMENT_NOT_FOUND_ERROR;
+        return GDS_ELEMENT_NOT_FOUND_ERROR;
 }
 
 //// FREE //////////////////////////////////////////////////////////////////////

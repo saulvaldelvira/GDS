@@ -66,7 +66,7 @@ static queue_tNode* queue_init_node(void *element, size_t size){
 int queue_enqueue(queue_t *queue, void *element){
         assert(queue && element);
         queue_tNode *node = queue_init_node(element, queue->data_size);
-        if (!node) return ERROR;
+        if (!node) return GDS_ERROR;
         if (!queue->head){
                 queue->head = node;
                 queue->tail = node;
@@ -75,18 +75,18 @@ int queue_enqueue(queue_t *queue, void *element){
                 queue->tail = queue->tail->next;
         }
         queue->n_elements++;
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 int queue_enqueue_array(queue_t *queue, void *array, size_t array_length){
         assert(queue && array);
         while (array_length-- > 0){
                 int status = queue_enqueue(queue, array);
-                if (status != SUCCESS)
+                if (status != GDS_SUCCESS)
                         return status;
                 array = void_offset(array, queue->data_size);
         }
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -112,7 +112,7 @@ int queue_dequeue_array(queue_t *queue, void *array, size_t array_length){
                         break;
                 array = void_offset(array, queue->data_size);
         }
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -144,12 +144,12 @@ int queue_remove(queue_t *queue, void *element){
         while (*aux != NULL && queue->compare((*aux)->info, element) != 0)
                 aux = &(*aux)->next;
         if (!*aux)
-                return ELEMENT_NOT_FOUND_ERROR;
+                return GDS_ELEMENT_NOT_FOUND_ERROR;
         queue_tNode *del = *aux;
         *aux = (*aux)->next;
         free(del);
         queue->n_elements--;
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 size_t queue_size(queue_t *queue){

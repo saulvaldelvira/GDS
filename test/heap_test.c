@@ -7,7 +7,7 @@ void change_priority(void){
 	int elements[] = {12 ,14, 15, 20, 16, 17, 19, 24, 30};
 	heap_add_array(min, elements, 9);
 
-	assert(heap_change_priority(min, &(int){-78}, &(int){90}) != SUCCESS);
+	assert(heap_change_priority(min, &(int){-78}, &(int){90}) != GDS_SUCCESS);
 
 	// Change priority of 20 to 5
 	assert(heap_change_priority(min, &elements[3], &(int){5}));
@@ -140,7 +140,7 @@ void destructor_test(void){
 	heap_set_destructor(heap, destroy_ptr);
 	for (int i = 0; i < 1024; i++){
 		int *ptr = malloc(sizeof(int));
-		assert(heap_add(heap, &ptr) == SUCCESS);
+		assert(heap_add(heap, &ptr) == GDS_SUCCESS);
 	}
 	heap_free(heap);
 }

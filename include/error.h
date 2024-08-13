@@ -11,12 +11,14 @@ extern "C" {
 #endif
 
 // Error codes
-#define SUCCESS                  1
-#define ERROR                    0
-#define INDEX_BOUNDS_ERROR      -0xE001
-#define ELEMENT_NOT_FOUND_ERROR -0xE002
-#define REPEATED_ELEMENT_ERROR  -0xE003
-#define INVALID_PARAMETER_ERROR -0xE004
+enum gds_return_t {
+        GDS_SUCCESS = 1,
+        GDS_ERROR = 0,
+        GDS_INDEX_BOUNDS_ERROR = -0xE001,
+        GDS_ELEMENT_NOT_FOUND_ERROR = -0xE002,
+        GDS_REPEATED_ELEMENT_ERROR  = -0xE003,
+        GDS_INVALID_PARAMETER_ERROR = -0xE004,
+};
 
 // If it's not already defined, define a macro for the base name of the file
 // Example: If __FILE__ is "/path/to/proyect/main.c" __FILE_NAME__ is "main.c"

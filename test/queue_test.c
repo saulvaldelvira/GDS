@@ -6,7 +6,7 @@ void destructor_test(void){
 	queue_set_destructor(queue, destroy_ptr);
 	for (int i = 0; i < 1024; i++){
 		int *ptr = malloc(sizeof(int));
-		assert(queue_enqueue(queue, &ptr) == SUCCESS);
+		assert(queue_enqueue(queue, &ptr) == GDS_SUCCESS);
 	}
 	queue_free(queue);
 }

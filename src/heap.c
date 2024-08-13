@@ -107,10 +107,10 @@ static void filter_down(vector_t *list, size_t pos){
 int heap_add(heap_t *heap, void *element){
         assert(heap && element);
         int status = vector_append(heap->elements, element);
-        if (status != SUCCESS)
+        if (status != GDS_SUCCESS)
                 return status;
         filter_up(heap->elements, vector_size(heap->elements)-1);
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 int heap_add_array(heap_t *heap, void *array, size_t array_length){
@@ -134,12 +134,12 @@ int heap_add_array(heap_t *heap, void *array, size_t array_length){
                 size_t data_size = vector_get_data_size(heap->elements);
                 while (array_length-- > 0){
                         int status = heap_add(heap, array);
-                        if (status != SUCCESS)
+                        if (status != GDS_SUCCESS)
                                 return status;
                         array = void_offset(array, data_size);
                 }
         }
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 void* heap_pop_min(heap_t *heap, void *dest){
@@ -148,7 +148,7 @@ void* heap_pop_min(heap_t *heap, void *dest){
         if (dest != NULL){
                 size_t last_pos = vector_size(heap->elements) - 1;
                 int status = vector_swap(heap->elements, 0, last_pos);
-                if (status != SUCCESS)
+                if (status != GDS_SUCCESS)
                         return NULL;
                 vector_pop_back(heap->elements, NULL);
                 filter_down(heap->elements, 0);
@@ -164,7 +164,7 @@ int heap_change_priority(heap_t *heap, void *element, void *replacement){
                 return pos;
         // Replace with new priority
         int status = vector_set_at(heap->elements, pos, replacement);
-        if (status != SUCCESS)
+        if (status != GDS_SUCCESS)
                 return status;
         // Filter (if necessary)
         comparator_function_t comp_func = vector_get_comparator(heap->elements);
@@ -173,7 +173,7 @@ int heap_change_priority(heap_t *heap, void *element, void *replacement){
                 filter_up(heap->elements, pos);
         else if (c < 0)
                 filter_down(heap->elements, pos);
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -207,12 +207,12 @@ int heap_remove(heap_t *heap, void *element){
                 return index;
         size_t n_elements = vector_size(heap->elements) - 1;
         int status = vector_swap(heap->elements, index, n_elements);
-        if (status != SUCCESS){
+        if (status != GDS_SUCCESS){
                 return status;
         }
         vector_pop_back(heap->elements, NULL);
         filter_down(heap->elements, index);
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 bool heap_exists(heap_t *heap, void *element){

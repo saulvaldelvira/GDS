@@ -67,34 +67,34 @@ int list_append(linked_list_t *list, void *element){
                         &list->head           : // Add to head
                         &list->tail->next;  // Else add to the tail
         *ref = list_init_node(element, list->data_size);
-        if (!*ref) return ERROR;
+        if (!*ref) return GDS_ERROR;
         (*ref)->prev = list->tail;
         list->tail = *ref;
         list->n_elements++;
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 int list_append_array(linked_list_t *list, void *array, size_t array_length){
         assert(list && array);
         while (array_length-- > 0){
                 int status = list_append(list, array);
-                if (status != SUCCESS)
+                if (status != GDS_SUCCESS)
                         return status;
                 array = void_offset(array, list->data_size);
         }
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 int list_push_front(linked_list_t *list, void *element){
         assert(list && element);
         LLNode *old_head = list->head;
         list->head = list_init_node(element, list->data_size);
-        if (!list->head) return ERROR;
+        if (!list->head) return GDS_ERROR;
         list->head->next = old_head;
         if (old_head)
                 old_head->prev = list->head;
         list->n_elements++;
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 int list_push_front_array(linked_list_t *list, void *array, size_t array_length){
@@ -103,11 +103,11 @@ int list_push_front_array(linked_list_t *list, void *array, size_t array_length)
         while (array_length-- > 0){
                 int status;
                 status = list_push_front(list, tmp);
-                if (status != SUCCESS)
+                if (status != GDS_SUCCESS)
                         return status;
                 tmp = void_offset(tmp, list->data_size);
         }
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 int list_set(linked_list_t *list, void *element, void *replacement){
@@ -116,12 +116,12 @@ int list_set(linked_list_t *list, void *element, void *replacement){
         while (list->compare(aux->info, element) != 0){
                 aux = aux->next;
                 if(aux == NULL)
-                        return ELEMENT_NOT_FOUND_ERROR;
+                        return GDS_ELEMENT_NOT_FOUND_ERROR;
         }
         if (list->destructor)
                 list->destructor(aux->info);
         memcpy(aux->info, replacement, list->data_size);
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -204,17 +204,17 @@ int list_remove(linked_list_t *list, void *element){
                                 list->destructor(tmp->info);
                         free(tmp);
                         list->n_elements--;
-                        return SUCCESS;
+                        return GDS_SUCCESS;
                 }
                 tmp = tmp->next;
         }
-        return ELEMENT_NOT_FOUND_ERROR;
+        return GDS_ELEMENT_NOT_FOUND_ERROR;
 }
 
 int list_remove_front(linked_list_t *list){
         assert(list);
         if (list->head == NULL)
-                return SUCCESS;
+                return GDS_SUCCESS;
         LLNode *del = list->head;
         if (list->tail == list->head)
                 list->tail = NULL;
@@ -223,13 +223,13 @@ int list_remove_front(linked_list_t *list){
                 list->destructor(del->info);
         free(del);
         list->n_elements--;
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 int list_remove_back(linked_list_t *list){
         assert(list);
         if (list->tail == NULL)
-                return SUCCESS;
+                return GDS_SUCCESS;
         LLNode *del = list->tail;
         if (list->tail == list->head)
                 list->head = NULL;
@@ -238,7 +238,7 @@ int list_remove_back(linked_list_t *list){
                 list->destructor(del->info);
         free(del);
         list->n_elements--;
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 int list_remove_array(linked_list_t *list, void *array, size_t array_length){
@@ -247,7 +247,7 @@ int list_remove_array(linked_list_t *list, void *array, size_t array_length){
                 list_remove(list, array);
                 array = void_offset(array, list->data_size);
         }
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 void* list_pop(linked_list_t *list, void *element, void *dest){

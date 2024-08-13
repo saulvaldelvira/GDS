@@ -77,14 +77,14 @@ static int check_and_transform_index(ptrdiff_t *index_1, ptrdiff_t *index_2, siz
         if (*index_1 < 0)
                 *index_1 = n_elements + *index_1;
         if ((size_t)*index_1 >= n_elements)
-                return INDEX_BOUNDS_ERROR;
+                return GDS_INDEX_BOUNDS_ERROR;
         if (index_2 == NULL)
-                return SUCCESS;
+                return GDS_SUCCESS;
         if (*index_2 < 0)
                 *index_2 = n_elements + *index_2;
         if ((size_t)*index_2 >= n_elements)
-                return INDEX_BOUNDS_ERROR;
-        return SUCCESS;
+                return GDS_INDEX_BOUNDS_ERROR;
+        return GDS_SUCCESS;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -94,10 +94,10 @@ static int check_and_transform_index(ptrdiff_t *index_1, ptrdiff_t *index_2, siz
 static int resize_buffer(vector_t *vector, size_t new_size){
         assert(vector->n_elements <= new_size);
         void *ptr = realloc(vector->elements, new_size * vector->data_size);
-        if (!ptr) return ERROR;
+        if (!ptr) return GDS_ERROR;
         vector->elements = ptr;
         vector->capacity = new_size;
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 int vector_append(vector_t *vector, void *element){
@@ -112,15 +112,15 @@ int vector_push_front(vector_t *vector, void *element){
 int vector_insert_array(vector_t *vector, ptrdiff_t index, void *array, size_t array_length){
         assert(vector && array);
         if (vector->capacity - vector->n_elements < array_length){
-                if (resize_buffer(vector, vector->capacity + array_length) == ERROR)
-                        return ERROR;
+                if (resize_buffer(vector, vector->capacity + array_length) == GDS_ERROR)
+                        return GDS_ERROR;
         }
         if (index >= 0 && (size_t)index == vector->n_elements){
                 void *dst = void_offset(vector->elements, vector->n_elements * vector->data_size);
                 memcpy(dst, array, array_length * vector->data_size);
         }else {
                 int status = check_and_transform_index(&index, NULL, vector->n_elements);
-                if (status != SUCCESS)
+                if (status != GDS_SUCCESS)
                         return status;
                 size_t n_elements_to_move = vector->n_elements - index;
                 void *dst = void_offset(vector->elements, (index + array_length) * vector->data_size);
@@ -129,7 +129,7 @@ int vector_insert_array(vector_t *vector, ptrdiff_t index, void *array, size_t a
                 memcpy(src, array, array_length * vector->data_size);
         }
         vector->n_elements += array_length;
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 int vector_append_array(vector_t *vector, void *array, size_t array_length){
@@ -144,13 +144,13 @@ int vector_push_front_array(vector_t *vector, void *array, size_t array_length){
 int vector_set_at(vector_t *vector, ptrdiff_t index, void *replacement){
         assert(vector && replacement);
         int status = check_and_transform_index(&index, NULL, vector->n_elements);
-        if (status != SUCCESS)
+        if (status != GDS_SUCCESS)
                 return status;
         void *tmp = void_offset(vector->elements, index * vector->data_size);
         if (vector->destructor)
                 vector->destructor(tmp);
         memmove(tmp, replacement, vector->data_size);
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 int vector_set(vector_t *vector, void *element, void *replacement){
@@ -158,7 +158,7 @@ int vector_set(vector_t *vector, void *element, void *replacement){
         ptrdiff_t index = vector_indexof(vector, element);
         if (index < 0) return index;
         vector_set_at(vector, index, replacement);
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 int vector_insert(vector_t *vector, void *element, void *insert){
@@ -172,15 +172,15 @@ int vector_insert(vector_t *vector, void *element, void *insert){
 int vector_insert_at(vector_t *vector, ptrdiff_t index, void *element){
         assert(vector && element);
         if (vector->n_elements == vector->capacity){
-                if (resize_buffer(vector, vector->capacity * VECTOR_GROW_FACTOR) == ERROR)
-                        return ERROR;
+                if (resize_buffer(vector, vector->capacity * VECTOR_GROW_FACTOR) == GDS_ERROR)
+                        return GDS_ERROR;
         }
         if (index >= 0 && (size_t)index == vector->n_elements){
                 void *dst = void_offset(vector->elements, vector->n_elements * vector->data_size);
                 memcpy(dst, element, vector->data_size);
         }else {
                 int status = check_and_transform_index(&index, NULL, vector->n_elements);
-                if (status != SUCCESS)
+                if (status != GDS_SUCCESS)
                         return status;
                 void *src = void_offset(vector->elements, index * vector->data_size);
                 void *dst = void_offset(vector->elements, (index + 1) * vector->data_size);
@@ -189,7 +189,7 @@ int vector_insert_at(vector_t *vector, ptrdiff_t index, void *element){
                 memcpy(src, element, vector->data_size); // Insert the element
         }
         vector->n_elements++;
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 void vector_map(vector_t *vector, void (*func) (void *,void*), void *args){
@@ -236,7 +236,7 @@ void* vector_reduce(vector_t *vector, void (*func) (const void*,void*), void *de
 int vector_remove_at(vector_t *vector, ptrdiff_t index){
         assert(vector);
         int status = check_and_transform_index(&index, NULL, vector->n_elements);
-        if (status != SUCCESS)
+        if (status != GDS_SUCCESS)
                 return status;
         void *remove = void_offset(vector->elements, index * vector->data_size);
         if (vector->destructor)
@@ -247,7 +247,7 @@ int vector_remove_at(vector_t *vector, ptrdiff_t index){
                 memmove(remove, src, leftover);
         }
         vector->n_elements--;
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 int vector_remove(vector_t *vector, void *element){
@@ -261,14 +261,14 @@ int vector_remove(vector_t *vector, void *element){
 int vector_remove_front(vector_t *vector){
         assert(vector);
         if (vector->n_elements == 0)
-                return SUCCESS;
+                return GDS_SUCCESS;
         return vector_remove_at(vector, 0);
 }
 
 int vector_remove_back(vector_t *vector){
         assert(vector);
         if (vector->n_elements == 0)
-                return SUCCESS;
+                return GDS_SUCCESS;
         return vector_remove_at(vector, vector->n_elements - 1);
 }
 
@@ -277,16 +277,16 @@ int vector_remove_array(vector_t *vector, void *array, size_t array_length){
         for (size_t i = 0; i < array_length; i++){
                 void *tmp = void_offset(array, i * vector->data_size);
                 int status = vector_remove(vector, tmp);
-                if (status != SUCCESS)
+                if (status != GDS_SUCCESS)
                         return status;
         }
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 void* vector_pop_at(vector_t *vector, ptrdiff_t index, void *dest){
         assert(vector);
         int status = check_and_transform_index(&index, NULL, vector->n_elements);
-        if (status != SUCCESS)
+        if (status != GDS_SUCCESS)
                 return NULL;
         void *remove = void_offset(vector->elements, index * vector->data_size);
         if (dest)
@@ -346,7 +346,7 @@ ptrdiff_t vector_indexof(vector_t *vector, void *element){
                 }
                 ptr = void_offset(ptr, vector->data_size);
         }
-        return ELEMENT_NOT_FOUND_ERROR;
+        return GDS_ELEMENT_NOT_FOUND_ERROR;
 }
 
 bool vector_exists(vector_t *vector, void *element){
@@ -360,7 +360,7 @@ bool vector_isempty(vector_t *vector){
 void* vector_at(vector_t *vector, ptrdiff_t index, void *dest){
         assert(vector && dest);
         int status = check_and_transform_index(&index, NULL, vector->n_elements);
-        if (status != SUCCESS)
+        if (status != GDS_SUCCESS)
                 return NULL;
         void *tmp = void_offset(vector->elements, index * vector->data_size);
         return memcpy(dest, tmp, vector->data_size);
@@ -421,12 +421,12 @@ void* vector_get_array(vector_t *vector, size_t array_length){
 int vector_swap(vector_t *vector, ptrdiff_t index_1, ptrdiff_t index_2){
         assert(vector);
         int status = check_and_transform_index(&index_1, &index_2, vector->n_elements);
-        if (status != SUCCESS)
+        if (status != GDS_SUCCESS)
                 return status;
         void *tmp = malloc(vector->data_size);
         if (!tmp || !vector_at(vector, index_1, tmp)){
                 free(tmp);
-                return ERROR;
+                return GDS_ERROR;
         }
 
         void *e1 = void_offset(vector->elements, index_1 * vector->data_size);
@@ -436,13 +436,13 @@ int vector_swap(vector_t *vector, ptrdiff_t index_1, ptrdiff_t index_2){
         memcpy(e2, tmp, vector->data_size);
 
         free(tmp);
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 int vector_compare(vector_t *vector, ptrdiff_t index_1, ptrdiff_t index_2){
         assert(vector);
         int status = check_and_transform_index(&index_1, &index_2, vector->n_elements);
-        if (status != SUCCESS)
+        if (status != GDS_SUCCESS)
                 return status;
         void *e1 = void_offset(vector->elements, index_1 * vector->data_size);
         void *e2 = void_offset(vector->elements, index_2 * vector->data_size);
@@ -460,19 +460,19 @@ size_t vector_capacity(vector_t *vector){
 int vector_reserve(vector_t *vector, size_t n_elements){
         assert(vector);
         if (vector->capacity < n_elements){
-                if (resize_buffer(vector, n_elements) == ERROR)
-                        return ERROR;
+                if (resize_buffer(vector, n_elements) == GDS_ERROR)
+                        return GDS_ERROR;
         }
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 int vector_resize(vector_t *vector, size_t n_elements, constructor_function_t constructor){
         assert(vector);
-        if (n_elements == vector->n_elements) return SUCCESS;
+        if (n_elements == vector->n_elements) return GDS_SUCCESS;
 
         if (vector->capacity < n_elements){
-                if (resize_buffer(vector, n_elements) == ERROR)
-                        return ERROR;
+                if (resize_buffer(vector, n_elements) == GDS_ERROR)
+                        return GDS_ERROR;
         }
 
         #define foreach(start,end,f) \
@@ -489,7 +489,7 @@ int vector_resize(vector_t *vector, size_t n_elements, constructor_function_t co
                 foreach(n_elements, vector->n_elements, vector->destructor);
         }
         vector->n_elements = n_elements;
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 int vector_shrink(vector_t *vector){
@@ -511,12 +511,12 @@ vector_t* vector_join(vector_t *vector_1, vector_t *vector_2){
         vector_t *vector_joint = vector_init(vector_1->data_size, vector_1->compare);
 
         int status = vector_append_array(vector_joint, vector_1->elements, vector_1->n_elements);
-        if (status != SUCCESS){
+        if (status != GDS_SUCCESS){
                 vector_free(vector_joint);
                 return NULL;
         }
         status = vector_append_array(vector_joint, vector_2->elements, vector_2->n_elements);
-        if (status != SUCCESS){
+        if (status != GDS_SUCCESS){
                 vector_free(vector_joint);
                 return NULL;
         }

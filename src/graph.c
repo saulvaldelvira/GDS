@@ -35,7 +35,7 @@ static int expand_memory(graph_t *graph, size_t new_size){
                 free(vertices);
                 free(weights);
                 free(edges);
-                return ERROR;
+                return GDS_ERROR;
         }
 
         if (graph->vertices)
@@ -53,7 +53,7 @@ static int expand_memory(graph_t *graph, size_t new_size){
                         free(vertices);
                         free(weights);
                         free(edges);
-                        return ERROR;
+                        return GDS_ERROR;
                 }
 
                 if (i < graph->max_elements){
@@ -75,7 +75,7 @@ static int expand_memory(graph_t *graph, size_t new_size){
         graph->weights = weights;
         graph->edges = edges;
         graph->max_elements = new_size;
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 graph_t* graph_init(size_t data_size, comparator_function_t cmp){
@@ -90,7 +90,7 @@ graph_t* graph_init(size_t data_size, comparator_function_t cmp){
         graph->edges = NULL;
         graph->vertices = NULL;
         graph->data_size = data_size;
-        if (expand_memory(graph, GRAPH_DEFAULT_SIZE) == ERROR){
+        if (expand_memory(graph, GRAPH_DEFAULT_SIZE) == GDS_ERROR){
                 free(graph);
                 return NULL;
         }
@@ -114,7 +114,7 @@ int graph_fill(graph_t *graph, void *array_vertices,
         assert(graph && array_vertices && array_sources && array_targets && array_weights);
         graph_add_vertices_array(graph, array_vertices, vertices_length);
         graph_add_edges_array(graph, array_sources, array_targets, array_weights, edges_length);
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -123,8 +123,8 @@ int graph_fill(graph_t *graph, void *array_vertices,
 int graph_add_vertex(graph_t *graph, void *vertex){
         assert(graph && vertex);
         if (graph->n_elements == graph->max_elements){
-                if (expand_memory(graph, graph->max_elements * 2) == ERROR)
-                        return ERROR;
+                if (expand_memory(graph, graph->max_elements * 2) == GDS_ERROR)
+                        return GDS_ERROR;
         }
         void *tmp = void_offset(graph->vertices, graph->n_elements * graph->data_size);
         memcpy(tmp, vertex, graph->data_size);
@@ -137,19 +137,19 @@ int graph_add_vertex(graph_t *graph, void *vertex){
                 graph->weights[graph->n_elements][i] = INFINITY;
         }
         graph->n_elements++;
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 int graph_add_vertices_array(graph_t *graph, void *array, size_t array_length){
         assert(graph && array);
         while (array_length-- > 0){
                 int status = graph_add_vertex(graph, array);
-                if (status != SUCCESS){
+                if (status != GDS_SUCCESS){
                         return status;
                 }
                 array = void_offset(array, graph->data_size);
         }
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 int graph_remove_vertex(graph_t *graph, void *vertex){
@@ -159,7 +159,7 @@ int graph_remove_vertex(graph_t *graph, void *vertex){
                 return index;
         graph->n_elements--;
         if ((size_t)index == graph->n_elements)
-                return SUCCESS;
+                return GDS_SUCCESS;
         void *target = void_offset(graph->vertices, index * graph->data_size);
         void *source = void_offset(graph->vertices, graph->n_elements * graph->data_size);
         memmove(target, source, graph->data_size);
@@ -176,7 +176,7 @@ int graph_remove_vertex(graph_t *graph, void *vertex){
                 graph->edges[i][index] = graph->edges[i][graph->n_elements];
                 graph->weights[i][index] = graph->weights[i][graph->n_elements];
         }
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 int graph_remove_vertices_array(graph_t *graph, void *array, size_t array_length){
@@ -185,7 +185,7 @@ int graph_remove_vertices_array(graph_t *graph, void *array, size_t array_length
                 graph_remove_vertex(graph, array);
                 array = void_offset(array, graph->data_size);
         }
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 bool graph_exists_vertex(graph_t *graph, void *vertex){
@@ -213,21 +213,21 @@ int graph_add_edge(graph_t *graph, void *source, void *target, float weight){
                 return index_dst;
         graph->edges[index_src][index_dst] = 1;
         graph->weights[index_src][index_dst] = weight;
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 int graph_add_edges_array(graph_t *graph, void *array_sources, void *array_targets, float *array_weights, size_t arrays_length){
         assert(graph && array_sources && array_targets && array_weights);
         while (arrays_length-- > 0){
                 int status = graph_add_edge(graph, array_sources, array_targets, *array_weights);
-                if (status != SUCCESS){
+                if (status != GDS_SUCCESS){
                         return status;
                 }
                 array_sources = void_offset(array_sources, graph->data_size);
                 array_targets = void_offset(array_targets, graph->data_size);
                 array_weights++;
         }
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 int graph_remove_edge(graph_t *graph, void *source, void *target){
@@ -240,7 +240,7 @@ int graph_remove_edge(graph_t *graph, void *source, void *target){
                 return index_dst;
         graph->edges[index_src][index_dst] = 0;
         graph->weights[index_src][index_dst] = INFINITY;
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 int graph_remove_edges_array(graph_t *graph, void *array_sources, void *array_targets, size_t arrays_length){
@@ -250,7 +250,7 @@ int graph_remove_edges_array(graph_t *graph, void *array_sources, void *array_ta
                 array_sources = void_offset(array_sources, graph->data_size);
                 array_targets = void_offset(array_targets, graph->data_size);
         }
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 void* graph_vertex_at(graph_t *graph, ptrdiff_t index, void *dest){
@@ -298,7 +298,7 @@ ptrdiff_t graph_indexof(graph_t *graph, void *vertex){
                         return i;
                 tmp = void_offset(tmp, graph->data_size);
         }
-        return ELEMENT_NOT_FOUND_ERROR;
+        return GDS_ELEMENT_NOT_FOUND_ERROR;
 }
 
 /// DIJKSTRA //////////////////////////////////////////////////////////////////
@@ -312,7 +312,7 @@ static void graph_init_dijkstra(DijkstraData_t *dijkstra, graph_t *graph, size_t
         if (!dijkstra->D || !dijkstra->P){
                 free(dijkstra->D);
                 free(dijkstra->P);
-                dijkstra->status = ERROR;
+                dijkstra->status = GDS_ERROR;
                 return;
         }
 
@@ -329,7 +329,7 @@ static void graph_init_dijkstra(DijkstraData_t *dijkstra, graph_t *graph, size_t
         dijkstra->D[source] = 0.0f;
         dijkstra->P[source] = source;
         dijkstra->n_elements = graph->n_elements;
-        dijkstra->status = SUCCESS;
+        dijkstra->status = GDS_SUCCESS;
 }
 
 /**
@@ -353,7 +353,7 @@ static ptrdiff_t graph_get_pivot(uint8_t *S, float *D, size_t n_elements){
 
 DijkstraData_t graph_dijkstra(graph_t *graph, void *source){
         assert(graph && source);
-        DijkstraData_t dijkstra = {.D = NULL, .P = NULL, .n_elements = 0, .status = SUCCESS};
+        DijkstraData_t dijkstra = {.D = NULL, .P = NULL, .n_elements = 0, .status = GDS_SUCCESS};
         ptrdiff_t source_index = graph_indexof(graph, source);
         if (source_index < 0){
                 dijkstra.status = source_index;
@@ -361,18 +361,18 @@ DijkstraData_t graph_dijkstra(graph_t *graph, void *source){
         }
 
         graph_init_dijkstra(&dijkstra, graph, source_index);
-        if (dijkstra.status != SUCCESS) return dijkstra;
+        if (dijkstra.status != GDS_SUCCESS) return dijkstra;
 
         uint8_t *S = calloc(graph->n_elements, sizeof(*S));
         if (!S){
                 free(dijkstra.D);
                 free(dijkstra.P);
-                dijkstra.status = ERROR;
+                dijkstra.status = GDS_ERROR;
                 return dijkstra;
         }
 
         if ((size_t)source_index >= graph->n_elements){
-                dijkstra.status = INDEX_BOUNDS_ERROR;
+                dijkstra.status = GDS_INDEX_BOUNDS_ERROR;
                 free(dijkstra.D);
                 free(dijkstra.P);
                 free(S);
@@ -418,7 +418,7 @@ static void graph_init_floyd(FloydData_t *floyd, graph_t *graph){
         if (!floyd->A || !floyd->P){
                 free(floyd->A);
                 free(floyd->P);
-                floyd->status = ERROR;
+                floyd->status = GDS_ERROR;
                 return;
         }
 
@@ -432,7 +432,7 @@ static void graph_init_floyd(FloydData_t *floyd, graph_t *graph){
                         }
                         free(floyd->A);
                         free(floyd->P);
-                        floyd->status = ERROR;
+                        floyd->status = GDS_ERROR;
                         return;
                 }
 
@@ -443,14 +443,14 @@ static void graph_init_floyd(FloydData_t *floyd, graph_t *graph){
                 floyd->A[i][i] = 0.0f;
         }
         floyd->n_elements = graph->n_elements;
-        floyd->status = SUCCESS;
+        floyd->status = GDS_SUCCESS;
 }
 
 FloydData_t graph_floyd(graph_t *graph){
         assert(graph);
-        FloydData_t floyd = {.A = NULL, .P = NULL, .n_elements = 0, .status = SUCCESS};
+        FloydData_t floyd = {.A = NULL, .P = NULL, .n_elements = 0, .status = GDS_SUCCESS};
         graph_init_floyd(&floyd, graph);
-        if (floyd.status != SUCCESS) return floyd;
+        if (floyd.status != GDS_SUCCESS) return floyd;
         for (size_t pivot = 0; pivot < graph->n_elements; pivot++){
                 for (size_t i = 0; i < graph->n_elements; i++){
                         for (size_t j = 0; j < graph->n_elements; j++){
@@ -482,7 +482,7 @@ void graph_free_floyd_data(FloydData_t *data){
 
 graph_degree graph_get_degree(graph_t *graph, void *vertex){
         assert(graph && vertex);
-        graph_degree degree = {0, 0, SUCCESS};
+        graph_degree degree = {0, 0, GDS_SUCCESS};
         ptrdiff_t index = graph_indexof(graph, vertex);
         if (index < 0){
                 degree.status = index;
@@ -501,7 +501,7 @@ graph_degree graph_get_degree(graph_t *graph, void *vertex){
 
 bool graph_is_source_vertex(graph_t *graph, void *vertex){
         graph_degree degree = graph_get_degree(graph, vertex);
-        if (degree.status != SUCCESS){
+        if (degree.status != GDS_SUCCESS){
                 return false;
         }
         return degree.deg_in == 0 && degree.deg_out > 0;
@@ -509,7 +509,7 @@ bool graph_is_source_vertex(graph_t *graph, void *vertex){
 
 bool graph_is_drain_vertex(graph_t *graph, void *vertex){
         graph_degree degree = graph_get_degree(graph, vertex);
-        if (degree.status != SUCCESS){
+        if (degree.status != GDS_SUCCESS){
                 return false;
         }
         return degree.deg_out == 0 && degree.deg_in > 0;
@@ -517,7 +517,7 @@ bool graph_is_drain_vertex(graph_t *graph, void *vertex){
 
 bool graph_is_isolated_vertex(graph_t *graph, void *vertex){
         graph_degree degree = graph_get_degree(graph, vertex);
-        if (degree.status != SUCCESS){
+        if (degree.status != GDS_SUCCESS){
                 return false;
         }
         return (degree.deg_in + degree.deg_out) == 0;
@@ -555,17 +555,17 @@ static int traverse_df_rec(graph_traversal *data, size_t index, uint8_t *visited
         for (size_t i = 0; i < graph->n_elements; i++){
                 if (visited[i] == 0 && graph->edges[index][i] == 1){
                         s = traverse_df_rec(data, i, visited, graph);
-                        if (s != SUCCESS){
+                        if (s != GDS_SUCCESS){
                                 return s;
                         }
                 }
         }
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 graph_traversal graph_traverse_DF(graph_t *graph, void *vertex){
         assert(graph);
-        graph_traversal df = {NULL, 0, SUCCESS};
+        graph_traversal df = {NULL, 0, GDS_SUCCESS};
         ptrdiff_t index = graph_indexof(graph, vertex);
         if (index < 0){
                 df.status = index;
@@ -578,12 +578,12 @@ graph_traversal graph_traverse_DF(graph_t *graph, void *vertex){
         if (!visited){
                 free(df.elements);
                 df.elements = NULL;
-                df.status = ERROR;
+                df.status = GDS_ERROR;
                 return df;
         }
 
         int s = traverse_df_rec(&df, index, visited, graph);
-        if (s != SUCCESS){
+        if (s != GDS_SUCCESS){
                 free(visited);
                 free(df.elements);
                 df.status = s;
@@ -596,7 +596,7 @@ graph_traversal graph_traverse_DF(graph_t *graph, void *vertex){
 
 graph_traversal graph_traverse_BF(graph_t *graph, void *vertex){
         assert(graph);
-        graph_traversal bf = {NULL, 0, SUCCESS};
+        graph_traversal bf = {NULL, 0, GDS_SUCCESS};
         // Get index of the starting vertex
         ptrdiff_t index = graph_indexof(graph, vertex);
         if (index < 0){
@@ -613,7 +613,7 @@ graph_traversal graph_traverse_BF(graph_t *graph, void *vertex){
                 free(visited);
                 free(bf.elements);
                 bf.elements = NULL;
-                bf.status = ERROR;
+                bf.status = GDS_ERROR;
                 return bf;
         }
 

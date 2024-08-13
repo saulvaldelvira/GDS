@@ -6,7 +6,7 @@ void destructor_test(void){
 	stack_set_destructor(stack, destroy_ptr);
 	for (int i = 0; i < 1024; i++){
 		int *ptr = malloc(sizeof(int));
-		assert(stack_push(stack, &ptr) == SUCCESS);
+		assert(stack_push(stack, &ptr) == GDS_SUCCESS);
 	}
 	stack_free(stack);
 }

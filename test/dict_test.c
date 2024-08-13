@@ -29,7 +29,7 @@ void brute(void){
         assert(dic);
         for (int i = 0; i < n; i++){
                 int s = dict_put(dic, &i, &i);
-                assert(s == SUCCESS);
+                assert(s == GDS_SUCCESS);
         }
         int tmp;
         for (int i = 0; i < n; i++){
@@ -71,11 +71,11 @@ void random_test(void){
                 int v = values[i];
                 exp[i] = k;
                 exp2[i] = v;
-                assert(dict_put(dic, &k, &v) == SUCCESS);
+                assert(dict_put(dic, &k, &v) == GDS_SUCCESS);
         }
         int tmp;
         for (int i = 0; i < n; i++){
-                assert(dict_exists(dic, &exp[i]) == SUCCESS);
+                assert(dict_exists(dic, &exp[i]) == GDS_SUCCESS);
                 assert(dict_get(dic, &exp[i], &tmp) != NULL);
                 assert(tmp == exp2[i]);
         }
@@ -144,7 +144,7 @@ void struct_test(void){
         strcpy(p.name, "alejandro");
 
         dictionary_t *d = dict_init(sizeof(struct key), sizeof(struct person), hash_structs);
-        assert(dict_put(d, &k, &p) == SUCCESS);
+        assert(dict_put(d, &k, &p) == GDS_SUCCESS);
         assert(dict_exists(d, &k));
         struct person per;
         assert(dict_get(d, &k, &per));

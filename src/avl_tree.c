@@ -181,7 +181,7 @@ struct add_rec_ret{
 static struct add_rec_ret add_rec(AVLNode *node, void *element, comparator_function_t cmp, size_t size){
         if (node == NULL){
                 AVLNode *aux = init_node(element, size);
-                return (struct add_rec_ret){aux, aux ? SUCCESS : ERROR};
+                return (struct add_rec_ret){aux, aux ? GDS_SUCCESS : GDS_ERROR};
         }
         struct add_rec_ret ret;
         int c = (*cmp) (element, node->info);
@@ -192,7 +192,7 @@ static struct add_rec_ret add_rec(AVLNode *node, void *element, comparator_funct
                 ret = add_rec(node->left, element, cmp, size);
                 node->left = ret.node;
         }else{
-                return (struct add_rec_ret){node, REPEATED_ELEMENT_ERROR};
+                return (struct add_rec_ret){node, GDS_REPEATED_ELEMENT_ERROR};
         }
         node = update_bf(node);
         ret.node = node;
@@ -202,23 +202,23 @@ static struct add_rec_ret add_rec(AVLNode *node, void *element, comparator_funct
 int avl_add(avl_t *tree, void *element){
         assert(tree && element);
         struct add_rec_ret ret = add_rec(tree->root, element, tree->compare, tree->data_size);
-        if (ret.status != SUCCESS)
+        if (ret.status != GDS_SUCCESS)
                 return ret.status;
         tree->root = ret.node;
         tree->n_elements++;
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 int avl_add_array(avl_t *tree, void *array, size_t array_length){
         assert(tree && array);
         while (array_length-- > 0){
                 int status = avl_add(tree, array);
-                if (status != SUCCESS){
+                if (status != GDS_SUCCESS){
                         return status;
                 }
                 array = void_offset(array, tree->data_size);
         }
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -264,7 +264,7 @@ struct remove_rec_ret {
 */
 static struct remove_rec_ret remove_rec(AVLNode *node, void *element, comparator_function_t cmp, size_t size){
         if (node == NULL)
-                return (struct remove_rec_ret){NULL, ELEMENT_NOT_FOUND_ERROR};
+                return (struct remove_rec_ret){NULL, GDS_ELEMENT_NOT_FOUND_ERROR};
         int c = (*cmp) (element, node->info);
         struct remove_rec_ret ret;
         if (c > 0){
@@ -274,7 +274,7 @@ static struct remove_rec_ret remove_rec(AVLNode *node, void *element, comparator
                 ret = remove_rec(node->left, element, cmp, size);
                 node->left = ret.node;
         }else {
-                ret.status = SUCCESS;
+                ret.status = GDS_SUCCESS;
                 AVLNode *aux = node;
                 if (node->left == NULL){
                         node = node->right;
@@ -297,7 +297,7 @@ static struct remove_rec_ret remove_rec(AVLNode *node, void *element, comparator
 int avl_remove(avl_t *tree, void *element){
         assert(tree && element);
         struct remove_rec_ret ret = remove_rec(tree->root, element, tree->compare, tree->data_size);
-        if (ret.status == SUCCESS){
+        if (ret.status == GDS_SUCCESS){
                 tree->root = ret.node;
                 tree->n_elements--;
         }
@@ -310,7 +310,7 @@ int avl_remove_array(avl_t *tree, void *array, size_t array_length){
                 avl_remove(tree, array);
                 array = void_offset(array, tree->data_size);
         }
-        return SUCCESS;
+        return GDS_SUCCESS;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -400,17 +400,17 @@ static struct traversal_ret traversal_rec(AVLNode *node, enum Traversal order, s
                 return (struct traversal_ret){
                         .elements = NULL,
                         .elements_size = 0,
-                        .status = SUCCESS
+                        .status = GDS_SUCCESS
                 };
         }
 
         struct traversal_ret left = traversal_rec(node->left, order, size);
         struct traversal_ret right = traversal_rec(node->right, order, size);
-        struct traversal_ret result = {.status = SUCCESS};
+        struct traversal_ret result = {.status = GDS_SUCCESS};
 
         // If the tarversals from the right returned with error statuses, propagate it.
-        if(left.status != SUCCESS || right.status != SUCCESS){
-                result.status = left.status != SUCCESS ? left.status : right.status;
+        if(left.status != GDS_SUCCESS || right.status != GDS_SUCCESS){
+                result.status = left.status != GDS_SUCCESS ? left.status : right.status;
                 goto cleanup;
         }
 
@@ -419,7 +419,7 @@ static struct traversal_ret traversal_rec(AVLNode *node, enum Traversal order, s
         result.elements_size = left.elements_size + right.elements_size + 1;
         result.elements = malloc(result.elements_size * size);
         if (!result.elements){
-                result.status = ERROR;
+                result.status = GDS_ERROR;
                 goto cleanup;
         }
 
@@ -483,7 +483,7 @@ avl_t* avl_join(avl_t *tree_1, avl_t *tree_2){
         if (tmp != NULL){
                 status = avl_add_array(tree_joint, tmp, tree_1->n_elements);
                 free(tmp);
-                if (status != SUCCESS){
+                if (status != GDS_SUCCESS){
                         free(tree_joint);
                         return NULL;
                 }
@@ -493,7 +493,7 @@ avl_t* avl_join(avl_t *tree_1, avl_t *tree_2){
         if (tmp != NULL){
                 status = avl_add_array(tree_joint, tmp, tree_2->n_elements);
                 free(tmp);
-                if (status != SUCCESS){
+                if (status != GDS_SUCCESS){
                         free(tree_joint);
                         return NULL;
                 }

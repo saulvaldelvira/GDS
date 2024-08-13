@@ -1,3 +1,4 @@
+#include "error.h"
 #include "test.h"
 #include "../include/vector.h"
 #include <string.h>
@@ -50,7 +51,7 @@ void destructor_test(void){
 	vector_set_destructor(vector, destroy_ptr);
 	for (int i = 0; i < 1024; i++){
 		int *ptr = malloc(sizeof(int));
-		assert(vector_append(vector, &ptr) == SUCCESS);
+		assert(vector_append(vector, &ptr) == GDS_SUCCESS);
 	}
 
 	/* Replacing an element is like removing it
@@ -344,7 +345,7 @@ int main(void){
 	assert(!vector_isempty(vec));
 	assert(n-1 == * (int*) vector_back(vec, &tmp));
 	assert(0 == * (int*) vector_front(vec, &tmp));
-	assert(vector_indexof(vec, &(int){-20}) == ELEMENT_NOT_FOUND_ERROR);
+	assert(vector_indexof(vec, &(int){-20}) == GDS_ELEMENT_NOT_FOUND_ERROR);
 
 	assert(vector_indexof(vec, &(int){30}) == (size_t) 30);
 
@@ -387,7 +388,7 @@ int main(void){
 
 	assert(2 == * (int*) vector_at(vec, 0, &tmp));
 
-	assert(vector_set(vec, &(int){2}, &(int){3}) != ELEMENT_NOT_FOUND_ERROR);
+	assert(vector_set(vec, &(int){2}, &(int){3}) != GDS_ELEMENT_NOT_FOUND_ERROR);
 	assert(3 == * (int*) vector_at(vec, 0, &tmp));
 	/////////////////////////////////////////////////////
         vector_clear(vec);
@@ -397,10 +398,10 @@ int main(void){
 
 	// Negative indexing
 	assert(5 == * (int*) vector_at(vec, -1, &tmp));
-	assert(SUCCESS == vector_set_at(vec, -2, &(int){-123}));
+	assert(GDS_SUCCESS == vector_set_at(vec, -2, &(int){-123}));
 	assert(-123 == * (int*) vector_at(vec, -2, &tmp));
-	assert(SUCCESS == vector_set_at(vec, -2, &(int){4}));
-	assert(SUCCESS != vector_set_at(vec, -50, &(int){-50}));
+	assert(GDS_SUCCESS == vector_set_at(vec, -2, &(int){4}));
+	assert(GDS_SUCCESS != vector_set_at(vec, -50, &(int){-50}));
 	assert(NULL == vector_at(vec, -12, &tmp));
 
 	assert(vector_insert_at(vec, 1, &(int){120}));
