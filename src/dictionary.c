@@ -3,10 +3,10 @@
  * Author: Saúl Valdelvira (2023)
  */
 #include "dictionary.h"
-#include "./util/error.h"
-#include "./util/definitions.h"
+#include "error.h"
+#include "definitions.h"
 #include "vector.h"
-#include "util/compare.h"
+#include "compare.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>

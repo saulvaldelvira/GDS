@@ -12,7 +12,7 @@ extern "C" {
 
 #include <stddef.h>
 #include <stdbool.h>
-#include "./util/compare.h"
+#include "compare.h"
 
 /**
  * The stack_t works in a similar way to a linked_list. But in this case, the elements are allways added in the head.

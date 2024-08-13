@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
-#include "util/compare.h"
+#include "compare.h"
 
 // COMPARATORS
 int compare_int(const void *e_1, const void *e_2){

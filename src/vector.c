@@ -5,9 +5,9 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "./util/error.h"
-#include "./util/definitions.h"
-#include "util/compare.h"
+#include "error.h"
+#include "definitions.h"
+#include "compare.h"
 #include <string.h>
 #include <stdarg.h>
 #include "vector.h"

@@ -77,7 +77,7 @@ int main(void){
 }
 
 /**
- * $ gcc destructors.c ../src/vector.c ../src/util/compare.c -o destructors
+ * $ gcc destructors.c ../src/vector.c ../src/compare.c -o destructors
  * $ valgrind destructors
  * Output:
  *      HEAP SUMMARY:

@@ -22,9 +22,9 @@ extern "C" {
 #include "stack.h"
 #include "vector.h"
 
-#include "util/compare.h"
-#include "util/error.h"
-#include "util/hash.h"
+#include "compare.h"
+#include "error.h"
+#include "hash.h"
 
 #ifdef __cplusplus
 }

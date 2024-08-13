@@ -1,4 +1,4 @@
-#include "util/error.h"
+#include "error.h"
 
 const char* gds_get_error_msg(int error_code) {
         switch (error_code){

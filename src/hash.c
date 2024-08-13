@@ -2,7 +2,7 @@
  * hash.c - Implements functions to hash common data types.
  * Author: Saúl Valdelvira (2023)
  */
-#include "util/hash.h"
+#include "hash.h"
 
 int64_t hash_int(const void *arg){
         return (int64_t) * (int*) arg;

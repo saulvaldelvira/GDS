@@ -12,7 +12,7 @@ extern "C" {
 
 #include <stdbool.h>
 #include <stddef.h>
-#include "./util/compare.h"
+#include "compare.h"
 
 /**
  * The queue_t works in a similar way to a linked_list. But in this case, the elements are removed from the head.

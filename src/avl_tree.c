@@ -3,8 +3,8 @@
  * Author: Saúl Valdelvira (2023)
  */
 #include "avl_tree.h"
-#include "./util/error.h"
-#include "./util/definitions.h"
+#include "error.h"
+#include "definitions.h"
 #include <stdint.h>
 #include <stdlib.h> // malloc
 #include <string.h> // memcpy

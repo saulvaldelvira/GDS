@@ -1,8 +1,8 @@
 /* Silly demo program for the dictionary.
    Track people's age by their name.
 
-   $ gcc dict_demo.c ../src/dictionary.c ../src/util/hash.c \
-         ../src/vector.c ../src/util/compare.c -o dict_demo
+   $ gcc dict_demo.c ../src/dictionary.c ../src/hash.c \
+         ../src/vector.c ../src/compare.c -o dict_demo
    $ ./dict_demo
    */
 #include <stdio.h>

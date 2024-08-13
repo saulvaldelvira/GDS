@@ -13,7 +13,7 @@ extern "C" {
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
-#include "./util/compare.h"
+#include "compare.h"
 
 #ifdef LINKED_LIST_IMPL
 

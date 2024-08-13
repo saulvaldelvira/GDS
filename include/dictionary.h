@@ -12,8 +12,8 @@ extern "C" {
 
 #include <stddef.h>
 #include <stdbool.h>
-#include "./util/hash.h"
-#include "./util/compare.h"
+#include "hash.h"
+#include "compare.h"
 #include "vector.h"
 
 typedef struct dictionary_t dictionary_t;

@@ -2,7 +2,7 @@
  * Prints the fibonacci sequence, using
  * a vector_t to cache the values.
  *
- * $ gcc fib.c ../src/vector.c ../src/util/compare.c -o fib
+ * $ gcc fib.c ../src/vector.c ../src/compare.c -o fib
  * $ ./fib 12
  *   144
  * $ ./fib 3 8

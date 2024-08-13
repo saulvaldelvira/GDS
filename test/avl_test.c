@@ -1,6 +1,6 @@
 #include "test.h"
 #include "../include/avl_tree.h"
-#include "../src/util/definitions.h"
+#include "../src/definitions.h"
 
 void print_preord(avl_t *tree){
 	void *preord = avl_preorder(tree);

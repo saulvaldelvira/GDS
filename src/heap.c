@@ -7,9 +7,9 @@
 #include <stdarg.h>
 #include <assert.h>
 #include "heap.h"
-#include "./util/error.h"
+#include "error.h"
 #include "./vector.h"
-#include "util/definitions.h"
+#include "definitions.h"
 
 struct heap_t {
         vector_t *elements;       ///< vector_t to hold the elements of the heap

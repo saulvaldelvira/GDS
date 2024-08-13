@@ -6,8 +6,8 @@
 #include <string.h>
 #include <stdarg.h>
 #include <assert.h>
-#include "./util/error.h"
-#include "util/definitions.h"
+#include "error.h"
+#include "definitions.h"
 #define LINKED_LIST_IMPL
 #include "linked_list.h"
 

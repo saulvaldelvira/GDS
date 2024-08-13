@@ -5,7 +5,7 @@
 #include "stack.h"
 #include <stdlib.h>
 #include "./vector.h"
-#include "./util/definitions.h"
+#include "definitions.h"
 #include <string.h>
 #include <stdarg.h>
 #include <assert.h>

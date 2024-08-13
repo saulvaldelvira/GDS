@@ -4,8 +4,8 @@
  */
 #include "queue.h"
 #include <stdlib.h>
-#include "./util/error.h"
-#include "./util/definitions.h"
+#include "error.h"
+#include "definitions.h"
 #include <string.h>
 #include <stdarg.h>
 #include <assert.h>

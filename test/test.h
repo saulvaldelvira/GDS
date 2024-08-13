@@ -11,8 +11,8 @@ extern "C" {
 #include <stdbool.h>
 #include <stdint.h>
 #include <time.h>
-#include <util/compare.h>
-#include <util/error.h>
+#include <compare.h>
+#include <error.h>
 
 /*
  * Returns a timestamp of the current time in milliseconds.

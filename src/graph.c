@@ -3,8 +3,8 @@
  * Author: Saúl Valdelvira (2023)
  */
 #include "graph.h"
-#include "./util/error.h"
-#include "./util/definitions.h"
+#include "error.h"
+#include "definitions.h"
 #include <stdlib.h>
 #include <math.h>
 #include <string.h>
