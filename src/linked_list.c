@@ -10,6 +10,7 @@
 #include "definitions.h"
 #define LINKED_LIST_IMPL
 #include "linked_list.h"
+#include "gdsmalloc.h"
 
 struct linked_list_t {
         LLNode *head;   ///< Head node
@@ -24,7 +25,7 @@ struct linked_list_t {
 
 linked_list_t* list_init(size_t data_size, comparator_function_t cmp){
         assert(cmp && data_size > 0);
-        linked_list_t *list = malloc(sizeof(*list));
+        linked_list_t *list = gdsmalloc(sizeof(*list));
         if (!list) return NULL;
         list->n_elements = 0;
         list->head = NULL;
@@ -49,7 +50,7 @@ void list_set_destructor(linked_list_t *list, destructor_function_t destructor){
  * Initializes a new LLNode with the given info
 */
 static LLNode* list_init_node(void *info, size_t size){
-        LLNode *node = malloc(offsetof(LLNode, info) + size);
+        LLNode *node = gdsmalloc(offsetof(LLNode, info) + size);
         if (!node) return NULL;
         node->next = NULL;
         node->prev = NULL;
@@ -172,7 +173,7 @@ void* list_get_array(linked_list_t *list, size_t array_length){
         assert(list);
         if (array_length == 0 || array_length > list->n_elements)
                 array_length = list->n_elements;
-        void *array = malloc(list->data_size * array_length);
+        void *array = gdsmalloc(list->data_size * array_length);
         assert(array);
         if (!list_get_into_array(list, array, array_length)){
                 free(array);

@@ -25,6 +25,14 @@ typedef struct graph_t graph_t;
 graph_t* graph_init(size_t data_size, comparator_function_t cmp);
 
 /**
+ * Initializes an empty graph with the given capacity.
+ * @param data_size size of the data being stored
+ * @param cmp comparator function for two elements on the graph
+ * @param capacity initial capacity of the graph
+*/
+graph_t* graph_with_capacity(size_t data_size, comparator_function_t cmp, size_t capacity);
+
+/**
  * Sets the comparator function of the graph
  * @param cmp the new comparator function
 */

@@ -11,14 +11,15 @@ extern "C" {
 #endif
 
 // Error codes
-enum gds_return_t {
+typedef enum gds_return_t {
         GDS_SUCCESS = 1,
         GDS_ERROR = 0,
         GDS_INDEX_BOUNDS_ERROR = -0xE001,
         GDS_ELEMENT_NOT_FOUND_ERROR = -0xE002,
         GDS_REPEATED_ELEMENT_ERROR  = -0xE003,
         GDS_INVALID_PARAMETER_ERROR = -0xE004,
-};
+        GDS_NOMEM_ERROR = -0xE005,
+} gds_return_t;
 
 // If it's not already defined, define a macro for the base name of the file
 // Example: If __FILE__ is "/path/to/proyect/main.c" __FILE_NAME__ is "main.c"
@@ -40,6 +41,9 @@ enum gds_return_t {
                 }while (0)
 
 const char* gds_get_error_msg(int error_code);
+
+gds_return_t gds_last_error(void);
+const char* gds_last_error_msg(void);
 
 #ifdef __cplusplus
 }

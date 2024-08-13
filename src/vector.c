@@ -12,6 +12,7 @@
 #include <stdarg.h>
 #include "vector.h"
 #include <assert.h>
+#include "gdsmalloc.h"
 
 #define VECTOR_DEFAULT_SIZE 12
 
@@ -30,15 +31,16 @@ struct vector_t {
 
 /// INITIALIZE ////////////////////////////////////////////////////////////////
 
-inline vector_t* vector_init(size_t data_size, comparator_function_t cmp){
+__inline
+vector_t* vector_init(size_t data_size, comparator_function_t cmp){
         return vector_with_capacity(data_size, cmp, VECTOR_DEFAULT_SIZE);
 }
 
 vector_t* vector_with_capacity(size_t data_size, comparator_function_t cmp, size_t capacity) {
         assert(cmp && data_size > 0);
-        vector_t *vector = malloc(sizeof(*vector));
+        vector_t *vector = gdsmalloc(sizeof(*vector));
         if (!vector) return NULL;
-        vector->elements = malloc(capacity * data_size);
+        vector->elements = gdsmalloc(capacity * data_size);
         if (!vector->elements){
                 free(vector);
                 return NULL;
@@ -51,24 +53,29 @@ vector_t* vector_with_capacity(size_t data_size, comparator_function_t cmp, size
         return vector;
 }
 
+__inline
 void vector_set_comparator(vector_t *vector, comparator_function_t cmp){
         if (vector && cmp)
                 vector->compare = cmp;
 }
 
+__inline
 comparator_function_t vector_get_comparator(vector_t *vector){
         return vector ? vector->compare : NULL;
 }
 
+__inline
 void vector_set_destructor(vector_t *vector, destructor_function_t destructor){
         if (vector)
                 vector->destructor = destructor;
 }
 
+__inline
 destructor_function_t vector_get_destructor(vector_t *vector){
         return vector ? vector->destructor : NULL;
 }
 
+__inline
 size_t vector_get_data_size(vector_t *vector){
         return vector ? vector->data_size : 0;
 }
@@ -93,7 +100,7 @@ static int check_and_transform_index(ptrdiff_t *index_1, ptrdiff_t *index_2, siz
 
 static int resize_buffer(vector_t *vector, size_t new_size){
         assert(vector->n_elements <= new_size);
-        void *ptr = realloc(vector->elements, new_size * vector->data_size);
+        void *ptr = gdsrealloc(vector->elements, new_size * vector->data_size);
         if (!ptr) return GDS_ERROR;
         vector->elements = ptr;
         vector->capacity = new_size;
@@ -105,6 +112,7 @@ int vector_append(vector_t *vector, void *element){
         return vector_insert_at(vector, vector->n_elements, element);
 }
 
+__inline
 int vector_push_front(vector_t *vector, void *element){
         return vector_insert_at(vector, 0, element);
 }
@@ -137,6 +145,7 @@ int vector_append_array(vector_t *vector, void *array, size_t array_length){
         return vector_insert_array(vector, vector->n_elements, array, array_length);
 }
 
+__inline
 int vector_push_front_array(vector_t *vector, void *array, size_t array_length){
         return vector_insert_array(vector, 0, array, array_length);
 }
@@ -214,6 +223,7 @@ vector_t* vector_filter(vector_t *vector, bool (*func) (void*)){
         return result;
 }
 
+__inline
 void vector_sort(vector_t *vector){
         if (vector)
                 qsort(vector->elements, vector->n_elements, vector->data_size, vector->compare);
@@ -349,10 +359,12 @@ ptrdiff_t vector_indexof(vector_t *vector, void *element){
         return GDS_ELEMENT_NOT_FOUND_ERROR;
 }
 
+__inline
 bool vector_exists(vector_t *vector, void *element){
         return vector ? vector_indexof(vector, element) >= 0 : false;
 }
 
+__inline
 bool vector_isempty(vector_t *vector){
         return vector ? vector->n_elements == 0 : true;
 }
@@ -403,7 +415,7 @@ void* vector_get_array(vector_t *vector, size_t array_length){
         if (array_length == 0 || array_length > vector->n_elements){
                 array_length = vector->n_elements;
         }
-        void *array = malloc(vector->data_size * array_length);
+        void *array = gdsmalloc(vector->data_size * array_length);
         if (!array){
                 return NULL;
         }
@@ -423,7 +435,7 @@ int vector_swap(vector_t *vector, ptrdiff_t index_1, ptrdiff_t index_2){
         int status = check_and_transform_index(&index_1, &index_2, vector->n_elements);
         if (status != GDS_SUCCESS)
                 return status;
-        void *tmp = malloc(vector->data_size);
+        void *tmp = gdsmalloc(vector->data_size);
         if (!tmp || !vector_at(vector, index_1, tmp)){
                 free(tmp);
                 return GDS_ERROR;
@@ -449,10 +461,12 @@ int vector_compare(vector_t *vector, ptrdiff_t index_1, ptrdiff_t index_2){
         return vector->compare(e1, e2);
 }
 
+__inline
 size_t vector_size(vector_t *vector){
         return vector ? vector->n_elements : 0;
 }
 
+__inline
 size_t vector_capacity(vector_t *vector){
         return vector ? vector->capacity : 0;
 }
@@ -569,7 +583,7 @@ void vector_reset(vector_t *vector){
                 return;
         destroy_content(vector);
         free(vector->elements);
-        vector->elements = malloc(VECTOR_DEFAULT_SIZE * vector->data_size);
+        vector->elements = gdsmalloc(VECTOR_DEFAULT_SIZE * vector->data_size);
         assert(vector->elements);
         vector->n_elements = 0;
         vector->capacity = VECTOR_DEFAULT_SIZE;

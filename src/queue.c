@@ -9,6 +9,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include <assert.h>
+#include "gdsmalloc.h"
 
 typedef struct queue_tNode {
         struct queue_tNode *next;
@@ -29,7 +30,7 @@ struct queue_t {
 queue_t* queue_init(size_t data_size, comparator_function_t cmp){
         assert(cmp && data_size > 0);
         // Allocate queue
-        queue_t *queue = malloc(sizeof(*queue));
+        queue_t *queue = gdsmalloc(sizeof(*queue));
         if (!queue) return NULL;
         // Initialize queue
         queue->head = NULL;
@@ -52,7 +53,7 @@ void queue_set_destructor(queue_t *queue, destructor_function_t destructor){
 }
 
 static queue_tNode* queue_init_node(void *element, size_t size){
-        queue_tNode *node = malloc(offsetof(queue_tNode, info) + size);
+        queue_tNode *node = gdsmalloc(offsetof(queue_tNode, info) + size);
         if (!node) return NULL;
         memcpy(node->info, element, size);
         node->next = NULL;

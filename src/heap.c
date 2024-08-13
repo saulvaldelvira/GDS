@@ -10,6 +10,7 @@
 #include "error.h"
 #include "./vector.h"
 #include "definitions.h"
+#include "gdsmalloc.h"
 
 struct heap_t {
         vector_t *elements;       ///< vector_t to hold the elements of the heap
@@ -19,7 +20,7 @@ struct heap_t {
 
 heap_t* heap_init(size_t data_size, comparator_function_t cmp){
         assert(cmp && data_size > 0);
-        heap_t *heap = malloc(sizeof(*heap));
+        heap_t *heap = gdsmalloc(sizeof(*heap));
         if (!heap) return NULL;
         heap->elements = vector_init(data_size, cmp);
         if (!heap->elements){

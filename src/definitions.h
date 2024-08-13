@@ -20,6 +20,12 @@ typedef int16_t i16;
 
 #define void_offset(ptr, bytes) ((void*)((byte*)ptr + (bytes)))
 
+#ifdef __GNUC__
+#       define __inline inline __attribute__((always_inline))
+#else
+#       define __inline inline
+#endif
+
 #ifdef __cplusplus
 }
 #endif

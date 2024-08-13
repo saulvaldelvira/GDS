@@ -9,6 +9,7 @@
 #include <string.h>
 #include <stdarg.h>
 #include <assert.h>
+#include "gdsmalloc.h"
 
 struct stack_t {
         vector_t *elements;       ///< Elements of the stack_t
@@ -18,7 +19,7 @@ struct stack_t {
 
 stack_t* stack_init(size_t data_size, comparator_function_t cmp){
         assert(cmp && data_size > 0);
-        stack_t *stack = malloc(sizeof(*stack));
+        stack_t *stack = gdsmalloc(sizeof(*stack));
         if (!stack) return NULL;
         stack->elements = vector_init(data_size,cmp);
         if (!stack->elements){

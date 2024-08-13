@@ -14,15 +14,15 @@
 #include <stdarg.h>
 #include <assert.h>
 #include <time.h>
+#include "gdsmalloc.h"
 
-
-typedef struct dictionary_tNode {
+typedef struct dict_node_t {
         void *key;
         void *value;
         enum NodeState {
                 EMPTY, FULL, DELETED
         } state;
-} dictionary_tNode;
+} dict_node_t;
 
 struct dictionary_t {
         vector_t *vec_elements;   ///< vector_t to store the elements
@@ -79,7 +79,7 @@ static int get_next_prime(int n){
  * Initializes a node.
  */
 static void init_node(void *node){
-        dictionary_tNode *n = (dictionary_tNode*) node;
+        dict_node_t *n = (dict_node_t*) node;
         n->key = NULL;
         n->value = NULL;
         n->state = EMPTY;
@@ -90,7 +90,7 @@ static void init_node(void *node){
  */
 static void free_node(void *node, void *args){
         destructor_function_t destructor = * (destructor_function_t*) args;
-        dictionary_tNode *n = (dictionary_tNode*) node;
+        dict_node_t *n = (dict_node_t*) node;
         if (destructor && n->state == FULL)
                 destructor(n->value);
         free(n->key);
@@ -105,7 +105,7 @@ static int __init_dict(dictionary_t *dict, size_t key_size, size_t value_size, h
         dict->min_lf = DICT_DEF_MIN_LF;
         dict->max_lf = DICT_DEF_MAX_LF;
         dict->destructor = NULL;
-        dict->vec_elements = vector_init(sizeof(dictionary_tNode), compare_equal);
+        dict->vec_elements = vector_init(sizeof(dict_node_t), compare_equal);
         if (!dict->vec_elements){
                 return GDS_ERROR;
         }
@@ -119,7 +119,7 @@ static int __init_dict(dictionary_t *dict, size_t key_size, size_t value_size, h
 
 dictionary_t* dict_with_capacity(size_t key_size, size_t value_size, hash_function_t hash_func, size_t capacity) {
         assert(hash_func && key_size > 0 && value_size > 0);
-        dictionary_t *dict = malloc(sizeof(*dict));
+        dictionary_t *dict = gdsmalloc(sizeof(*dict));
         if (!dict) return NULL;
         if ( __init_dict(dict, key_size, value_size, hash_func, capacity) != GDS_SUCCESS) {
                 free(dict);
@@ -186,7 +186,7 @@ static int dict_redisperse(dictionary_t *dict, size_t new_size){
         d.destructor = dict->destructor;
 
         for (size_t i = 0; i < VEC_SIZE(dict); i++) {
-                dictionary_tNode node;
+                dict_node_t node;
                 vector_at(dict->vec_elements, i, &node);
                 if (node.state == FULL) {
                         int status = dict_put(&d, node.key, node.value);
@@ -230,7 +230,7 @@ static size_t dict_get_pos(dictionary_t *dict, void *key, size_t n_it){
 int dict_put(dictionary_t *dict, void *key, void *value){
         assert(dict && key && value);
         size_t pos = 0;
-        dictionary_tNode node = {0};
+        dict_node_t node = {0};
 
         for (size_t i = 0; i < VEC_SIZE(dict); ++i){
                 pos = dict_get_pos(dict, key, i);
@@ -249,12 +249,12 @@ int dict_put(dictionary_t *dict, void *key, void *value){
         /* if the node is empty, we need to allocate
            memory for the key and value. */
         if (!node.key){
-                node.key = malloc(dict->key_size);
+                node.key = gdsmalloc(dict->key_size);
                 if (!node.key)
                         return GDS_ERROR;
         }
         if (!node.value){
-                node.value = malloc(dict->value_size);
+                node.value = gdsmalloc(dict->value_size);
                 if (!node.value){
                         free(node.key);
                         return GDS_ERROR;
@@ -292,7 +292,7 @@ void* dict_get(dictionary_t *dict, void *key, void *dest){
         assert(dict && key);
         for (size_t i = 0; i < VEC_SIZE(dict); i++) {
                 size_t pos = dict_get_pos(dict, key, i);
-                dictionary_tNode node;
+                dict_node_t node;
                 vector_at(dict->vec_elements, pos, &node);
                 if (node.state == FULL){
                         int64_t h1 = dict->hash(key);
@@ -309,7 +309,7 @@ bool dict_exists(dictionary_t *dict, void *key){
         assert(dict && key);
         for (size_t i = 0; i < VEC_SIZE(dict); i++) {
                 size_t pos = dict_get_pos(dict, key, i);
-                dictionary_tNode node;
+                dict_node_t node;
                 vector_at(dict->vec_elements, pos, &node);
                 if (node.state == FULL){
                         int64_t h1 = dict->hash(key);
@@ -328,7 +328,7 @@ vector_t* dict_keys(dictionary_t *dict) {
         if (!v) return NULL;
 
         for (size_t i = 0; i < VEC_SIZE(dict); i++) {
-                dictionary_tNode node;
+                dict_node_t node;
                 vector_at(dict->vec_elements, i, &node);
                 if (node.state == FULL) {
                         if (vector_append(v, node.key) != GDS_SUCCESS) {
@@ -344,7 +344,7 @@ vector_t* dict_keys(dictionary_t *dict) {
 /// REMOVE ////////////////////////////////////////////////////////////////////
 
 static int __delete_node(dictionary_t *dict, size_t pos, bool redispersion, bool destroy){
-        dictionary_tNode node;
+        dict_node_t node;
         vector_at(dict->vec_elements, pos, &node);
         if (destroy && dict->destructor)
                 dict->destructor(node.value);
@@ -369,7 +369,7 @@ int dict_remove(dictionary_t *dict, void *key){
         assert(dict && key);
         for (size_t i = 0; i < VEC_SIZE(dict); i++){
                 size_t pos = dict_get_pos(dict, key, i);
-                dictionary_tNode node;
+                dict_node_t node;
                 vector_at(dict->vec_elements, pos, &node);
                 if (node.state == FULL){
                         int64_t h1 = dict->hash(key);

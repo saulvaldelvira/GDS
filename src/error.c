@@ -1,4 +1,6 @@
 #include "error.h"
+#include "error_priv.h"
+#include <threads.h>
 
 const char* gds_get_error_msg(int error_code) {
         switch (error_code){
@@ -14,3 +16,21 @@ const char* gds_get_error_msg(int error_code) {
                         return "Unknown error code";
         }
 }
+
+thread_local static gds_return_t last_error;
+
+__inline
+gds_return_t gds_last_error(void) {
+        return last_error;
+}
+
+__inline
+const char* gds_last_error_msg(void) {
+        return gds_get_error_msg(last_error);
+}
+
+__inline
+void register_error(gds_return_t e) {
+        last_error = e;
+}
+

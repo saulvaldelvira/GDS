@@ -6,10 +6,11 @@
 #include "error.h"
 #include "definitions.h"
 #include <stdint.h>
-#include <stdlib.h> // malloc
+#include <stdlib.h>
 #include <string.h> // memcpy
 #include <stdarg.h>
 #include <assert.h>
+#include "gdsmalloc.h"
 
 #define MAX_DISBALANCE 2
 
@@ -31,7 +32,7 @@ struct avl_t {
 //// INITIALIZE ////////////////////////////////////////////////////////////////
 
 static AVLNode* init_node(void *element, size_t data_size){
-        AVLNode *node = malloc(offsetof(AVLNode, info) + data_size);
+        AVLNode *node = gdsmalloc(offsetof(AVLNode, info) + data_size);
         if (!node) return NULL;
         node->left = NULL;
         node->right = NULL;
@@ -52,7 +53,7 @@ void avl_set_destructor(avl_t *tree, destructor_function_t destructor){
 
 avl_t* avl_init(size_t data_size, comparator_function_t cmp){
         assert(cmp && data_size > 0);
-        avl_t *tree = malloc(sizeof(*tree));
+        avl_t *tree = gdsmalloc(sizeof(*tree));
         if (!tree) return NULL;
         tree->compare = cmp;
         tree->destructor = NULL;
@@ -417,7 +418,7 @@ static struct traversal_ret traversal_rec(AVLNode *node, enum Traversal order, s
         /* Create a new struct traversal_ret to aggregate the traversal
            from left and right and this current node all in one */
         result.elements_size = left.elements_size + right.elements_size + 1;
-        result.elements = malloc(result.elements_size * size);
+        result.elements = gdsmalloc(result.elements_size * size);
         if (!result.elements){
                 result.status = GDS_ERROR;
                 goto cleanup;

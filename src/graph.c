@@ -1,4 +1,5 @@
 /*
+#include "gdsmalloc.h"
  * graph.c - graph_t implementation.
  * Author: Saúl Valdelvira (2023)
  */
@@ -11,6 +12,7 @@
 #include <stdint.h>
 #include <stdarg.h>
 #include <assert.h>
+#include "gdsmalloc.h"
 
 struct graph_t {
         size_t n_elements;      ///< Number of elements in the graph_t
@@ -28,9 +30,9 @@ struct graph_t {
 /// CONSTRUCTORS //////////////////////////////////////////////////////////////
 
 static int expand_memory(graph_t *graph, size_t new_size){
-        void *vertices = malloc(new_size * graph->data_size);
-        float **weights = malloc(new_size * sizeof(*weights));
-        int8_t **edges = malloc(new_size * sizeof(*edges));
+        void *vertices = gdsmalloc(new_size * graph->data_size);
+        float **weights = gdsmalloc(new_size * sizeof(*weights));
+        int8_t **edges = gdsmalloc(new_size * sizeof(*edges));
         if (!vertices || !weights || !edges){
                 free(vertices);
                 free(weights);
@@ -42,8 +44,8 @@ static int expand_memory(graph_t *graph, size_t new_size){
                 memcpy(vertices, graph->vertices, graph->max_elements * graph->data_size);
 
         for (size_t i = 0; i < new_size; i++){
-                weights[i] = malloc(new_size * sizeof(*weights[i]));
-                edges[i] = malloc(new_size * sizeof(*edges[i]));
+                weights[i] = gdsmalloc(new_size * sizeof(*weights[i]));
+                edges[i] = gdsmalloc(new_size * sizeof(*edges[i]));
 
                 if (!weights[i] || !edges[i]){
                         for (size_t j = 0; j <= i; j++){
@@ -79,8 +81,12 @@ static int expand_memory(graph_t *graph, size_t new_size){
 }
 
 graph_t* graph_init(size_t data_size, comparator_function_t cmp){
-        assert(cmp && data_size > 0);
-        graph_t *graph = malloc(sizeof(*graph));
+        return graph_with_capacity(data_size, cmp, GRAPH_DEFAULT_SIZE);
+}
+
+graph_t* graph_with_capacity(size_t data_size, comparator_function_t cmp, size_t capacity) {
+        assert(cmp && data_size > 0 && capacity > 0);
+        graph_t *graph = gdsmalloc(sizeof(*graph));
         if (!graph) return NULL;
         graph->n_elements = 0;
         graph->max_elements = 0;
@@ -90,7 +96,7 @@ graph_t* graph_init(size_t data_size, comparator_function_t cmp){
         graph->edges = NULL;
         graph->vertices = NULL;
         graph->data_size = data_size;
-        if (expand_memory(graph, GRAPH_DEFAULT_SIZE) == GDS_ERROR){
+        if (expand_memory(graph, capacity) == GDS_ERROR){
                 free(graph);
                 return NULL;
         }
@@ -283,10 +289,12 @@ bool graph_exists_edge(graph_t *graph, void *source, void *target){
 
 ///////////////////////////////////////////////////////////////////////////////
 
+__inline
 size_t graph_size(graph_t *graph){
         return graph ? graph->n_elements : 0;
 }
 
+__inline
 bool graph_isempty(graph_t *graph){
         return graph ? graph->n_elements == 0 : true;
 }
@@ -306,9 +314,9 @@ ptrdiff_t graph_indexof(graph_t *graph, void *vertex){
 /**
  * Initializes the DijkstraData_t structure.
 */
-static void graph_init_dijkstra(DijkstraData_t *dijkstra, graph_t *graph, size_t source){
-        dijkstra->D = malloc(graph->n_elements * sizeof(*dijkstra->D));
-        dijkstra->P = malloc(graph->n_elements * sizeof(*dijkstra->P));
+static void graph_init_dijkstra(DijkstraData_t *dijkstra, const graph_t *graph, size_t source){
+        dijkstra->D = gdsmalloc(graph->n_elements * sizeof(*dijkstra->D));
+        dijkstra->P = gdsmalloc(graph->n_elements * sizeof(*dijkstra->P));
         if (!dijkstra->D || !dijkstra->P){
                 free(dijkstra->D);
                 free(dijkstra->P);
@@ -412,9 +420,9 @@ void graph_free_dijkstra_data(DijkstraData_t *data){
 /**
  * Initializes the FloydData_t struct
 */
-static void graph_init_floyd(FloydData_t *floyd, graph_t *graph){
-        floyd->A = malloc(sizeof(*floyd->A) * graph->n_elements);
-        floyd->P = malloc(sizeof(*floyd->P) * graph->n_elements);
+static void graph_init_floyd(FloydData_t *floyd, const graph_t *graph){
+        floyd->A = gdsmalloc(sizeof(*floyd->A) * graph->n_elements);
+        floyd->P = gdsmalloc(sizeof(*floyd->P) * graph->n_elements);
         if (!floyd->A || !floyd->P){
                 free(floyd->A);
                 free(floyd->P);
@@ -423,8 +431,8 @@ static void graph_init_floyd(FloydData_t *floyd, graph_t *graph){
         }
 
         for (size_t i = 0; i < graph->n_elements; i++){
-                floyd->A[i] = malloc(sizeof(*floyd->A[i]) * graph->n_elements);
-                floyd->P[i] = malloc(sizeof(*floyd->P[i]) * graph->n_elements);
+                floyd->A[i] = gdsmalloc(sizeof(*floyd->A[i]) * graph->n_elements);
+                floyd->P[i] = gdsmalloc(sizeof(*floyd->P[i]) * graph->n_elements);
                 if (!floyd->A[i] || !floyd->P[i]){
                         for (size_t j = 0; j <= i; j++){
                                 free(floyd->A[j]);
@@ -605,9 +613,9 @@ graph_traversal graph_traverse_BF(graph_t *graph, void *vertex){
         }
         // Initialize result and temporary structures.
         bf.elements_size = 0;
-        bf.elements = malloc(graph->n_elements * graph->data_size);
+        bf.elements = gdsmalloc(graph->n_elements * graph->data_size);
         uint8_t *visited = calloc(graph->n_elements, sizeof(*visited));
-        size_t *queue = malloc(graph->n_elements * sizeof(*queue));
+        size_t *queue = gdsmalloc(graph->n_elements * sizeof(*queue));
         if (!bf.elements || !visited || !queue){
                 free(queue);
                 free(visited);
