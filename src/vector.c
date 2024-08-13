@@ -94,6 +94,12 @@ static int check_and_transform_index(ptrdiff_t *index_1, ptrdiff_t *index_2, siz
         return GDS_SUCCESS;
 }
 
+__inline
+void* vector_get_buffer(vector_t *self) {
+        assert(self);
+        return self->elements;
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 
 /// ADD-SET ///////////////////////////////////////////////////////////////////////

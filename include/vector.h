@@ -234,6 +234,11 @@ void* vector_front_ref(vector_t *vector);
 void* vector_back_ref(vector_t *vector);
 
 /**
+ * Returns the inner buffer behind the vector
+ */
+void* vector_get_buffer(vector_t *self);
+
+/**
  * Copies the first [array_length] elements from the vector into the array
 */
 void* vector_get_into_array(const vector_t *vector, void *array, size_t array_length);
