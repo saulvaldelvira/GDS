@@ -62,7 +62,7 @@ doxygen: ./doxygen/
 	/** @mainpage \n \
 		@verbinclude README.adoc */" > ./doxygen/doc.doxy
 	@ echo "/**" >> doxygen/doc.doxy
-	@ find ./src -name '*.h' -exec bash -c ' \
+	@ find ./include -name '*.h' -exec bash -c ' \
 		name={} ; base=$$(basename $$name) ; \
 		echo -n " * @file $$name " >> doxygen/doc.doxy ; \
 		cat $$name | grep $$base | sed "s/.*$$base -//"' >> doxygen/doc.doxy \;

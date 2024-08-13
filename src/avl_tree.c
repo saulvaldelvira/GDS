@@ -1,8 +1,8 @@
 /*
- * AVLTree.c - AVLTree implementation.
+ * avl_tree.c - avl_t implementation.
  * Author: Saúl Valdelvira (2023)
  */
-#include "AVLTree.h"
+#include "avl_tree.h"
 #include "./util/error.h"
 #include "./util/definitions.h"
 #include <stdint.h>
@@ -20,7 +20,7 @@ typedef struct AVLNode {
         byte info[];
 } AVLNode;
 
-struct AVLTree {
+struct avl_t {
         AVLNode *root;                          ///< Root node of the tree
         comparator_function_t compare;          ///< Comparator function pointer
         destructor_function_t destructor;       ///< Destructor function pointer
@@ -40,19 +40,19 @@ static AVLNode* init_node(void *element, size_t data_size){
         return node;
 }
 
-void avl_set_comparator(AVLTree *tree, comparator_function_t cmp){
+void avl_set_comparator(avl_t *tree, comparator_function_t cmp){
         if (tree && cmp)
                 tree->compare = cmp;
 }
 
-void avl_set_destructor(AVLTree *tree, destructor_function_t destructor){
+void avl_set_destructor(avl_t *tree, destructor_function_t destructor){
         if (tree)
                 tree->destructor = destructor;
 }
 
-AVLTree* avl_init(size_t data_size, comparator_function_t cmp){
+avl_t* avl_init(size_t data_size, comparator_function_t cmp){
         assert(cmp && data_size > 0);
-        AVLTree *tree = malloc(sizeof(*tree));
+        avl_t *tree = malloc(sizeof(*tree));
         if (!tree) return NULL;
         tree->compare = cmp;
         tree->destructor = NULL;
@@ -199,7 +199,7 @@ static struct add_rec_ret add_rec(AVLNode *node, void *element, comparator_funct
         return ret;
 }
 
-int avl_add(AVLTree *tree, void *element){
+int avl_add(avl_t *tree, void *element){
         assert(tree && element);
         struct add_rec_ret ret = add_rec(tree->root, element, tree->compare, tree->data_size);
         if (ret.status != SUCCESS)
@@ -209,7 +209,7 @@ int avl_add(AVLTree *tree, void *element){
         return SUCCESS;
 }
 
-int avl_add_array(AVLTree *tree, void *array, size_t array_length){
+int avl_add_array(avl_t *tree, void *array, size_t array_length){
         assert(tree && array);
         while (array_length-- > 0){
                 int status = avl_add(tree, array);
@@ -294,7 +294,7 @@ static struct remove_rec_ret remove_rec(AVLNode *node, void *element, comparator
         return ret;
 }
 
-int avl_remove(AVLTree *tree, void *element){
+int avl_remove(avl_t *tree, void *element){
         assert(tree && element);
         struct remove_rec_ret ret = remove_rec(tree->root, element, tree->compare, tree->data_size);
         if (ret.status == SUCCESS){
@@ -304,7 +304,7 @@ int avl_remove(AVLTree *tree, void *element){
         return ret.status;
 }
 
-int avl_remove_array(AVLTree *tree, void *array, size_t array_length){
+int avl_remove_array(avl_t *tree, void *array, size_t array_length){
         assert(tree && array);
         while (array_length-- > 0){
                 avl_remove(tree, array);
@@ -329,7 +329,7 @@ static bool exists_rec(AVLNode *node, void *element, comparator_function_t compa
                 return true;
 }
 
-bool avl_exists(AVLTree *tree, void *element){
+bool avl_exists(avl_t *tree, void *element){
         assert(tree && element);
         return exists_rec(tree->root, element, tree->compare);
 }
@@ -346,7 +346,7 @@ static AVLNode* get_rec(AVLNode *node, void *element, comparator_function_t comp
                 return node;
 }
 
-void* avl_get(AVLTree *tree, void *element, void *dest){
+void* avl_get(avl_t *tree, void *element, void *dest){
         assert(tree && element && dest);
         AVLNode *node = get_rec(tree->root, element, tree->compare);
         if (!node)
@@ -355,15 +355,15 @@ void* avl_get(AVLTree *tree, void *element, void *dest){
         return dest;
 }
 
-size_t avl_size(AVLTree *tree){
+size_t avl_size(avl_t *tree){
         return tree ? tree->n_elements : 0;
 }
 
-bool avl_isempty(AVLTree *tree){
+bool avl_isempty(avl_t *tree){
         return tree ? tree->root == NULL : true;
 }
 
-int avl_height(AVLTree *tree){
+int avl_height(avl_t *tree){
         if (!tree || !tree->root)
                 return -1;
         return tree->root->height;
@@ -454,19 +454,19 @@ cleanup:
         return result;
 }
 
-void* avl_preorder(AVLTree *tree){
+void* avl_preorder(avl_t *tree){
         assert(tree);
         struct traversal_ret result = traversal_rec(tree->root, PRE_ORDER, tree->data_size);
         return result.elements;
 }
 
-void* avl_inorder(AVLTree *tree){
+void* avl_inorder(avl_t *tree){
         assert(tree);
         struct traversal_ret result = traversal_rec(tree->root, IN_ORDER, tree->data_size);
         return result.elements;
 }
 
-void* avl_postorder(AVLTree *tree){
+void* avl_postorder(avl_t *tree){
         assert(tree);
         struct traversal_ret result = traversal_rec(tree->root, POST_ORDER, tree->data_size);
 
@@ -475,9 +475,9 @@ void* avl_postorder(AVLTree *tree){
 
 ///////////////////////////////////////////////////////////////////////////////
 
-AVLTree* avl_join(AVLTree *tree_1, AVLTree *tree_2){
+avl_t* avl_join(avl_t *tree_1, avl_t *tree_2){
         assert(tree_1 && tree_2 && tree_1->data_size == tree_2->data_size);
-        AVLTree *tree_joint = avl_init(tree_1->data_size, tree_1->compare);
+        avl_t *tree_joint = avl_init(tree_1->data_size, tree_1->compare);
         int status;
         void *tmp = avl_preorder(tree_1);
         if (tmp != NULL){
@@ -504,17 +504,17 @@ AVLTree* avl_join(AVLTree *tree_1, AVLTree *tree_2){
 
 ///// MAX-MIN /////////////////////////////////////////////////////////////////
 
-void* avl_max(AVLTree *tree, void *dest){
+void* avl_max(avl_t *tree, void *dest){
         assert(tree && dest);
         return avl_max_from(tree, tree->root->info, dest);
 }
 
-void* avl_min(AVLTree *tree, void *dest){
+void* avl_min(avl_t *tree, void *dest){
         assert(tree && dest);
         return avl_min_from(tree, tree->root->info, dest);
 }
 
-void* avl_max_from(AVLTree *tree, void *element, void *dest){
+void* avl_max_from(avl_t *tree, void *element, void *dest){
         assert(tree && element && dest);
         AVLNode *tmp = get_rec(tree->root, element, tree->compare);
         if (!tmp)
@@ -524,7 +524,7 @@ void* avl_max_from(AVLTree *tree, void *element, void *dest){
         return dest;
 }
 
-void* avl_min_from(AVLTree *tree, void *element, void *dest){
+void* avl_min_from(avl_t *tree, void *element, void *dest){
         assert(tree && element && dest);
         AVLNode *tmp = get_rec(tree->root, element, tree->compare);
         if (!tmp)
@@ -548,26 +548,26 @@ static void free_node(AVLNode *node, destructor_function_t destructor){
         free(node);
 }
 
-static void _avl_free(AVLTree *tree){
+static void _avl_free(avl_t *tree){
         if (tree){
                 free_node(tree->root, tree->destructor);
                 free(tree);
         }
 }
 
-void (avl_free)(AVLTree *t, ...){
+void (avl_free)(avl_t *t, ...){
         if (!t)
                 return;
         va_list arg;
         va_start(arg, t);
         do {
                 _avl_free(t);
-                t = va_arg(arg, AVLTree*);
+                t = va_arg(arg, avl_t*);
         } while (t);
         va_end(arg);
 }
 
-void avl_clear(AVLTree *tree){
+void avl_clear(avl_t *tree){
         if (tree){
                 free_node(tree->root, tree->destructor);
                 tree->root = NULL;

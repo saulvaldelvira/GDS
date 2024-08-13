@@ -1,8 +1,8 @@
 #include "test.h"
-#include "../include/AVLTree.h"
+#include "../include/avl_tree.h"
 #include "../src/util/definitions.h"
 
-void print_preord(AVLTree *tree){
+void print_preord(avl_t *tree){
 	void *preord = avl_preorder(tree);
 	for (size_t i = 0; i < avl_size(tree); i++){
 		void *tmp = void_offset(preord, i * sizeof(int));
@@ -12,7 +12,7 @@ void print_preord(AVLTree *tree){
 	free(preord);
 }
 
-void assert_preord(AVLTree *tree, int exp[]){
+void assert_preord(avl_t *tree, int exp[]){
 	void *preord = avl_preorder(tree);
 	for (size_t i = 0; i < avl_size(tree); i++){
 		void *tmp = void_offset(preord, i * sizeof(int));
@@ -22,8 +22,8 @@ void assert_preord(AVLTree *tree, int exp[]){
 }
 
 void join_test(void){
-	AVLTree *t1 = avl_init(sizeof(int), compare_int);
-	AVLTree *t2 = avl_init(sizeof(int), compare_int);
+	avl_t *t1 = avl_init(sizeof(int), compare_int);
+	avl_t *t2 = avl_init(sizeof(int), compare_int);
 
 	for (int i = 0; i < 10; i++){
 		avl_add(t1, &i);
@@ -33,7 +33,7 @@ void join_test(void){
 		avl_add(t2, &i);
 	}
 
-	AVLTree *joint = avl_join(t1, t2);
+	avl_t *joint = avl_join(t1, t2);
 
 	for (int i = 0; i < 20; i++){
 		assert(avl_exists(joint, &i));
@@ -43,7 +43,7 @@ void join_test(void){
 }
 
 void destructor_test(void){
-	AVLTree *avl = avl_init(sizeof(int*), compare_lesser);
+	avl_t *avl = avl_init(sizeof(int*), compare_lesser);
 	avl_set_destructor(avl, destroy_ptr);
 	for (int i = 0; i < 1024; i++){
 		int *ptr = malloc(sizeof(int));
@@ -53,11 +53,11 @@ void destructor_test(void){
 }
 
 int main(void){
-	test_start("AVLTree.c");
+	test_start("avl_tree.c");
 
 	int tmp = 0;
 
-	AVLTree *t = avl_init(sizeof(int), compare_int);
+	avl_t *t = avl_init(sizeof(int), compare_int);
 	assert(avl_size(t) == 0UL);
 	assert(avl_isempty(t));
 	assert(-1 == avl_height(t));
@@ -127,6 +127,6 @@ int main(void){
 	destructor_test();
 
 
-	test_end("AVLTree.c");
+	test_end("avl_tree.c");
 	return 0;
 }

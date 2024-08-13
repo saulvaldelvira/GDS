@@ -1,8 +1,8 @@
-#include "../include/Stack.h"
+#include "../include/stack.h"
 #include "test.h"
 
 void destructor_test(void){
-	Stack *stack = stack_init(sizeof(int*), compare_lesser);
+	stack_t *stack = stack_init(sizeof(int*), compare_lesser);
 	stack_set_destructor(stack, destroy_ptr);
 	for (int i = 0; i < 1024; i++){
 		int *ptr = malloc(sizeof(int));
@@ -13,10 +13,10 @@ void destructor_test(void){
 
 int main(void){
 	int n = 10000, tmp;
-	test_start("Stack.c");
+	test_start("stack.c");
 
 
-	Stack *stack = stack_init(sizeof(int), compare_int);
+	stack_t *stack = stack_init(sizeof(int), compare_int);
 	assert(stack_isempty(stack));
 	assert(stack_pop(stack, &tmp) == NULL);
 
@@ -60,5 +60,5 @@ int main(void){
 	destructor_test();
 
 
-	test_end("Stack.c");
+	test_end("stack.c");
 }

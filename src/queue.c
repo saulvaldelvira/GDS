@@ -1,8 +1,8 @@
 /*
- * Queue.c - Queue implementation.
+ * queue.c - queue_t implementation.
  * Author: Saúl Valdelvira (2023)
  */
-#include "Queue.h"
+#include "queue.h"
 #include <stdlib.h>
 #include "./util/error.h"
 #include "./util/definitions.h"
@@ -10,14 +10,14 @@
 #include <stdarg.h>
 #include <assert.h>
 
-typedef struct QueueNode {
-        struct QueueNode *next;
+typedef struct queue_tNode {
+        struct queue_tNode *next;
         byte info[];
-} QueueNode;
+} queue_tNode;
 
-struct Queue {
-        QueueNode *head;        ///< Head node
-        QueueNode *tail;        ///< Tail node. Last added node
+struct queue_t {
+        queue_tNode *head;        ///< Head node
+        queue_tNode *tail;        ///< Tail node. Last added node
         size_t data_size;       ///< Size (in bytes) of the data type being stored
         size_t n_elements;      ///< Number of elements in the queue
         comparator_function_t compare;          ///< Comparator function pointer
@@ -26,10 +26,10 @@ struct Queue {
 
 /// INITIALIZE ////////////////////////////////////////////////////////////////
 
-Queue* queue_init(size_t data_size, comparator_function_t cmp){
+queue_t* queue_init(size_t data_size, comparator_function_t cmp){
         assert(cmp && data_size > 0);
         // Allocate queue
-        Queue *queue = malloc(sizeof(*queue));
+        queue_t *queue = malloc(sizeof(*queue));
         if (!queue) return NULL;
         // Initialize queue
         queue->head = NULL;
@@ -41,18 +41,18 @@ Queue* queue_init(size_t data_size, comparator_function_t cmp){
         return queue;
 }
 
-void queue_set_comparator(Queue *queue, comparator_function_t cmp){
+void queue_set_comparator(queue_t *queue, comparator_function_t cmp){
         if (queue && cmp)
                 queue->compare = cmp;
 }
 
-void queue_set_destructor(Queue *queue, destructor_function_t destructor){
+void queue_set_destructor(queue_t *queue, destructor_function_t destructor){
         if (queue)
                 queue->destructor = destructor;
 }
 
-static QueueNode* queue_init_node(void *element, size_t size){
-        QueueNode *node = malloc(offsetof(QueueNode, info) + size);
+static queue_tNode* queue_init_node(void *element, size_t size){
+        queue_tNode *node = malloc(offsetof(queue_tNode, info) + size);
         if (!node) return NULL;
         memcpy(node->info, element, size);
         node->next = NULL;
@@ -63,9 +63,9 @@ static QueueNode* queue_init_node(void *element, size_t size){
 
 /// ENQUEUE ///////////////////////////////////////////////////////////////////
 
-int queue_enqueue(Queue *queue, void *element){
+int queue_enqueue(queue_t *queue, void *element){
         assert(queue && element);
-        QueueNode *node = queue_init_node(element, queue->data_size);
+        queue_tNode *node = queue_init_node(element, queue->data_size);
         if (!node) return ERROR;
         if (!queue->head){
                 queue->head = node;
@@ -78,7 +78,7 @@ int queue_enqueue(Queue *queue, void *element){
         return SUCCESS;
 }
 
-int queue_enqueue_array(Queue *queue, void *array, size_t array_length){
+int queue_enqueue_array(queue_t *queue, void *array, size_t array_length){
         assert(queue && array);
         while (array_length-- > 0){
                 int status = queue_enqueue(queue, array);
@@ -93,11 +93,11 @@ int queue_enqueue_array(Queue *queue, void *array, size_t array_length){
 
 /// DEQUEUE ///////////////////////////////////////////////////////////////////
 
-void* queue_dequeue(Queue *queue, void *dest){
+void* queue_dequeue(queue_t *queue, void *dest){
         assert(queue && dest);
         if (queue->head == NULL)
                 return NULL;
-        QueueNode *aux = queue->head;
+        queue_tNode *aux = queue->head;
         queue->head = queue->head->next;
         memcpy(dest, aux->info, queue->data_size);
         free(aux);
@@ -105,7 +105,7 @@ void* queue_dequeue(Queue *queue, void *dest){
         return dest;
 }
 
-int queue_dequeue_array(Queue *queue, void *array, size_t array_length){
+int queue_dequeue_array(queue_t *queue, void *array, size_t array_length){
         assert(queue && array);
         while (array_length-- > 0) {
                 if (!queue_dequeue(queue, array))
@@ -119,7 +119,7 @@ int queue_dequeue_array(Queue *queue, void *array, size_t array_length){
 
 /// PEEK-EXISTS-SIZE //////////////////////////////////////////////////////////
 
-void* queue_peek(Queue *queue, void *dest){
+void* queue_peek(queue_t *queue, void *dest){
         assert(queue && dest);
         if (queue->head == NULL)
                 return NULL;
@@ -127,9 +127,9 @@ void* queue_peek(Queue *queue, void *dest){
                 return memcpy(dest, queue->head->info, queue->data_size);
 }
 
-bool queue_exists(Queue *queue, void *element){
+bool queue_exists(queue_t *queue, void *element){
         assert(queue && element);
-        QueueNode *aux = queue->head;
+        queue_tNode *aux = queue->head;
         while (aux != NULL){
                 if(queue->compare(aux->info, element) == 0)
                         return true;
@@ -138,25 +138,25 @@ bool queue_exists(Queue *queue, void *element){
         return false;
 }
 
-int queue_remove(Queue *queue, void *element){
+int queue_remove(queue_t *queue, void *element){
         assert(queue && element);
-        QueueNode** aux = &queue->head;
+        queue_tNode** aux = &queue->head;
         while (*aux != NULL && queue->compare((*aux)->info, element) != 0)
                 aux = &(*aux)->next;
         if (!*aux)
                 return ELEMENT_NOT_FOUND_ERROR;
-        QueueNode *del = *aux;
+        queue_tNode *del = *aux;
         *aux = (*aux)->next;
         free(del);
         queue->n_elements--;
         return SUCCESS;
 }
 
-size_t queue_size(Queue *queue){
+size_t queue_size(queue_t *queue){
         return queue ? queue->n_elements : 0;
 }
 
-bool queue_isempty(Queue *queue){
+bool queue_isempty(queue_t *queue){
         return queue ? queue->head == NULL : true;
 }
 
@@ -164,7 +164,7 @@ bool queue_isempty(Queue *queue){
 
 /// FREE //////////////////////////////////////////////////////////////////////
 
-static void queue_free_node(QueueNode *node, destructor_function_t destructor){
+static void queue_free_node(queue_tNode *node, destructor_function_t destructor){
         if (node == NULL)
                 return;
         if (destructor)
@@ -173,26 +173,26 @@ static void queue_free_node(QueueNode *node, destructor_function_t destructor){
         free(node);
 }
 
-static void _queue_free(Queue *queue){
+static void _queue_free(queue_t *queue){
         if (queue){
                 queue_free_node(queue->head, queue->destructor);
                 free(queue);
         }
 }
 
-void (queue_free)(Queue *q, ...){
+void (queue_free)(queue_t *q, ...){
         if (!q)
                 return;
         va_list arg;
         va_start(arg, q);
         do {
                 _queue_free(q);
-                q = va_arg(arg, Queue*);
+                q = va_arg(arg, queue_t*);
         } while (q);
         va_end(arg);
 }
 
-void queue_clear(Queue *queue){
+void queue_clear(queue_t *queue){
         if (queue){
                 queue_free_node(queue->head, queue->destructor);
                 queue->head = NULL;

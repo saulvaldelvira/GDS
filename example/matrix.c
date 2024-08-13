@@ -1,7 +1,7 @@
 /**
  * Prints a matrix filled with random numbers.
  * The dimension can be given as a command line parameter (default: 10)
- * $ gcc matrix.c ../src/Vector.c ../src/util/compare.c -o matrix
+ * $ gcc matrix.c ../src/vector.c ../src/util/compare.c -o matrix
  * $ ./matrix 7
  * Output:
  *      83 86 77 15 93 35 86
@@ -12,18 +12,18 @@
  *      67 93 56 11 42 29 73
  *      21 19 84 37 98 24 15
 */
-#include "../include/Vector.h"
+#include "../include/vector.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
 void destroy_vec(void *arg){
-        Vector *v = * (Vector**) arg;
+        vector_t *v = * (vector_t**) arg;
         vector_free(v);
 }
 
 void matrix_init(void *element, void *args){
-        Vector **v = (Vector**) element;
+        vector_t **v = (vector_t**) element;
         *v = vector_init(sizeof(int), compare_int);
         int size = * (int*) args;
         vector_reserve(*v, size);
@@ -35,12 +35,12 @@ int main(int argc, char *argv[]){
                 dim = atoi(argv[1]);
         srand(time(0));
 
-        Vector *matrix = vector_init(sizeof(Vector*), compare_equal);
+        vector_t *matrix = vector_init(sizeof(vector_t*), compare_equal);
         vector_set_destructor(matrix, destroy_vec);
         vector_reserve(matrix, dim);
         vector_map(matrix, matrix_init, &dim);
 
-        Vector *row;
+        vector_t *row;
         for (int i = 0; i < dim; i++){
                 vector_at(matrix, i, &row);
                 for (int j = 0; j < dim; j++){

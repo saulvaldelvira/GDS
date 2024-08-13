@@ -1,5 +1,5 @@
 /*
- * LinkedList.h - Doubly Linked List definition.
+ * linked_list.h - Doubly Linked List definition.
  * Author: Saúl Valdelvira (2023)
  */
 #pragma once
@@ -32,7 +32,7 @@ extern "C" {
 /**
  * Linked List structure.
  */
-typedef struct LinkedList LinkedList;
+typedef struct linked_list_t linked_list_t;
 
 /**
  * Initializes the linked list
@@ -40,96 +40,96 @@ typedef struct LinkedList LinkedList;
  * @param cmp pointer to a function that receives two void pointers and returns 1 if the first one is greater than the
  *              second, 0 if they are equal and -1 if the first one is smaller than the second one
 */
-LinkedList* list_init(size_t data_size, comparator_function_t cmp);
+linked_list_t* list_init(size_t data_size, comparator_function_t cmp);
 
 /**
  * Changes the comparator function of the list
  * @param cmp the new comparator function
 */
-void list_set_comparator(LinkedList *list, comparator_function_t cmp);
+void list_set_comparator(linked_list_t *list, comparator_function_t cmp);
 
 /**
  * Changes the comparator function of the list
  * @param destructor the new destructor function
 */
-void list_set_destructor(LinkedList *list, destructor_function_t destructor);
+void list_set_destructor(linked_list_t *list, destructor_function_t destructor);
 
 /**
  * Adds the given element to the end of the list
  * @return 1 if the operation is successful
 */
-int list_append(LinkedList *list, void *element);
+int list_append(linked_list_t *list, void *element);
 
 /**
  * Pushes back in the list the first [array_length] elements in the array
 */
-int list_append_array(LinkedList *list, void *array, size_t array_length);
+int list_append_array(linked_list_t *list, void *array, size_t array_length);
 
 /**
  * Adds the given element to the start of the list
  * @return 1 if the operation is successful
 */
-int list_push_front(LinkedList *list, void *element);
+int list_push_front(linked_list_t *list, void *element);
 
 /**
  * Pushes front in the list the first [array_length] elements in the array
 */
-int list_push_front_array(LinkedList *list, void *array, size_t array_length);
+int list_push_front_array(linked_list_t *list, void *array, size_t array_length);
 
 /**
  * Changes the given element in the list with the replacement, if it exists.
  *
  * @return 1 if the operation is successful
 */
-int list_set(LinkedList *list, void *element, void *replacement);
+int list_set(linked_list_t *list, void *element, void *replacement);
 
 /**
  * @param[out] dest adress to store the element into.
  * @return a pointer to the first element in the list that is equal to the parameter element.
 */
-void* list_get(LinkedList *list, void *element, void *dest);
+void* list_get(linked_list_t *list, void *element, void *dest);
 
 /**
  * @return The first element in the list, or NULL if it does not exists
 */
-void* list_get_front(LinkedList *list, void *dest);
+void* list_get_front(linked_list_t *list, void *dest);
 
 /**
  * @return The last element in the list, or NULL if it does not exists
 */
-void* list_get_back(LinkedList *list, void *dest);
+void* list_get_back(linked_list_t *list, void *dest);
 
 /**
  * Copies into the array the first [array_length] elements of the list
 */
-void* list_get_into_array(LinkedList *list, void *array, size_t array_length);
+void* list_get_into_array(linked_list_t *list, void *array, size_t array_length);
 
 /**
  * Creates an array with the first [array_length] elements of the list.
  * @param array_length the number of elements to get. Pass 0 to get all the elements in the list
  * @note Remember to free the array.
 */
-void* list_get_array(LinkedList *list, size_t array_length);
+void* list_get_array(linked_list_t *list, size_t array_length);
 
 /**
 * @return true if the element exists in the list
 */
-bool list_exists(LinkedList *list, void *element);
+bool list_exists(linked_list_t *list, void *element);
 
 /**
  * @return the number of elements in the list
 */
-size_t list_size(LinkedList *list);
+size_t list_size(linked_list_t *list);
 
 /**
 * @return true if the list is empty
 */
-bool list_isempty(LinkedList *list);
+bool list_isempty(linked_list_t *list);
 
 /**
  * Removes all the elements from the list
 */
-void list_clear(LinkedList *list);
+void list_clear(linked_list_t *list);
 
 /**
  * Removes the specified element.
@@ -137,7 +137,7 @@ void list_clear(LinkedList *list);
  * @note If you don't want that, see list_pop
  * @return 1 if the operation is successful.
  */
-int list_remove(LinkedList *list, void *element);
+int list_remove(linked_list_t *list, void *element);
 
 /**
  * Removes the first element.
@@ -145,7 +145,7 @@ int list_remove(LinkedList *list, void *element);
  * @note If you don't want that, see list_pop_front
  * @return 1 if the operation is successful.
  */
-int list_remove_front(LinkedList *list);
+int list_remove_front(linked_list_t *list);
 
 /**
  * Removes the last element.
@@ -153,7 +153,7 @@ int list_remove_front(LinkedList *list);
  * @note If you don't want that, see list_pop_back
  * @return 1 if the operation is successful.
  */
-int list_remove_back(LinkedList *list);
+int list_remove_back(linked_list_t *list);
 
 /**
  * Removes from the first [array_length] elements of the given array.
@@ -161,7 +161,7 @@ int list_remove_back(LinkedList *list);
  * @note If you don't want that, see list_pop_array
  * @return 1 if the operation is successful
 */
-int list_remove_array(LinkedList *list, void *array, size_t array_length);
+int list_remove_array(linked_list_t *list, void *array, size_t array_length);
 
 /**
  * Pops the given element
@@ -169,7 +169,7 @@ int list_remove_array(LinkedList *list, void *array, size_t array_length);
  * @note If you want the destructor to be called on the element, use list_remove instead
  * @return the dest pointer
  */
-void* list_pop(LinkedList *list, void *element, void *dest);
+void* list_pop(linked_list_t *list, void *element, void *dest);
 
 /**
  * Pops the frist element
@@ -177,7 +177,7 @@ void* list_pop(LinkedList *list, void *element, void *dest);
  * @note If you want the destructor to be called on the element, use list_remove_front instead
  * @return the dest pointer
  */
-void* list_pop_front(LinkedList *list, void *dest);
+void* list_pop_front(linked_list_t *list, void *dest);
 
 /**
  * Pops the last element
@@ -185,7 +185,7 @@ void* list_pop_front(LinkedList *list, void *dest);
  * @note If you want the destructor to be called on the element, use list_remove_back instead
  * @return the dest pointer
  */
-void* list_pop_back(LinkedList *list, void *dest);
+void* list_pop_back(linked_list_t *list, void *dest);
 
 /**
  * Pops from the first [array_length] elements of the given array.
@@ -194,15 +194,15 @@ void* list_pop_back(LinkedList *list, void *dest);
  * @note If you want the destructor to be called on the element, use list_remove_array instead
  * @return the dest pointer
 */
-void* list_pop_array(LinkedList *list, void *array, size_t array_length, void *dest);
+void* list_pop_array(linked_list_t *list, void *array, size_t array_length, void *dest);
 
 /**
- * @return a new LinkedList with the elements of the two given
+ * @return a new linked_list_t with the elements of the two given
  *         lists, or NULL if the lists have different data_size.
 */
-LinkedList* list_join(LinkedList *list_1, LinkedList *list_2);
+linked_list_t* list_join(linked_list_t *list_1, linked_list_t *list_2);
 
-void list_free(LinkedList *h, ...);
+void list_free(linked_list_t *h, ...);
 
 /**
  * Frees all the given lists.
@@ -210,7 +210,7 @@ void list_free(LinkedList *h, ...);
 #define list_free(...) list_free(__VA_ARGS__, NULL)
 
 /* ITERATOR */
-typedef struct LinkedListIterator {
+typedef struct list_iterator_t {
 #ifdef LINKED_LIST_IMPL
         LLNode
 #else
@@ -218,22 +218,22 @@ typedef struct LinkedListIterator {
 #endif
         *next, *prev;
         uint16_t data_size;
-} LinkedListIterator;
+} list_iterator_t;
 
 /*
  * Create an iterator of the given list.
  * CAUTION:
  * DO NOT use this iterator after the original list has been freed.
  * */
-LinkedListIterator list_iterator(LinkedList *list);
-LinkedListIterator list_iterator_from_back(LinkedList *list);
+list_iterator_t list_iterator(linked_list_t *list);
+list_iterator_t list_iterator_from_back(linked_list_t *list);
 
-void* list_it_next(LinkedListIterator *it, void *dst);
-void* list_it_prev(LinkedListIterator *it, void *dst);
-void* list_it_peek_next(LinkedListIterator *it, void *dst);
-void* list_it_peek_prev(LinkedListIterator *it, void *dst);
-bool list_it_has_next(LinkedListIterator *it);
-bool list_it_has_prev(LinkedListIterator *it);
+void* list_it_next(list_iterator_t *it, void *dst);
+void* list_it_prev(list_iterator_t *it, void *dst);
+void* list_it_peek_next(list_iterator_t *it, void *dst);
+void* list_it_peek_prev(list_iterator_t *it, void *dst);
+bool list_it_has_next(list_iterator_t *it);
+bool list_it_has_prev(list_iterator_t *it);
 
 #ifdef __cplusplus
 }

@@ -1,7 +1,7 @@
 /**
  * Example of using an AVL Tree as a map of Key-Value pairs.
 */
-#include "../include/AVLTree.h"
+#include "../include/avl_tree.h"
 #include <stdio.h>
 
 struct Pair{
@@ -22,7 +22,7 @@ int compare_pair(const void *e_1, const void *e_2){
 }
 
 int main(void){
-        AVLTree *tree = avl_init(sizeof(struct Pair), compare_pair);
+        avl_t *tree = avl_init(sizeof(struct Pair), compare_pair);
 
         struct Pair p;
         for (int i=0; i < 50; i++){

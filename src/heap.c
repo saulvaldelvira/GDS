@@ -1,25 +1,25 @@
 /*
- * Heap.c - Binary Heap implementation.
+ * heap.c - Binary heap_t implementation.
  * Author: Saúl Valdelvira (2023)
  */
 #include <stdlib.h>
 #include <string.h>
 #include <stdarg.h>
 #include <assert.h>
-#include "Heap.h"
+#include "heap.h"
 #include "./util/error.h"
-#include "./Vector.h"
+#include "./vector.h"
 #include "util/definitions.h"
 
-struct Heap {
-        Vector *elements;       ///< Vector to hold the elements of the heap
+struct heap_t {
+        vector_t *elements;       ///< vector_t to hold the elements of the heap
 };
 
 /// INITIALIZE ////////////////////////////////////////////////////////////////
 
-Heap* heap_init(size_t data_size, comparator_function_t cmp){
+heap_t* heap_init(size_t data_size, comparator_function_t cmp){
         assert(cmp && data_size > 0);
-        Heap *heap = malloc(sizeof(*heap));
+        heap_t *heap = malloc(sizeof(*heap));
         if (!heap) return NULL;
         heap->elements = vector_init(data_size, cmp);
         if (!heap->elements){
@@ -29,12 +29,12 @@ Heap* heap_init(size_t data_size, comparator_function_t cmp){
         return heap;
 }
 
-void heap_set_comparator(Heap *heap, comparator_function_t cmp){
+void heap_set_comparator(heap_t *heap, comparator_function_t cmp){
         if (heap && cmp)
                 vector_set_comparator(heap->elements, cmp);
 }
 
-void heap_set_destructor(Heap *heap, destructor_function_t destructor){
+void heap_set_destructor(heap_t *heap, destructor_function_t destructor){
         if (heap)
                 vector_set_destructor(heap->elements, destructor);
 }
@@ -48,7 +48,7 @@ void heap_set_destructor(Heap *heap, destructor_function_t destructor){
  * The filter is made recursively from the given position, going "up"
  * every iteration until we find the "root".
 */
-static void filter_up(Vector *list, size_t pos){
+static void filter_up(vector_t *list, size_t pos){
         size_t father = (pos-1) / 2;
         if (pos == 0 || vector_compare(list, pos, father) >= 0)
                 return;
@@ -60,7 +60,7 @@ static void filter_up(Vector *list, size_t pos){
  * Returns the  with the lowest of the childs of a given
  * position (or with a status of -1 if thre is no valid childs)
 */
-static ptrdiff_t lowest_child(Vector *list, size_t pos){
+static ptrdiff_t lowest_child(vector_t *list, size_t pos){
         size_t l_child = pos * 2 + 1;
         size_t r_child = pos * 2 + 2;
         size_t size = vector_size(list);
@@ -90,7 +90,7 @@ static ptrdiff_t lowest_child(Vector *list, size_t pos){
  * The filter is made recursively from the given position, going "down"
  * every iteration until we find the last element.
 */
-static void filter_down(Vector *list, size_t pos){
+static void filter_down(vector_t *list, size_t pos){
         if (pos >= vector_size(list))
                 return;
         ptrdiff_t lowest = lowest_child(list, pos);
@@ -104,7 +104,7 @@ static void filter_down(Vector *list, size_t pos){
 
 //// ADD-REMOVE ///////////////////////////////////////////////////////////////
 
-int heap_add(Heap *heap, void *element){
+int heap_add(heap_t *heap, void *element){
         assert(heap && element);
         int status = vector_append(heap->elements, element);
         if (status != SUCCESS)
@@ -113,7 +113,7 @@ int heap_add(Heap *heap, void *element){
         return SUCCESS;
 }
 
-int heap_add_array(Heap *heap, void *array, size_t array_length){
+int heap_add_array(heap_t *heap, void *array, size_t array_length){
         assert(heap && array);
         // If the heap is empty, we use this piece of code because it
         // uses half as much "filter_down" calls than the other one
@@ -142,7 +142,7 @@ int heap_add_array(Heap *heap, void *array, size_t array_length){
         return SUCCESS;
 }
 
-void* heap_pop_min(Heap *heap, void *dest){
+void* heap_pop_min(heap_t *heap, void *dest){
         assert(heap && dest);
         dest = vector_front(heap->elements, dest);
         if (dest != NULL){
@@ -156,7 +156,7 @@ void* heap_pop_min(Heap *heap, void *dest){
         return dest;
 }
 
-int heap_change_priority(Heap *heap, void *element, void *replacement){
+int heap_change_priority(heap_t *heap, void *element, void *replacement){
         assert(heap && element && replacement);
         // Get pos of the element
         ptrdiff_t pos = vector_indexof(heap->elements, element);
@@ -180,27 +180,27 @@ int heap_change_priority(Heap *heap, void *element, void *replacement){
 
 /// GET-EXISTS-SIZE ///////////////////////////////////////////////////////////
 
-void* heap_get_array(Heap *heap, size_t array_length){
+void* heap_get_array(heap_t *heap, size_t array_length){
         assert(heap);
         return vector_get_array(heap->elements, array_length);
 }
 
-void* heap_get_into_array(Heap *heap, void *array, size_t array_length){
+void* heap_get_into_array(heap_t *heap, void *array, size_t array_length){
         assert(heap);
         return vector_get_into_array(heap->elements, array, array_length);
 }
 
-void* heap_peek(Heap *heap, void *dest){
+void* heap_peek(heap_t *heap, void *dest){
         assert(heap && dest);
         return vector_at(heap->elements, 0, dest);
 }
 
-void heap_clear(Heap *heap){
+void heap_clear(heap_t *heap){
         if (heap)
                 vector_clear(heap->elements);
 }
 
-int heap_remove(Heap *heap, void *element){
+int heap_remove(heap_t *heap, void *element){
         assert(heap && element);
         ptrdiff_t index = vector_indexof(heap->elements, element);
         if (index < 0)
@@ -215,16 +215,16 @@ int heap_remove(Heap *heap, void *element){
         return SUCCESS;
 }
 
-bool heap_exists(Heap *heap, void *element){
+bool heap_exists(heap_t *heap, void *element){
         assert(heap && element);
         return vector_exists(heap->elements, element);
 }
 
-size_t heap_size(Heap *heap){
+size_t heap_size(heap_t *heap){
         return heap ? vector_size(heap->elements) : 0;
 }
 
-bool heap_isempty(Heap *heap){
+bool heap_isempty(heap_t *heap){
         return heap ? vector_isempty(heap->elements) : true;
 }
 
@@ -232,21 +232,21 @@ bool heap_isempty(Heap *heap){
 
 //// FREE /////////////////////////////////////////////////////////////////////
 
-static void _heap_free(Heap *heap){
+static void _heap_free(heap_t *heap){
         if (heap){
                 vector_free(heap->elements);
                 free(heap);
         }
 }
 
-void (heap_free)(Heap *h, ...){
+void (heap_free)(heap_t *h, ...){
         if (!h)
                 return;
         va_list arg;
         va_start(arg, h);
         do {
                 _heap_free(h);
-                h = va_arg(arg, Heap*);
+                h = va_arg(arg, heap_t*);
         } while (h);
         va_end(arg);
 }

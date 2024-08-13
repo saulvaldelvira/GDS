@@ -1,8 +1,8 @@
-#include "../include/Queue.h"
+#include "../include/queue.h"
 #include "test.h"
 
 void destructor_test(void){
-	Queue *queue = queue_init(sizeof(int*), compare_lesser);
+	queue_t *queue = queue_init(sizeof(int*), compare_lesser);
 	queue_set_destructor(queue, destroy_ptr);
 	for (int i = 0; i < 1024; i++){
 		int *ptr = malloc(sizeof(int));
@@ -14,10 +14,10 @@ void destructor_test(void){
 int main(void){
 	int n = 10000, tmp;
 
-	test_start("Queue.c");
+	test_start("queue.c");
 
 
-	Queue *q = queue_init(sizeof(int), compare_int);
+	queue_t *q = queue_init(sizeof(int), compare_int);
 	assert(queue_isempty(q));
 	assert(queue_dequeue(q, &tmp) == NULL);
 
@@ -58,5 +58,5 @@ queue_clear(q);
 	destructor_test();
 
 
-	test_end("Queue.c");
+	test_end("queue.c");
 }

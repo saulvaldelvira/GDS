@@ -5,8 +5,8 @@ A set of Data Structures for the C programming language.
 It includes:
 
 * Vector
-* LinkedList
-* AVLTree
+* Linked List
+* AVL Tree
 * Graph
 * Dictionary
 * Heap
@@ -19,7 +19,7 @@ of data type, by only knowing the size of it.
 [source,c]
 ----
 int main(){
-    Vector *vec = vector_init(sizeof(int), compare_int);
+    vector_t *vec = vector_init(sizeof(int), compare_int);
     int tmp = 12;
     vector_append(vec, &tmp);
     tmp = 3;
@@ -79,7 +79,7 @@ The header file *comparator.h* defines functions to compare the most common data
 
 [source,c]
 ----
-LinkedList *list = list_init(sizeof(char), compare_char); // This list stores chars
+linked_list_t *list = list_init(sizeof(char), compare_char); // This list stores chars
 ----
 
 If you don't need to compare elements inside the structure you can use the ``compare_equal``, ``compare_lesser`` and ``compare_greater`` functions, which always return 0, -1, and 1 respectively.
@@ -138,10 +138,10 @@ the ``-lGDS`` or ``-lGDS-static`` flags when compiling. The headers are installe
 Example:
 [source,c]
 ----
-#include <GDS/GDS.h> // or #include <GDS/Vector.h>
+#include <GDS/GDS.h> // or #include <GDS/vector.h>
 
 int main(){
-        Vector *v = vector_init(sizeof(int), compare_int);
+        vector_t *v = vector_init(sizeof(int), compare_int);
         // ....
         vector_free(v);
         return 0;
@@ -164,7 +164,7 @@ int compare_person(const void* e_1, const void* e_2){
 }
 
 int main(){
-    Vector *vector = vector_init(sizeof(struct Person), compare_person);
+    vector_t *vector = vector_init(sizeof(struct Person), compare_person);
     vector_append(vector, &(struct Person){012345, 23, "My name"});
     vector_free(vector);
 }

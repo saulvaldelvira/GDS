@@ -1,5 +1,5 @@
 /*
- * Graph.h - Graph definition.
+ * graph.h - graph_t definition.
  * Author: Saúl Valdelvira (2023)
  */
 #pragma once
@@ -15,113 +15,113 @@ extern "C" {
 #include <stdint.h>
 #include "./util/compare.h"
 
-typedef struct Graph Graph;
+typedef struct graph_t graph_t;
 
 /**
  * Initializes an empty graph.
  * @param data_size size of the data being stored
  * @param cmp comparator function for two elements on the graph
 */
-Graph* graph_init(size_t data_size, comparator_function_t cmp);
+graph_t* graph_init(size_t data_size, comparator_function_t cmp);
 
 /**
  * Sets the comparator function of the graph
  * @param cmp the new comparator function
 */
-void graph_set_comparator(Graph *graph, comparator_function_t cmp);
+void graph_set_comparator(graph_t *graph, comparator_function_t cmp);
 
 /**
  * Sets the destructor function of the graph
  * @param destructor the new destructor function. NULL means no destructor
 */
-void graph_set_destructor(Graph *graph, destructor_function_t destructor);
+void graph_set_destructor(graph_t *graph, destructor_function_t destructor);
 
 /**
  * Fills the graph given arrays for vertices, edge sources, edge targets, and weights.
  * @param vertices_length the length of the vetrices array
  * @param edges the length of the sources, targets and weights array
 */
-int graph_fill(Graph *graph, void *array_vertices, void *array_sources, void *array_targets, float *array_weights, size_t vertices_length, size_t edges_length);
+int graph_fill(graph_t *graph, void *array_vertices, void *array_sources, void *array_targets, float *array_weights, size_t vertices_length, size_t edges_length);
 
 /**
  * Adds a vertex to the graph.
  * @return 1 if the operation is successful
 */
-int graph_add_vertex(Graph *graph, void *vertex);
+int graph_add_vertex(graph_t *graph, void *vertex);
 
 /**
  * Adds [array_length] elements from array to the graph
 */
-int graph_add_vertices_array(Graph *graph, void *array, size_t array_length);
+int graph_add_vertices_array(graph_t *graph, void *array, size_t array_length);
 
 /**
  * Removes a vertex from the graph.
  * @note If it exists, the destructor will be called on the element.
  * @return 1 if the operation is successful
 */
-int graph_remove_vertex(Graph *graph, void *vertex);
+int graph_remove_vertex(graph_t *graph, void *vertex);
 
 /**
  * Adds the first [array_length] of the array from the graph
 */
-int graph_remove_vertices_array(Graph *graph, void *array, size_t array_length);
+int graph_remove_vertices_array(graph_t *graph, void *array, size_t array_length);
 
 /**
  * @return true if the vertex exists in the graph
 */
-bool graph_exists_vertex(Graph *graph, void *vertex);
+bool graph_exists_vertex(graph_t *graph, void *vertex);
 
 /**
  * Adds an edge between source and target, with the given weight
  * @return 1 if the operation is successful
 */
-int graph_add_edge(Graph *graph, void *source, void *target, float weight);
+int graph_add_edge(graph_t *graph, void *source, void *target, float weight);
 
 /**
  * Adds [arrays_length] edges to the graph.
  * Taking elements from array_sources, array_targets and array_weights.
  * @note The three arrays MUST BE THE SAME SIZE
 */
-int graph_add_edges_array(Graph *graph, void *array_sources, void *array_targets, float *array_weights, size_t arrays_length);
+int graph_add_edges_array(graph_t *graph, void *array_sources, void *array_targets, float *array_weights, size_t arrays_length);
 
 /**
  * Removes the edge between source and target
  * @return 1 if the operation is successful
 */
-int graph_remove_edge(Graph *graph, void *source, void *target);
+int graph_remove_edge(graph_t *graph, void *source, void *target);
 
 /**
  * Removes the first [arrays_length] edges from the arrays.
 */
-int graph_remove_edges_array(Graph *graph, void *array_sources, void *array_targets, size_t arrays_length);
+int graph_remove_edges_array(graph_t *graph, void *array_sources, void *array_targets, size_t arrays_length);
 
 /**
  * Copies into dest the element at the given index
  * in the vertices array
 */
-void* graph_vertex_at(Graph *graph, ptrdiff_t index, void *dest);
+void* graph_vertex_at(graph_t *graph, ptrdiff_t index, void *dest);
 
 /**
  * @return the weight of the edge between source and target
 */
-float graph_get_edge(Graph *graph, void *source, void *target);
+float graph_get_edge(graph_t *graph, void *source, void *target);
 
 /**
  * @return true if an edge between source and target exists
 */
-bool graph_exists_edge(Graph *graph, void *source, void *target);
+bool graph_exists_edge(graph_t *graph, void *source, void *target);
 
 /**
  * @return the index of the vertex in the graph
 */
-ptrdiff_t graph_indexof(Graph *graph, void *vertex);
+ptrdiff_t graph_indexof(graph_t *graph, void *vertex);
 
 /**
  * @return the number of elements in the graph
 */
-size_t graph_size(Graph *graph);
+size_t graph_size(graph_t *graph);
 
-bool graph_isempty(Graph *graph);
+bool graph_isempty(graph_t *graph);
 
 /////// DIJKSTRA ///////
 
@@ -143,7 +143,7 @@ typedef struct {
  *      status the return status of the operation. If the algorith does not encounter any issue, returns SUCESS (1)
  * @note REMEMBER to free the D and P arrays!! There's a fucntion graph_free_dijkstra_data that does that for you.
 */
-DijkstraData_t graph_dijkstra(Graph *graph, void *source);
+DijkstraData_t graph_dijkstra(graph_t *graph, void *source);
 
 /**
  * Frees the allocated memory for the given DijkstraData_t's D and P arrays
@@ -165,7 +165,7 @@ typedef struct {
 /**
  * Performs the Floyd–Warshall algorithm to find the cheapest path for all vertices of the graph.
 */
-FloydData_t graph_floyd(Graph *graph);
+FloydData_t graph_floyd(graph_t *graph);
 
 /**
  * Frees all memory allocated for the given FloydData_t
@@ -190,34 +190,34 @@ typedef struct {
  * @param     deg_in:  the in degree of the vertex. This means, number of edges starting from the vertex.
  * @param     deg:     total degree of the vertex. It's value is deg_in plus deg_out.
 */
-graph_degree graph_get_degree(Graph *graph, void *vertex);
+graph_degree graph_get_degree(graph_t *graph, void *vertex);
 
 /**
  * @return true if the given vertex is a source vertex.
  * @note A vertex is source if the in degree (number of edges entering the vertex) is 0
  *      and the out degree is > 0 (at least an edge is born from the vertex)
 */
-bool graph_is_source_vertex(Graph *graph, void *vertex);
+bool graph_is_source_vertex(graph_t *graph, void *vertex);
 
 /**
  * @return true if the given vertex is a drain vertex.
  * @note A vertex is source if the out degree (number of edges exiting the vertex) is 0
  *      and the in degree is > 0 (at least an edge eneters the vertex)
 */
-bool graph_is_drain_vertex(Graph *graph, void *vertex);
+bool graph_is_drain_vertex(graph_t *graph, void *vertex);
 
 /**
  * @return true if the given vertex is isolated.
  * @note A vertex is isolated if its degree is 0, wich means no
  * edges go into the vertex, and no edges start from the vertex.
 */
-bool graph_is_isolated_vertex(Graph *graph, void *vertex);
+bool graph_is_isolated_vertex(graph_t *graph, void *vertex);
 
 /**
  * @return The eccentricity of the vertex. This means, the highest of
  * the min cost paths between the vertex and the rest of vertices.
 */
-float graph_eccentricity(Graph *graph, void *vertex);
+float graph_eccentricity(graph_t *graph, void *vertex);
 
 /////////////////////////////////////////////////////////
 
@@ -241,7 +241,7 @@ typedef struct {
  * This is because, as there might be unreachable vertices, it's posible that the length of the array is < than the number of elements in the graph.
  * @note Remember to free the returned array when you finish working with it.
 */
-graph_traversal graph_traverse_DF(Graph *graph, void *vertex);
+graph_traversal graph_traverse_DF(graph_t *graph, void *vertex);
 
 /**
  * Traverses the graph using the Breadth First algorithm.
@@ -253,11 +253,11 @@ graph_traversal graph_traverse_DF(Graph *graph, void *vertex);
  * This is because, as there might be unreachable vertices, it's posible that the length of the array is < than the number of elements in the graph.
  * @note Remember to free the returned array when you finish working with it.
 */
-graph_traversal graph_traverse_BF(Graph *graph, void *vertex);
+graph_traversal graph_traverse_BF(graph_t *graph, void *vertex);
 
 /////////////////////////////////////////////////////////
 
-void graph_free(Graph *g, ...);
+void graph_free(graph_t *g, ...);
 
 /**
  * Frees all the given graphs.
@@ -267,7 +267,7 @@ void graph_free(Graph *g, ...);
 /**
  * Resets the graph to it's original state.
 */
-void graph_clear(Graph *graph);
+void graph_clear(graph_t *graph);
 
 #ifdef __cplusplus
 }

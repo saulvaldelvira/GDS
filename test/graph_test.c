@@ -1,8 +1,8 @@
 #include "test.h"
-#include "../include/Graph.h"
+#include "../include/graph.h"
 
 void dijkstra_test(void){
-	Graph *g = graph_init(sizeof(char) , compare_char);
+	graph_t *g = graph_init(sizeof(char) , compare_char);
 
 	char a = 'A', b = 'B', c = 'C', d = 'D' , e = 'E';
 
@@ -63,7 +63,7 @@ void dijkstra_test(void){
 }
 
 void floyd_test(void){
-	Graph *g = graph_init(sizeof(char), compare_char);
+	graph_t *g = graph_init(sizeof(char), compare_char);
 	char a = 'A', b = 'B', c = 'C', d = 'D', e = 'E', f = 'F';
 	assert(graph_add_vertex(g, &a));
 	assert(graph_add_vertex(g, &b));
@@ -92,7 +92,7 @@ void floyd_test(void){
 }
 
 void drain_source(void){
-	Graph *g = graph_init(sizeof(char), compare_char);
+	graph_t *g = graph_init(sizeof(char), compare_char);
 	char a = 'A', b = 'B', c = 'C', d = 'D';
 
 	graph_add_vertex(g, &a);
@@ -117,7 +117,7 @@ void drain_source(void){
 }
 
 void traverse_bf(void){
-	Graph *graph = graph_init(sizeof(char), compare_char);
+	graph_t *graph = graph_init(sizeof(char), compare_char);
 	char a = 'A', b = 'B', c = 'C', d = 'D', e= 'E', f ='F', g = 'G';
 	graph_add_vertex(graph, &a);
 	graph_add_vertex(graph, &b);
@@ -145,7 +145,7 @@ void traverse_bf(void){
 }
 
 void traverse_df(void){
-	Graph *graph = graph_init(sizeof(char), compare_char);
+	graph_t *graph = graph_init(sizeof(char), compare_char);
 	char a = 'A', b = 'B', c = 'C', d = 'D',
 		e = 'E', f = 'F', g = 'G', h = 'H', i = 'I', j = 'J';
 
@@ -194,7 +194,7 @@ void traverse_df(void){
 }
 
 void eccentricity_test(void){
-	Graph *g = graph_init(sizeof(char), compare_char);
+	graph_t *g = graph_init(sizeof(char), compare_char);
 	char a = 'A', b = 'B', c = 'C', d = 'D', e = 'E';
 	graph_add_vertex(g, &a);
 	graph_add_vertex(g, &b);
@@ -224,7 +224,7 @@ void eccentricity_test(void){
 }
 
 void destructor_test(void){
-	Graph *g = graph_init(sizeof(int*), compare_lesser);
+	graph_t *g = graph_init(sizeof(int*), compare_lesser);
 	graph_set_destructor(g, destroy_ptr);
 	for (int i = 0; i < 1024; i++){
 		int *ptr = malloc(sizeof(int));
@@ -236,10 +236,10 @@ void destructor_test(void){
 int main(void){
 	intptr_t n = 1200;
 	int tmp;
-	test_start("Graph.c");
+	test_start("graph.c");
 
 
-	Graph *g = graph_init(sizeof(int) ,compare_int);
+	graph_t *g = graph_init(sizeof(int) ,compare_int);
 	for(int i = 0; i < n; i++){
 		assert(graph_add_vertex(g, &i));
 		assert(graph_size(g) == (size_t) i+1);
@@ -301,6 +301,6 @@ int main(void){
 
 	graph_free(g);
 
-	test_end("Graph.c");
+	test_end("graph.c");
 	return 0;
 }

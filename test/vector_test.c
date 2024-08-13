@@ -1,22 +1,22 @@
 #include "test.h"
-#include "../include/Vector.h"
+#include "../include/vector.h"
 #include <string.h>
 
-void assert_index(Vector *v, int i, int val){
+void assert_index(vector_t *v, int i, int val){
         int tmp;
         assert(vector_at(v, i, &tmp));
         assert(tmp == val);
 }
 
-void assert_noindex(Vector *v, int i){
+void assert_noindex(vector_t *v, int i){
         int tmp;
         assert(!vector_at(v, i, &tmp));
 }
 
 void joins_test(void){
-	Vector *a1 = vector_init(sizeof(int), compare_int);
-	Vector *a2 = vector_init(sizeof(int), compare_int);
-	Vector *diff_size = vector_init(sizeof(char), compare_char);
+	vector_t *a1 = vector_init(sizeof(int), compare_int);
+	vector_t *a2 = vector_init(sizeof(int), compare_int);
+	vector_t *diff_size = vector_init(sizeof(char), compare_char);
 
 	for (int i = 0; i < 10; i++)
 		vector_append(a1, &i);
@@ -24,7 +24,7 @@ void joins_test(void){
 	for (int i = 10; i < 20; i++)
 		vector_append(a2, &i);
 
-	Vector *vec_joint = vector_join(a1, a2);
+	vector_t *vec_joint = vector_join(a1, a2);
 	assert(vec_joint != NULL);
 	for (int i = 0; i < 20; i++)
 		assert(vector_exists(vec_joint, &i));
@@ -33,12 +33,12 @@ void joins_test(void){
 }
 
 void dup_test(void){
-	Vector *v = vector_init(sizeof(int), compare_int);
+	vector_t *v = vector_init(sizeof(int), compare_int);
 
 	for (int i = 0; i < 10; i++)
 		vector_append(v, &i);
 
-	Vector *dup = vector_dup(v);
+	vector_t *dup = vector_dup(v);
 	for (int i = 0; i < 10; i++)
 		assert(vector_exists(dup, &i));
 
@@ -46,7 +46,7 @@ void dup_test(void){
 }
 
 void destructor_test(void){
-	Vector *vector = vector_init(sizeof(int*), compare_lesser);
+	vector_t *vector = vector_init(sizeof(int*), compare_lesser);
 	vector_set_destructor(vector, destroy_ptr);
 	for (int i = 0; i < 1024; i++){
 		int *ptr = malloc(sizeof(int));
@@ -62,7 +62,7 @@ void destructor_test(void){
 }
 
 void reserve_shrink_test(void){
-	Vector *vector = vector_init(sizeof(int), compare_int);
+	vector_t *vector = vector_init(sizeof(int), compare_int);
 	assert(vector_reserve(vector, 1024));
 	assert(vector_capacity(vector) == 1024);
 	vector_reset(vector);
@@ -75,7 +75,7 @@ void reserve_shrink_test(void){
 }
 
 void clear_test(void){
-	Vector *vector = vector_init(sizeof(int), compare_int);
+	vector_t *vector = vector_init(sizeof(int), compare_int);
 	for (int i = 0; i < 100; i++)
 		vector_append(vector, &i);
 	assert(vector_capacity(vector) > 100);
@@ -104,7 +104,7 @@ static void multiply_by(void *e, void *arg){
 
 void map_test(void){
 	test_step("Map");
-	Vector *vector = vector_init(sizeof(int), compare_int);
+	vector_t *vector = vector_init(sizeof(int), compare_int);
 
 	int arr[] = {1,2,3,4,5};
 
@@ -128,12 +128,12 @@ static bool filter_even(void *e){
 
 void filter_test(void){
 	test_step("Filter");
-	Vector *vector = vector_init(sizeof(int), compare_int);
+	vector_t *vector = vector_init(sizeof(int), compare_int);
 
 	int arr[] = {1,2,3,4,5,6,7};
 
 	vector_append_array(vector, arr, 7);
-	Vector *filtered = vector_filter(vector, filter_even);
+	vector_t *filtered = vector_filter(vector, filter_even);
 
 
 	size_t size = vector_size(filtered);
@@ -157,7 +157,7 @@ void addition(const void* e, void *acc){
 
 void reduce_test(void){
 	test_step("Reduce");
-	Vector *vector = vector_init(sizeof(int), compare_int);
+	vector_t *vector = vector_init(sizeof(int), compare_int);
 
 	int arr[] = {1,2,3,4,5};
 
@@ -173,7 +173,7 @@ void reduce_test(void){
 
 void sort_test(void){
 	const int n = 1024;
-	Vector *vector = vector_init(sizeof(int), compare_int);
+	vector_t *vector = vector_init(sizeof(int), compare_int);
 
 	for (int i = 0; i < n; i++)
 		vector_append(vector, &(int){rand_range(0, n)});
@@ -192,7 +192,7 @@ void sort_test(void){
 }
 
 void string_test(void){
-	Vector *vector = vector_init(sizeof(char*), compare_string);
+	vector_t *vector = vector_init(sizeof(char*), compare_string);
 
         char* arr[] = {
                 "[1] Hello world!",
@@ -216,7 +216,7 @@ void string_test(void){
 }
 
 void index_test(void) {
-	Vector *vector = vector_init(sizeof(int), compare_int);
+	vector_t *vector = vector_init(sizeof(int), compare_int);
 
         vector_append_array(vector, &(int[]){1,2,3,4,5}, 5);
 
@@ -244,7 +244,7 @@ static void init_int(void *e) {
 void resize_test(void) {
         test_step("Resize");
 
-        Vector *v = vector_init(sizeof(int), compare_int);
+        vector_t *v = vector_init(sizeof(int), compare_int);
         vector_resize(v, 1024, init_int);
         for (int i = 0; i < 1024; i++) {
                 int tmp;
@@ -271,12 +271,12 @@ void resize_test(void) {
 
 void iterator(void) {
         const int N = 1024;
-	Vector *v = vector_init(sizeof(int), compare_int);
+	vector_t *v = vector_init(sizeof(int), compare_int);
 
 	for (int i = 0; i < N; i++)
 		vector_append(v, &i);
 
-        VectorIterator it = vector_iterator(v);
+        vector_iterator_t it = vector_iterator(v);
         assert(!vector_it_has_prev(&it));
         assert(vector_it_has_next(&it));
         int tmp;
@@ -325,9 +325,9 @@ void iterator(void) {
 int main(void){
         int n = 2400;
 	int tmp;
-        test_start("Vector.c");
+        test_start("vector.c");
 
-        Vector *vec = vector_init(sizeof(int), compare_int);
+        vector_t *vec = vector_init(sizeof(int), compare_int);
 
 	assert(vector_isempty(vec));
 	for(int i=0; i < n; i++){
@@ -436,5 +436,5 @@ int main(void){
         resize_test();
         iterator();
 
-	test_end("Vector.c");
+	test_end("vector.c");
 }

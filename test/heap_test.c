@@ -1,9 +1,9 @@
 #include "test.h"
-#include "../include/Heap.h"
+#include "../include/heap.h"
 
 void change_priority(void){
 	test_step("Change Priority");
-	Heap *min = heap_init(sizeof(int), compare_int);
+	heap_t *min = heap_init(sizeof(int), compare_int);
 	int elements[] = {12 ,14, 15, 20, 16, 17, 19, 24, 30};
 	heap_add_array(min, elements, 9);
 
@@ -26,7 +26,7 @@ void change_priority(void){
 }
 
 void filter_up(void){
-	Heap *min = heap_init(sizeof(int), compare_int);
+	heap_t *min = heap_init(sizeof(int), compare_int);
 	heap_add(min, &(int){10});
 	heap_add(min, &(int){9});
 	heap_add(min, &(int){8});
@@ -106,7 +106,7 @@ void filter_up(void){
 }
 
 void pop_min(void){
-	Heap *min = heap_init(sizeof(int), compare_int);
+	heap_t *min = heap_init(sizeof(int), compare_int);
 	heap_add(min, &(int){200});
 	heap_add(min, &(int){105});
 	heap_add(min, &(int){1});
@@ -136,7 +136,7 @@ void pop_min(void){
 }
 
 void destructor_test(void){
-	Heap *heap = heap_init(sizeof(int*), compare_lesser);
+	heap_t *heap = heap_init(sizeof(int*), compare_lesser);
 	heap_set_destructor(heap, destroy_ptr);
 	for (int i = 0; i < 1024; i++){
 		int *ptr = malloc(sizeof(int));
@@ -146,11 +146,11 @@ void destructor_test(void){
 }
 
 int main(void){
-	test_start("Heap.c");
+	test_start("heap.c");
 
 	int tmp;
 
-	Heap *min = heap_init(sizeof(int), compare_int);
+	heap_t *min = heap_init(sizeof(int), compare_int);
 	assert(heap_isempty(min));
 	assert(heap_pop_min(min, &tmp) == NULL);
 
@@ -182,6 +182,6 @@ heap_clear(min);
 	destructor_test();
 
 
-	test_end("Heap.c");
+	test_end("heap.c");
 	return 0;
 }

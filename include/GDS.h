@@ -13,14 +13,14 @@ extern "C" {
 
 #define GDS_VERSION 1.0
 
-#include "AVLTree.h"
-#include "Heap.h"
-#include "Dictionary.h"
-#include "Graph.h"
-#include "LinkedList.h"
-#include "Queue.h"
-#include "Stack.h"
-#include "Vector.h"
+#include "avl_tree.h"
+#include "heap.h"
+#include "dictionary.h"
+#include "graph.h"
+#include "linked_list.h"
+#include "queue.h"
+#include "stack.h"
+#include "vector.h"
 
 #include "util/compare.h"
 #include "util/error.h"

@@ -1,8 +1,8 @@
 /**
  * Prints the fibonacci sequence, using
- * a Vector to cache the values.
+ * a vector_t to cache the values.
  *
- * $ gcc fib.c ../src/Vector.c ../src/util/compare.c -o fib
+ * $ gcc fib.c ../src/vector.c ../src/util/compare.c -o fib
  * $ ./fib 12
  *   144
  * $ ./fib 3 8
@@ -12,11 +12,11 @@
  *   8
  *   13
  */
-#include "../include/Vector.h"
+#include "../include/vector.h"
 #include <stdio.h>
 #include <stdlib.h> // atoi
 
-Vector *fib_cache;
+vector_t *fib_cache;
 
 double fib(size_t n){
 	double f;

@@ -1,12 +1,11 @@
-#include "../include/Dictionary.h"
+#include "../include/dictionary.h"
 #include "test.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 void test_simple(void){
-
-        Dictionary *dic = dict_init(sizeof(int), sizeof(char), hash_int);
+        dictionary_t *dic = dict_init(sizeof(int), sizeof(char), hash_int);
         int itmp = 1;
         char ctmp = 'A';
         dict_put(dic, &itmp, &ctmp);
@@ -26,7 +25,7 @@ void test_simple(void){
 void brute(void){
         test_step("Brute");
         int n = 1000;
-        Dictionary *dic = dict_init(sizeof(int), sizeof(int), hash_int);
+        dictionary_t *dic = dict_init(sizeof(int), sizeof(int), hash_int);
         assert(dic);
         for (int i = 0; i < n; i++){
                 int s = dict_put(dic, &i, &i);
@@ -44,7 +43,7 @@ void brute(void){
 }
 
 void config(void){
-        Dictionary *dic = dict_init(sizeof(int), sizeof(int), hash_int);
+        dictionary_t *dic = dict_init(sizeof(int), sizeof(int), hash_int);
 
         assert(dict_configure(dic, DOUBLE_HASHING, 0.05, 0.15, NULL));
 
@@ -64,7 +63,7 @@ void random_test(void){
         shuffle_array(keys, n);
         shuffle_array(values, n);
 
-        Dictionary *dic = dict_init(sizeof(int), sizeof(int), hash_int);
+        dictionary_t *dic = dict_init(sizeof(int), sizeof(int), hash_int);
         int *exp = malloc(n * sizeof(int));
         int *exp2 = malloc(n * sizeof(int));
         for (int i = 0; i < n; i++){
@@ -90,7 +89,7 @@ void random_test(void){
 
 void string_test(void){
         test_step("String");
-        Dictionary *dict = dict_init(sizeof(char*), sizeof(int), hash_string);
+        dictionary_t *dict = dict_init(sizeof(char*), sizeof(int), hash_string);
 
         const int n = 100;
         char *strs[n];
@@ -144,7 +143,7 @@ void struct_test(void){
         };
         strcpy(p.name, "alejandro");
 
-        Dictionary *d = dict_init(sizeof(struct key), sizeof(struct person), hash_structs);
+        dictionary_t *d = dict_init(sizeof(struct key), sizeof(struct person), hash_structs);
         assert(dict_put(d, &k, &p) == SUCCESS);
         assert(dict_exists(d, &k));
         struct person per;
@@ -157,7 +156,7 @@ void struct_test(void){
 }
 
 void destructor_test(void){
-	Dictionary *dict = dict_init(sizeof(int), sizeof(char*), hash_int);
+	dictionary_t *dict = dict_init(sizeof(int), sizeof(char*), hash_int);
 	dict_set_destructor(dict, destroy_ptr);
 
         char *tmp = NULL;
@@ -179,7 +178,7 @@ void destructor_test(void){
 }
 
 int main(void){
-	test_start("Dictionary.c");
+	test_start("dictionary.c");
 
 
         test_simple();
@@ -191,6 +190,6 @@ int main(void){
 	destructor_test();
 
 
-	test_end("Dictionary.c");
+	test_end("dictionary.c");
         return 0;
 }

@@ -1,10 +1,10 @@
-#include "../include/LinkedList.h"
+#include "../include/linked_list.h"
 #include "test.h"
 #include <stdio.h>
 
 void joins_test(void){
-	LinkedList *l1 = list_init(sizeof(int), compare_int);
-	LinkedList *l2 = list_init(sizeof(int), compare_int);
+	linked_list_t *l1 = list_init(sizeof(int), compare_int);
+	linked_list_t *l2 = list_init(sizeof(int), compare_int);
 
 	for (int i = 0; i < 10; i++)
 		list_append(l1, &i);
@@ -12,7 +12,7 @@ void joins_test(void){
 	for (int i = 10; i < 20; i++)
 		list_append(l2, &i);
 
-	LinkedList *lnkd_joint = list_join(l1, l2);
+	linked_list_t *lnkd_joint = list_join(l1, l2);
 	assert(lnkd_joint != NULL);
 	for (int i = 0; i < 20; i++)
 		assert(list_exists(lnkd_joint, &i));
@@ -21,7 +21,7 @@ void joins_test(void){
 }
 
 void destructor_test(void){
-	LinkedList *list = list_init(sizeof(int*), compare_pointer);
+	linked_list_t *list = list_init(sizeof(int*), compare_pointer);
 	list_set_destructor(list, destroy_ptr);
 	int *ptr;
 	for (int i = 0; i < 1024; i++){
@@ -39,7 +39,7 @@ void destructor_test(void){
    and tail are the same is correctly handled */
 void remove_back_and_front(void){
         int tmpdest;
-	LinkedList *list = list_init(sizeof(int), compare_pointer);
+	linked_list_t *list = list_init(sizeof(int), compare_pointer);
         list_append(list, &(int){1});
         list_remove_front(list);
         assert(list_get_back(list, &tmpdest) == NULL);
@@ -60,12 +60,12 @@ void remove_back_and_front(void){
 
 void iterator(void) {
         const int N = 1024;
-	LinkedList *l = list_init(sizeof(int), compare_int);
+	linked_list_t *l = list_init(sizeof(int), compare_int);
 
 	for (int i = 0; i < N; i++)
 		list_append(l, &i);
 
-        LinkedListIterator it = list_iterator(l);
+        list_iterator_t it = list_iterator(l);
         assert(!list_it_has_prev(&it));
         assert(list_it_has_next(&it));
         int tmp;
@@ -114,10 +114,10 @@ void iterator(void) {
 int main(void){
 	int n = 2400;
 	int tmp;
-	test_start("LinkedList.c");
+	test_start("linked_list.c");
 
 
-	LinkedList *lnked = list_init(sizeof(int), compare_int);
+	linked_list_t *lnked = list_init(sizeof(int), compare_int);
 
 	assert(list_isempty(lnked));
 	assert(list_get_front(lnked, &tmp) == NULL);
@@ -190,6 +190,6 @@ int main(void){
 	destructor_test();
         iterator();
 
-	test_end("LinkedList.c");
+	test_end("linked_list.c");
 	return 0;
 }

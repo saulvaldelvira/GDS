@@ -1,5 +1,5 @@
 /*
- * Vector.h - Vector definition.
+ * vector.h - vector_t definition.
  * Author: Saúl Valdelvira (2023)
  */
 #pragma once
@@ -14,64 +14,64 @@ extern "C" {
 #include <stdbool.h>
 #include "./util/compare.h"
 
-typedef struct Vector Vector;
+typedef struct vector_t vector_t;
 
 /**
- * Creates a Vector.
+ * Creates a vector_t.
  * @param data_size the size (in bytes) of the data stored
  * @param cmp pointer to a function that receives two void pointers and returns 1 if the first one is greater than the
  *              second, 0 if they are equal and -1 if the first one is smaller than the second one
  */
-Vector* vector_init(size_t data_size, comparator_function_t cmp);
+vector_t* vector_init(size_t data_size, comparator_function_t cmp);
 
 /**
- * Creates a Vector with the given initial capacity.
+ * Creates a vector_t with the given initial capacity.
  * @param data_size the size (in bytes) of the data stored
  * @param cmp pointer to a function that receives two void pointers and returns 1 if the first one is greater than the
  *              second, 0 if they are equal and -1 if the first one is smaller than the second one
- * @param capacity initial capacity of the Vector.
+ * @param capacity initial capacity of the vector_t.
  */
-Vector* vector_with_capacity(size_t data_size, comparator_function_t cmp, size_t capacity);
+vector_t* vector_with_capacity(size_t data_size, comparator_function_t cmp, size_t capacity);
 
 /**
  * Changes the comparator function of the vector
  * @param cmp the new comparator function
 */
-void vector_set_comparator(Vector *vector, comparator_function_t cmp);
+void vector_set_comparator(vector_t *vector, comparator_function_t cmp);
 
 /**
  * @return the comparator function used by the vector
 */
-comparator_function_t vector_get_comparator(Vector *vector);
+comparator_function_t vector_get_comparator(vector_t *vector);
 
 /**
  * Changes the destructor function of the vector
  * @param destructor the new destructor function. NULL means no destructor.
 */
-void vector_set_destructor(Vector *vector, destructor_function_t destructor);
+void vector_set_destructor(vector_t *vector, destructor_function_t destructor);
 
 /**
  * @return the destructor function used by the vector,
  *         or NULL if it doesn't have one
 */
-destructor_function_t vector_get_destructor(Vector *vector);
+destructor_function_t vector_get_destructor(vector_t *vector);
 
 /**
  * @return the data size of the vector
 */
-size_t vector_get_data_size(Vector *vector);
+size_t vector_get_data_size(vector_t *vector);
 
 /**
  * Adds the element to the end of the vector
  * @return 1 if the operation is successful
  */
-int vector_append(Vector *vector, void *element);
+int vector_append(vector_t *vector, void *element);
 
 /**
  * Adds the element to the front of the vector
  * @return 1 if the operation is successful
  */
-int vector_push_front(Vector *vector, void *element);
+int vector_push_front(vector_t *vector, void *element);
 
 /**
  * Appends a batch of elements to the end of the vector.
@@ -79,7 +79,7 @@ int vector_push_front(Vector *vector, void *element);
  * @param array_length number of elements to copy from array into the vector.
  * @return 1 if the operation is successful
 */
-int vector_append_array(Vector *vector, void *array, size_t array_length);
+int vector_append_array(vector_t *vector, void *array, size_t array_length);
 
 /**
  * Inserts a batch of elements into the vector.
@@ -88,7 +88,7 @@ int vector_append_array(Vector *vector, void *array, size_t array_length);
  * @param array_length number of elements to copy from array into the vector.
  * @return 1 if the operation is successful
 */
-int vector_insert_array(Vector *vector, ptrdiff_t index, void *array, size_t array_length);
+int vector_insert_array(vector_t *vector, ptrdiff_t index, void *array, size_t array_length);
 
 /**
  * Appends a batch of elements to the front of the vector.
@@ -96,32 +96,32 @@ int vector_insert_array(Vector *vector, ptrdiff_t index, void *array, size_t arr
  * @param array_length number of elements to copy from array into the vector.
  * @return 1 if the operation is successful
 */
-int vector_push_front_array(Vector *vector, void *array, size_t array_length);
+int vector_push_front_array(vector_t *vector, void *array, size_t array_length);
 
 /**
  * @return the index of the element in the vector.
  */
-ptrdiff_t vector_indexof(Vector *vector, void *element);
+ptrdiff_t vector_indexof(vector_t *vector, void *element);
 
 /**
  * @return true if the element exists inside the vector.
  */
-bool vector_exists(Vector *vector, void *element);
+bool vector_exists(vector_t *vector, void *element);
 
 /**
  * @return true if the vector is empty.
  */
-bool vector_isempty(Vector *vector);
+bool vector_isempty(vector_t *vector);
 
 /**
  * @return the number of elements in the vector.
  */
-size_t vector_size(Vector *vector);
+size_t vector_size(vector_t *vector);
 
 /**
  * @return the capacity of the vector.
 */
-size_t vector_capacity(Vector *vector);
+size_t vector_capacity(vector_t *vector);
 
 /**
  * Reserves space for a certain number of elements.
@@ -130,7 +130,7 @@ size_t vector_capacity(Vector *vector);
  *       the space. For that, use vector_resize
  * @note It does NOT shrink the vector. For that, use vector_shrink.
 */
-int vector_reserve(Vector *vector, size_t n_elements);
+int vector_reserve(vector_t *vector, size_t n_elements);
 
 /**
  * Resizes the vector to the given number of elements.
@@ -142,32 +142,32 @@ int vector_reserve(Vector *vector, size_t n_elements);
  *       be called. This is to avoid calling it on garbage elements.
  * @note It does NOT shrink the vector. For that, use vector_shrink.
 */
-int vector_resize(Vector *vector, size_t n_elements, constructor_function_t constructor);
+int vector_resize(vector_t *vector, size_t n_elements, constructor_function_t constructor);
 
 /**
  * Shrinks the vector to fit exactly it's content.
 */
-int vector_shrink(Vector *vector);
+int vector_shrink(vector_t *vector);
 
 /**
  * Applies 'func' to every element in the vector
  * @param func function to apply
  * @param args (optional) passed to func as the second parameter
 */
-void vector_map(Vector *vector, void (*func) (void *,void *), void *args);
+void vector_map(vector_t *vector, void (*func) (void *,void *), void *args);
 
 /**
-* Returns a new Vector containing all the elements that match the
+* Returns a new vector_t containing all the elements that match the
 * a given predicate.
 * @param func a function that receives an element and returns
 *        true if it must be added to the result vector.
 */
-Vector* vector_filter(Vector *vector, bool (*func) (void*));
+vector_t* vector_filter(vector_t *vector, bool (*func) (void*));
 
 /**
- * Performs the Quick Sort algorithm on the Vector.
+ * Performs the Quick Sort algorithm on the vector_t.
 */
-void vector_sort(Vector *vector);
+void vector_sort(vector_t *vector);
 
 /**
  * Reduces all element of the vector into a single element.
@@ -177,37 +177,37 @@ void vector_sort(Vector *vector);
  * @param dest address to store the result into
  * @return the dest pointer
  */
-void* vector_reduce(Vector *vector, void (*func) (const void*,void*), void *dest);
+void* vector_reduce(vector_t *vector, void (*func) (const void*,void*), void *dest);
 
 /**
  * Replaces the element at the given index with replacement.
  */
-int vector_set_at(Vector *vector, ptrdiff_t index, void *replacement);
+int vector_set_at(vector_t *vector, ptrdiff_t index, void *replacement);
 
 /**
  * Inserts an element in the position of another.
  * Same as:
  *     vector_insert_at(vector, vector_indexof(element), insert);
 */
-int vector_insert(Vector *vector, void *element, void *insert);
+int vector_insert(vector_t *vector, void *element, void *insert);
 
 /**
  * Inserts element in the given index.
 */
-int vector_insert_at(Vector *vector, ptrdiff_t index, void *element);
+int vector_insert_at(vector_t *vector, ptrdiff_t index, void *element);
 
 /**
  * Replaces element with replacement.
  * @return 1 if the operation is successful
  */
-int vector_set(Vector *vector, void *element, void *replacement);
+int vector_set(vector_t *vector, void *element, void *replacement);
 
 /**
  * Copies into dest the element at index.
  * @param[out] dest the memory address to copy the value into.
  * @return the dest pointer, or NULL if error.
  */
-void* vector_at(Vector *vector, ptrdiff_t index, void *dest);
+void* vector_at(vector_t *vector, ptrdiff_t index, void *dest);
 
 /**
  * Same as:
@@ -215,24 +215,24 @@ void* vector_at(Vector *vector, ptrdiff_t index, void *dest);
  * @param[out] dest the memory address to copy the value into.
  * @return the dest pointer, or NULL if error.
  */
-void* vector_get(Vector *vector, void *element, void *dest);
+void* vector_get(vector_t *vector, void *element, void *dest);
 
 /**
  * Copies into dest the first element in the vector.
  * @return dest, or NULL if the vector is empty.
 */
-void* vector_front(Vector *vector, void *dest);
+void* vector_front(vector_t *vector, void *dest);
 
 /**
  * Copies into dest the last element in the vector.
  * @return dest, or NULL if the vector is empty.
 */
-void* vector_back(Vector *vector, void *dest);
+void* vector_back(vector_t *vector, void *dest);
 
 /**
  * Copies the first [array_length] elements from the vector into the array
 */
-void* vector_get_into_array(Vector *vector, void *array, size_t array_length);
+void* vector_get_into_array(vector_t *vector, void *array, size_t array_length);
 
 /**
  * Allocates an array of [array_length] elements and fills it with
@@ -240,18 +240,18 @@ void* vector_get_into_array(Vector *vector, void *array, size_t array_length);
  * @param array_length the number of elements to get.
  *        Pass 0 to get all the elements in the vector
 */
-void* vector_get_array(Vector *vector, size_t array_length);
+void* vector_get_array(vector_t *vector, size_t array_length);
 
 /**
  * Swaps the element at index_1 and index_2
 */
-int vector_swap(Vector *vector, ptrdiff_t index_1, ptrdiff_t index_2);
+int vector_swap(vector_t *vector, ptrdiff_t index_1, ptrdiff_t index_2);
 
 /**
  * Compares the element at index_1 and index_2
  * @return the result of the comparison
 */
-int vector_compare(Vector *vector, ptrdiff_t index_1, ptrdiff_t index_2);
+int vector_compare(vector_t *vector, ptrdiff_t index_1, ptrdiff_t index_2);
 
 /*
  * Remove vs. Pop
@@ -267,7 +267,7 @@ int vector_compare(Vector *vector, ptrdiff_t index_1, ptrdiff_t index_2);
  * @note If you don't want that, see #vector_pop_at
  * @return 1 if the operation is successful.
  */
-int vector_remove_at(Vector *vector, ptrdiff_t index);
+int vector_remove_at(vector_t *vector, ptrdiff_t index);
 
 /**
  * Removes the specified element.
@@ -275,7 +275,7 @@ int vector_remove_at(Vector *vector, ptrdiff_t index);
  * @note If you don't want that, see #vector_pop
  * @return 1 if the operation is successful.
  */
-int vector_remove(Vector *vector, void *element);
+int vector_remove(vector_t *vector, void *element);
 
 /**
  * Removes the first element in the vector.
@@ -283,7 +283,7 @@ int vector_remove(Vector *vector, void *element);
  * @note If you don't want that, see #vector_pop_front
  * @return 1 if the operation is succesful
 */
-int vector_remove_front(Vector *vector);
+int vector_remove_front(vector_t *vector);
 
 /**
  * Removes the last element in the vector.
@@ -291,7 +291,7 @@ int vector_remove_front(Vector *vector);
  * @note If you don't want that, see #vector_pop_back
  * @return 1 if the operation is successful
 */
-int vector_remove_back(Vector *vector);
+int vector_remove_back(vector_t *vector);
 
 /**
  * Removes from the vector the first [array_length] elements of the given array.
@@ -299,7 +299,7 @@ int vector_remove_back(Vector *vector);
  * @note If you don't want that, see #vector_pop_array
  * @return 1 if the operation is successful
 */
-int vector_remove_array(Vector *vector, void *array, size_t array_length);
+int vector_remove_array(vector_t *vector, void *array, size_t array_length);
 
 /**
  * Pops the element at the given index.
@@ -307,7 +307,7 @@ int vector_remove_array(Vector *vector, void *array, size_t array_length);
  * @note If you want the destructor to be called on the element, use #vector_remove_at instead
  * @return the dest pointer
  */
-void* vector_pop_at(Vector *vector, ptrdiff_t index, void *dest);
+void* vector_pop_at(vector_t *vector, ptrdiff_t index, void *dest);
 
 /**
  * Pops the element
@@ -315,7 +315,7 @@ void* vector_pop_at(Vector *vector, ptrdiff_t index, void *dest);
  * @note If you want the destructor to be called on the element, use #vector_remove instead
  * @return the dest pointer
  */
-void* vector_pop(Vector *vector, void *element, void *dest);
+void* vector_pop(vector_t *vector, void *element, void *dest);
 
 /**
  * Pops the first element.
@@ -323,7 +323,7 @@ void* vector_pop(Vector *vector, void *element, void *dest);
  * @note If you want the destructor to be called on the element, use #vector_remove_front instead
  * @return the dest pointer
 */
-void* vector_pop_front(Vector *vector, void *dest);
+void* vector_pop_front(vector_t *vector, void *dest);
 
 /**
  * Pops the last element.
@@ -331,7 +331,7 @@ void* vector_pop_front(Vector *vector, void *dest);
  * @note If you want the destructor to be called on the element, use #vector_remove_back instead
  * @return the dest pointer
 */
-void* vector_pop_back(Vector *vector, void *dest);
+void* vector_pop_back(vector_t *vector, void *dest);
 
 /**
  * Pops from the vector the first [array_length] elements of the given array.
@@ -340,25 +340,25 @@ void* vector_pop_back(Vector *vector, void *dest);
  * @note If you want the destructor to be called on the element, use #vector_remove_array instead
  * @return the dest pointer
 */
-void* vector_pop_array(Vector *vector, void *array, size_t array_length, void *dest);
+void* vector_pop_array(vector_t *vector, void *array, size_t array_length, void *dest);
 
 /**
  * @return A copy of the vector.
 */
-Vector* vector_dup(Vector *vector);
+vector_t* vector_dup(vector_t *vector);
 
 /**
  * Removes all the elements in the vector, without freeing the
  * internal buffer (i.e. without shrinking it's capacity).
 */
-void vector_clear(Vector *vector);
+void vector_clear(vector_t *vector);
 
 /**
  * @returns a new vector, with all the elements of vector_1 and vector_2.
 */
-Vector* vector_join(Vector *vector_1, Vector *vector_2);
+vector_t* vector_join(vector_t *vector_1, vector_t *vector_2);
 
-void vector_free(Vector *v, ...);
+void vector_free(vector_t *v, ...);
 
 /**
  * Frees all the given vectors.
@@ -368,28 +368,28 @@ void vector_free(Vector *v, ...);
 /**
  * Frees the vector and resets it to it's original state.
  */
-void vector_reset(Vector *vector);
+void vector_reset(vector_t *vector);
 
 /* ITERATOR */
-typedef struct VectorIterator {
-        Vector *vector;
+typedef struct vector_iterator_t {
+        vector_t *vector;
         ptrdiff_t next, prev;
-} VectorIterator;
+} vector_iterator_t;
 
 /*
  * Create an iterator of the given vector.
  * CAUTION:
  * DO NOT use this iterator after the original vector has been freed.
  * */
-VectorIterator vector_iterator(Vector *vector);
-VectorIterator vector_iterator_from_back(Vector *vector);
+vector_iterator_t vector_iterator(vector_t *vector);
+vector_iterator_t vector_iterator_from_back(vector_t *vector);
 
-void* vector_it_next(VectorIterator *it, void *dst);
-void* vector_it_prev(VectorIterator *it, void *dst);
-void* vector_it_peek_next(VectorIterator *it, void *dst);
-void* vector_it_peek_prev(VectorIterator *it, void *dst);
-bool vector_it_has_next(VectorIterator *it);
-bool vector_it_has_prev(VectorIterator *it);
+void* vector_it_next(vector_iterator_t *it, void *dst);
+void* vector_it_prev(vector_iterator_t *it, void *dst);
+void* vector_it_peek_next(vector_iterator_t *it, void *dst);
+void* vector_it_peek_prev(vector_iterator_t *it, void *dst);
+bool vector_it_has_next(vector_iterator_t *it);
+bool vector_it_has_prev(vector_iterator_t *it);
 
 #ifdef __cplusplus
 }

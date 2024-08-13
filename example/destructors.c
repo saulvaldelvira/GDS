@@ -1,4 +1,4 @@
-#include "../include/Vector.h"
+#include "../include/vector.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
@@ -14,7 +14,7 @@ void destroy_person(void *p){
 }
 
 int main(void){
-        Vector *v = vector_init(sizeof(char*), compare_equal);
+        vector_t *v = vector_init(sizeof(char*), compare_equal);
         // The destructor will treat every element in the
         // vector as a pointer that must be freed
         vector_set_destructor(v, destroy_ptr);
@@ -77,7 +77,7 @@ int main(void){
 }
 
 /**
- * $ gcc destructors.c ../src/Vector.c ../src/util/compare.c -o destructors
+ * $ gcc destructors.c ../src/vector.c ../src/util/compare.c -o destructors
  * $ valgrind destructors
  * Output:
  *      HEAP SUMMARY:

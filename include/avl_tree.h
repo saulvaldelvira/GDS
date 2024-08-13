@@ -1,5 +1,5 @@
 /*
- * AVLTree.h - AVLTree definition.
+ * avl_tree.h - avl_t definition.
  * Author: Saúl Valdelvira (2023)
  */
 #pragma once
@@ -14,117 +14,117 @@ extern "C" {
 #include <stdbool.h>
 #include "./util/compare.h"
 
-typedef struct AVLTree AVLTree;
+typedef struct avl_t avl_t;
 
 /**
- * Initializes an AVLTree.
+ * Initializes an avl_t.
  * @param data_size the size of the data type being stored
  * @param cmp the comprator function for two elements in the tree
 */
-AVLTree* avl_init(size_t data_size, comparator_function_t cmp);
+avl_t* avl_init(size_t data_size, comparator_function_t cmp);
 
 /**
  * Changes the comparator function of the tree
  * @param cmp the new comparator function
 */
-void avl_set_comparator(AVLTree *tree, comparator_function_t cmp);
+void avl_set_comparator(avl_t *tree, comparator_function_t cmp);
 
 /**
  * Sets the destructor function of the tree
  * @param destructor the new destructor function. NULL means no destructor
 */
-void avl_set_destructor(AVLTree *tree, destructor_function_t destructor);
+void avl_set_destructor(avl_t *tree, destructor_function_t destructor);
 
 /**
  * Adds the elements to the tree
  * @return 1 if the operation is successful
 */
-int avl_add(AVLTree *tree, void *element);
+int avl_add(avl_t *tree, void *element);
 
 /**
  * Adds [array_length] elements from array
  * @return 1 if the operation is successful
 */
-int avl_add_array(AVLTree *tree, void *array, size_t array_length);
+int avl_add_array(avl_t *tree, void *array, size_t array_length);
 
 /**
  * Removes the elements from the tree
  * @return 1 if the operation is successful
 */
-int avl_remove(AVLTree *tree, void *element);
+int avl_remove(avl_t *tree, void *element);
 
 /**
  * Removes [array_length] elements from array
  * @return 1 if the operation is successful
 */
-int avl_remove_array(AVLTree *tree, void *array, size_t array_length);
+int avl_remove_array(avl_t *tree, void *array, size_t array_length);
 
 /**
  * @return true if the elements exists in the tree
 */
-bool avl_exists(AVLTree *tree, void *element);
+bool avl_exists(avl_t *tree, void *element);
 
 /**
  * Copies the element into dest, if existing.
  * @return dest if it succesfuly finds the element
 */
-void* avl_get(AVLTree *tree, void *element, void *dest);
+void* avl_get(avl_t *tree, void *element, void *dest);
 
 /**
  * @return the number of elements in the tree
 */
-size_t avl_size(AVLTree *tree);
+size_t avl_size(avl_t *tree);
 
 /**
  * @return the height of the tree
 */
-int avl_height(AVLTree *tree);
+int avl_height(avl_t *tree);
 
 /**
  * @return true if the tree is empty
 */
-bool avl_isempty(AVLTree *tree);
+bool avl_isempty(avl_t *tree);
 
 /**
  * @return an array with the elements in the tree traversed Pre Order
  * @note Remember to free the returned pointer when finished
 */
-void* avl_preorder(AVLTree *tree);
+void* avl_preorder(avl_t *tree);
 
 /**
  * @return an array with the elements in the tree traversed In Order
  * @note Remember to free the returned pointer when finished
 */
-void* avl_inorder(AVLTree *tree);
+void* avl_inorder(avl_t *tree);
 
 /**
  * @return an array with the elements in the tree traversed Post Order
  * @note Remember to free the returned pointer when finished
 */
-void* avl_postorder(AVLTree *tree);
+void* avl_postorder(avl_t *tree);
 
 /**
- * @return a new AVLTree with the elements of the two given trees.
+ * @return a new avl_t with the elements of the two given trees.
  * @note No particular order of elements is guaranteed.
  * @note ATTENTION: The trees must store the same data. At least, they must have
  * the same data size. Also, the comparator function of tree_1 will be taken,
  * because it is assumed that both trees have the same comparator functions.
 */
-AVLTree* avl_join(AVLTree *tree_1, AVLTree *tree_2);
+avl_t* avl_join(avl_t *tree_1, avl_t *tree_2);
 
 /**
  * Get the max value inside the tree
  * @param[out] dest address to copy the element into
  * @return dest pointer, or NULL if error
 */
-void* avl_max(AVLTree *tree, void *dest);
+void* avl_max(avl_t *tree, void *dest);
 
 /**
  * Get the min value inside the tree
  * @param[out] dest address to copy the element into
  * @return dest pointer, or NULL if error
 */
-void* avl_min(AVLTree *tree, void *dest);
+void* avl_min(avl_t *tree, void *dest);
 
 /**
  * Get the max value inside the tree, starting in element
@@ -132,7 +132,7 @@ void* avl_min(AVLTree *tree, void *dest);
  * @param[out] dest address to copy the element into
  * @return dest pointer, or NULL if error
 */
-void* avl_max_from(AVLTree *tree, void *element, void *dest);
+void* avl_max_from(avl_t *tree, void *element, void *dest);
 
 /**
  * Get the min value inside the tree, starting in element
@@ -140,9 +140,9 @@ void* avl_max_from(AVLTree *tree, void *element, void *dest);
  * @param[out] dest address to copy the element into
  * @return dest pointer, or NULL if error
 */
-void* avl_min_from(AVLTree *tree, void *element, void *dest);
+void* avl_min_from(avl_t *tree, void *element, void *dest);
 
-void avl_free(AVLTree *t, ...);
+void avl_free(avl_t *t, ...);
 
 /**
  * Frees all the given trees.
@@ -152,7 +152,7 @@ void avl_free(AVLTree *t, ...);
 /**
  * Removes all elements from the tree
 */
-void avl_clear(AVLTree *tree);
+void avl_clear(avl_t *tree);
 
 #ifdef __cplusplus
 }

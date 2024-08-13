@@ -1,8 +1,8 @@
 /*
- * Graph.c - Graph implementation.
+ * graph.c - graph_t implementation.
  * Author: Saúl Valdelvira (2023)
  */
-#include "Graph.h"
+#include "graph.h"
 #include "./util/error.h"
 #include "./util/definitions.h"
 #include <stdlib.h>
@@ -12,8 +12,8 @@
 #include <stdarg.h>
 #include <assert.h>
 
-struct Graph {
-        size_t n_elements;      ///< Number of elements in the Graph
+struct graph_t {
+        size_t n_elements;      ///< Number of elements in the graph_t
         size_t max_elements;    ///< Current capacity of the graph
         size_t data_size;       ///< Size (in bytes) of the data type
         comparator_function_t compare;          ///< Comparator function pointer
@@ -27,7 +27,7 @@ struct Graph {
 
 /// CONSTRUCTORS //////////////////////////////////////////////////////////////
 
-static int expand_memory(Graph *graph, size_t new_size){
+static int expand_memory(graph_t *graph, size_t new_size){
         void *vertices = malloc(new_size * graph->data_size);
         float **weights = malloc(new_size * sizeof(*weights));
         int8_t **edges = malloc(new_size * sizeof(*edges));
@@ -78,9 +78,9 @@ static int expand_memory(Graph *graph, size_t new_size){
         return SUCCESS;
 }
 
-Graph* graph_init(size_t data_size, comparator_function_t cmp){
+graph_t* graph_init(size_t data_size, comparator_function_t cmp){
         assert(cmp && data_size > 0);
-        Graph *graph = malloc(sizeof(*graph));
+        graph_t *graph = malloc(sizeof(*graph));
         if (!graph) return NULL;
         graph->n_elements = 0;
         graph->max_elements = 0;
@@ -97,17 +97,17 @@ Graph* graph_init(size_t data_size, comparator_function_t cmp){
         return graph;
 }
 
-void graph_set_comparator(Graph *graph, comparator_function_t cmp){
+void graph_set_comparator(graph_t *graph, comparator_function_t cmp){
         if (graph && cmp)
                 graph->compare = cmp;
 }
 
-void graph_set_destructor(Graph *graph, destructor_function_t destructor){
+void graph_set_destructor(graph_t *graph, destructor_function_t destructor){
         if (graph)
                 graph->destructor = destructor;
 }
 
-int graph_fill(Graph *graph, void *array_vertices,
+int graph_fill(graph_t *graph, void *array_vertices,
                void *array_sources, void *array_targets, float *array_weights,
                size_t vertices_length, size_t edges_length
 ){
@@ -120,7 +120,7 @@ int graph_fill(Graph *graph, void *array_vertices,
 ///////////////////////////////////////////////////////////////////////////////
 
 /// vertices /////////////////////////////////////////////////////////////////////
-int graph_add_vertex(Graph *graph, void *vertex){
+int graph_add_vertex(graph_t *graph, void *vertex){
         assert(graph && vertex);
         if (graph->n_elements == graph->max_elements){
                 if (expand_memory(graph, graph->max_elements * 2) == ERROR)
@@ -140,7 +140,7 @@ int graph_add_vertex(Graph *graph, void *vertex){
         return SUCCESS;
 }
 
-int graph_add_vertices_array(Graph *graph, void *array, size_t array_length){
+int graph_add_vertices_array(graph_t *graph, void *array, size_t array_length){
         assert(graph && array);
         while (array_length-- > 0){
                 int status = graph_add_vertex(graph, array);
@@ -152,7 +152,7 @@ int graph_add_vertices_array(Graph *graph, void *array, size_t array_length){
         return SUCCESS;
 }
 
-int graph_remove_vertex(Graph *graph, void *vertex){
+int graph_remove_vertex(graph_t *graph, void *vertex){
         assert(graph && vertex);
         ptrdiff_t index = graph_indexof(graph, vertex);
         if (index < 0)
@@ -179,7 +179,7 @@ int graph_remove_vertex(Graph *graph, void *vertex){
         return SUCCESS;
 }
 
-int graph_remove_vertices_array(Graph *graph, void *array, size_t array_length){
+int graph_remove_vertices_array(graph_t *graph, void *array, size_t array_length){
         assert(graph && array);
         while (array_length-- > 0){
                 graph_remove_vertex(graph, array);
@@ -188,7 +188,7 @@ int graph_remove_vertices_array(Graph *graph, void *array, size_t array_length){
         return SUCCESS;
 }
 
-bool graph_exists_vertex(Graph *graph, void *vertex){
+bool graph_exists_vertex(graph_t *graph, void *vertex){
         assert(graph && vertex);
         for (size_t i = 0; i < graph->n_elements; i++){
                 void *tmp = void_offset(graph->vertices, graph->data_size * i);
@@ -203,7 +203,7 @@ bool graph_exists_vertex(Graph *graph, void *vertex){
 
 ///// EDGES ///////////////////////////////////////////////////////////////////
 
-int graph_add_edge(Graph *graph, void *source, void *target, float weight){
+int graph_add_edge(graph_t *graph, void *source, void *target, float weight){
         assert(graph && source && target);
         ptrdiff_t index_src = graph_indexof(graph, source);
         if (index_src < 0)
@@ -216,7 +216,7 @@ int graph_add_edge(Graph *graph, void *source, void *target, float weight){
         return SUCCESS;
 }
 
-int graph_add_edges_array(Graph *graph, void *array_sources, void *array_targets, float *array_weights, size_t arrays_length){
+int graph_add_edges_array(graph_t *graph, void *array_sources, void *array_targets, float *array_weights, size_t arrays_length){
         assert(graph && array_sources && array_targets && array_weights);
         while (arrays_length-- > 0){
                 int status = graph_add_edge(graph, array_sources, array_targets, *array_weights);
@@ -230,7 +230,7 @@ int graph_add_edges_array(Graph *graph, void *array_sources, void *array_targets
         return SUCCESS;
 }
 
-int graph_remove_edge(Graph *graph, void *source, void *target){
+int graph_remove_edge(graph_t *graph, void *source, void *target){
         assert(graph && source && target);
         ptrdiff_t index_src = graph_indexof(graph, source);
         if (index_src < 0)
@@ -243,7 +243,7 @@ int graph_remove_edge(Graph *graph, void *source, void *target){
         return SUCCESS;
 }
 
-int graph_remove_edges_array(Graph *graph, void *array_sources, void *array_targets, size_t arrays_length){
+int graph_remove_edges_array(graph_t *graph, void *array_sources, void *array_targets, size_t arrays_length){
         assert(graph && array_sources && array_targets);
         while (arrays_length-- > 0){
                 graph_remove_edge(graph, array_sources, array_targets);
@@ -253,7 +253,7 @@ int graph_remove_edges_array(Graph *graph, void *array_sources, void *array_targ
         return SUCCESS;
 }
 
-void* graph_vertex_at(Graph *graph, ptrdiff_t index, void *dest){
+void* graph_vertex_at(graph_t *graph, ptrdiff_t index, void *dest){
         assert(graph && dest);
         if (index < 0 || (size_t)index >= graph->n_elements)
                 return NULL;
@@ -261,7 +261,7 @@ void* graph_vertex_at(Graph *graph, ptrdiff_t index, void *dest){
         return memcpy(dest, src, graph->data_size);
 }
 
-float graph_get_edge(Graph *graph, void *source, void *target){
+float graph_get_edge(graph_t *graph, void *source, void *target){
         assert(graph && source && target);
         ptrdiff_t index_src = graph_indexof(graph, source);
         if (index_src < 0)
@@ -272,7 +272,7 @@ float graph_get_edge(Graph *graph, void *source, void *target){
         return graph->weights[index_src][index_dst];
 }
 
-bool graph_exists_edge(Graph *graph, void *source, void *target){
+bool graph_exists_edge(graph_t *graph, void *source, void *target){
         assert(graph && source && target);
         ptrdiff_t index_src = graph_indexof(graph, source);
         ptrdiff_t index_dst = graph_indexof(graph, target);
@@ -283,15 +283,15 @@ bool graph_exists_edge(Graph *graph, void *source, void *target){
 
 ///////////////////////////////////////////////////////////////////////////////
 
-size_t graph_size(Graph *graph){
+size_t graph_size(graph_t *graph){
         return graph ? graph->n_elements : 0;
 }
 
-bool graph_isempty(Graph *graph){
+bool graph_isempty(graph_t *graph){
         return graph ? graph->n_elements == 0 : true;
 }
 
-ptrdiff_t graph_indexof(Graph *graph, void *vertex){
+ptrdiff_t graph_indexof(graph_t *graph, void *vertex){
         void *tmp = graph->vertices;
         for (size_t i = 0; i < graph->n_elements; i++){
                 if(graph->compare(tmp, vertex) == 0)
@@ -306,7 +306,7 @@ ptrdiff_t graph_indexof(Graph *graph, void *vertex){
 /**
  * Initializes the DijkstraData_t structure.
 */
-static void graph_init_dijkstra(DijkstraData_t *dijkstra, Graph *graph, size_t source){
+static void graph_init_dijkstra(DijkstraData_t *dijkstra, graph_t *graph, size_t source){
         dijkstra->D = malloc(graph->n_elements * sizeof(*dijkstra->D));
         dijkstra->P = malloc(graph->n_elements * sizeof(*dijkstra->P));
         if (!dijkstra->D || !dijkstra->P){
@@ -351,7 +351,7 @@ static ptrdiff_t graph_get_pivot(uint8_t *S, float *D, size_t n_elements){
         return pivot;
 }
 
-DijkstraData_t graph_dijkstra(Graph *graph, void *source){
+DijkstraData_t graph_dijkstra(graph_t *graph, void *source){
         assert(graph && source);
         DijkstraData_t dijkstra = {.D = NULL, .P = NULL, .n_elements = 0, .status = SUCCESS};
         ptrdiff_t source_index = graph_indexof(graph, source);
@@ -412,7 +412,7 @@ void graph_free_dijkstra_data(DijkstraData_t *data){
 /**
  * Initializes the FloydData_t struct
 */
-static void graph_init_floyd(FloydData_t *floyd, Graph *graph){
+static void graph_init_floyd(FloydData_t *floyd, graph_t *graph){
         floyd->A = malloc(sizeof(*floyd->A) * graph->n_elements);
         floyd->P = malloc(sizeof(*floyd->P) * graph->n_elements);
         if (!floyd->A || !floyd->P){
@@ -446,7 +446,7 @@ static void graph_init_floyd(FloydData_t *floyd, Graph *graph){
         floyd->status = SUCCESS;
 }
 
-FloydData_t graph_floyd(Graph *graph){
+FloydData_t graph_floyd(graph_t *graph){
         assert(graph);
         FloydData_t floyd = {.A = NULL, .P = NULL, .n_elements = 0, .status = SUCCESS};
         graph_init_floyd(&floyd, graph);
@@ -480,7 +480,7 @@ void graph_free_floyd_data(FloydData_t *data){
 
 //// OTHER ALGORITHMS ////////////////////////////////////////////////////////
 
-graph_degree graph_get_degree(Graph *graph, void *vertex){
+graph_degree graph_get_degree(graph_t *graph, void *vertex){
         assert(graph && vertex);
         graph_degree degree = {0, 0, SUCCESS};
         ptrdiff_t index = graph_indexof(graph, vertex);
@@ -499,7 +499,7 @@ graph_degree graph_get_degree(Graph *graph, void *vertex){
         return degree;
 }
 
-bool graph_is_source_vertex(Graph *graph, void *vertex){
+bool graph_is_source_vertex(graph_t *graph, void *vertex){
         graph_degree degree = graph_get_degree(graph, vertex);
         if (degree.status != SUCCESS){
                 return false;
@@ -507,7 +507,7 @@ bool graph_is_source_vertex(Graph *graph, void *vertex){
         return degree.deg_in == 0 && degree.deg_out > 0;
 }
 
-bool graph_is_drain_vertex(Graph *graph, void *vertex){
+bool graph_is_drain_vertex(graph_t *graph, void *vertex){
         graph_degree degree = graph_get_degree(graph, vertex);
         if (degree.status != SUCCESS){
                 return false;
@@ -515,7 +515,7 @@ bool graph_is_drain_vertex(Graph *graph, void *vertex){
         return degree.deg_out == 0 && degree.deg_in > 0;
 }
 
-bool graph_is_isolated_vertex(Graph *graph, void *vertex){
+bool graph_is_isolated_vertex(graph_t *graph, void *vertex){
         graph_degree degree = graph_get_degree(graph, vertex);
         if (degree.status != SUCCESS){
                 return false;
@@ -523,7 +523,7 @@ bool graph_is_isolated_vertex(Graph *graph, void *vertex){
         return (degree.deg_in + degree.deg_out) == 0;
 }
 
-float graph_eccentricity(Graph *graph, void *vertex){
+float graph_eccentricity(graph_t *graph, void *vertex){
         assert(graph && vertex);
         ptrdiff_t index = graph_indexof(graph, vertex);
         if (index < 0){
@@ -545,7 +545,7 @@ float graph_eccentricity(Graph *graph, void *vertex){
 
 ////// Traverse ///////////////////////////////////////////////////////////////
 
-static int traverse_df_rec(graph_traversal *data, size_t index, uint8_t *visited, Graph *graph){
+static int traverse_df_rec(graph_traversal *data, size_t index, uint8_t *visited, graph_t *graph){
         visited[index] = 1;
         void *dst = void_offset(data->elements, data->elements_size * graph->data_size);
         void *src = void_offset(graph->vertices, index * graph->data_size);
@@ -563,7 +563,7 @@ static int traverse_df_rec(graph_traversal *data, size_t index, uint8_t *visited
         return SUCCESS;
 }
 
-graph_traversal graph_traverse_DF(Graph *graph, void *vertex){
+graph_traversal graph_traverse_DF(graph_t *graph, void *vertex){
         assert(graph);
         graph_traversal df = {NULL, 0, SUCCESS};
         ptrdiff_t index = graph_indexof(graph, vertex);
@@ -594,7 +594,7 @@ graph_traversal graph_traverse_DF(Graph *graph, void *vertex){
         return df;
 }
 
-graph_traversal graph_traverse_BF(Graph *graph, void *vertex){
+graph_traversal graph_traverse_BF(graph_t *graph, void *vertex){
         assert(graph);
         graph_traversal bf = {NULL, 0, SUCCESS};
         // Get index of the starting vertex
@@ -652,7 +652,7 @@ graph_traversal graph_traverse_BF(Graph *graph, void *vertex){
 
 /// FREE //////////////////////////////////////////////////////////////////////
 
-static void free_contents(Graph *graph){
+static void free_contents(graph_t *graph){
         if (graph->destructor){
                 void *tmp = graph->vertices;
                 for (size_t i = 0; i < graph->n_elements; i++){
@@ -669,26 +669,26 @@ static void free_contents(Graph *graph){
         free(graph->weights);
 }
 
-static void _graph_free(Graph *graph){
+static void _graph_free(graph_t *graph){
         if (graph){
                 free_contents(graph);
                 free(graph);
         }
 }
 
-void (graph_free)(Graph *g, ...){
+void (graph_free)(graph_t *g, ...){
         if (!g)
                 return;
         va_list arg;
         va_start(arg, g);
         do {
                 _graph_free(g);
-                g = va_arg(arg, Graph*);
+                g = va_arg(arg, graph_t*);
         } while (g);
         va_end(arg);
 }
 
-void graph_clear(Graph *graph){
+void graph_clear(graph_t *graph){
         if (!graph)
                 return;
         free_contents(graph);

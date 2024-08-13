@@ -1,5 +1,5 @@
 /*
- * LinkedList.c - Doubly Linked List implementation.
+ * linked_list.c - Doubly Linked List implementation.
  * Author: Saúl Valdelvira (2023)
  */
 #include <stdlib.h>
@@ -9,9 +9,9 @@
 #include "./util/error.h"
 #include "util/definitions.h"
 #define LINKED_LIST_IMPL
-#include "LinkedList.h"
+#include "linked_list.h"
 
-struct LinkedList {
+struct linked_list_t {
         LLNode *head;   ///< Head node
         LLNode *tail;   ///< Tail node. Last added node
         size_t n_elements;      ///< Number of elements in the list
@@ -22,9 +22,9 @@ struct LinkedList {
 
 /// INITIALIZE ////////////////////////////////////////////////////////////////
 
-LinkedList* list_init(size_t data_size, comparator_function_t cmp){
+linked_list_t* list_init(size_t data_size, comparator_function_t cmp){
         assert(cmp && data_size > 0);
-        LinkedList *list = malloc(sizeof(*list));
+        linked_list_t *list = malloc(sizeof(*list));
         if (!list) return NULL;
         list->n_elements = 0;
         list->head = NULL;
@@ -35,12 +35,12 @@ LinkedList* list_init(size_t data_size, comparator_function_t cmp){
         return list;
 }
 
-void list_set_comparator(LinkedList *list, comparator_function_t cmp){
+void list_set_comparator(linked_list_t *list, comparator_function_t cmp){
         if (list && cmp)
                 list->compare = cmp;
 }
 
-void list_set_destructor(LinkedList *list, destructor_function_t destructor){
+void list_set_destructor(linked_list_t *list, destructor_function_t destructor){
         if (list)
                 list->destructor = destructor;
 }
@@ -61,7 +61,7 @@ static LLNode* list_init_node(void *info, size_t size){
 
 /// ADD-SET ///////////////////////////////////////////////////////////////////////
 
-int list_append(LinkedList *list, void *element){
+int list_append(linked_list_t *list, void *element){
         assert(list && element);
         LLNode **ref = list->head == NULL ? // If head NULL
                         &list->head           : // Add to head
@@ -74,7 +74,7 @@ int list_append(LinkedList *list, void *element){
         return SUCCESS;
 }
 
-int list_append_array(LinkedList *list, void *array, size_t array_length){
+int list_append_array(linked_list_t *list, void *array, size_t array_length){
         assert(list && array);
         while (array_length-- > 0){
                 int status = list_append(list, array);
@@ -85,7 +85,7 @@ int list_append_array(LinkedList *list, void *array, size_t array_length){
         return SUCCESS;
 }
 
-int list_push_front(LinkedList *list, void *element){
+int list_push_front(linked_list_t *list, void *element){
         assert(list && element);
         LLNode *old_head = list->head;
         list->head = list_init_node(element, list->data_size);
@@ -97,7 +97,7 @@ int list_push_front(LinkedList *list, void *element){
         return SUCCESS;
 }
 
-int list_push_front_array(LinkedList *list, void *array, size_t array_length){
+int list_push_front_array(linked_list_t *list, void *array, size_t array_length){
         assert(list && array);
         void *tmp = array;
         while (array_length-- > 0){
@@ -110,7 +110,7 @@ int list_push_front_array(LinkedList *list, void *array, size_t array_length){
         return SUCCESS;
 }
 
-int list_set(LinkedList *list, void *element, void *replacement){
+int list_set(linked_list_t *list, void *element, void *replacement){
         assert(list && element && replacement);
         LLNode *aux = list->head;
         while (list->compare(aux->info, element) != 0){
@@ -128,7 +128,7 @@ int list_set(LinkedList *list, void *element, void *replacement){
 
 /// GET ///////////////////////////////////////////////////////////////////////
 
-void* list_get(LinkedList *list, void *element, void *dest){
+void* list_get(linked_list_t *list, void *element, void *dest){
         assert(list && element && dest);
         LLNode *aux = list->head;
         while (aux != NULL){
@@ -139,21 +139,21 @@ void* list_get(LinkedList *list, void *element, void *dest){
         return NULL;
 }
 
-void* list_get_front(LinkedList *list, void *dest){
+void* list_get_front(linked_list_t *list, void *dest){
         assert(list && dest);
         if (list->head == NULL)
                 return NULL;
         return memcpy(dest, list->head->info, list->data_size);
 }
 
-void* list_get_back(LinkedList *list, void *dest){
+void* list_get_back(linked_list_t *list, void *dest){
         assert(list && dest);
         if (list->tail == NULL)
                 return NULL;
         return memcpy(dest, list->tail->info, list->data_size);
 }
 
-void* list_get_into_array(LinkedList *list, void *array, size_t array_length){
+void* list_get_into_array(linked_list_t *list, void *array, size_t array_length){
         assert(list && array);
         if (array_length > list->n_elements)
                 array_length = list->n_elements;
@@ -168,7 +168,7 @@ void* list_get_into_array(LinkedList *list, void *array, size_t array_length){
 
 }
 
-void* list_get_array(LinkedList *list, size_t array_length){
+void* list_get_array(linked_list_t *list, size_t array_length){
         assert(list);
         if (array_length == 0 || array_length > list->n_elements)
                 array_length = list->n_elements;
@@ -185,7 +185,7 @@ void* list_get_array(LinkedList *list, size_t array_length){
 
 /// REMOVE ////////////////////////////////////////////////////////////////////
 
-int list_remove(LinkedList *list, void *element){
+int list_remove(linked_list_t *list, void *element){
         assert(list && element);
         LLNode *tmp = list->head;
         while(tmp){
@@ -211,7 +211,7 @@ int list_remove(LinkedList *list, void *element){
         return ELEMENT_NOT_FOUND_ERROR;
 }
 
-int list_remove_front(LinkedList *list){
+int list_remove_front(linked_list_t *list){
         assert(list);
         if (list->head == NULL)
                 return SUCCESS;
@@ -226,7 +226,7 @@ int list_remove_front(LinkedList *list){
         return SUCCESS;
 }
 
-int list_remove_back(LinkedList *list){
+int list_remove_back(linked_list_t *list){
         assert(list);
         if (list->tail == NULL)
                 return SUCCESS;
@@ -241,7 +241,7 @@ int list_remove_back(LinkedList *list){
         return SUCCESS;
 }
 
-int list_remove_array(LinkedList *list, void *array, size_t array_length){
+int list_remove_array(linked_list_t *list, void *array, size_t array_length){
         assert(list && array);
         while (array_length-- > 0){
                 list_remove(list, array);
@@ -250,7 +250,7 @@ int list_remove_array(LinkedList *list, void *array, size_t array_length){
         return SUCCESS;
 }
 
-void* list_pop(LinkedList *list, void *element, void *dest){
+void* list_pop(linked_list_t *list, void *element, void *dest){
         assert(list && element);
         LLNode *tmp = list->head;
         while(tmp){
@@ -276,7 +276,7 @@ void* list_pop(LinkedList *list, void *element, void *dest){
         return NULL;
 }
 
-void* list_pop_front(LinkedList *list, void *dest){
+void* list_pop_front(linked_list_t *list, void *dest){
         assert(list);
         if (list->head == NULL)
                 return NULL;
@@ -291,7 +291,7 @@ void* list_pop_front(LinkedList *list, void *dest){
         return dest;
 }
 
-void* list_pop_back(LinkedList *list, void *dest){
+void* list_pop_back(linked_list_t *list, void *dest){
         assert(list);
         if (list->tail == NULL)
                 return NULL;
@@ -306,7 +306,7 @@ void* list_pop_back(LinkedList *list, void *dest){
         return dest;
 }
 
-void* list_pop_array(LinkedList *list, void *array, size_t array_length, void *dest){
+void* list_pop_array(linked_list_t *list, void *array, size_t array_length, void *dest){
         assert(list && array);
         while (array_length-- > 0){
                 list_pop(list, array, dest);
@@ -321,7 +321,7 @@ void* list_pop_array(LinkedList *list, void *array, size_t array_length, void *d
 
 /// OTHER /////////////////////////////////////////////////////////////////////
 
-bool list_exists(LinkedList *list, void *element){
+bool list_exists(linked_list_t *list, void *element){
         if (!list || !element)
                 return false;
         LLNode *aux = list->head;
@@ -333,19 +333,19 @@ bool list_exists(LinkedList *list, void *element){
         return false;
 }
 
-size_t list_size(LinkedList *list){
+size_t list_size(linked_list_t *list){
         return list ? list->n_elements : 0;
 }
 
-bool list_isempty(LinkedList *list){
+bool list_isempty(linked_list_t *list){
         return list ? list->n_elements == 0 : true;
 }
 
-LinkedList* list_join(LinkedList *list_1, LinkedList *list_2){
+linked_list_t* list_join(linked_list_t *list_1, linked_list_t *list_2){
         assert(list_1 && list_2);
         if (list_1->data_size != list_2->data_size)
                 return NULL;
-        LinkedList *list_joint = list_init(list_1->data_size, list_1->compare);
+        linked_list_t *list_joint = list_init(list_1->data_size, list_1->compare);
         LLNode *aux = list_1->head;
         while (aux){
                 list_append(list_joint, aux->info);
@@ -372,26 +372,26 @@ static void list_free_node(LLNode *node, destructor_function_t destructor){
         free(node);
 }
 
-static void _list_free(LinkedList *list){
+static void _list_free(linked_list_t *list){
         if (list){
                 list_free_node(list->head, list->destructor);
                 free(list);
         }
 }
 
-void (list_free)(LinkedList *l, ...){
+void (list_free)(linked_list_t *l, ...){
         if (!l)
                 return;
         va_list arg;
         va_start(arg, l);
         do {
                 _list_free(l);
-                l = va_arg(arg, LinkedList*);
+                l = va_arg(arg, linked_list_t*);
         } while (l);
         va_end(arg);
 }
 
-void list_clear(LinkedList *list){
+void list_clear(linked_list_t *list){
         if (!list)
                 return;
         list_free_node(list->head, list->destructor);
@@ -402,23 +402,23 @@ void list_clear(LinkedList *list){
 
 /* ITERATOR  */
 
-inline LinkedListIterator list_iterator(LinkedList *list) {
+inline list_iterator_t list_iterator(linked_list_t *list) {
         assert(list);
-        return (LinkedListIterator){
+        return (list_iterator_t){
                 .next = list->head,
                 .data_size = list->data_size,
         };
 }
 
-inline LinkedListIterator list_iterator_from_back(LinkedList *list) {
+inline list_iterator_t list_iterator_from_back(linked_list_t *list) {
         assert(list);
-        return (LinkedListIterator){
+        return (list_iterator_t){
                 .prev = list->tail,
                 .data_size = list->data_size,
         };
 }
 
-void* list_it_next(LinkedListIterator *it, void *dst) {
+void* list_it_next(list_iterator_t *it, void *dst) {
         assert(it && dst);
         if (it->next) {
                 it->prev = it->next;
@@ -428,7 +428,7 @@ void* list_it_next(LinkedListIterator *it, void *dst) {
         return NULL;
 }
 
-void* list_it_prev(LinkedListIterator *it, void *dst) {
+void* list_it_prev(list_iterator_t *it, void *dst) {
         assert(it && dst);
         if (it->prev) {
                 it->next = it->prev;
@@ -438,24 +438,24 @@ void* list_it_prev(LinkedListIterator *it, void *dst) {
         return NULL;
 }
 
-inline void* list_it_peek_next(LinkedListIterator *it, void *dst) {
+inline void* list_it_peek_next(list_iterator_t *it, void *dst) {
         assert(it && dst);
         return it->next ?
                 memcpy(dst, it->next->info, it->data_size) : NULL;
 }
 
-inline void* list_it_peek_prev(LinkedListIterator *it, void *dst) {
+inline void* list_it_peek_prev(list_iterator_t *it, void *dst) {
         assert(it && dst);
         return it->prev ?
                 memcpy(dst, it->prev->info, it->data_size) : NULL;
 }
 
-inline bool list_it_has_next(LinkedListIterator *it) {
+inline bool list_it_has_next(list_iterator_t *it) {
         assert(it);
         return it->next;
 }
 
-inline bool list_it_has_prev(LinkedListIterator *it) {
+inline bool list_it_has_prev(list_iterator_t *it) {
         assert(it);
         return it->prev;
 }

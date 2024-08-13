@@ -1,18 +1,18 @@
 /* Silly demo program for the dictionary.
    Track people's age by their name.
 
-   $ gcc dict_demo.c ../src/Dictionary.c ../src/util/hash.c \
-         ../src/Vector.c ../src/util/compare.c -o dict_demo
+   $ gcc dict_demo.c ../src/dictionary.c ../src/util/hash.c \
+         ../src/vector.c ../src/util/compare.c -o dict_demo
    $ ./dict_demo
    */
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
-#include "../include/Dictionary.h"
+#include "../include/dictionary.h"
 
 int main(void){
-	Dictionary *dict = dict_init(sizeof(char*), sizeof(int), hash_string);
+	dictionary_t *dict = dict_init(sizeof(char*), sizeof(int), hash_string);
 	for (;;){
 		char option;
 		printf("Options: (a)dd person, (r)emove person, (s)earch person, (e)xit.\n"
