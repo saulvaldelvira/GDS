@@ -262,7 +262,7 @@ void graph_free(graph_t *g, ...);
 /**
  * Frees all the given graphs.
  */
-#define graph_free(...) graph_free(__VA_ARGS__, NULL)
+#define graph_free(...) graph_free(__VA_ARGS__, 0L)
 
 /**
  * Resets the graph to it's original state.

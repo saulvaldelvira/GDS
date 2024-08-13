@@ -100,7 +100,7 @@ void dict_free(dictionary_t *d, ...);
 /**
  * Frees all the given dicts.
  */
-#define dict_free(...) dict_free(__VA_ARGS__, NULL)
+#define dict_free(...) dict_free(__VA_ARGS__, 0L)
 
 /**
  * Removes all elements from the dictionary

@@ -97,7 +97,7 @@ void queue_free(queue_t *v, ...);
 /**
  * Frees all the given queues.
  */
-#define queue_free(...) queue_free(__VA_ARGS__, NULL)
+#define queue_free(...) queue_free(__VA_ARGS__, 0L)
 
 /**
  * Frees multiple queues at once.

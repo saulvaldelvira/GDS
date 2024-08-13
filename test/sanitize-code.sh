@@ -20,6 +20,7 @@ find . -name '*.c' |
 	     --suppress=constParameter \
 	     --suppress=constParameterPointer\
 	     --suppress=constVariablePointer \
+         --check-level=exhaustive \
 	     --std=c99 \
 	     $file
 	  if [ $? -ne 0 ] ; then

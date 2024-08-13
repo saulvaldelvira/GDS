@@ -101,7 +101,7 @@ void heap_free(heap_t *h, ...);
 /**
  * Frees all the given heaps.
  */
-#define heap_free(...) heap_free(__VA_ARGS__, NULL)
+#define heap_free(...) heap_free(__VA_ARGS__, 0L)
 
 #ifdef __cplusplus
 }

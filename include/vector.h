@@ -363,7 +363,7 @@ void vector_free(vector_t *v, ...);
 /**
  * Frees all the given vectors.
  */
-#define vector_free(...) vector_free(__VA_ARGS__, NULL)
+#define vector_free(...) vector_free(__VA_ARGS__, 0L)
 
 /**
  * Frees the vector and resets it to it's original state.

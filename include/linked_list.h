@@ -207,7 +207,7 @@ void list_free(linked_list_t *h, ...);
 /**
  * Frees all the given lists.
  */
-#define list_free(...) list_free(__VA_ARGS__, NULL)
+#define list_free(...) list_free(__VA_ARGS__, 0L)
 
 /* ITERATOR */
 typedef struct list_iterator_t {

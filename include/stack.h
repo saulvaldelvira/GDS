@@ -98,7 +98,7 @@ void stack_free(stack_t *v, ...);
 /**
  * Frees all the given stacks.
  */
-#define stack_free(...) stack_free(__VA_ARGS__, NULL)
+#define stack_free(...) stack_free(__VA_ARGS__, 0L)
 
 #ifdef __cplusplus
 }

@@ -147,7 +147,7 @@ void avl_free(avl_t *t, ...);
 /**
  * Frees all the given trees.
  */
-#define avl_free(...) avl_free(__VA_ARGS__, NULL)
+#define avl_free(...) avl_free(__VA_ARGS__, 0L)
 
 /**
  * Removes all elements from the tree
