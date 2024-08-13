@@ -84,4 +84,4 @@ clangd:
 
 clean:
 	@ rm -f $(OFILES)
-	@ rm -rf doxygen
+	@ rm -rf doxygen bin
