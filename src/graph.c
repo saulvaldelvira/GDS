@@ -14,7 +14,7 @@
 #include <assert.h>
 #include "gdsmalloc.h"
 
-struct graph_t {
+struct graph {
         size_t n_elements;      ///< Number of elements in the graph_t
         size_t max_elements;    ///< Current capacity of the graph
         size_t data_size;       ///< Size (in bytes) of the data type

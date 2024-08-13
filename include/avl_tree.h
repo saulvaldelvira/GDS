@@ -14,7 +14,7 @@ extern "C" {
 #include <stdbool.h>
 #include "compare.h"
 
-typedef struct avl_t avl_t;
+typedef struct avl avl_t;
 
 /**
  * Initializes an avl_t.

@@ -24,7 +24,7 @@ typedef struct dict_node_t {
         } state;
 } dict_node_t;
 
-struct dictionary_t {
+struct dictionary {
         vector_t *vec_elements;   ///< vector_t to store the elements
         hash_function_t hash;                   ///< Hashing function pointer
         destructor_function_t destructor;       ///< Destructor function pointer

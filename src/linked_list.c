@@ -12,7 +12,7 @@
 #include "linked_list.h"
 #include "gdsmalloc.h"
 
-struct linked_list_t {
+struct linked_list {
         LLNode *head;   ///< Head node
         LLNode *tail;   ///< Tail node. Last added node
         size_t n_elements;      ///< Number of elements in the list

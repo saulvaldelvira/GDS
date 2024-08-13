@@ -14,7 +14,7 @@ extern "C" {
 #include <stdbool.h>
 #include "compare.h"
 
-typedef struct heap_t heap_t;
+typedef struct heap heap_t;
 
 /**
  * @return a new Binary heap_t of mins with the given data size and comparator function

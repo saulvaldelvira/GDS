@@ -21,7 +21,7 @@ typedef struct AVLNode {
         byte info[];
 } AVLNode;
 
-struct avl_t {
+struct avl {
         AVLNode *root;                          ///< Root node of the tree
         comparator_function_t compare;          ///< Comparator function pointer
         destructor_function_t destructor;       ///< Destructor function pointer

@@ -11,7 +11,7 @@
 #include <assert.h>
 #include "gdsmalloc.h"
 
-struct stack_t {
+struct stack {
         vector_t *elements;       ///< Elements of the stack_t
 };
 

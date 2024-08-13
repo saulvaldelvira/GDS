@@ -11,12 +11,12 @@
 #include <assert.h>
 #include "gdsmalloc.h"
 
-typedef struct queue_tNode {
-        struct queue_tNode *next;
+typedef struct queueNode {
+        struct queueNode *next;
         byte info[];
 } queue_tNode;
 
-struct queue_t {
+struct queue {
         queue_tNode *head;        ///< Head node
         queue_tNode *tail;        ///< Tail node. Last added node
         size_t data_size;       ///< Size (in bytes) of the data type being stored

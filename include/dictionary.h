@@ -16,7 +16,7 @@ extern "C" {
 #include "compare.h"
 #include "vector.h"
 
-typedef struct dictionary_t dictionary_t;
+typedef struct dictionary dictionary_t;
 
 enum Redispersion{
         LINEAR, QUADRATIC, DOUBLE_HASHING

@@ -11,7 +11,7 @@ extern "C" {
 #endif
 
 // Error codes
-typedef enum gds_return_t {
+typedef enum gds_return {
         GDS_SUCCESS = 1,
         GDS_ERROR = 0,
         GDS_INDEX_BOUNDS_ERROR = -0xE001,

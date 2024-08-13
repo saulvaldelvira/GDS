@@ -12,7 +12,7 @@
 #include "definitions.h"
 #include "gdsmalloc.h"
 
-struct heap_t {
+struct heap {
         vector_t *elements;       ///< vector_t to hold the elements of the heap
 };
 

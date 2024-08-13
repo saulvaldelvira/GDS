@@ -14,7 +14,7 @@ extern "C" {
 #include <stdbool.h>
 #include "compare.h"
 
-typedef struct vector_t vector_t;
+typedef struct vector vector_t;
 
 /**
  * Creates a vector_t.

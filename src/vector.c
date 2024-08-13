@@ -20,7 +20,7 @@
 #define VECTOR_GROW_FACTOR 2
 #endif
 
-struct vector_t {
+struct vector {
         size_t n_elements;                      ///< Number of elements in the vector
         size_t capacity;                        ///< Current capacity of the vector
         size_t data_size;                       ///< Size (in bytes) of the data type being stored

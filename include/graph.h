@@ -15,7 +15,7 @@ extern "C" {
 #include <stdint.h>
 #include "compare.h"
 
-typedef struct graph_t graph_t;
+typedef struct graph graph_t;
 
 /**
  * Initializes an empty graph.
@@ -234,7 +234,7 @@ float graph_eccentricity(const graph_t *graph, void *vertex);
 /**
  * Struct that hold the result of a graph traversal
 */
-typedef struct graph_traversal_t {
+typedef struct graphraversal_t {
         void *elements;         ///< Array of elements
         uint32_t elements_size;         ///< Number of elements in the array
         int status;                 ///< return status of the traversal

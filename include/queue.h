@@ -19,7 +19,7 @@ extern "C" {
  * This is because a queue_t is a Data Structure that follows a FIFO (First In First Out) dynamic. The first element added (the head)
  * is the first one that goes out.
 */
-typedef struct queue_t queue_t;
+typedef struct queue queue_t;
 
 /**
  * @param data_size the size of the data being stored.

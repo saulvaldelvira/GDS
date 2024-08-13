@@ -19,7 +19,7 @@ extern "C" {
  * This is because a stack_t is a Data Structure that follows a LIFO (Last In First Out) dynamic. The last element added
  * is the first one that goes out.
 */
-typedef struct stack_t stack_t;
+typedef struct stack stack_t;
 
 /**
  * Initializes an empty stack_t.
