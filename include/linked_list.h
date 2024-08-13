@@ -87,44 +87,44 @@ int list_set(linked_list_t *list, void *element, void *replacement);
  * @param[out] dest adress to store the element into.
  * @return a pointer to the first element in the list that is equal to the parameter element.
 */
-void* list_get(linked_list_t *list, void *element, void *dest);
+void* list_get(const linked_list_t *list, void *element, void *dest);
 
 /**
  * @return The first element in the list, or NULL if it does not exists
 */
-void* list_get_front(linked_list_t *list, void *dest);
+void* list_get_front(const linked_list_t *list, void *dest);
 
 /**
  * @return The last element in the list, or NULL if it does not exists
 */
-void* list_get_back(linked_list_t *list, void *dest);
+void* list_get_back(const linked_list_t *list, void *dest);
 
 /**
  * Copies into the array the first [array_length] elements of the list
 */
-void* list_get_into_array(linked_list_t *list, void *array, size_t array_length);
+void* list_get_into_array(const linked_list_t *list, void *array, size_t array_length);
 
 /**
  * Creates an array with the first [array_length] elements of the list.
  * @param array_length the number of elements to get. Pass 0 to get all the elements in the list
  * @note Remember to free the array.
 */
-void* list_get_array(linked_list_t *list, size_t array_length);
+void* list_get_array(const linked_list_t *list, size_t array_length);
 
 /**
 * @return true if the element exists in the list
 */
-bool list_exists(linked_list_t *list, void *element);
+bool list_exists(const linked_list_t *list, void *element);
 
 /**
  * @return the number of elements in the list
 */
-size_t list_size(linked_list_t *list);
+size_t list_size(const linked_list_t *list);
 
 /**
 * @return true if the list is empty
 */
-bool list_isempty(linked_list_t *list);
+bool list_isempty(const linked_list_t *list);
 
 /**
  * Removes all the elements from the list
@@ -200,7 +200,7 @@ void* list_pop_array(linked_list_t *list, void *array, size_t array_length, void
  * @return a new linked_list_t with the elements of the two given
  *         lists, or NULL if the lists have different data_size.
 */
-linked_list_t* list_join(linked_list_t *list_1, linked_list_t *list_2);
+linked_list_t* list_join(const linked_list_t *list_1, const linked_list_t *list_2);
 
 void list_free(linked_list_t *h, ...);
 
@@ -225,8 +225,8 @@ typedef struct list_iterator_t {
  * CAUTION:
  * DO NOT use this iterator after the original list has been freed.
  * */
-list_iterator_t list_iterator(linked_list_t *list);
-list_iterator_t list_iterator_from_back(linked_list_t *list);
+list_iterator_t list_iterator(const linked_list_t *list);
+list_iterator_t list_iterator_from_back(const linked_list_t *list);
 
 void* list_it_next(list_iterator_t *it, void *dst);
 void* list_it_prev(list_iterator_t *it, void *dst);

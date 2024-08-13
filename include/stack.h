@@ -65,12 +65,12 @@ size_t stack_pop_array(stack_t *stack, void *array, size_t array_length);
 /**
  * @return the last pushed element (without deleting it)
 */
-void* stack_peek(stack_t *stack, void *dest);
+void* stack_peek(const stack_t *stack, void *dest);
 
 /**
  * @return true if the element exists in the stack
 */
-bool stack_exists(stack_t *stack, void *element);
+bool stack_exists(const stack_t *stack, void *element);
 
 /**
  * Removes the element from the stack.
@@ -86,12 +86,12 @@ void stack_clear(stack_t *stack);
 /**
  * @return the number of elements in the stack_t
 */
-size_t stack_size(stack_t *stack);
+size_t stack_size(const stack_t *stack);
 
 /**
  * @return true if the stack is empty
 */
-bool stack_isempty(stack_t *stack);
+bool stack_isempty(const stack_t *stack);
 
 void stack_free(stack_t *v, ...);
 

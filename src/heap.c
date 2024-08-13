@@ -181,17 +181,17 @@ int heap_change_priority(heap_t *heap, void *element, void *replacement){
 
 /// GET-EXISTS-SIZE ///////////////////////////////////////////////////////////
 
-void* heap_get_array(heap_t *heap, size_t array_length){
+void* heap_get_array(const heap_t *heap, size_t array_length){
         assert(heap);
         return vector_get_array(heap->elements, array_length);
 }
 
-void* heap_get_into_array(heap_t *heap, void *array, size_t array_length){
+void* heap_get_into_array(const heap_t *heap, void *array, size_t array_length){
         assert(heap);
         return vector_get_into_array(heap->elements, array, array_length);
 }
 
-void* heap_peek(heap_t *heap, void *dest){
+void* heap_peek(const heap_t *heap, void *dest){
         assert(heap && dest);
         return vector_at(heap->elements, 0, dest);
 }
@@ -216,16 +216,16 @@ int heap_remove(heap_t *heap, void *element){
         return GDS_SUCCESS;
 }
 
-bool heap_exists(heap_t *heap, void *element){
+bool heap_exists(const heap_t *heap, void *element){
         assert(heap && element);
         return vector_exists(heap->elements, element);
 }
 
-size_t heap_size(heap_t *heap){
+size_t heap_size(const heap_t *heap){
         return heap ? vector_size(heap->elements) : 0;
 }
 
-bool heap_isempty(heap_t *heap){
+bool heap_isempty(const heap_t *heap){
         return heap ? vector_isempty(heap->elements) : true;
 }
 

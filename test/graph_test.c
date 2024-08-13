@@ -136,7 +136,7 @@ void traverse_bf(void){
 	graph_add_edge(graph, &e, &c, 1.0f);
 	graph_add_edge(graph, &d, &f, 1.0f);
 	graph_add_edge(graph, &f, &g, 1.0f);
-	graph_traversal result = graph_traverse_BF(graph, &a);
+	graph_traversal_t result = graph_traverse_BF(graph, &a);
 	assert(result.status == GDS_SUCCESS);
 
 	char expected[] = {'A', 'B', 'D', 'E', 'F', 'C', 'G'};

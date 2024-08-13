@@ -129,7 +129,7 @@ int list_set(linked_list_t *list, void *element, void *replacement){
 
 /// GET ///////////////////////////////////////////////////////////////////////
 
-void* list_get(linked_list_t *list, void *element, void *dest){
+void* list_get(const linked_list_t *list, void *element, void *dest){
         assert(list && element && dest);
         LLNode *aux = list->head;
         while (aux != NULL){
@@ -140,21 +140,21 @@ void* list_get(linked_list_t *list, void *element, void *dest){
         return NULL;
 }
 
-void* list_get_front(linked_list_t *list, void *dest){
+void* list_get_front(const linked_list_t *list, void *dest){
         assert(list && dest);
         if (list->head == NULL)
                 return NULL;
         return memcpy(dest, list->head->info, list->data_size);
 }
 
-void* list_get_back(linked_list_t *list, void *dest){
+void* list_get_back(const linked_list_t *list, void *dest){
         assert(list && dest);
         if (list->tail == NULL)
                 return NULL;
         return memcpy(dest, list->tail->info, list->data_size);
 }
 
-void* list_get_into_array(linked_list_t *list, void *array, size_t array_length){
+void* list_get_into_array(const linked_list_t *list, void *array, size_t array_length){
         assert(list && array);
         if (array_length > list->n_elements)
                 array_length = list->n_elements;
@@ -169,7 +169,7 @@ void* list_get_into_array(linked_list_t *list, void *array, size_t array_length)
 
 }
 
-void* list_get_array(linked_list_t *list, size_t array_length){
+void* list_get_array(const linked_list_t *list, size_t array_length){
         assert(list);
         if (array_length == 0 || array_length > list->n_elements)
                 array_length = list->n_elements;
@@ -322,7 +322,7 @@ void* list_pop_array(linked_list_t *list, void *array, size_t array_length, void
 
 /// OTHER /////////////////////////////////////////////////////////////////////
 
-bool list_exists(linked_list_t *list, void *element){
+bool list_exists(const linked_list_t *list, void *element){
         if (!list || !element)
                 return false;
         LLNode *aux = list->head;
@@ -334,15 +334,15 @@ bool list_exists(linked_list_t *list, void *element){
         return false;
 }
 
-size_t list_size(linked_list_t *list){
+size_t list_size(const linked_list_t *list){
         return list ? list->n_elements : 0;
 }
 
-bool list_isempty(linked_list_t *list){
+bool list_isempty(const linked_list_t *list){
         return list ? list->n_elements == 0 : true;
 }
 
-linked_list_t* list_join(linked_list_t *list_1, linked_list_t *list_2){
+linked_list_t* list_join(const linked_list_t *list_1, const linked_list_t *list_2){
         assert(list_1 && list_2);
         if (list_1->data_size != list_2->data_size)
                 return NULL;
@@ -403,7 +403,7 @@ void list_clear(linked_list_t *list){
 
 /* ITERATOR  */
 
-inline list_iterator_t list_iterator(linked_list_t *list) {
+inline list_iterator_t list_iterator(const linked_list_t *list) {
         assert(list);
         return (list_iterator_t){
                 .next = list->head,
@@ -411,7 +411,7 @@ inline list_iterator_t list_iterator(linked_list_t *list) {
         };
 }
 
-inline list_iterator_t list_iterator_from_back(linked_list_t *list) {
+inline list_iterator_t list_iterator_from_back(const linked_list_t *list) {
         assert(list);
         return (list_iterator_t){
                 .prev = list->tail,

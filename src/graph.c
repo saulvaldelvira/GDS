@@ -194,7 +194,7 @@ int graph_remove_vertices_array(graph_t *graph, void *array, size_t array_length
         return GDS_SUCCESS;
 }
 
-bool graph_exists_vertex(graph_t *graph, void *vertex){
+bool graph_exists_vertex(const graph_t *graph, void *vertex){
         assert(graph && vertex);
         for (size_t i = 0; i < graph->n_elements; i++){
                 void *tmp = void_offset(graph->vertices, graph->data_size * i);
@@ -259,7 +259,7 @@ int graph_remove_edges_array(graph_t *graph, void *array_sources, void *array_ta
         return GDS_SUCCESS;
 }
 
-void* graph_vertex_at(graph_t *graph, ptrdiff_t index, void *dest){
+void* graph_vertex_at(const graph_t *graph, ptrdiff_t index, void *dest){
         assert(graph && dest);
         if (index < 0 || (size_t)index >= graph->n_elements)
                 return NULL;
@@ -267,7 +267,7 @@ void* graph_vertex_at(graph_t *graph, ptrdiff_t index, void *dest){
         return memcpy(dest, src, graph->data_size);
 }
 
-float graph_get_edge(graph_t *graph, void *source, void *target){
+float graph_get_edge(const graph_t *graph, void *source, void *target){
         assert(graph && source && target);
         ptrdiff_t index_src = graph_indexof(graph, source);
         if (index_src < 0)
@@ -278,7 +278,7 @@ float graph_get_edge(graph_t *graph, void *source, void *target){
         return graph->weights[index_src][index_dst];
 }
 
-bool graph_exists_edge(graph_t *graph, void *source, void *target){
+bool graph_exists_edge(const graph_t *graph, void *source, void *target){
         assert(graph && source && target);
         ptrdiff_t index_src = graph_indexof(graph, source);
         ptrdiff_t index_dst = graph_indexof(graph, target);
@@ -290,16 +290,16 @@ bool graph_exists_edge(graph_t *graph, void *source, void *target){
 ///////////////////////////////////////////////////////////////////////////////
 
 __inline
-size_t graph_size(graph_t *graph){
+size_t graph_size(const graph_t *graph){
         return graph ? graph->n_elements : 0;
 }
 
 __inline
-bool graph_isempty(graph_t *graph){
+bool graph_isempty(const graph_t *graph){
         return graph ? graph->n_elements == 0 : true;
 }
 
-ptrdiff_t graph_indexof(graph_t *graph, void *vertex){
+ptrdiff_t graph_indexof(const graph_t *graph, void *vertex){
         void *tmp = graph->vertices;
         for (size_t i = 0; i < graph->n_elements; i++){
                 if(graph->compare(tmp, vertex) == 0)
@@ -359,7 +359,7 @@ static ptrdiff_t graph_get_pivot(uint8_t *S, float *D, size_t n_elements){
         return pivot;
 }
 
-DijkstraData_t graph_dijkstra(graph_t *graph, void *source){
+DijkstraData_t graph_dijkstra(const graph_t *graph, void *source){
         assert(graph && source);
         DijkstraData_t dijkstra = {.D = NULL, .P = NULL, .n_elements = 0, .status = GDS_SUCCESS};
         ptrdiff_t source_index = graph_indexof(graph, source);
@@ -454,7 +454,7 @@ static void graph_init_floyd(FloydData_t *floyd, const graph_t *graph){
         floyd->status = GDS_SUCCESS;
 }
 
-FloydData_t graph_floyd(graph_t *graph){
+FloydData_t graph_floyd(const graph_t *graph){
         assert(graph);
         FloydData_t floyd = {.A = NULL, .P = NULL, .n_elements = 0, .status = GDS_SUCCESS};
         graph_init_floyd(&floyd, graph);
@@ -488,7 +488,7 @@ void graph_free_floyd_data(FloydData_t *data){
 
 //// OTHER ALGORITHMS ////////////////////////////////////////////////////////
 
-graph_degree graph_get_degree(graph_t *graph, void *vertex){
+graph_degree graph_get_degree(const graph_t *graph, void *vertex){
         assert(graph && vertex);
         graph_degree degree = {0, 0, GDS_SUCCESS};
         ptrdiff_t index = graph_indexof(graph, vertex);
@@ -507,7 +507,7 @@ graph_degree graph_get_degree(graph_t *graph, void *vertex){
         return degree;
 }
 
-bool graph_is_source_vertex(graph_t *graph, void *vertex){
+bool graph_is_source_vertex(const graph_t *graph, void *vertex){
         graph_degree degree = graph_get_degree(graph, vertex);
         if (degree.status != GDS_SUCCESS){
                 return false;
@@ -515,7 +515,7 @@ bool graph_is_source_vertex(graph_t *graph, void *vertex){
         return degree.deg_in == 0 && degree.deg_out > 0;
 }
 
-bool graph_is_drain_vertex(graph_t *graph, void *vertex){
+bool graph_is_drain_vertex(const graph_t *graph, void *vertex){
         graph_degree degree = graph_get_degree(graph, vertex);
         if (degree.status != GDS_SUCCESS){
                 return false;
@@ -523,7 +523,7 @@ bool graph_is_drain_vertex(graph_t *graph, void *vertex){
         return degree.deg_out == 0 && degree.deg_in > 0;
 }
 
-bool graph_is_isolated_vertex(graph_t *graph, void *vertex){
+bool graph_is_isolated_vertex(const graph_t *graph, void *vertex){
         graph_degree degree = graph_get_degree(graph, vertex);
         if (degree.status != GDS_SUCCESS){
                 return false;
@@ -531,7 +531,7 @@ bool graph_is_isolated_vertex(graph_t *graph, void *vertex){
         return (degree.deg_in + degree.deg_out) == 0;
 }
 
-float graph_eccentricity(graph_t *graph, void *vertex){
+float graph_eccentricity(const graph_t *graph, void *vertex){
         assert(graph && vertex);
         ptrdiff_t index = graph_indexof(graph, vertex);
         if (index < 0){
@@ -553,7 +553,7 @@ float graph_eccentricity(graph_t *graph, void *vertex){
 
 ////// Traverse ///////////////////////////////////////////////////////////////
 
-static int traverse_df_rec(graph_traversal *data, size_t index, uint8_t *visited, graph_t *graph){
+static int traverse_df_rec(graph_traversal_t *data, size_t index, uint8_t *visited, const graph_t *graph){
         visited[index] = 1;
         void *dst = void_offset(data->elements, data->elements_size * graph->data_size);
         void *src = void_offset(graph->vertices, index * graph->data_size);
@@ -571,9 +571,9 @@ static int traverse_df_rec(graph_traversal *data, size_t index, uint8_t *visited
         return GDS_SUCCESS;
 }
 
-graph_traversal graph_traverse_DF(graph_t *graph, void *vertex){
+graph_traversal_t graph_traverse_DF(const graph_t *graph, void *vertex){
         assert(graph);
-        graph_traversal df = {NULL, 0, GDS_SUCCESS};
+        graph_traversal_t df = {NULL, 0, GDS_SUCCESS};
         ptrdiff_t index = graph_indexof(graph, vertex);
         if (index < 0){
                 df.status = index;
@@ -602,9 +602,9 @@ graph_traversal graph_traverse_DF(graph_t *graph, void *vertex){
         return df;
 }
 
-graph_traversal graph_traverse_BF(graph_t *graph, void *vertex){
+graph_traversal_t graph_traverse_BF(const graph_t *graph, void *vertex){
         assert(graph);
-        graph_traversal bf = {NULL, 0, GDS_SUCCESS};
+        graph_traversal_t bf = {NULL, 0, GDS_SUCCESS};
         // Get index of the starting vertex
         ptrdiff_t index = graph_indexof(graph, vertex);
         if (index < 0){

@@ -63,12 +63,12 @@ int queue_dequeue_array(queue_t *queue, void *array, size_t array_length);
 /**
  * @return the corresponding element of the queue (the one added first), without removing it
 */
-void* queue_peek(queue_t *queue, void *dest);
+void* queue_peek(const queue_t *queue, void *dest);
 
 /**
  * @return true if the element is in the queue
 */
-bool queue_exists(queue_t *queue, void *element);
+bool queue_exists(const queue_t *queue, void *element);
 
 /**
  * Removes the element from the queue.
@@ -85,12 +85,12 @@ void queue_clear(queue_t *queue);
 /**
  * @return the number of elements in the queue_t
 */
-size_t queue_size(queue_t *queue);
+size_t queue_size(const queue_t *queue);
 
 /**
  * @return true if the queue is empty
 */
-bool queue_isempty(queue_t *queue);
+bool queue_isempty(const queue_t *queue);
 
 void queue_free(queue_t *v, ...);
 

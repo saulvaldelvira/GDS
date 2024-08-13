@@ -159,6 +159,7 @@ int dict_configure(dictionary_t *dict, enum Redispersion redispersion, double mi
         return GDS_SUCCESS;
 }
 
+__inline
 void dict_set_destructor(dictionary_t *dict, destructor_function_t value_destructor){
         if (dict)
                 dict->destructor = value_destructor;
@@ -209,7 +210,7 @@ static int dict_redisperse(dictionary_t *dict, size_t new_size){
  * Retuns an index to store the key into
  * @param n_it number of tries, to handle collisions.
  */
-static size_t dict_get_pos(dictionary_t *dict, void *key, size_t n_it){
+static size_t dict_get_pos(const dictionary_t *dict, void *key, size_t n_it){
         size_t pos = 0;
         switch (dict->redispersion){
         case LINEAR:
@@ -288,7 +289,7 @@ int dict_put(dictionary_t *dict, void *key, void *value){
 
 //// GET_EXISTS ///////////////////////////////////////////////////////////////
 
-void* dict_get(dictionary_t *dict, void *key, void *dest){
+void* dict_get(const dictionary_t *dict, void *key, void *dest){
         assert(dict && key);
         for (size_t i = 0; i < VEC_SIZE(dict); i++) {
                 size_t pos = dict_get_pos(dict, key, i);
@@ -305,7 +306,7 @@ void* dict_get(dictionary_t *dict, void *key, void *dest){
         return NULL;
 }
 
-bool dict_exists(dictionary_t *dict, void *key){
+bool dict_exists(const dictionary_t *dict, void *key){
         assert(dict && key);
         for (size_t i = 0; i < VEC_SIZE(dict); i++) {
                 size_t pos = dict_get_pos(dict, key, i);
@@ -322,7 +323,7 @@ bool dict_exists(dictionary_t *dict, void *key){
         return false;
 }
 
-vector_t* dict_keys(dictionary_t *dict) {
+vector_t* dict_keys(const dictionary_t *dict) {
         assert(dict);
         vector_t *v = vector_with_capacity(dict->key_size, compare_equal, dict->n_elements);
         if (!v) return NULL;

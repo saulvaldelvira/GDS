@@ -75,7 +75,7 @@ int dict_put(dictionary_t *dict, void *key, void *value);
  * Returns the value for the given key, or NULL if it
  * doesn't exist in the dictionary
 */
-void* dict_get(dictionary_t *dict, void *key, void *dest);
+void* dict_get(const dictionary_t *dict, void *key, void *dest);
 
 /**
  * Returns a vector with all the keys to the dictionary_t
@@ -83,12 +83,12 @@ void* dict_get(dictionary_t *dict, void *key, void *dest);
  * This means, if we call this method on a dictionary_t of int to char,
  * the vector will be a vector of ints
  */
-vector_t* dict_keys(dictionary_t *dict);
+vector_t* dict_keys(const dictionary_t *dict);
 
 /**
  * Returns true if the key exists in the dictionary
 */
-bool dict_exists(dictionary_t *dict, void *key);
+bool dict_exists(const dictionary_t *dict, void *key);
 
 /**
  * Removes a key from the dictionary

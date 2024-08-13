@@ -330,7 +330,7 @@ static bool exists_rec(AVLNode *node, void *element, comparator_function_t compa
                 return true;
 }
 
-bool avl_exists(avl_t *tree, void *element){
+bool avl_exists(const avl_t *tree, void *element){
         assert(tree && element);
         return exists_rec(tree->root, element, tree->compare);
 }
@@ -347,7 +347,7 @@ static AVLNode* get_rec(AVLNode *node, void *element, comparator_function_t comp
                 return node;
 }
 
-void* avl_get(avl_t *tree, void *element, void *dest){
+void* avl_get(const avl_t *tree, void *element, void *dest){
         assert(tree && element && dest);
         AVLNode *node = get_rec(tree->root, element, tree->compare);
         if (!node)
@@ -356,15 +356,15 @@ void* avl_get(avl_t *tree, void *element, void *dest){
         return dest;
 }
 
-size_t avl_size(avl_t *tree){
+size_t avl_size(const avl_t *tree){
         return tree ? tree->n_elements : 0;
 }
 
-bool avl_isempty(avl_t *tree){
+bool avl_isempty(const avl_t *tree){
         return tree ? tree->root == NULL : true;
 }
 
-int avl_height(avl_t *tree){
+int avl_height(const avl_t *tree){
         if (!tree || !tree->root)
                 return -1;
         return tree->root->height;
@@ -455,19 +455,19 @@ cleanup:
         return result;
 }
 
-void* avl_preorder(avl_t *tree){
+void* avl_preorder(const avl_t *tree){
         assert(tree);
         struct traversal_ret result = traversal_rec(tree->root, PRE_ORDER, tree->data_size);
         return result.elements;
 }
 
-void* avl_inorder(avl_t *tree){
+void* avl_inorder(const avl_t *tree){
         assert(tree);
         struct traversal_ret result = traversal_rec(tree->root, IN_ORDER, tree->data_size);
         return result.elements;
 }
 
-void* avl_postorder(avl_t *tree){
+void* avl_postorder(const avl_t *tree){
         assert(tree);
         struct traversal_ret result = traversal_rec(tree->root, POST_ORDER, tree->data_size);
 
@@ -476,7 +476,7 @@ void* avl_postorder(avl_t *tree){
 
 ///////////////////////////////////////////////////////////////////////////////
 
-avl_t* avl_join(avl_t *tree_1, avl_t *tree_2){
+avl_t* avl_join(const avl_t *tree_1, const avl_t *tree_2){
         assert(tree_1 && tree_2 && tree_1->data_size == tree_2->data_size);
         avl_t *tree_joint = avl_init(tree_1->data_size, tree_1->compare);
         int status;
@@ -505,17 +505,17 @@ avl_t* avl_join(avl_t *tree_1, avl_t *tree_2){
 
 ///// MAX-MIN /////////////////////////////////////////////////////////////////
 
-void* avl_max(avl_t *tree, void *dest){
+void* avl_max(const avl_t *tree, void *dest){
         assert(tree && dest);
         return avl_max_from(tree, tree->root->info, dest);
 }
 
-void* avl_min(avl_t *tree, void *dest){
+void* avl_min(const avl_t *tree, void *dest){
         assert(tree && dest);
         return avl_min_from(tree, tree->root->info, dest);
 }
 
-void* avl_max_from(avl_t *tree, void *element, void *dest){
+void* avl_max_from(const avl_t *tree, void *element, void *dest){
         assert(tree && element && dest);
         AVLNode *tmp = get_rec(tree->root, element, tree->compare);
         if (!tmp)
@@ -525,7 +525,7 @@ void* avl_max_from(avl_t *tree, void *element, void *dest){
         return dest;
 }
 
-void* avl_min_from(avl_t *tree, void *element, void *dest){
+void* avl_min_from(const avl_t *tree, void *element, void *dest){
         assert(tree && element && dest);
         AVLNode *tmp = get_rec(tree->root, element, tree->compare);
         if (!tmp)

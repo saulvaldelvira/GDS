@@ -60,7 +60,7 @@ void vector_set_comparator(vector_t *vector, comparator_function_t cmp){
 }
 
 __inline
-comparator_function_t vector_get_comparator(vector_t *vector){
+comparator_function_t vector_get_comparator(const vector_t *vector){
         return vector ? vector->compare : NULL;
 }
 
@@ -71,12 +71,12 @@ void vector_set_destructor(vector_t *vector, destructor_function_t destructor){
 }
 
 __inline
-destructor_function_t vector_get_destructor(vector_t *vector){
+destructor_function_t vector_get_destructor(const vector_t *vector){
         return vector ? vector->destructor : NULL;
 }
 
 __inline
-size_t vector_get_data_size(vector_t *vector){
+size_t vector_get_data_size(const vector_t *vector){
         return vector ? vector->data_size : 0;
 }
 
@@ -347,7 +347,7 @@ void* vector_pop_array(vector_t *vector, void *array, size_t array_length, void 
 
 /// GET ////////////////////////////////////////////////////////////////
 
-ptrdiff_t vector_indexof(vector_t *vector, void *element){
+ptrdiff_t vector_indexof(const vector_t *vector, void *element){
         assert(vector && element);
         void *ptr = vector->elements; // Current element in the iteration
         for (size_t i = 0; i < vector->n_elements; i++){
@@ -360,16 +360,16 @@ ptrdiff_t vector_indexof(vector_t *vector, void *element){
 }
 
 __inline
-bool vector_exists(vector_t *vector, void *element){
+bool vector_exists(const vector_t *vector, void *element){
         return vector ? vector_indexof(vector, element) >= 0 : false;
 }
 
 __inline
-bool vector_isempty(vector_t *vector){
+bool vector_isempty(const vector_t *vector){
         return vector ? vector->n_elements == 0 : true;
 }
 
-void* vector_at(vector_t *vector, ptrdiff_t index, void *dest){
+void* vector_at(const vector_t *vector, ptrdiff_t index, void *dest){
         assert(vector && dest);
         int status = check_and_transform_index(&index, NULL, vector->n_elements);
         if (status != GDS_SUCCESS)
@@ -378,7 +378,7 @@ void* vector_at(vector_t *vector, ptrdiff_t index, void *dest){
         return memcpy(dest, tmp, vector->data_size);
 }
 
-void* vector_get(vector_t *vector, void *element, void *dest){
+void* vector_get(const vector_t *vector, void *element, void *dest){
         assert(vector && element && dest);
         ptrdiff_t index = vector_indexof(vector, element);
         if (index < 0)
@@ -386,7 +386,7 @@ void* vector_get(vector_t *vector, void *element, void *dest){
         return vector_at(vector, index, dest);
 }
 
-void* vector_front(vector_t *vector, void *dest){
+void* vector_front(const vector_t *vector, void *dest){
         assert(vector && dest);
         if (vector->n_elements > 0)
                 return vector_at(vector, 0, dest);
@@ -394,7 +394,7 @@ void* vector_front(vector_t *vector, void *dest){
                 return NULL;
 }
 
-void* vector_back(vector_t *vector, void *dest){
+void* vector_back(const vector_t *vector, void *dest){
         assert(vector && dest);
         if (vector->n_elements > 0)
                 return vector_at(vector, vector->n_elements - 1, dest);
@@ -402,7 +402,7 @@ void* vector_back(vector_t *vector, void *dest){
                 return NULL;
 }
 
-void* vector_get_into_array(vector_t *vector, void *array, size_t array_length){
+void* vector_get_into_array(const vector_t *vector, void *array, size_t array_length){
         assert(vector && array);
         if (array_length > vector->n_elements)
                 array_length = vector->n_elements;
@@ -410,7 +410,7 @@ void* vector_get_into_array(vector_t *vector, void *array, size_t array_length){
         return array;
 }
 
-void* vector_get_array(vector_t *vector, size_t array_length){
+void* vector_get_array(const vector_t *vector, size_t array_length){
         assert(vector);
         if (array_length == 0 || array_length > vector->n_elements){
                 array_length = vector->n_elements;
@@ -451,7 +451,7 @@ int vector_swap(vector_t *vector, ptrdiff_t index_1, ptrdiff_t index_2){
         return GDS_SUCCESS;
 }
 
-int vector_compare(vector_t *vector, ptrdiff_t index_1, ptrdiff_t index_2){
+int vector_compare(const vector_t *vector, ptrdiff_t index_1, ptrdiff_t index_2){
         assert(vector);
         int status = check_and_transform_index(&index_1, &index_2, vector->n_elements);
         if (status != GDS_SUCCESS)
@@ -462,12 +462,12 @@ int vector_compare(vector_t *vector, ptrdiff_t index_1, ptrdiff_t index_2){
 }
 
 __inline
-size_t vector_size(vector_t *vector){
+size_t vector_size(const vector_t *vector){
         return vector ? vector->n_elements : 0;
 }
 
 __inline
-size_t vector_capacity(vector_t *vector){
+size_t vector_capacity(const vector_t *vector){
         return vector ? vector->capacity : 0;
 }
 
@@ -520,7 +520,7 @@ vector_t* vector_dup(vector_t *vector){
         return dup;
 }
 
-vector_t* vector_join(vector_t *vector_1, vector_t *vector_2){
+vector_t* vector_join(const vector_t *vector_1, const vector_t *vector_2){
         assert(vector_1 && vector_2 && vector_1->data_size == vector_2->data_size);
         vector_t *vector_joint = vector_init(vector_1->data_size, vector_1->compare);
 
@@ -591,7 +591,7 @@ void vector_reset(vector_t *vector){
 
 /* ITERATOR */
 
-vector_iterator_t vector_iterator(vector_t *vector) {
+vector_iterator_t vector_iterator(const vector_t *vector) {
         return (vector_iterator_t) {
                 .vector = vector,
                 .next = 0,
@@ -599,7 +599,7 @@ vector_iterator_t vector_iterator(vector_t *vector) {
         };
 }
 
-vector_iterator_t vector_iterator_from_back(vector_t *vector) {
+vector_iterator_t vector_iterator_from_back(const vector_t *vector) {
         return (vector_iterator_t) {
                 .vector = vector,
                 .prev = vector->n_elements > 0 ? vector->n_elements - 1 : 0,

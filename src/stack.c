@@ -72,12 +72,12 @@ size_t stack_pop_array(stack_t *stack, void *array, size_t array_length){
 
 /// PEEK //////////////////////////////////////////////////////////////////////
 
-void* stack_peek(stack_t *stack, void *dest){
+void* stack_peek(const stack_t *stack, void *dest){
         assert(stack && dest);
         return vector_back(stack->elements, dest);
 }
 
-bool stack_exists(stack_t *stack, void *element){
+bool stack_exists(const stack_t *stack, void *element){
         assert(stack && element);
         return vector_exists(stack->elements, element);
 }
@@ -87,11 +87,11 @@ int stack_remove(stack_t *stack, void *element){
         return vector_remove(stack->elements, element);
 }
 
-size_t stack_size(stack_t *stack){
+size_t stack_size(const stack_t *stack){
         return vector_size(stack->elements);
 }
 
-bool stack_isempty(stack_t *stack){
+bool stack_isempty(const stack_t *stack){
         return vector_isempty(stack->elements);
 }
 

@@ -51,19 +51,19 @@ void* heap_pop_min(heap_t *heap, void *dest);
  * Allocs an array with [array_length] elements and fills it with the elements in the heap
  * @param array_length the number of elements to get. Pass 0 to get all the elements in the heap
 */
-void* heap_get_array(heap_t *heap, size_t array_length);
+void* heap_get_array(const heap_t *heap, size_t array_length);
 
 /**
  * Fills [array] with the first [array_length] elements from the heap.
  * @param array_length the number of elements to get. Pass GET_ALL_ELEMENTS to get all the elements in the heap
 */
-void* heap_get_into_array(heap_t *heap, void *array, size_t array_length);
+void* heap_get_into_array(const heap_t *heap, void *array, size_t array_length);
 
 /**
  * Copies to dest the min element in the heap, without deleting it
  * @return dest, or NULL if error.
 */
-void* heap_peek(heap_t *heap, void *dest);
+void* heap_peek(const heap_t *heap, void *dest);
 
 /**
  * Removes an element from the heap.
@@ -84,17 +84,17 @@ int heap_change_priority(heap_t *heap, void *element, void *replacement);
 /**
  * @return true if the element exists in the heap
 */
-bool heap_exists(heap_t *heap, void *element);
+bool heap_exists(const heap_t *heap, void *element);
 
 /**
  * @return the number of elements in the heap
 */
-size_t heap_size(heap_t *heap);
+size_t heap_size(const heap_t *heap);
 
 /**
  * @return true if the heap is empty
 */
-bool heap_isempty(heap_t *heap);
+bool heap_isempty(const heap_t *heap);
 
 void heap_free(heap_t *h, ...);
 

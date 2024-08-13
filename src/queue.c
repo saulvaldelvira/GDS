@@ -120,7 +120,7 @@ int queue_dequeue_array(queue_t *queue, void *array, size_t array_length){
 
 /// PEEK-EXISTS-SIZE //////////////////////////////////////////////////////////
 
-void* queue_peek(queue_t *queue, void *dest){
+void* queue_peek(const queue_t *queue, void *dest){
         assert(queue && dest);
         if (queue->head == NULL)
                 return NULL;
@@ -128,7 +128,7 @@ void* queue_peek(queue_t *queue, void *dest){
                 return memcpy(dest, queue->head->info, queue->data_size);
 }
 
-bool queue_exists(queue_t *queue, void *element){
+bool queue_exists(const queue_t *queue, void *element){
         assert(queue && element);
         queue_tNode *aux = queue->head;
         while (aux != NULL){
@@ -153,11 +153,11 @@ int queue_remove(queue_t *queue, void *element){
         return GDS_SUCCESS;
 }
 
-size_t queue_size(queue_t *queue){
+size_t queue_size(const queue_t *queue){
         return queue ? queue->n_elements : 0;
 }
 
-bool queue_isempty(queue_t *queue){
+bool queue_isempty(const queue_t *queue){
         return queue ? queue->head == NULL : true;
 }
 

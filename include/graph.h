@@ -77,7 +77,7 @@ int graph_remove_vertices_array(graph_t *graph, void *array, size_t array_length
 /**
  * @return true if the vertex exists in the graph
 */
-bool graph_exists_vertex(graph_t *graph, void *vertex);
+bool graph_exists_vertex(const graph_t *graph, void *vertex);
 
 /**
  * Adds an edge between source and target, with the given weight
@@ -107,29 +107,29 @@ int graph_remove_edges_array(graph_t *graph, void *array_sources, void *array_ta
  * Copies into dest the element at the given index
  * in the vertices array
 */
-void* graph_vertex_at(graph_t *graph, ptrdiff_t index, void *dest);
+void* graph_vertex_at(const graph_t *graph, ptrdiff_t index, void *dest);
 
 /**
  * @return the weight of the edge between source and target
 */
-float graph_get_edge(graph_t *graph, void *source, void *target);
+float graph_get_edge(const graph_t *graph, void *source, void *target);
 
 /**
  * @return true if an edge between source and target exists
 */
-bool graph_exists_edge(graph_t *graph, void *source, void *target);
+bool graph_exists_edge(const graph_t *graph, void *source, void *target);
 
 /**
  * @return the index of the vertex in the graph
 */
-ptrdiff_t graph_indexof(graph_t *graph, void *vertex);
+ptrdiff_t graph_indexof(const graph_t *graph, void *vertex);
 
 /**
  * @return the number of elements in the graph
 */
-size_t graph_size(graph_t *graph);
+size_t graph_size(const graph_t *graph);
 
-bool graph_isempty(graph_t *graph);
+bool graph_isempty(const graph_t *graph);
 
 /////// DIJKSTRA ///////
 
@@ -151,7 +151,7 @@ typedef struct {
  *      status the return status of the operation. If the algorith does not encounter any issue, returns SUCESS (1)
  * @note REMEMBER to free the D and P arrays!! There's a fucntion graph_free_dijkstra_data that does that for you.
 */
-DijkstraData_t graph_dijkstra(graph_t *graph, void *source);
+DijkstraData_t graph_dijkstra(const graph_t *graph, void *source);
 
 /**
  * Frees the allocated memory for the given DijkstraData_t's D and P arrays
@@ -173,7 +173,7 @@ typedef struct {
 /**
  * Performs the Floyd–Warshall algorithm to find the cheapest path for all vertices of the graph.
 */
-FloydData_t graph_floyd(graph_t *graph);
+FloydData_t graph_floyd(const graph_t *graph);
 
 /**
  * Frees all memory allocated for the given FloydData_t
@@ -198,34 +198,34 @@ typedef struct {
  * @param     deg_in:  the in degree of the vertex. This means, number of edges starting from the vertex.
  * @param     deg:     total degree of the vertex. It's value is deg_in plus deg_out.
 */
-graph_degree graph_get_degree(graph_t *graph, void *vertex);
+graph_degree graph_get_degree(const graph_t *graph, void *vertex);
 
 /**
  * @return true if the given vertex is a source vertex.
  * @note A vertex is source if the in degree (number of edges entering the vertex) is 0
  *      and the out degree is > 0 (at least an edge is born from the vertex)
 */
-bool graph_is_source_vertex(graph_t *graph, void *vertex);
+bool graph_is_source_vertex(const graph_t *graph, void *vertex);
 
 /**
  * @return true if the given vertex is a drain vertex.
  * @note A vertex is source if the out degree (number of edges exiting the vertex) is 0
  *      and the in degree is > 0 (at least an edge eneters the vertex)
 */
-bool graph_is_drain_vertex(graph_t *graph, void *vertex);
+bool graph_is_drain_vertex(const graph_t *graph, void *vertex);
 
 /**
  * @return true if the given vertex is isolated.
  * @note A vertex is isolated if its degree is 0, wich means no
  * edges go into the vertex, and no edges start from the vertex.
 */
-bool graph_is_isolated_vertex(graph_t *graph, void *vertex);
+bool graph_is_isolated_vertex(const graph_t *graph, void *vertex);
 
 /**
  * @return The eccentricity of the vertex. This means, the highest of
  * the min cost paths between the vertex and the rest of vertices.
 */
-float graph_eccentricity(graph_t *graph, void *vertex);
+float graph_eccentricity(const graph_t *graph, void *vertex);
 
 /////////////////////////////////////////////////////////
 
@@ -234,11 +234,11 @@ float graph_eccentricity(graph_t *graph, void *vertex);
 /**
  * Struct that hold the result of a graph traversal
 */
-typedef struct {
+typedef struct graph_traversal_t {
         void *elements;         ///< Array of elements
         uint32_t elements_size;         ///< Number of elements in the array
         int status;                 ///< return status of the traversal
-}graph_traversal;
+} graph_traversal_t;
 
 /**
  * Traverses the graph using the Deep First algorithm.
@@ -249,7 +249,7 @@ typedef struct {
  * This is because, as there might be unreachable vertices, it's posible that the length of the array is < than the number of elements in the graph.
  * @note Remember to free the returned array when you finish working with it.
 */
-graph_traversal graph_traverse_DF(graph_t *graph, void *vertex);
+graph_traversal_t graph_traverse_DF(const graph_t *graph, void *vertex);
 
 /**
  * Traverses the graph using the Breadth First algorithm.
@@ -261,7 +261,7 @@ graph_traversal graph_traverse_DF(graph_t *graph, void *vertex);
  * This is because, as there might be unreachable vertices, it's posible that the length of the array is < than the number of elements in the graph.
  * @note Remember to free the returned array when you finish working with it.
 */
-graph_traversal graph_traverse_BF(graph_t *graph, void *vertex);
+graph_traversal_t graph_traverse_BF(const graph_t *graph, void *vertex);
 
 /////////////////////////////////////////////////////////
 
