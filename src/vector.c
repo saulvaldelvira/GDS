@@ -369,13 +369,19 @@ bool vector_isempty(const vector_t *vector){
         return vector ? vector->n_elements == 0 : true;
 }
 
-void* vector_at(const vector_t *vector, ptrdiff_t index, void *dest){
-        assert(vector && dest);
+__inline
+static void* __get_at(const vector_t *vector, ptrdiff_t index) {
+        assert(vector);
         int status = check_and_transform_index(&index, NULL, vector->n_elements);
         if (status != GDS_SUCCESS)
                 return NULL;
-        void *tmp = void_offset(vector->elements, index * vector->data_size);
-        return memcpy(dest, tmp, vector->data_size);
+        return void_offset(vector->elements, index * vector->data_size);
+}
+
+void* vector_at(const vector_t *vector, ptrdiff_t index, void *dest){
+        assert(vector && dest);
+        void *tmp = __get_at(vector, index);
+        return tmp ? memcpy(dest, tmp, vector->data_size) : NULL;
 }
 
 void* vector_get(const vector_t *vector, void *element, void *dest){
@@ -398,6 +404,35 @@ void* vector_back(const vector_t *vector, void *dest){
         assert(vector && dest);
         if (vector->n_elements > 0)
                 return vector_at(vector, vector->n_elements - 1, dest);
+        else
+                return NULL;
+}
+
+void* vector_at_ref(vector_t *self, ptrdiff_t index) {
+        assert(self);
+        return __get_at(self, index);
+}
+
+void* vector_get_ref(vector_t *vector, void *element) {
+        assert(vector);
+        ptrdiff_t index = vector_indexof(vector, element);
+        if (index < 0)
+                return NULL;
+        return vector_at_ref(vector, index);
+}
+
+void* vector_front_ref(vector_t *vector){
+        assert(vector);
+        if (vector->n_elements > 0)
+                return vector_at_ref(vector, 0);
+        else
+                return NULL;
+}
+
+void* vector_back_ref(vector_t *vector){
+        assert(vector);
+        if (vector->n_elements > 0)
+                return vector_at_ref(vector, vector->n_elements - 1);
         else
                 return NULL;
 }

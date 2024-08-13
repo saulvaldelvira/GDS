@@ -137,10 +137,9 @@ int vector_reserve(vector_t *vector, size_t n_elements);
  * @param n_elements new number of elements.
  * @param [OPTIONAL] constructor. This function will set the
  *                   new default values.
- * @note If a destructor is set, and the given n_elements is lower
- *       than the current size of the vector, the destructor WON'T
- *       be called. This is to avoid calling it on garbage elements.
  * @note It does NOT shrink the vector. For that, use vector_shrink.
+ * @note If a destructor function is set, make sure you properly initialize
+ * the new elements with a constructor functions.
 */
 int vector_resize(vector_t *vector, size_t n_elements, constructor_function_t constructor);
 
@@ -228,6 +227,11 @@ void* vector_front(const vector_t *vector, void *dest);
  * @return dest, or NULL if the vector is empty.
 */
 void* vector_back(const vector_t *vector, void *dest);
+
+void* vector_at_ref(vector_t *self, ptrdiff_t index);
+void* vector_get_ref(vector_t *vector, void *element);
+void* vector_front_ref(vector_t *vector);
+void* vector_back_ref(vector_t *vector);
 
 /**
  * Copies the first [array_length] elements from the vector into the array

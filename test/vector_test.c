@@ -1,7 +1,9 @@
+#include "compare.h"
 #include "error.h"
 #include "test.h"
 #include "../include/vector.h"
 #include <string.h>
+#include <time.h>
 
 void assert_index(vector_t *v, int i, int val){
         int tmp;
@@ -323,6 +325,24 @@ void iterator(void) {
 	vector_free(v);
 }
 
+void ref_test(void) {
+        vector_t *v = vector_init(sizeof(int), compare_int);
+        vector_resize(v, 1024, NULL);
+
+        for (int i = 0; i < 1024; i++) {
+                int *ptr = vector_at_ref(v, i);
+                *ptr = i;
+        }
+
+        for (int i = 0; i < 1024; i++) {
+                int tmp;
+                vector_at(v, i, &tmp);
+                assert(tmp == i);
+        }
+
+        vector_free(v);
+}
+
 int main(void){
         int n = 2400;
 	int tmp;
@@ -436,6 +456,7 @@ int main(void){
         index_test();
         resize_test();
         iterator();
+        ref_test();
 
 	test_end("vector.c");
 }
