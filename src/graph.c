@@ -263,7 +263,7 @@ void* graph_vertex_at(const graph_t *graph, ptrdiff_t index, void *dest){
         assert(graph && dest);
         if (index < 0 || (size_t)index >= graph->n_elements)
                 return NULL;
-        void *src = void_offset(graph->vertices, index * graph->data_size);
+        const void *src = void_offset(graph->vertices, index * graph->data_size);
         return memcpy(dest, src, graph->data_size);
 }
 
@@ -347,7 +347,7 @@ static void graph_init_dijkstra(DijkstraData_t *dijkstra, const graph_t *graph, 
  * @param D an array of weights
  * @param n_elements the number of elements in the arrays
 */
-static ptrdiff_t graph_get_pivot(uint8_t *S, float *D, size_t n_elements){
+static ptrdiff_t graph_get_pivot(const uint8_t *S, const float *D, size_t n_elements){
         ptrdiff_t pivot = -1;
         float min = INFINITY;
         for (size_t i = 0; i < n_elements; i++){
@@ -556,7 +556,7 @@ float graph_eccentricity(const graph_t *graph, void *vertex){
 static int traverse_df_rec(graph_traversal_t *data, size_t index, uint8_t *visited, const graph_t *graph){
         visited[index] = 1;
         void *dst = void_offset(data->elements, data->elements_size * graph->data_size);
-        void *src = void_offset(graph->vertices, index * graph->data_size);
+        const void *src = void_offset(graph->vertices, index * graph->data_size);
         memcpy(dst, src, graph->data_size);
         data->elements_size++;
         int s;
@@ -638,7 +638,7 @@ graph_traversal_t graph_traverse_BF(const graph_t *graph, void *vertex){
                 size_t piv = *start++;
 
                 // Copy it into result array
-                void *src = void_offset(graph->vertices, piv * graph->data_size);
+                const void *src = void_offset(graph->vertices, piv * graph->data_size);
                 memcpy(dst, src, graph->data_size);
                 dst = void_offset(dst, graph->data_size);
                 bf.elements_size++;

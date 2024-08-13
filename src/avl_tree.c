@@ -31,7 +31,7 @@ struct avl {
 
 //// INITIALIZE ////////////////////////////////////////////////////////////////
 
-static AVLNode* init_node(void *element, size_t data_size){
+static AVLNode* init_node(const void *element, size_t data_size){
         AVLNode *node = gdsmalloc(offsetof(AVLNode, info) + data_size);
         if (!node) return NULL;
         node->left = NULL;
@@ -349,7 +349,7 @@ static AVLNode* get_rec(AVLNode *node, void *element, comparator_function_t comp
 
 void* avl_get(const avl_t *tree, void *element, void *dest){
         assert(tree && element && dest);
-        AVLNode *node = get_rec(tree->root, element, tree->compare);
+        const AVLNode *node = get_rec(tree->root, element, tree->compare);
         if (!node)
                 return NULL;
         memcpy(dest, node->info, tree->data_size);

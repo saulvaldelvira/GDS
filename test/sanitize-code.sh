@@ -8,28 +8,19 @@ fi
 make clean
 make CC=gcc FLAGS="-fsanitize=address,undefined,leak -Werror"
 
-failures=""
-export failures
-find . -name '*.c' |
+if cppcheck --help | grep check-level ; then
+    CHECK_LEVEL=--check-level=exhaustive
+fi
+
+find src -name '*.c' |
     while read file
     do
 	  cppcheck -j$(nproc) \
 	     --enable=style,performance,portability \
 	     --error-exitcode=1 \
-	     --suppress=constVariable \
-	     --suppress=constParameter \
-	     --suppress=constParameterPointer\
-	     --suppress=constVariablePointer \
-         --check-level=exhaustive \
+	     --suppress=constParameterPointer \
 	     --std=c99 \
+         $CHECK_LEVEL \
 	     $file
-	  if [ $? -ne 0 ] ; then
-	      failures+="$file,"
-	  fi
     done
 
-if [[ $failures != "" ]] ; then
-    echo "[CPPCHECK] Failed on: $failures" ;
-else
-    echo "[CPPCHECK] Finished with no errors" ;
-fi

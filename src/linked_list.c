@@ -131,7 +131,7 @@ int list_set(linked_list_t *list, void *element, void *replacement){
 
 void* list_get(const linked_list_t *list, void *element, void *dest){
         assert(list && element && dest);
-        LLNode *aux = list->head;
+        const LLNode *aux = list->head;
         while (aux != NULL){
                 if (list->compare(aux->info, element) == 0)
                         return memcpy(dest, aux->info, list->data_size);
@@ -158,7 +158,7 @@ void* list_get_into_array(const linked_list_t *list, void *array, size_t array_l
         assert(list && array);
         if (array_length > list->n_elements)
                 array_length = list->n_elements;
-        LLNode *aux = list->head;
+        const LLNode *aux = list->head;
         void *dst = array;
         while (array_length-- > 0){
                 memcpy(dst, aux->info, list->data_size);

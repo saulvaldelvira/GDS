@@ -79,7 +79,7 @@ int vector_push_front(vector_t *vector, void *element);
  * @param array_length number of elements to copy from array into the vector.
  * @return 1 if the operation is successful
 */
-int vector_append_array(vector_t *vector, void *array, size_t array_length);
+int vector_append_array(vector_t *vector, const void *array, size_t array_length);
 
 /**
  * Inserts a batch of elements into the vector.
@@ -88,7 +88,7 @@ int vector_append_array(vector_t *vector, void *array, size_t array_length);
  * @param array_length number of elements to copy from array into the vector.
  * @return 1 if the operation is successful
 */
-int vector_insert_array(vector_t *vector, ptrdiff_t index, void *array, size_t array_length);
+int vector_insert_array(vector_t *vector, ptrdiff_t index, const void *array, size_t array_length);
 
 /**
  * Appends a batch of elements to the front of the vector.
@@ -96,7 +96,7 @@ int vector_insert_array(vector_t *vector, ptrdiff_t index, void *array, size_t a
  * @param array_length number of elements to copy from array into the vector.
  * @return 1 if the operation is successful
 */
-int vector_push_front_array(vector_t *vector, void *array, size_t array_length);
+int vector_push_front_array(vector_t *vector, const void *array, size_t array_length);
 
 /**
  * @return the index of the element in the vector.

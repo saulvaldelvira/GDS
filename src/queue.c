@@ -52,7 +52,7 @@ void queue_set_destructor(queue_t *queue, destructor_function_t destructor){
                 queue->destructor = destructor;
 }
 
-static queue_tNode* queue_init_node(void *element, size_t size){
+static queue_tNode* queue_init_node(const void *element, size_t size){
         queue_tNode *node = gdsmalloc(offsetof(queue_tNode, info) + size);
         if (!node) return NULL;
         memcpy(node->info, element, size);

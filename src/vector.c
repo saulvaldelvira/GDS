@@ -117,7 +117,7 @@ int vector_push_front(vector_t *vector, void *element){
         return vector_insert_at(vector, 0, element);
 }
 
-int vector_insert_array(vector_t *vector, ptrdiff_t index, void *array, size_t array_length){
+int vector_insert_array(vector_t *vector, ptrdiff_t index, const void *array, size_t array_length){
         assert(vector && array);
         if (vector->capacity - vector->n_elements < array_length){
                 if (resize_buffer(vector, vector->capacity + array_length) == GDS_ERROR)
@@ -140,13 +140,13 @@ int vector_insert_array(vector_t *vector, ptrdiff_t index, void *array, size_t a
         return GDS_SUCCESS;
 }
 
-int vector_append_array(vector_t *vector, void *array, size_t array_length){
+int vector_append_array(vector_t *vector, const void *array, size_t array_length){
         assert(vector);
         return vector_insert_array(vector, vector->n_elements, array, array_length);
 }
 
 __inline
-int vector_push_front_array(vector_t *vector, void *array, size_t array_length){
+int vector_push_front_array(vector_t *vector, const void *array, size_t array_length){
         return vector_insert_array(vector, 0, array, array_length);
 }
 
@@ -380,7 +380,7 @@ static void* __get_at(const vector_t *vector, ptrdiff_t index) {
 
 void* vector_at(const vector_t *vector, ptrdiff_t index, void *dest){
         assert(vector && dest);
-        void *tmp = __get_at(vector, index);
+        const void *tmp = __get_at(vector, index);
         return tmp ? memcpy(dest, tmp, vector->data_size) : NULL;
 }
 
