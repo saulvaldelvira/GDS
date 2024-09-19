@@ -34,9 +34,9 @@ static int expand_memory(graph_t *graph, size_t new_size){
         float **weights = gdsmalloc(new_size * sizeof(*weights));
         int8_t **edges = gdsmalloc(new_size * sizeof(*edges));
         if (!vertices || !weights || !edges){
-                free(vertices);
-                free(weights);
-                free(edges);
+                gdsfree(vertices);
+                gdsfree(weights);
+                gdsfree(edges);
                 return GDS_ERROR;
         }
 
@@ -49,12 +49,12 @@ static int expand_memory(graph_t *graph, size_t new_size){
 
                 if (!weights[i] || !edges[i]){
                         for (size_t j = 0; j <= i; j++){
-                                free(weights[j]);
-                                free(edges[j]);
+                                gdsfree(weights[j]);
+                                gdsfree(edges[j]);
                         }
-                        free(vertices);
-                        free(weights);
-                        free(edges);
+                        gdsfree(vertices);
+                        gdsfree(weights);
+                        gdsfree(edges);
                         return GDS_ERROR;
                 }
 
@@ -66,12 +66,12 @@ static int expand_memory(graph_t *graph, size_t new_size){
 
         // Free old pointers
         for (size_t i = 0; i < graph->max_elements; i++){
-                free(graph->weights[i]);
-                free(graph->edges[i]);
+                gdsfree(graph->weights[i]);
+                gdsfree(graph->edges[i]);
         }
-        free(graph->vertices);
-        free(graph->weights);
-        free(graph->edges);
+        gdsfree(graph->vertices);
+        gdsfree(graph->weights);
+        gdsfree(graph->edges);
 
         graph->vertices = vertices;
         graph->weights = weights;
@@ -97,7 +97,7 @@ graph_t* graph_with_capacity(size_t data_size, comparator_function_t cmp, size_t
         graph->vertices = NULL;
         graph->data_size = data_size;
         if (expand_memory(graph, capacity) == GDS_ERROR){
-                free(graph);
+                gdsfree(graph);
                 return NULL;
         }
         return graph;
@@ -318,8 +318,8 @@ static void graph_init_dijkstra(DijkstraData_t *dijkstra, const graph_t *graph, 
         dijkstra->D = gdsmalloc(graph->n_elements * sizeof(*dijkstra->D));
         dijkstra->P = gdsmalloc(graph->n_elements * sizeof(*dijkstra->P));
         if (!dijkstra->D || !dijkstra->P){
-                free(dijkstra->D);
-                free(dijkstra->P);
+                gdsfree(dijkstra->D);
+                gdsfree(dijkstra->P);
                 dijkstra->status = GDS_ERROR;
                 return;
         }
@@ -373,17 +373,17 @@ DijkstraData_t graph_dijkstra(const graph_t *graph, void *source){
 
         uint8_t *S = calloc(graph->n_elements, sizeof(*S));
         if (!S){
-                free(dijkstra.D);
-                free(dijkstra.P);
+                gdsfree(dijkstra.D);
+                gdsfree(dijkstra.P);
                 dijkstra.status = GDS_ERROR;
                 return dijkstra;
         }
 
         if ((size_t)source_index >= graph->n_elements){
                 dijkstra.status = GDS_INDEX_BOUNDS_ERROR;
-                free(dijkstra.D);
-                free(dijkstra.P);
-                free(S);
+                gdsfree(dijkstra.D);
+                gdsfree(dijkstra.P);
+                gdsfree(S);
                 return dijkstra;
         }
 
@@ -402,13 +402,13 @@ DijkstraData_t graph_dijkstra(const graph_t *graph, void *source){
                 S[pivot] = 1;
                 pivot = graph_get_pivot(S, dijkstra.D, graph->n_elements);
         }
-        free(S);
+        gdsfree(S);
         return dijkstra;
 }
 
 void graph_free_dijkstra_data(DijkstraData_t *data){
-        free(data->D);
-        free(data->P);
+        gdsfree(data->D);
+        gdsfree(data->P);
         data->D = NULL;
         data->P = NULL;
 }
@@ -424,8 +424,8 @@ static void graph_init_floyd(FloydData_t *floyd, const graph_t *graph){
         floyd->A = gdsmalloc(sizeof(*floyd->A) * graph->n_elements);
         floyd->P = gdsmalloc(sizeof(*floyd->P) * graph->n_elements);
         if (!floyd->A || !floyd->P){
-                free(floyd->A);
-                free(floyd->P);
+                gdsfree(floyd->A);
+                gdsfree(floyd->P);
                 floyd->status = GDS_ERROR;
                 return;
         }
@@ -435,11 +435,11 @@ static void graph_init_floyd(FloydData_t *floyd, const graph_t *graph){
                 floyd->P[i] = gdsmalloc(sizeof(*floyd->P[i]) * graph->n_elements);
                 if (!floyd->A[i] || !floyd->P[i]){
                         for (size_t j = 0; j <= i; j++){
-                                free(floyd->A[j]);
-                                free(floyd->P[j]);
+                                gdsfree(floyd->A[j]);
+                                gdsfree(floyd->P[j]);
                         }
-                        free(floyd->A);
-                        free(floyd->P);
+                        gdsfree(floyd->A);
+                        gdsfree(floyd->P);
                         floyd->status = GDS_ERROR;
                         return;
                 }
@@ -475,11 +475,11 @@ FloydData_t graph_floyd(const graph_t *graph){
 
 void graph_free_floyd_data(FloydData_t *data){
         for (size_t i = 0; i < data->n_elements; i++){
-                free(data->A[i]);
-                free(data->P[i]);
+                gdsfree(data->A[i]);
+                gdsfree(data->P[i]);
         }
-        free(data->A);
-        free(data->P);
+        gdsfree(data->A);
+        gdsfree(data->P);
         data->A = NULL;
         data->P = NULL;
 }
@@ -584,7 +584,7 @@ graph_traversal_t graph_traverse_DF(const graph_t *graph, void *vertex){
 
         uint8_t *visited = calloc(graph->n_elements, sizeof(*visited));
         if (!visited){
-                free(df.elements);
+                gdsfree(df.elements);
                 df.elements = NULL;
                 df.status = GDS_ERROR;
                 return df;
@@ -592,13 +592,13 @@ graph_traversal_t graph_traverse_DF(const graph_t *graph, void *vertex){
 
         int s = traverse_df_rec(&df, index, visited, graph);
         if (s != GDS_SUCCESS){
-                free(visited);
-                free(df.elements);
+                gdsfree(visited);
+                gdsfree(df.elements);
                 df.status = s;
                 return df;
         }
 
-        free(visited);
+        gdsfree(visited);
         return df;
 }
 
@@ -617,9 +617,9 @@ graph_traversal_t graph_traverse_BF(const graph_t *graph, void *vertex){
         uint8_t *visited = calloc(graph->n_elements, sizeof(*visited));
         size_t *queue = gdsmalloc(graph->n_elements * sizeof(*queue));
         if (!bf.elements || !visited || !queue){
-                free(queue);
-                free(visited);
-                free(bf.elements);
+                gdsfree(queue);
+                gdsfree(visited);
+                gdsfree(bf.elements);
                 bf.elements = NULL;
                 bf.status = GDS_ERROR;
                 return bf;
@@ -651,8 +651,8 @@ graph_traversal_t graph_traverse_BF(const graph_t *graph, void *vertex){
                         }
                 }
         }
-        free(queue);
-        free(visited);
+        gdsfree(queue);
+        gdsfree(visited);
         return bf;
 }
 
@@ -668,19 +668,19 @@ static void free_contents(graph_t *graph){
                         tmp = void_offset(tmp, graph->data_size);
                 }
         }
-        free(graph->vertices);
+        gdsfree(graph->vertices);
         for (size_t i = 0; i < graph->max_elements; i++){
-                free(graph->edges[i]);
-                free(graph->weights[i]);
+                gdsfree(graph->edges[i]);
+                gdsfree(graph->weights[i]);
         }
-        free(graph->edges);
-        free(graph->weights);
+        gdsfree(graph->edges);
+        gdsfree(graph->weights);
 }
 
 static void _graph_free(graph_t *graph){
         if (graph){
                 free_contents(graph);
-                free(graph);
+                gdsfree(graph);
         }
 }
 

@@ -25,6 +25,7 @@ extern "C" {
 #include "compare.h"
 #include "error.h"
 #include "hash.h"
+#include "allocator.h"
 
 #ifdef __cplusplus
 }

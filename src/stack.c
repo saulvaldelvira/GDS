@@ -23,7 +23,7 @@ stack_t* stack_init(size_t data_size, comparator_function_t cmp){
         if (!stack) return NULL;
         stack->elements = vector_init(data_size,cmp);
         if (!stack->elements){
-                free(stack);
+                gdsfree(stack);
                 return NULL;
         }
         return stack;
@@ -102,7 +102,7 @@ bool stack_isempty(const stack_t *stack){
 static void _stack_free(stack_t *stack){
         if (stack){
                 vector_free(stack->elements);
-                free(stack);
+                gdsfree(stack);
         }
 }
 

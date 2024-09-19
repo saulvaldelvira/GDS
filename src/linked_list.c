@@ -176,7 +176,7 @@ void* list_get_array(const linked_list_t *list, size_t array_length){
         void *array = gdsmalloc(list->data_size * array_length);
         assert(array);
         if (!list_get_into_array(list, array, array_length)){
-                free(array);
+                gdsfree(array);
                 return NULL;
         }
         return array;
@@ -203,7 +203,7 @@ int list_remove(linked_list_t *list, void *element){
 
                         if (list->destructor)
                                 list->destructor(tmp->info);
-                        free(tmp);
+                        gdsfree(tmp);
                         list->n_elements--;
                         return GDS_SUCCESS;
                 }
@@ -222,7 +222,7 @@ int list_remove_front(linked_list_t *list){
         list->head = list->head->next;
         if (list->destructor)
                 list->destructor(del->info);
-        free(del);
+        gdsfree(del);
         list->n_elements--;
         return GDS_SUCCESS;
 }
@@ -237,7 +237,7 @@ int list_remove_back(linked_list_t *list){
         list->tail = list->tail->prev;
         if (list->destructor)
                 list->destructor(del->info);
-        free(del);
+        gdsfree(del);
         list->n_elements--;
         return GDS_SUCCESS;
 }
@@ -268,7 +268,7 @@ void* list_pop(linked_list_t *list, void *element, void *dest){
 
                         if (dest)
                                 memcpy(dest, tmp->info, list->data_size);
-                        free(tmp);
+                        gdsfree(tmp);
                         list->n_elements--;
                         return dest;
                 }
@@ -287,7 +287,7 @@ void* list_pop_front(linked_list_t *list, void *dest){
         list->head = list->head->next;
         if (dest)
                 memcpy(dest, del->info, list->data_size);
-        free(del);
+        gdsfree(del);
         list->n_elements--;
         return dest;
 }
@@ -302,7 +302,7 @@ void* list_pop_back(linked_list_t *list, void *dest){
         list->tail = list->tail->prev;
         if (dest)
                 memcpy(dest, del->info, list->data_size);
-        free(del);
+        gdsfree(del);
         list->n_elements--;
         return dest;
 }
@@ -370,13 +370,13 @@ static void list_free_node(LLNode *node, destructor_function_t destructor){
         if (destructor)
                 destructor(node->info);
         list_free_node(node->next, destructor);
-        free(node);
+        gdsfree(node);
 }
 
 static void _list_free(linked_list_t *list){
         if (list){
                 list_free_node(list->head, list->destructor);
-                free(list);
+                gdsfree(list);
         }
 }
 

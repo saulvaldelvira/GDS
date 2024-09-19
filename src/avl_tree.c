@@ -6,7 +6,6 @@
 #include "error.h"
 #include "definitions.h"
 #include <stdint.h>
-#include <stdlib.h>
 #include <string.h> // memcpy
 #include <stdarg.h>
 #include <assert.h>
@@ -279,10 +278,10 @@ static struct remove_rec_ret remove_rec(AVLNode *node, void *element, comparator
                 AVLNode *aux = node;
                 if (node->left == NULL){
                         node = node->right;
-                        free(aux);
+                        gdsfree(aux);
                 } else if(node->right == NULL){
                         node = node->left;
-                        free(aux);
+                        gdsfree(aux);
                 }else {
                         aux = get_max(node->left);
                         memcpy(node->info, aux->info, size);
@@ -450,8 +449,8 @@ static struct traversal_ret traversal_rec(AVLNode *node, enum Traversal order, s
                 memcpy(tmp, node->info, size);
         }
 cleanup:
-        free(left.elements);
-        free(right.elements);
+        gdsfree(left.elements);
+        gdsfree(right.elements);
         return result;
 }
 
@@ -483,9 +482,9 @@ avl_t* avl_join(const avl_t *tree_1, const avl_t *tree_2){
         void *tmp = avl_preorder(tree_1);
         if (tmp != NULL){
                 status = avl_add_array(tree_joint, tmp, tree_1->n_elements);
-                free(tmp);
+                gdsfree(tmp);
                 if (status != GDS_SUCCESS){
-                        free(tree_joint);
+                        gdsfree(tree_joint);
                         return NULL;
                 }
         }
@@ -493,9 +492,9 @@ avl_t* avl_join(const avl_t *tree_1, const avl_t *tree_2){
         tmp = avl_preorder(tree_2);
         if (tmp != NULL){
                 status = avl_add_array(tree_joint, tmp, tree_2->n_elements);
-                free(tmp);
+                gdsfree(tmp);
                 if (status != GDS_SUCCESS){
-                        free(tree_joint);
+                        gdsfree(tree_joint);
                         return NULL;
                 }
         }
@@ -546,13 +545,13 @@ static void free_node(AVLNode *node, destructor_function_t destructor){
                 destructor(node->info);
         free_node(node->left, destructor);
         free_node(node->right, destructor);
-        free(node);
+        gdsfree(node);
 }
 
-static void _avl_free(avl_t *tree){
+static void _avl_gdsfree(avl_t *tree){
         if (tree){
                 free_node(tree->root, tree->destructor);
-                free(tree);
+                gdsfree(tree);
         }
 }
 
@@ -562,7 +561,7 @@ void (avl_free)(avl_t *t, ...){
         va_list arg;
         va_start(arg, t);
         do {
-                _avl_free(t);
+                _avl_gdsfree(t);
                 t = va_arg(arg, avl_t*);
         } while (t);
         va_end(arg);

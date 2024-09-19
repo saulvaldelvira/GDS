@@ -43,7 +43,7 @@ vector_t* vector_with_capacity(size_t data_size, comparator_function_t cmp, size
         if (!vector) return NULL;
         vector->elements = gdsmalloc(capacity * data_size);
         if (!vector->elements){
-                free(vector);
+                gdsfree(vector);
                 return NULL;
         }
         vector->data_size = data_size;
@@ -462,7 +462,7 @@ void* vector_get_array(const vector_t *vector, size_t array_length){
                 return NULL;
         }
         if (!vector_get_into_array(vector, array, array_length)){
-                free(array);
+                gdsfree(array);
                 return NULL;
         }
         return array;
@@ -479,17 +479,16 @@ int vector_swap(vector_t *vector, ptrdiff_t index_1, ptrdiff_t index_2){
                 return status;
         void *tmp = gdsmalloc(vector->data_size);
         if (!tmp || !vector_at(vector, index_1, tmp)){
-                free(tmp);
+                gdsfree(tmp);
                 return GDS_ERROR;
         }
 
         void *e1 = void_offset(vector->elements, index_1 * vector->data_size);
         void *e2 = void_offset(vector->elements, index_2 * vector->data_size);
-        assert(e1 && e2);
         memmove(e1, e2, vector->data_size);
         memcpy(e2, tmp, vector->data_size);
 
-        free(tmp);
+        gdsfree(tmp);
         return GDS_SUCCESS;
 }
 
@@ -604,8 +603,8 @@ static void _vector_free(vector_t *vector){
         if (!vector)
                 return;
         destroy_content(vector);
-        free(vector->elements);
-        free(vector);
+        gdsfree(vector->elements);
+        gdsfree(vector);
 }
 
 void (vector_free)(vector_t *v, ...){
@@ -624,7 +623,7 @@ void vector_reset(vector_t *vector){
         if (!vector)
                 return;
         destroy_content(vector);
-        free(vector->elements);
+        gdsfree(vector->elements);
         vector->elements = gdsmalloc(VECTOR_DEFAULT_SIZE * vector->data_size);
         assert(vector->elements);
         vector->n_elements = 0;

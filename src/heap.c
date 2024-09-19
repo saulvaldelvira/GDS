@@ -24,7 +24,7 @@ heap_t* heap_init(size_t data_size, comparator_function_t cmp){
         if (!heap) return NULL;
         heap->elements = vector_init(data_size, cmp);
         if (!heap->elements){
-                free(heap);
+                gdsfree(heap);
                 return NULL;
         }
         return heap;
@@ -236,7 +236,7 @@ bool heap_isempty(const heap_t *heap){
 static void _heap_free(heap_t *heap){
         if (heap){
                 vector_free(heap->elements);
-                free(heap);
+                gdsfree(heap);
         }
 }
 

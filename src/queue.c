@@ -101,7 +101,7 @@ void* queue_dequeue(queue_t *queue, void *dest){
         queue_tNode *aux = queue->head;
         queue->head = queue->head->next;
         memcpy(dest, aux->info, queue->data_size);
-        free(aux);
+        gdsfree(aux);
         queue->n_elements--;
         return dest;
 }
@@ -148,7 +148,7 @@ int queue_remove(queue_t *queue, void *element){
                 return GDS_ELEMENT_NOT_FOUND_ERROR;
         queue_tNode *del = *aux;
         *aux = (*aux)->next;
-        free(del);
+        gdsfree(del);
         queue->n_elements--;
         return GDS_SUCCESS;
 }
@@ -171,13 +171,13 @@ static void queue_free_node(queue_tNode *node, destructor_function_t destructor)
         if (destructor)
                 destructor(node->info);
         queue_free_node(node->next, destructor);
-        free(node);
+        gdsfree(node);
 }
 
 static void _queue_free(queue_t *queue){
         if (queue){
                 queue_free_node(queue->head, queue->destructor);
-                free(queue);
+                gdsfree(queue);
         }
 }
 
