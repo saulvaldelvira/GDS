@@ -21,6 +21,7 @@ extern "C" {
 #include "queue.h"
 #include "stack.h"
 #include "vector.h"
+#include "deque.h"
 
 #include "compare.h"
 #include "error.h"
