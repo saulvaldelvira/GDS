@@ -20,6 +20,17 @@ typedef int16_t i16;
 
 #define void_offset(ptr, bytes) ((void*)((byte*)ptr + (bytes)))
 
+#include <string.h>
+#define copy_into(buf, i, e, size) { \
+        void *ptr = void_offset(buf, i * size); \
+        memcpy(ptr, e, size); \
+}
+
+#define copy_from(buf, i, e, size) { \
+        void *ptr = void_offset(buf, i * size); \
+        memcpy(e, ptr, size); \
+}
+
 #ifdef __GNUC__
 #       define __inline inline __attribute__((always_inline))
 #else
