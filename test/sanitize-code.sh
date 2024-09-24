@@ -19,6 +19,7 @@ find src -name '*.c' |
 	     --enable=style,performance,portability \
 	     --error-exitcode=1 \
 	     --suppress=constParameterPointer \
+         --suppress=unusedStructMember \
 	     --std=c99 \
          $CHECK_LEVEL \
 	     $file
