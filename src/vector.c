@@ -391,6 +391,11 @@ void* vector_at(const vector_t *vector, ptrdiff_t index, void *dest){
         return tmp ? memcpy(dest, tmp, vector->data_size) : NULL;
 }
 
+void* vector_get_inner_at(const vector_t *vector, ptrdiff_t index) {
+        assert(vector);
+        return __get_at(vector, index);
+}
+
 void* vector_get(const vector_t *vector, void *element, void *dest){
         assert(vector && element && dest);
         ptrdiff_t index = vector_indexof(vector, element);

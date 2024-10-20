@@ -209,6 +209,12 @@ int vector_set(vector_t *vector, void *element, void *replacement);
 void* vector_at(const vector_t *vector, ptrdiff_t index, void *dest);
 
 /**
+ * Returns a pointer to the object at index inside the vector
+ * @param index index of the object
+ */
+void* vector_get_inner_at(const vector_t *vector, ptrdiff_t index);
+
+/**
  * Same as:
  *      vector_at(vector, vector_indexof(element), dest);
  * @param[out] dest the memory address to copy the value into.
