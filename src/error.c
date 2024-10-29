@@ -17,20 +17,20 @@ const char* gds_get_error_msg(int error_code) {
 }
 
 _Thread_local
-static gds_return_t last_error;
+gds_return_t __gds_last_error_code__;
 
 __inline
 gds_return_t gds_last_error(void) {
-        return last_error;
+        return __gds_last_error_code__;
 }
 
 __inline
 const char* gds_last_error_msg(void) {
-        return gds_get_error_msg(last_error);
+        return gds_get_error_msg(__gds_last_error_code__);
 }
 
 __inline
 void register_error(gds_return_t e) {
-        last_error = e;
+        __gds_last_error_code__ = e;
 }
 
