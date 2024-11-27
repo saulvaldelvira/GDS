@@ -1,6 +1,5 @@
 /*
-#include "gdsmalloc.h"
- * graph.c - graph_t implementation.
+ * graph.c - graph implementation.
  * Author: Saúl Valdelvira (2023)
  */
 #include "graph.h"

@@ -1,5 +1,5 @@
 /*
- * vector_t.c - vector_t implementation.
+ * vector.c - vector implementation.
  * Author: Saúl Valdelvira (2023)
  */
 #include <stdlib.h>

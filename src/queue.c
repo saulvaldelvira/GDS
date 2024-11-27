@@ -1,5 +1,5 @@
 /*
- * queue.c - queue_t implementation.
+ * queue.c - queue implementation.
  * Author: Saúl Valdelvira (2023)
  */
 #include "queue.h"

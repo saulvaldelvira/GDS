@@ -1,5 +1,5 @@
 /*
- * avl_tree.c - avl_t implementation.
+ * avl_tree.c - avl tree implementation.
  * Author: Saúl Valdelvira (2023)
  */
 #include "avl_tree.h"

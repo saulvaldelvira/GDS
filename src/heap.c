@@ -1,5 +1,5 @@
 /*
- * heap.c - Binary heap_t implementation.
+ * heap.c - Binary heap implementation.
  * Author: Saúl Valdelvira (2023)
  */
 #include <stdlib.h>

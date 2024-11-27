@@ -1,5 +1,5 @@
 /*
- * stack.c - stack_t Implementation
+ * stack.c - stack Implementation
  * Author: Saúl Valdelvira (2023)
  */
 #include "stack.h"

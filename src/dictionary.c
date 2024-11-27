@@ -1,5 +1,5 @@
 /*
- * dictionary.c - dictionary_t implementation.
+ * dictionary.c - dictionary implementation.
  * Author: Saúl Valdelvira (2023)
  */
 #include "dictionary.h"
