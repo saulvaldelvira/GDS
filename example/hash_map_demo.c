@@ -1,18 +1,18 @@
-/* Silly demo program for the dictionary.
+/* Silly demo program for the hash_map.
    Track people's age by their name.
 
-   $ gcc dict_demo.c ../src/dictionary.c ../src/hash.c \
-         ../src/vector.c ../src/compare.c -o dict_demo
-   $ ./dict_demo
+   $ gcc hash_map_demo.c ../src/hash_map.c ../src/hash.c \
+         ../src/vector.c ../src/compare.c -o hash_map_demo
+   $ ./hash_map_demo
    */
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
-#include "../include/dictionary.h"
+#include "../include/hash_map.h"
 
 int main(void){
-	dictionary_t *dict = dict_init(sizeof(char*), sizeof(int), hash_string);
+	hash_map_t *map = hashmap_init(sizeof(char*), sizeof(int), hash_string, compare_string);
 	for (;;){
 		char option;
 		printf("Options: (a)dd person, (r)emove person, (s)earch person, (e)xit.\n"
@@ -34,18 +34,18 @@ int main(void){
 			scanf("%d", &age);
                         char *k = malloc(1024);
                         strcpy(k,name);
-			dict_put(dict, &k, &age);
+			hashmap_put(map, &k, &age);
 			break;
 		case 'r':
-			dict_remove(dict, &name);
+			hashmap_remove(map, &name);
 			break;
 		case 's':
-			if (dict_get(dict, &name, &age) == NULL)
+			if (hashmap_get(map, &name, &age) == NULL)
 				printf("The person [%s] doesn't exist\n", name);
 			else
 				printf("%s's age is %d\n", name, age);
 			break;
 		}
 	}
-	dict_free(dict);
+	hashmap_free(map);
 }

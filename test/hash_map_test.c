@@ -1,53 +1,53 @@
-#include "../include/dictionary.h"
+#include "../include/hash_map.h"
 #include "test.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 void test_simple(void){
-        dictionary_t *dic = dict_init(sizeof(int), sizeof(char), hash_int, compare_int);
+        hash_map_t *dic = hashmap_init(sizeof(int), sizeof(char), hash_int, compare_int);
         int itmp = 1;
         char ctmp = 'A';
-        dict_put(dic, &itmp, &ctmp);
+        hashmap_put(dic, &itmp, &ctmp);
 
-        assert(dict_exists(dic, &itmp));
+        assert(hashmap_exists(dic, &itmp));
         char c;
-        assert(dict_get(dic, &itmp, &c) != NULL);
+        assert(hashmap_get(dic, &itmp, &c) != NULL);
         assert(c == ctmp);
 
-        assert(dict_remove(dic, &itmp));
+        assert(hashmap_remove(dic, &itmp));
 
-        assert(!dict_exists(dic, &itmp));
-        assert(dict_get(dic, &itmp, &c) == NULL);
-        dict_free(dic);
+        assert(!hashmap_exists(dic, &itmp));
+        assert(hashmap_get(dic, &itmp, &c) == NULL);
+        hashmap_free(dic);
 }
 
 void brute(void){
         test_step("Brute");
         int n = 1000;
-        dictionary_t *dic = dict_init(sizeof(int), sizeof(int), hash_int, compare_int);
+        hash_map_t *dic = hashmap_init(sizeof(int), sizeof(int), hash_int, compare_int);
         assert(dic);
         for (int i = 0; i < n; i++){
-                int s = dict_put(dic, &i, &i);
+                int s = hashmap_put(dic, &i, &i);
                 assert(s == GDS_SUCCESS);
         }
         int tmp;
         for (int i = 0; i < n; i++){
-                assert(i == * (int*) dict_get(dic, &i, &tmp));
-                assert(dict_exists(dic, &i));
-                assert(dict_remove(dic, &i));
-                assert(!dict_exists(dic, &i));
+                assert(i == * (int*) hashmap_get(dic, &i, &tmp));
+                assert(hashmap_exists(dic, &i));
+                assert(hashmap_remove(dic, &i));
+                assert(!hashmap_exists(dic, &i));
         }
-        dict_free(dic);
+        hashmap_free(dic);
         test_ok();
 }
 
 void config(void){
-        dictionary_t *dic = dict_init(sizeof(int), sizeof(int), hash_int, compare_int);
+        hash_map_t *dic = hashmap_init(sizeof(int), sizeof(int), hash_int, compare_int);
 
-        assert(dict_configure(dic, DOUBLE_HASHING, 0.05, 0.15));
+        assert(hashmap_configure(dic, DOUBLE_HASHING, 0.05, 0.15));
 
-        dict_free(dic);
+        hashmap_free(dic);
 
 }
 
@@ -63,7 +63,7 @@ void random_test(void){
         shuffle_array(keys, n);
         shuffle_array(values, n);
 
-        dictionary_t *dic = dict_init(sizeof(int), sizeof(int), hash_int, compare_int);
+        hash_map_t *dic = hashmap_init(sizeof(int), sizeof(int), hash_int, compare_int);
         int *exp = malloc(n * sizeof(int));
         int *exp2 = malloc(n * sizeof(int));
         for (int i = 0; i < n; i++){
@@ -71,25 +71,25 @@ void random_test(void){
                 int v = values[i];
                 exp[i] = k;
                 exp2[i] = v;
-                assert(dict_put(dic, &k, &v) == GDS_SUCCESS);
+                assert(hashmap_put(dic, &k, &v) == GDS_SUCCESS);
         }
         int tmp;
         for (int i = 0; i < n; i++){
-                assert(dict_exists(dic, &exp[i]) == GDS_SUCCESS);
-                assert(dict_get(dic, &exp[i], &tmp) != NULL);
+                assert(hashmap_exists(dic, &exp[i]) == GDS_SUCCESS);
+                assert(hashmap_get(dic, &exp[i], &tmp) != NULL);
                 assert(tmp == exp2[i]);
         }
         free(exp);
         free(exp2);
         free(keys);
         free(values);
-        dict_free(dic);
+        hashmap_free(dic);
         test_ok();
 }
 
 void string_test(void){
         test_step("String");
-        dictionary_t *dict = dict_init(sizeof(char*), sizeof(int), hash_string, compare_string);
+        hash_map_t *map = hashmap_init(sizeof(char*), sizeof(int), hash_string, compare_string);
 
         const int n = 100;
         char *strs[n];
@@ -98,18 +98,18 @@ void string_test(void){
                 char *str = malloc(1000);
                 strs[i] = str;
                 sprintf(str, "%d", i);
-                dict_put(dict, &str, &i);
+                hashmap_put(map, &str, &i);
         }
 
         for (int i = 0; i < n; i++) {
                 int tmp;
-                assert(dict_exists(dict,&strs[i]));
-                assert(i == * (int*) dict_get(dict,&strs[i],&tmp));
+                assert(hashmap_exists(map,&strs[i]));
+                assert(i == * (int*) hashmap_get(map,&strs[i],&tmp));
         }
         for (int i = 0; i < n; i++) {
                 free(strs[i]);
         }
-        dict_free(dict);
+        hashmap_free(map);
         test_ok();
 }
 
@@ -151,42 +151,42 @@ void struct_test(void){
         };
         strcpy(p.name, "alejandro");
 
-        dictionary_t *d = dict_init(sizeof(struct key), sizeof(struct person), hash_structs, compare_structs);
-        assert(dict_put(d, &k, &p) == GDS_SUCCESS);
-        assert(dict_exists(d, &k));
+        hash_map_t *d = hashmap_init(sizeof(struct key), sizeof(struct person), hash_structs, compare_structs);
+        assert(hashmap_put(d, &k, &p) == GDS_SUCCESS);
+        assert(hashmap_exists(d, &k));
         struct person per;
-        assert(dict_get(d, &k, &per));
+        assert(hashmap_get(d, &k, &per));
         assert(per.age == p.age);
         assert(strcmp(per.name, p.name) == 0);
 
-        dict_free(d);
+        hashmap_free(d);
         test_ok();
 }
 
 void destructor_test(void){
-	dictionary_t *dict = dict_init(sizeof(int), sizeof(char*), hash_int, compare_int);
-	dict_set_destructor(dict, destroy_ptr);
+	hash_map_t *map = hashmap_init(sizeof(int), sizeof(char*), hash_int, compare_int);
+	hashmap_set_destructor(map, destroy_ptr);
 
         char *tmp = NULL;
-        assert(dict_get(dict, &(int){12}, &tmp) == NULL);
+        assert(hashmap_get(map, &(int){12}, &tmp) == NULL);
 
 	for (int i = 0; i < 120; i++){
 		char *str = malloc(sizeof(char[12]));
 		assert(str);
 		sprintf(str, "%d", i);
-		dict_put(dict, &i, &str);
+		hashmap_put(map, &i, &str);
 	}
 
 	// Make sure the pointers are also
 	// freed when we overwrite the values
 	char *str = malloc(sizeof(char[12]));
-	dict_put(dict, &(int){30}, &str);
+	hashmap_put(map, &(int){30}, &str);
 
-	dict_free(dict);
+	hashmap_free(map);
 }
 
 int main(void){
-	test_start("dictionary.c");
+	test_start("hash_map.c");
 
 
         test_simple();
@@ -198,6 +198,6 @@ int main(void){
 	destructor_test();
 
 
-	test_end("dictionary.c");
+	test_end("hash_map.c");
         return 0;
 }

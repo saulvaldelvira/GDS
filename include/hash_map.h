@@ -1,5 +1,5 @@
 /*
- * dictionary.h - dictionary_t definition.
+ * hash_map.h - hash_map_t definition.
  * Author: Saúl Valdelvira (2023)
  */
 #pragma once
@@ -16,24 +16,24 @@ extern "C" {
 #include "compare.h"
 #include "vector.h"
 
-typedef struct dictionary dictionary_t;
+typedef struct hash_map hash_map_t;
 
 enum Redispersion{
         LINEAR, QUADRATIC, DOUBLE_HASHING
 };
 
 /**
- * Initializes a dictionary
+ * Initializes a hash_map
  * @param key_size size in bytes of the keys
  * @param value_size size in bytes of the values
  * @param hash_func hash fucntion for the keys. it takes a const void pointer
  *                     and returns a 64 bit signed integer (int64_t).
  * @param cmp Comparator function
 */
-dictionary_t* dict_init(size_t key_size, size_t value_size, hash_function_t hash_func, comparator_function_t cmp);
+hash_map_t* hashmap_init(size_t key_size, size_t value_size, hash_function_t hash_func, comparator_function_t cmp);
 
 /**
- * Initializes a dictionary with an initial capacity
+ * Initializes a hash_map with an initial capacity
  * @param key_size size in bytes of the keys
  * @param value_size size in bytes of the values
  * @param hash_func hash fucntion for the keys. It takes a const void pointer
@@ -41,7 +41,7 @@ dictionary_t* dict_init(size_t key_size, size_t value_size, hash_function_t hash
  * @param cmp Comparator function
  * @param capacity initial capacity of the vector
 */
-dictionary_t* dict_with_capacity(size_t key_size, size_t value_size, hash_function_t hash_func, comparator_function_t cmp, size_t capacity);
+hash_map_t* hashmap_with_capacity(size_t key_size, size_t value_size, hash_function_t hash_func, comparator_function_t cmp, size_t capacity);
 
 #define DICT_NO_SHRINKING        -1.0f
 #define DICT_DEF_REDISPERSION        DOUBLE_HASHING
@@ -49,65 +49,65 @@ dictionary_t* dict_with_capacity(size_t key_size, size_t value_size, hash_functi
 #define DICT_DEF_MIN_LF                0.1f
 
 /**
- * Configures the dictionary_t's behaviour.
+ * Configures the hash_map_t's behaviour.
  * @param redisperison the kind of redispersion to apply. Can be LINEAR, QUADRATIC or DOUBLE_HASHING (default value).
  * @param min_lf minimun value for the load factor. This means that, when deleting,
- *               if (number of elements / total size) <= min_lf, the dictionary's size is cut in half.
+ *               if (number of elements / total size) <= min_lf, the hash_map's size is cut in half.
  * @param max_lf maximun value for the load factor. This means that, when adding,
- *               if (number of elements / total size) >= min_lf, the dictionary's size is doubled.
- * @note 1) You can use the macros defined in dictionary.h to pass the default values (for example, DICT_DEF_MAX_LF)
+ *               if (number of elements / total size) >= min_lf, the hash_map's size is doubled.
+ * @note 1) You can use the macros defined in hash_map.h to pass the default values (for example, DICT_DEF_MAX_LF)
  * @note 2) You can pass 0.0f to the min_lf and max_lf to not change them, and NULL to hash_func to also use the current one.
- * @note 3) You can use DICT_NO_SHRINKING in the min_lf parameter to configure the dictionary to NOT shrink when deleting. This makes it
+ * @note 3) You can use DICT_NO_SHRINKING in the min_lf parameter to configure the hash_map to NOT shrink when deleting. This makes it
  *       faster, since we don't need to resize that often, but wastes more memory in some situations.
 */
-int dict_configure(dictionary_t *dict, enum Redispersion redispersion, double min_lf, double max_lf);
+int hashmap_configure(hash_map_t *map, enum Redispersion redispersion, double min_lf, double max_lf);
 
 /**
  * Sets the destructor for value type.
  * A NULL parameter means there's no destructor.
 */
-void dict_set_destructor(dictionary_t *dict, destructor_function_t value_destructor);
+void hashmap_set_destructor(hash_map_t *map, destructor_function_t value_destructor);
 
 /**
- * Puts the a key-value pair in the dictionary
+ * Puts the a key-value pair in the hash_map
 */
-int dict_put(dictionary_t *dict, void *key, void *value);
+int hashmap_put(hash_map_t *map, void *key, void *value);
 
 /**
  * Returns the value for the given key, or NULL if it
- * doesn't exist in the dictionary
+ * doesn't exist in the hash_map
 */
-void* dict_get(const dictionary_t *dict, void *key, void *dest);
+void* hashmap_get(const hash_map_t *map, void *key, void *dest);
 
 /**
- * Returns a vector with all the keys to the dictionary_t
+ * Returns a vector with all the keys to the hash_map_t
  * The vector is of the same type as the keys in the table.
- * This means, if we call this method on a dictionary_t of int to char,
+ * This means, if we call this method on a hash_map_t of int to char,
  * the vector will be a vector of ints
  */
-vector_t* dict_keys(const dictionary_t *dict);
+vector_t* hashmap_keys(const hash_map_t *map);
 
 /**
- * Returns true if the key exists in the dictionary
+ * Returns true if the key exists in the hash_map
 */
-bool dict_exists(const dictionary_t *dict, void *key);
+bool hashmap_exists(const hash_map_t *map, void *key);
 
 /**
- * Removes a key from the dictionary
+ * Removes a key from the hash_map
 */
-int dict_remove(dictionary_t *dict, void *key);
+int hashmap_remove(hash_map_t *map, void *key);
 
-void dict_free(dictionary_t *d, ...);
+void hashmap_free(hash_map_t *d, ...);
 
 /**
- * Frees all the given dicts.
+ * Frees all the given maps.
  */
-#define dict_free(...) dict_free(__VA_ARGS__, 0L)
+#define hashmap_free(...) hashmap_free(__VA_ARGS__, 0L)
 
 /**
- * Removes all elements from the dictionary
+ * Removes all elements from the hash_map
 */
-void dict_clear(dictionary_t *dict);
+void hashmap_clear(hash_map_t *map);
 
 #ifdef __cplusplus
 }
