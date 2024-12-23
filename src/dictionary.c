@@ -28,6 +28,7 @@ struct dictionary {
         vector_t *vec_elements;   ///< vector_t to store the elements
         hash_function_t hash;                   ///< Hashing function pointer
         destructor_function_t destructor;       ///< Destructor function pointer
+        comparator_function_t cmp;       ///< Comparator function pointer
         u32 n_elements;      ///< Number of elements in the dictionary_t
         u32 prev_vec_size;   ///< Previous capacity of the vector
         u16 value_size;      ///< Size (in bytes) of the value data type
@@ -99,11 +100,13 @@ static void free_node(void *node, void *args){
         n->value = NULL;
 }
 
-static int __init_dict(dictionary_t *dict, size_t key_size, size_t value_size, hash_function_t hash_func, size_t capacity) {
+__inline
+static int __init_dict(dictionary_t *dict, size_t key_size, size_t value_size, hash_function_t hash_func, comparator_function_t cmp, size_t capacity) {
         dict->value_size = value_size;
         dict->key_size = key_size;
         dict->min_lf = DICT_DEF_MIN_LF;
         dict->max_lf = DICT_DEF_MAX_LF;
+        dict->cmp = cmp;
         dict->destructor = NULL;
         dict->vec_elements = vector_init(sizeof(dict_node_t), compare_equal);
         if (!dict->vec_elements){
@@ -117,22 +120,22 @@ static int __init_dict(dictionary_t *dict, size_t key_size, size_t value_size, h
         return GDS_SUCCESS;
 }
 
-dictionary_t* dict_with_capacity(size_t key_size, size_t value_size, hash_function_t hash_func, size_t capacity) {
+dictionary_t* dict_with_capacity(size_t key_size, size_t value_size, hash_function_t hash_func, comparator_function_t cmp, size_t capacity) {
         assert(hash_func && key_size > 0 && value_size > 0);
         dictionary_t *dict = gdsmalloc(sizeof(*dict));
         if (!dict) return NULL;
-        if ( __init_dict(dict, key_size, value_size, hash_func, capacity) != GDS_SUCCESS) {
+        if ( __init_dict(dict, key_size, value_size, hash_func, cmp, capacity) != GDS_SUCCESS) {
                 free(dict);
                 return NULL;
         }
         return dict;
 }
 
-inline dictionary_t* dict_init(size_t key_size, size_t value_size, hash_function_t hash_func){
-        return dict_with_capacity(key_size, value_size, hash_func, DICT_INITIAL_SIZE);
+inline dictionary_t* dict_init(size_t key_size, size_t value_size, hash_function_t hash_func, comparator_function_t cmp){
+        return dict_with_capacity(key_size, value_size, hash_func, cmp, DICT_INITIAL_SIZE);
 }
 
-int dict_configure(dictionary_t *dict, enum Redispersion redispersion, double min_lf, double max_lf, hash_function_t hash_func){
+int dict_configure(dictionary_t *dict, enum Redispersion redispersion, double min_lf, double max_lf){
         assert(dict);
         float min, max;
         if (min_lf > 0.0f || min_lf == DICT_NO_SHRINKING)
@@ -153,8 +156,6 @@ int dict_configure(dictionary_t *dict, enum Redispersion redispersion, double mi
 
         if (redispersion >= 0)
                 dict->redispersion = redispersion;
-        if (hash_func)
-                dict->hash = hash_func;
 
         return GDS_SUCCESS;
 }
@@ -183,7 +184,7 @@ static int dict_redisperse(dictionary_t *dict, size_t new_size){
         assert(dict->n_elements < new_size);
 
         dictionary_t d;
-        __init_dict(&d, dict->key_size, dict->value_size, dict->hash, new_size);
+        __init_dict(&d, dict->key_size, dict->value_size, dict->hash, dict->cmp, new_size);
         d.destructor = dict->destructor;
 
         for (size_t i = 0; i < VEC_SIZE(dict); i++) {
@@ -238,9 +239,8 @@ int dict_put(dictionary_t *dict, void *key, void *value){
                 vector_at(dict->vec_elements, pos, &node);
 
                 if (node.state == FULL){
-                        int64_t h1 = dict->hash(key);
-                        int64_t h2 = dict->hash(node.key);
-                        if (h1 == h2)
+                        int c = dict->cmp(key, node.key);
+                        if (c == 0)
                                 break;
                 }else {
                         break;
@@ -296,9 +296,8 @@ void* dict_get(const dictionary_t *dict, void *key, void *dest){
                 dict_node_t node;
                 vector_at(dict->vec_elements, pos, &node);
                 if (node.state == FULL){
-                        int64_t h1 = dict->hash(key);
-                        int64_t h2 = dict->hash(node.key);
-                        if (h1 == h2)
+                        int c = dict->cmp(key, node.key);
+                        if (c == 0)
                                 return memcpy(dest, node.value, dict->value_size);
                 }
                 if (node.state == EMPTY) break;
@@ -313,9 +312,8 @@ bool dict_exists(const dictionary_t *dict, void *key){
                 dict_node_t node;
                 vector_at(dict->vec_elements, pos, &node);
                 if (node.state == FULL){
-                        int64_t h1 = dict->hash(key);
-                        int64_t h2 = dict->hash(node.key);
-                        if (h1 == h2)
+                        int c = dict->cmp(key, node.key);
+                        if (c == 0)
                                 return true;
                 }
                 if (node.state == EMPTY) break;
@@ -373,9 +371,8 @@ int dict_remove(dictionary_t *dict, void *key){
                 dict_node_t node;
                 vector_at(dict->vec_elements, pos, &node);
                 if (node.state == FULL){
-                        int64_t h1 = dict->hash(key);
-                        int64_t h2 = dict->hash(node.key);
-                        if (h1 == h2)
+                        int c = dict->cmp(key, node.key);
+                        if (c == 0)
                                 return __delete_node(dict, pos, true, true);
                 }
                 else if (node.state == EMPTY) break;

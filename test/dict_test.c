@@ -5,7 +5,7 @@
 #include <string.h>
 
 void test_simple(void){
-        dictionary_t *dic = dict_init(sizeof(int), sizeof(char), hash_int);
+        dictionary_t *dic = dict_init(sizeof(int), sizeof(char), hash_int, compare_int);
         int itmp = 1;
         char ctmp = 'A';
         dict_put(dic, &itmp, &ctmp);
@@ -25,7 +25,7 @@ void test_simple(void){
 void brute(void){
         test_step("Brute");
         int n = 1000;
-        dictionary_t *dic = dict_init(sizeof(int), sizeof(int), hash_int);
+        dictionary_t *dic = dict_init(sizeof(int), sizeof(int), hash_int, compare_int);
         assert(dic);
         for (int i = 0; i < n; i++){
                 int s = dict_put(dic, &i, &i);
@@ -43,9 +43,9 @@ void brute(void){
 }
 
 void config(void){
-        dictionary_t *dic = dict_init(sizeof(int), sizeof(int), hash_int);
+        dictionary_t *dic = dict_init(sizeof(int), sizeof(int), hash_int, compare_int);
 
-        assert(dict_configure(dic, DOUBLE_HASHING, 0.05, 0.15, NULL));
+        assert(dict_configure(dic, DOUBLE_HASHING, 0.05, 0.15));
 
         dict_free(dic);
 
@@ -63,7 +63,7 @@ void random_test(void){
         shuffle_array(keys, n);
         shuffle_array(values, n);
 
-        dictionary_t *dic = dict_init(sizeof(int), sizeof(int), hash_int);
+        dictionary_t *dic = dict_init(sizeof(int), sizeof(int), hash_int, compare_int);
         int *exp = malloc(n * sizeof(int));
         int *exp2 = malloc(n * sizeof(int));
         for (int i = 0; i < n; i++){
@@ -89,7 +89,7 @@ void random_test(void){
 
 void string_test(void){
         test_step("String");
-        dictionary_t *dict = dict_init(sizeof(char*), sizeof(int), hash_string);
+        dictionary_t *dict = dict_init(sizeof(char*), sizeof(int), hash_string, compare_string);
 
         const int n = 100;
         char *strs[n];
@@ -132,6 +132,14 @@ int64_t hash_structs(const void *e_1){
         return hash;
 }
 
+int compare_structs(const void *e_1, const void *e_2){
+        struct key *k1 = (struct key*) e_1;
+        struct key *k2 = (struct key*) e_2;
+        if (k1->i == k2->i && k1->c == k2->c)
+                return 0;
+        return 1;
+}
+
 void struct_test(void){
         test_step("Struct");
         struct key k = {
@@ -143,7 +151,7 @@ void struct_test(void){
         };
         strcpy(p.name, "alejandro");
 
-        dictionary_t *d = dict_init(sizeof(struct key), sizeof(struct person), hash_structs);
+        dictionary_t *d = dict_init(sizeof(struct key), sizeof(struct person), hash_structs, compare_structs);
         assert(dict_put(d, &k, &p) == GDS_SUCCESS);
         assert(dict_exists(d, &k));
         struct person per;
@@ -156,7 +164,7 @@ void struct_test(void){
 }
 
 void destructor_test(void){
-	dictionary_t *dict = dict_init(sizeof(int), sizeof(char*), hash_int);
+	dictionary_t *dict = dict_init(sizeof(int), sizeof(char*), hash_int, compare_int);
 	dict_set_destructor(dict, destroy_ptr);
 
         char *tmp = NULL;

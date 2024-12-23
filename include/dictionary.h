@@ -26,10 +26,11 @@ enum Redispersion{
  * Initializes a dictionary
  * @param key_size size in bytes of the keys
  * @param value_size size in bytes of the values
- * @param hash_func hash fucntion for the keys. It takes a const void pointer
+ * @param hash_func hash fucntion for the keys. it takes a const void pointer
  *                     and returns a 64 bit signed integer (int64_t).
+ * @param cmp Comparator function
 */
-dictionary_t* dict_init(size_t key_size, size_t value_size, hash_function_t hash_func);
+dictionary_t* dict_init(size_t key_size, size_t value_size, hash_function_t hash_func, comparator_function_t cmp);
 
 /**
  * Initializes a dictionary with an initial capacity
@@ -37,9 +38,10 @@ dictionary_t* dict_init(size_t key_size, size_t value_size, hash_function_t hash
  * @param value_size size in bytes of the values
  * @param hash_func hash fucntion for the keys. It takes a const void pointer
  *                     and returns a 64 bit signed integer (int64_t).
+ * @param cmp Comparator function
  * @param capacity initial capacity of the vector
 */
-dictionary_t* dict_with_capacity(size_t key_size, size_t value_size, hash_function_t hash_func, size_t capacity);
+dictionary_t* dict_with_capacity(size_t key_size, size_t value_size, hash_function_t hash_func, comparator_function_t cmp, size_t capacity);
 
 #define DICT_NO_SHRINKING        -1.0f
 #define DICT_DEF_REDISPERSION        DOUBLE_HASHING
@@ -58,7 +60,7 @@ dictionary_t* dict_with_capacity(size_t key_size, size_t value_size, hash_functi
  * @note 3) You can use DICT_NO_SHRINKING in the min_lf parameter to configure the dictionary to NOT shrink when deleting. This makes it
  *       faster, since we don't need to resize that often, but wastes more memory in some situations.
 */
-int dict_configure(dictionary_t *dict, enum Redispersion redispersion, double min_lf, double max_lf, hash_function_t hash_func);
+int dict_configure(dictionary_t *dict, enum Redispersion redispersion, double min_lf, double max_lf);
 
 /**
  * Sets the destructor for value type.
