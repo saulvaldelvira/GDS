@@ -172,6 +172,19 @@ static inline void hashmap_free_contents(hash_map_t *map) {
         vector_free(map->vec_elements);
 }
 
+
+static bool __are_equal(const hash_map_t *map, const void *e1, const void *e2) {
+        int64_t h1 = map->hash(e1);
+        int64_t h2 = map->hash(e2);
+        if (h1 == h2) {
+                int c = map->cmp(e1, e2);
+                if (c == 0)
+                        return true;
+
+        }
+        return false;
+}
+
 //// REDISPERSE ///////////////////////////////////////////////////////////////
 
 static int __delete_node(hash_map_t *map, size_t pos, bool redispersion, bool destroy);
@@ -239,8 +252,7 @@ int hashmap_put(hash_map_t *map, void *key, void *value){
                 vector_at(map->vec_elements, pos, &node);
 
                 if (node.state == FULL){
-                        int c = map->cmp(key, node.key);
-                        if (c == 0)
+                        if (__are_equal(map, key, node.key))
                                 break;
                 }else {
                         break;
@@ -296,8 +308,7 @@ void* hashmap_get(const hash_map_t *map, void *key, void *dest){
                 hash_node_t node;
                 vector_at(map->vec_elements, pos, &node);
                 if (node.state == FULL){
-                        int c = map->cmp(key, node.key);
-                        if (c == 0)
+                        if (__are_equal(map, key, node.key))
                                 return memcpy(dest, node.value, map->value_size);
                 }
                 if (node.state == EMPTY) break;
@@ -312,8 +323,7 @@ bool hashmap_exists(const hash_map_t *map, void *key){
                 hash_node_t node;
                 vector_at(map->vec_elements, pos, &node);
                 if (node.state == FULL){
-                        int c = map->cmp(key, node.key);
-                        if (c == 0)
+                        if (__are_equal(map, key, node.key))
                                 return true;
                 }
                 if (node.state == EMPTY) break;
@@ -371,8 +381,7 @@ int hashmap_remove(hash_map_t *map, void *key){
                 hash_node_t node;
                 vector_at(map->vec_elements, pos, &node);
                 if (node.state == FULL){
-                        int c = map->cmp(key, node.key);
-                        if (c == 0)
+                        if (__are_equal(map, key, node.key))
                                 return __delete_node(map, pos, true, true);
                 }
                 else if (node.state == EMPTY) break;
