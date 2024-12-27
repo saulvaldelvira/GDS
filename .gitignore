@@ -2,3 +2,4 @@ bin/
 doxygen/
 *.o
 .clangd
+*.html

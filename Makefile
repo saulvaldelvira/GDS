@@ -9,7 +9,9 @@ TESTFILES = $(wildcard test/*)
 EXAMPLES = $(wildcard example/*.c)
 
 CC = cc
-CCFLAGS += -Wall -Wextra -pedantic -std=c11 -Wstrict-prototypes -I./include -g -fPIC -O3 $(FLAGS)
+CCFLAGS += -Wall -Wextra -pedantic -Wstrict-prototypes -Wno-unknown-warning-option \
+     		-Wno-nonnull-compare  -Wno-pointer-bool-conversion \
+			-std=c11 -I./include -g -fPIC -O3 $(FLAGS)
 
 AR = ar
 ARFLAGS = rcs

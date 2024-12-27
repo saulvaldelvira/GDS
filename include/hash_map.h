@@ -30,6 +30,7 @@ enum Redispersion{
  *                     and returns a 64 bit signed integer (int64_t).
  * @param cmp Comparator function
 */
+NONNULL()
 hash_map_t* hashmap_init(size_t key_size, size_t value_size, hash_function_t hash_func, comparator_function_t cmp);
 
 /**
@@ -41,6 +42,7 @@ hash_map_t* hashmap_init(size_t key_size, size_t value_size, hash_function_t has
  * @param cmp Comparator function
  * @param capacity initial capacity of the vector
 */
+NONNULL()
 hash_map_t* hashmap_with_capacity(size_t key_size, size_t value_size, hash_function_t hash_func, comparator_function_t cmp, size_t capacity);
 
 #define DICT_NO_SHRINKING        -1.0f
@@ -60,23 +62,27 @@ hash_map_t* hashmap_with_capacity(size_t key_size, size_t value_size, hash_funct
  * @note 3) You can use DICT_NO_SHRINKING in the min_lf parameter to configure the hash_map to NOT shrink when deleting. This makes it
  *       faster, since we don't need to resize that often, but wastes more memory in some situations.
 */
+NONNULL()
 int hashmap_configure(hash_map_t *map, enum Redispersion redispersion, double min_lf, double max_lf);
 
 /**
  * Sets the destructor for value type.
  * A NULL parameter means there's no destructor.
 */
+NONNULL(1)
 void hashmap_set_destructor(hash_map_t *map, destructor_function_t value_destructor);
 
 /**
  * Puts the a key-value pair in the hash_map
 */
+NONNULL()
 int hashmap_put(hash_map_t *map, void *key, void *value);
 
 /**
  * Returns the value for the given key, or NULL if it
  * doesn't exist in the hash_map
 */
+NONNULL()
 void* hashmap_get(const hash_map_t *map, void *key, void *dest);
 
 /**
@@ -85,29 +91,34 @@ void* hashmap_get(const hash_map_t *map, void *key, void *dest);
  * This means, if we call this method on a hash_map_t of int to char,
  * the vector will be a vector of ints
  */
+NONNULL()
 vector_t* hashmap_keys(const hash_map_t *map);
 
 /**
  * Returns true if the key exists in the hash_map
 */
+NONNULL()
 bool hashmap_exists(const hash_map_t *map, void *key);
 
 /**
  * Removes a key from the hash_map
 */
+NONNULL()
 int hashmap_remove(hash_map_t *map, void *key);
 
+/**
+ * Removes all elements from the hash_map
+ */
+NONNULL()
+void hashmap_clear(hash_map_t *map);
+
+NONNULL()
 void hashmap_free(hash_map_t *d, ...);
 
 /**
  * Frees all the given maps.
  */
 #define hashmap_free(...) hashmap_free(__VA_ARGS__, 0L)
-
-/**
- * Removes all elements from the hash_map
-*/
-void hashmap_clear(hash_map_t *map);
 
 #ifdef __cplusplus
 }

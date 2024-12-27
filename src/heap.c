@@ -148,7 +148,7 @@ void* heap_pop_min(heap_t *heap, void *dest){
                 int status = vector_swap(heap, 0, last_pos);
                 if (status != GDS_SUCCESS)
                         return NULL;
-                vector_pop_back(heap, NULL);
+                vector_pop_back(heap, dest);
                 filter_down(heap, 0);
         }
         return dest;

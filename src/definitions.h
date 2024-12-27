@@ -11,6 +11,7 @@ extern "C" {
 #endif
 
 #include <stdint.h>
+#include <attrs.h>
 
 typedef int8_t byte;
 typedef uint32_t u32;
@@ -27,19 +28,16 @@ typedef int16_t i16;
 }
 
 #define copy_from(buf, i, e, size) { \
-        void *ptr = void_offset(buf, i * size); \
+        const void *ptr = void_offset(buf, i * size); \
         memcpy(e, ptr, size); \
 }
-
-#ifndef __has_attribute
-#       define __has_attribute(x) 0
-#endif
 
 #if __has_attribute(always_inline)
 #       define __inline inline __attribute__((always_inline))
 #else
 #       define __inline inline
 #endif
+
 
 #ifdef __cplusplus
 }
