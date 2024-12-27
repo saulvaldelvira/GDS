@@ -14,10 +14,12 @@ extern "C" {
 #include <stdbool.h>
 #include "compare.h"
 
-typedef struct heap heap_t;
+#ifndef heap_t
+typedef void* heap_t;
+#endif
 
 /**
- * @return a new Binary heap_t of mins with the given data size and comparator function
+ * @return a new Binary Heap with the given data size and comparator function
 */
 heap_t* heap_init(size_t data_size, comparator_function_t cmp);
 

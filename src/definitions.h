@@ -31,7 +31,11 @@ typedef int16_t i16;
         memcpy(e, ptr, size); \
 }
 
-#ifdef __GNUC__
+#ifndef __has_attribute
+#       define __has_attribute(x) 0
+#endif
+
+#if __has_attribute(always_inline)
 #       define __inline inline __attribute__((always_inline))
 #else
 #       define __inline inline
