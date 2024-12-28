@@ -2,7 +2,6 @@
  * stack.c - stack Implementation
  * Author: Saúl Valdelvira (2023)
  */
-#include "stack.h"
 #include <stdlib.h>
 #include "./vector.h"
 #include "definitions.h"
@@ -11,30 +10,22 @@
 #include <assert.h>
 #include "gdsmalloc.h"
 
-struct stack {
-        vector_t *elements;       ///< Elements of the stack_t
-};
+#define stack_t vector_t
+#include "stack.h"
 
 /// INITIALIZE ////////////////////////////////////////////////////////////////
 
 stack_t* stack_init(size_t data_size, comparator_function_t cmp){
         assert(cmp && data_size > 0);
-        stack_t *stack = gdsmalloc(sizeof(*stack));
-        if (!stack) return NULL;
-        stack->elements = vector_init(data_size,cmp);
-        if (!stack->elements){
-                gdsfree(stack);
-                return NULL;
-        }
-        return stack;
+        return vector_init(data_size, cmp);
 }
 
 void stack_set_comparator(stack_t *stack, comparator_function_t cmp){
-        vector_set_comparator(stack->elements, cmp);
+        vector_set_comparator(stack, cmp);
 }
 
 void stack_set_destructor(stack_t *stack, destructor_function_t destructor){
-        vector_set_destructor(stack->elements, destructor);
+        vector_set_destructor(stack, destructor);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -43,25 +34,25 @@ void stack_set_destructor(stack_t *stack, destructor_function_t destructor){
 
 int stack_push(stack_t *stack, void *element){
         assert(stack && element);
-        return vector_append(stack->elements, element);
+        return vector_append(stack, element);
 }
 
 int stack_push_array(stack_t *stack, void *array, size_t array_length){
         assert(stack && array);
-        return vector_append_array(stack->elements, array, array_length);
+        return vector_append_array(stack, array, array_length);
 }
 
 void* stack_pop(stack_t *stack, void *dest){
         assert(stack && dest);
-        return vector_pop_back(stack->elements, dest);
+        return vector_pop_back(stack, dest);
 }
 
 size_t stack_pop_array(stack_t *stack, void *array, size_t array_length){
         assert(stack && array);
-        size_t data_size = vector_get_data_size(stack->elements);
+        size_t data_size = vector_get_data_size(stack);
         for (size_t i = 0; i < array_length; i++){
                 // When the stack is empty, return
-                if (!vector_pop_back(stack->elements, array))
+                if (!vector_pop_back(stack, array))
                         return i;
                 array = void_offset(array, data_size);
         }
@@ -74,25 +65,25 @@ size_t stack_pop_array(stack_t *stack, void *array, size_t array_length){
 
 void* stack_peek(const stack_t *stack, void *dest){
         assert(stack && dest);
-        return vector_back(stack->elements, dest);
+        return vector_back(stack, dest);
 }
 
 bool stack_exists(const stack_t *stack, void *element){
         assert(stack && element);
-        return vector_exists(stack->elements, element);
+        return vector_exists(stack, element);
 }
 
 int stack_remove(stack_t *stack, void *element){
         assert(stack && element);
-        return vector_remove(stack->elements, element);
+        return vector_remove(stack, element);
 }
 
 size_t stack_size(const stack_t *stack){
-        return vector_size(stack->elements);
+        return vector_size(stack);
 }
 
 bool stack_isempty(const stack_t *stack){
-        return vector_isempty(stack->elements);
+        return vector_isempty(stack);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -101,8 +92,7 @@ bool stack_isempty(const stack_t *stack){
 
 static void _stack_free(stack_t *stack){
         if (stack){
-                vector_free(stack->elements);
-                gdsfree(stack);
+                vector_free(stack);
         }
 }
 
@@ -120,5 +110,5 @@ void (stack_free)(stack_t *s, ...){
 
 void stack_clear(stack_t *stack){
         if (stack)
-                vector_clear(stack->elements);
+                vector_clear(stack);
 }

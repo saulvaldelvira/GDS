@@ -15,12 +15,9 @@ extern "C" {
 #include "compare.h"
 #include "attrs.h"
 
-/**
- * The stack_t works in a similar way to a linked_list. But in this case, the elements are allways added in the head.
- * This is because a stack_t is a Data Structure that follows a LIFO (Last In First Out) dynamic. The last element added
- * is the first one that goes out.
-*/
+#ifndef stack_t
 typedef struct stack stack_t;
+#endif
 
 /**
  * Initializes an empty stack_t.
