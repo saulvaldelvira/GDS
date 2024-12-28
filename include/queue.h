@@ -15,12 +15,9 @@ extern "C" {
 #include "compare.h"
 #include "attrs.h"
 
-/**
- * The queue_t works in a similar way to a linked_list. But in this case, the elements are removed from the head.
- * This is because a queue_t is a Data Structure that follows a FIFO (First In First Out) dynamic. The first element added (the head)
- * is the first one that goes out.
-*/
+#ifndef queue_t
 typedef struct queue queue_t;
+#endif
 
 /**
  * @param data_size the size of the data being stored.
@@ -61,12 +58,6 @@ int queue_enqueue_array(queue_t *queue, void *array, size_t array_length);
 */
 NONNULL()
 void* queue_dequeue(queue_t *queue, void *dest);
-
-/**
- * Dequeues [array_length] elements into dest_array
-*/
-NONNULL()
-int queue_dequeue_array(queue_t *queue, void *array, size_t array_length);
 
 /**
  * @return the corresponding element of the queue (the one added first), without removing it
@@ -113,12 +104,6 @@ void queue_free(queue_t *v, ...);
  * Frees all the given queues.
  */
 #define queue_free(...) queue_free(__VA_ARGS__, 0L)
-
-/**
- * Frees multiple queues at once.
- * @param n number of pointers to free.
-*/
-void queue_free_all(unsigned int n, ...);
 
 #ifdef __cplusplus
 }

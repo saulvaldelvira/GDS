@@ -44,14 +44,14 @@ int main(void){
 
 queue_clear(q);
 	int nums[] = {1, 2, 3, 4, 5, 6, 7, 8};
-	int dest[8];
 	assert(queue_enqueue_array(q, nums, 8));
 	assert(8UL == queue_size(q));
-	assert(queue_dequeue_array(q, dest, 8));
-	assert(queue_isempty(q));
 	for (int i = 0; i < 8; i++){
-		assert(nums[i] == dest[i]);
+                int tmp;
+                queue_dequeue(q, &tmp);
+		assert(nums[i] == tmp);
 	}
+        assert(queue_isempty(q));
 
 	queue_free(q);
 
