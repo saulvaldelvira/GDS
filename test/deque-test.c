@@ -11,14 +11,14 @@ void push_back(void) {
 
         deque_at(q, 2, &tmp);
         assert(tmp == 2);
-        assert(deque_size(q) == N);
+        assert((int)deque_size(q) == N);
 
         for (int i = 0; i < N; i++) {
                 deque_pop_front(q, &tmp);
                 assert(tmp == i);
         }
 
-        assert(deque_size(q) == 0);
+        assert((int)deque_size(q) == 0);
 
         deque_free(q);
 }
@@ -37,8 +37,8 @@ void destructor(void) {
                 deque_push_back(q, &ptr);
         }
 
-        assert(deque_size(q) == N);
-        assert(deque_size(q2) == 0);
+        assert((int)deque_size(q) == N);
+        assert((int)deque_size(q2) == 0);
 
         for (int i = 0; i < N; i++) {
                 void *ptr;
@@ -46,8 +46,8 @@ void destructor(void) {
                 deque_push_back(q2, &ptr);
         }
 
-        assert(deque_size(q2) == N);
-        assert(deque_size(q) == 0);
+        assert((int)deque_size(q2) == N);
+        assert((int)deque_size(q) == 0);
 
         deque_free(q, q2);
 }

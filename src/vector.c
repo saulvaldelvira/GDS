@@ -40,7 +40,7 @@ vector_t* vector_init(size_t data_size, comparator_function_t cmp){
 vector_t* vector_with_capacity(size_t data_size, comparator_function_t cmp, size_t capacity) {
         assert(cmp && data_size > 0);
         vector_t *vector = gdsmalloc(sizeof(*vector));
-        if (!vector) return NULL;
+        if (unlikely(!vector)) return NULL;
         vector->elements = gdsmalloc(capacity * data_size);
         if (!vector->elements){
                 gdsfree(vector);

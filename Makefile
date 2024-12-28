@@ -8,10 +8,22 @@ OFILES = $(patsubst %.c,%.o,$(CFILES))
 TESTFILES = $(wildcard test/*)
 EXAMPLES = $(wildcard example/*.c)
 
-CC = cc
-CCFLAGS += -Wall -Wextra -pedantic -Wstrict-prototypes -Wno-unknown-warning-option \
-     		-Wno-nonnull-compare  -Wno-pointer-bool-conversion \
-			-std=c11 -I./include -g -fPIC -O3 $(FLAGS)
+PROFILE := release
+
+CC := cc
+
+DISABLED_WARNINGS_LIST = nonnull-compare unknown-warning-option pointer-bool-conversion
+
+DISABLED_WARNINGS = $(foreach W,$(DISABLED_WARNINGS_LIST), -Wno-$(W))
+
+CCFLAGS += -Wall -Wextra -pedantic -Wstrict-prototypes $(DISABLED_WARNINGS) \
+			-std=c11 -I./include -g -fPIC $(FLAGS)
+
+ifeq ($(PROFILE),release)
+	CCFLAGS += -O3
+else ifeq ($(PROFILE),coverage)
+	CCFLAGS += --coverage
+endif
 
 AR = ar
 ARFLAGS = rcs
@@ -82,8 +94,11 @@ doxygen: ./doxygen/
 clangd:
 	@ echo -e \
 		"CompileFlags: \n" \
-		"Add: [ -I$(shell pwd)/include/ , -xc ]" > .clangd
+		"Add: [ -I$(shell pwd)/include/ , -xc " \
+		"$(foreach W,$(DISABLED_WARNINGS), , $(W))" "]" \
+		> .clangd
 
 clean:
 	@ rm -f $(OFILES)
+	@ find . \( -name '*.*.gcov' -o -name '*.gcda' -o -name '*.gcno' \) -delete
 	@ rm -rf doxygen bin

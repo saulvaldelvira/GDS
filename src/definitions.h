@@ -38,6 +38,8 @@ typedef int16_t i16;
 #       define __inline inline
 #endif
 
+#define unlikely(expr) __builtin_expect(!!(expr), 0)
+#define likely(expr) __builtin_expect(!!(expr), 1)
 
 #ifdef __cplusplus
 }
