@@ -9,6 +9,7 @@ It includes:
 * AVL Tree
 * Graph
 * Dictionary
+* Deque (Double ended Queue)
 * Heap
 * Stack
 * Queue
@@ -124,7 +125,7 @@ void destroy_buffer(void *e){
 In the header files, every function that takes pointer arguments is tagged with a
 NONULL macro, indicating which arguments CAN NOT be NULL (no arguments means all must be non-null)
 
-This macro expands to the https://gcc.gnu.org/onlinedocs/gcc-4.7.2/gcc/Function-Attributes.html[\\__attribute__\((nonull))] function attribute if the compiler supports it.
+This macro expands to the https://gcc.gnu.org/onlinedocs/gcc-4.7.2/gcc/Function-Attributes.html[\\__attribute__\((nonnull))] function attribute if the compiler supports it.
 
 When you see a function with a NONULL macro, it's a contract. All the arguments marked as
 NONULL will be asserted to be, well... not null, at the start of the function.
