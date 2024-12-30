@@ -101,4 +101,5 @@ clangd:
 clean:
 	@ rm -f $(OFILES)
 	@ find . \( -name '*.*.gcov' -o -name '*.gcda' -o -name '*.gcno' \) -delete
+	@ rm -f README.html
 	@ rm -rf doxygen bin
