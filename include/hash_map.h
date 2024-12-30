@@ -75,7 +75,7 @@ void hashmap_set_destructor(hash_map_t *map, destructor_function_t value_destruc
 /**
  * Puts the a key-value pair in the hash_map
 */
-NONNULL()
+NONNULL(1,2)
 int hashmap_put(hash_map_t *map, void *key, void *value);
 
 /**

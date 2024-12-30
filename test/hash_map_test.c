@@ -185,6 +185,23 @@ void destructor_test(void){
 	hashmap_free(map);
 }
 
+void hashset_test(void) {
+        hash_map_t *set = hashmap_init(sizeof(int), 0, hash_int, compare_int);
+
+        for (int i = 0; i < 1024; i++) {
+                hashmap_put(set, &i, NULL);
+        }
+
+        for (int i = 0; i < 1024; i++) {
+                assert(hashmap_exists(set, &i));
+        }
+        for (int i = 1024; i < 2048; i++) {
+                assert(!hashmap_exists(set, &i));
+        }
+
+        hashmap_free(set);
+}
+
 int main(void){
 	test_start("hash_map.c");
 
@@ -196,7 +213,7 @@ int main(void){
         string_test();
         struct_test();
 	destructor_test();
-
+        hashset_test();
 
 	test_end("hash_map.c");
         return 0;

@@ -121,7 +121,7 @@ static int __init_map(hash_map_t *map, size_t key_size, size_t value_size, hash_
 }
 
 hash_map_t* hashmap_with_capacity(size_t key_size, size_t value_size, hash_function_t hash_func, comparator_function_t cmp, size_t capacity) {
-        assert(hash_func && key_size > 0 && value_size > 0);
+        assert(hash_func && key_size > 0);
         hash_map_t *map = gdsmalloc(sizeof(*map));
         if (!map) return NULL;
         if ( __init_map(map, key_size, value_size, hash_func, cmp, capacity) != GDS_SUCCESS) {
@@ -243,7 +243,9 @@ static size_t hashmap_get_pos(const hash_map_t *map, void *key, size_t n_it){
 }
 
 int hashmap_put(hash_map_t *map, void *key, void *value){
-        assert(map && key && value);
+        assert(map && key);
+        if (map->value_size != 0)
+                assert(value);
         size_t pos = 0;
         hash_node_t node = {0};
 
