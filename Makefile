@@ -6,6 +6,7 @@ BIN = bin
 CFILES = $(wildcard $(SRC)/*.c) $(wildcard $(SRC)/*/*.c)
 OFILES = $(patsubst %.c,%.o,$(CFILES))
 TESTFILES = $(wildcard test/*)
+BENCH_FILES = $(wildcard benches/*)
 EXAMPLES = $(wildcard example/*.c)
 
 PROFILE := release
@@ -63,6 +64,11 @@ uninstall:
 NO-RUN?= false # If true, only builds the test, without running them
 test: $(TESTFILES) libs | $(BIN)/
 	@ $(foreach T,$(filter %.c,$(TESTFILES)), \
+	  $(CC) $(CCFLAGS) -o $(BIN)/$(patsubst %.c,%.out, $(notdir $(T))) $(T) -L./$(BIN)/ -lGDS-static; \
+	  $(NO-RUN) || $(BIN)/$(patsubst %.c,%.out, $(notdir $(T))) || exit 1;)
+
+bench: $(BENCH_FILES) libs | $(BIN)/
+	 @ $(foreach T,$(filter %.c,$(BENCH_FILES)), \
 	  $(CC) $(CCFLAGS) -o $(BIN)/$(patsubst %.c,%.out, $(notdir $(T))) $(T) -L./$(BIN)/ -lGDS-static; \
 	  $(NO-RUN) || $(BIN)/$(patsubst %.c,%.out, $(notdir $(T))) || exit 1;)
 
