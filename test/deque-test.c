@@ -52,9 +52,23 @@ void destructor(void) {
         deque_free(q, q2);
 }
 
+void remove_range(void) {
+        deque_t *q = deque_init(sizeof(int), compare_int);
+        const int N = 10000;
+
+        for (int i = 0; i < N; i++)
+                deque_push_back(q, &i);
+
+        deque_remove_at(q, 900);
+        assert(!deque_exists(q, &(int){900}));
+
+        deque_free(q);
+}
+
 int main(void) {
         test_start("deque.c");
         push_back();
         destructor();
+        remove_range();
         test_end("deque.c");
 }

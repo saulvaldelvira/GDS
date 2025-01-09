@@ -225,15 +225,54 @@ int deque_remove(deque_t *self, const void *element) {
         return deque_remove_at(self, i);
 }
 
+static void __remove_range(deque_t *self, ptrdiff_t start, ptrdiff_t end) {
+        assert(self);
+        assert(start >= 0 && end <= (ptrdiff_t)self->n_elements);
+
+        // TODO: Destructor, and move from left to right if end < n_elements / 2
+
+        ptrdiff_t start_i = WRAP_INDEX(self->head + start, self->capacity);
+        ptrdiff_t end_i = WRAP_INDEX(self->head + end + 1, self->capacity);
+        size_t len = end - start;
+
+        ptrdiff_t tail_i = WRAP_INDEX(self->tail, self->capacity);
+
+        size_t ahead = self->n_elements - end;
+
+        void *src = void_offset(self->ringbuf, end_i * self->data_size);
+        void *dst = void_offset(self->ringbuf, start_i * self->data_size);
+
+        if (start_i < tail_i && end_i <= tail_i) {
+                memmove(dst, src, ahead);
+        } else {
+                size_t part_1_n = self->capacity - end_i;
+                memmove(dst, src, part_1_n);
+
+                start += part_1_n;
+                end += part_1_n;
+                ptrdiff_t start_i = WRAP_INDEX(self->head + start, self->capacity);
+                ptrdiff_t end_i = WRAP_INDEX(self->head + end + 1, self->capacity);
+
+                void *src = void_offset(self->ringbuf, end_i * self->data_size);
+                void *dst = void_offset(self->ringbuf, start_i * self->data_size);
+
+                size_t part_2_n = ahead - part_1_n;
+                memmove(dst, src, part_2_n);
+
+                size_t new_len = self->n_elements - len;
+                ptrdiff_t new_tail = WRAP_INDEX(new_len, self->capacity);
+                self->n_elements = new_len;
+                self->tail = new_tail;
+        }
+}
+
 int deque_remove_at(deque_t *self, ptrdiff_t i) {
         assert(self);
         if (i < 0 || i >= (ptrdiff_t)self->n_elements)
                 return GDS_INDEX_BOUNDS_ERROR;
-        while (i < (ptrdiff_t)self->n_elements - 1) {
-                void *curr = get_at_index(self, i);
-                const void *next = get_at_index(self, i + 1);
-                memcpy(curr, next, self->data_size);
-        }
+
+        __remove_range(self, i, i + 1);
+
         return GDS_SUCCESS;
 }
 
