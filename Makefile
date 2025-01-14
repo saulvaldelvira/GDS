@@ -28,7 +28,7 @@ endif
 AR = ar
 ARFLAGS = rcs
 
-INSTALL_PATH ?= /usr/local
+PREFIX ?= /usr/local
 
 default: libs
 
@@ -39,26 +39,26 @@ libs: $(OFILES) | $(BIN)/
 	@ $(AR) $(ARFLAGS) ./$(BIN)/libGDS-static.a $(OFILES)
 
 install: $(BIN)/libGDS.so $(BIN)/libGDS-static.a
-	  @ echo " INSTALL $(INSTALL_PATH)/lib/libGDS.so"
-	  @ echo " INSTALL $(INSTALL_PATH)/lib/libGDS-static.a"
-	  @ mkdir -p -m 755 $(INSTALL_PATH)/lib
-	  @ cp $(BIN)/libGDS* $(INSTALL_PATH)/lib
-	  @ chmod 644 $(INSTALL_PATH)/lib/libGDS*
-	  @ echo " INSTALL $(INSTALL_PATH)/include/GDS/"
-	  @ mkdir -p -m 755 $(INSTALL_PATH)/include
-	  @ cp -r include $(INSTALL_PATH)/include/GDS
-	  @ chmod -R 644 $(INSTALL_PATH)/include/GDS
-	  @ find $(INSTALL_PATH)/include/GDS -type d -exec chmod 755 {} \;
+	  @ echo " INSTALL $(PREFIX)/lib/libGDS.so"
+	  @ echo " INSTALL $(PREFIX)/lib/libGDS-static.a"
+	  @ mkdir -p -m 755 $(PREFIX)/lib
+	  @ cp $(BIN)/libGDS* $(PREFIX)/lib
+	  @ chmod 644 $(PREFIX)/lib/libGDS*
+	  @ echo " INSTALL $(PREFIX)/include/GDS/"
+	  @ mkdir -p -m 755 $(PREFIX)/include
+	  @ cp -r include $(PREFIX)/include/GDS
+	  @ chmod -R 644 $(PREFIX)/include/GDS
+	  @ find $(PREFIX)/include/GDS -type d -exec chmod 755 {} \;
 
 $(BIN)/libGDS.so $(BIN)/libGDS-static.a:
 	@ $(MAKE) --no-print-directory libs
 
 uninstall:
-	  @ echo " RM $(INSTALL_PATH)/lib/libGDS.so"
-	  @ echo " RM $(INSTALL_PATH)/lib/libGDS-static.a"
-	  @ rm -f $(INSTALL_PATH)/lib/libGDS*
-	  @ echo " RM $(INSTALL_PATH)/include/GDS/"
-	  @ rm -rf $(INSTALL_PATH)/include/GDS
+	  @ echo " RM $(PREFIX)/lib/libGDS.so"
+	  @ echo " RM $(PREFIX)/lib/libGDS-static.a"
+	  @ rm -f $(PREFIX)/lib/libGDS*
+	  @ echo " RM $(PREFIX)/include/GDS/"
+	  @ rm -rf $(PREFIX)/include/GDS
 
 NO-RUN?= false # If true, only builds the test, without running them
 test: $(TESTFILES) libs | $(BIN)/
