@@ -8,7 +8,6 @@
 #include <string.h>
 #include <stdarg.h>
 #include <assert.h>
-#include "gdsmalloc.h"
 
 #define stack_t vector_t
 #include "stack.h"

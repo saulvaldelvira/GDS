@@ -3,6 +3,7 @@
  * Author: Saúl Valdelvira (2023)
  */
 #include "hash_map.h"
+#include "attrs.h"
 #include "error.h"
 #include "definitions.h"
 #include "vector.h"
@@ -48,10 +49,12 @@ struct hash_map {
 
 #define VEC_SIZE(map) vector_size(map->vec_elements)
 
+_const_fn
 static inline int64_t abs_i64(int64_t n) { return n < 0 ? -n : n; }
 
 /// PRIME //////////////////////////////////////////////////////////////////////
 
+_const_fn
 static bool is_prime(int n){
         for (int i = n-1; i > 1; --i){
                 if (n % i == 0)
@@ -60,6 +63,7 @@ static bool is_prime(int n){
         return true;
 }
 
+_const_fn
 static int get_prev_prime(int n){
         do{
                 --n;
@@ -67,6 +71,7 @@ static int get_prev_prime(int n){
         return n;
 }
 
+_const_fn
 static int get_next_prime(int n){
         do{
                 ++n;

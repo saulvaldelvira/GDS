@@ -19,12 +19,10 @@ const char* gds_get_error_msg(int error_code) {
 _Thread_local
 gds_return_t __gds_last_error_code__;
 
-__inline
 gds_return_t gds_last_error(void) {
         return __gds_last_error_code__;
 }
 
-__inline
 const char* gds_last_error_msg(void) {
         return gds_get_error_msg(__gds_last_error_code__);
 }

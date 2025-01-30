@@ -32,12 +32,6 @@ typedef int16_t i16;
         memcpy(e, ptr, size); \
 }
 
-#if __has_attribute(always_inline)
-#       define __inline inline __attribute__((always_inline))
-#else
-#       define __inline inline
-#endif
-
 #define unlikely(expr) __builtin_expect(!!(expr), 0)
 #define likely(expr) __builtin_expect(!!(expr), 1)
 

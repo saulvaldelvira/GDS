@@ -10,6 +10,8 @@
 extern "C" {
 #endif
 
+#include "attrs.h"
+
 // Error codes
 typedef enum gds_return {
         GDS_SUCCESS = 1,
@@ -40,9 +42,13 @@ typedef enum gds_return {
                         fprintf(stderr, " In %s, line %d (%s)\n", __FILE_NAME__, __LINE__, __func__);\
                 }while (0)
 
+_const_fn
 const char* gds_get_error_msg(int error_code);
 
+_pure_fn
 gds_return_t gds_last_error(void);
+
+_pure_fn
 const char* gds_last_error_msg(void);
 
 #ifdef __cplusplus
