@@ -86,6 +86,18 @@ NONNULL()
 void* hashmap_get(const hash_map_t *map, void *key, void *dest);
 
 /**
+ * Returns a reference to the value of this key.
+ *
+ * Returns NULL if the key doesn't exists in the hash-map.
+ *
+ * Unline hashmap_get, this function returns the actual value, intead
+ * of copying it to a destination pointer. This allows to mutate the value
+ * without having to do another hashmap_put after
+ */
+NONNULL()
+void* hashmap_get_ref(const hash_map_t *map, void *key);
+
+/**
  * Returns a vector with all the keys to the hash_map_t
  * The vector is of the same type as the keys in the table.
  * This means, if we call this method on a hash_map_t of int to char,
@@ -105,6 +117,9 @@ bool hashmap_exists(const hash_map_t *map, void *key);
 */
 NONNULL()
 int hashmap_remove(hash_map_t *map, void *key);
+
+NONNULL()
+size_t hashmap_length(const hash_map_t *map);
 
 /**
  * Removes all elements from the hash_map

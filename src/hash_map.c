@@ -323,6 +323,21 @@ void* hashmap_get(const hash_map_t *map, void *key, void *dest){
         return NULL;
 }
 
+void* hashmap_get_ref(const hash_map_t *map, void *key){
+        assert(map && key);
+        for (size_t i = 0; i < VEC_SIZE(map); i++) {
+                size_t pos = hashmap_get_pos(map, key, i);
+                hash_node_t node;
+                vector_at(map->vec_elements, pos, &node);
+                if (node.state == FULL){
+                        if (__are_equal(map, key, node.key))
+                                return node.value;
+                }
+                if (node.state == EMPTY) break;
+        }
+        return NULL;
+}
+
 bool hashmap_exists(const hash_map_t *map, void *key){
         assert(map && key);
         for (size_t i = 0; i < VEC_SIZE(map); i++) {
@@ -394,6 +409,11 @@ int hashmap_remove(hash_map_t *map, void *key){
                 else if (node.state == EMPTY) break;
         }
         return GDS_ELEMENT_NOT_FOUND_ERROR;
+}
+
+size_t hashmap_length(const hash_map_t *map) {
+        assert(map);
+        return map->n_elements;
 }
 
 //// FREE //////////////////////////////////////////////////////////////////////
