@@ -3,6 +3,8 @@
  * Author: Saúl Valdelvira (2023)
  */
 #include "hash.h"
+#include <stdint.h>
+#include <string.h>
 
 int64_t hash_int(const void *arg){
         return (int64_t) * (int*) arg;
@@ -32,4 +34,10 @@ int64_t hash_string(const void *arg){
             hash = ((hash << 5) + hash) + c; // hash * 33 + c
         }
         return hash;
+}
+
+int64_t hash_ptr(const void *arg) {
+        void *ptr;
+        memcpy(&ptr, arg, sizeof(void*));
+        return (int64_t)ptr;
 }

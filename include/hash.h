@@ -24,6 +24,8 @@ int64_t hash_long(const void *arg);
 
 int64_t hash_string(const void *arg);
 
+int64_t hash_ptr(const void *arg);
+
 #ifdef __cplusplus
 }
 #endif
