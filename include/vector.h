@@ -13,7 +13,7 @@ extern "C" {
 #include <stddef.h>
 #include <stdbool.h>
 #include "compare.h"
-#include <attrs.h>
+#include "attrs.h"
 
 typedef struct vector vector_t;
 
