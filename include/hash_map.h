@@ -19,7 +19,7 @@ extern "C" {
 typedef struct hash_map hash_map_t;
 
 enum Redispersion{
-        LINEAR, QUADRATIC, DOUBLE_HASHING
+        LINEAR_HASHING, QUADRATIC_HASHING,
 };
 
 /**
@@ -46,8 +46,8 @@ NONNULL()
 hash_map_t* hashmap_with_capacity(size_t key_size, size_t value_size, hash_function_t hash_func, comparator_function_t cmp, size_t capacity);
 
 #define DICT_NO_SHRINKING        -1.0f
-#define DICT_DEF_REDISPERSION        DOUBLE_HASHING
-#define DICT_DEF_MAX_LF                0.2f
+#define DICT_DEF_REDISPERSION        LINEAR_HASHING
+#define DICT_DEF_MAX_LF                0.8f
 #define DICT_DEF_MIN_LF                0.1f
 
 /**

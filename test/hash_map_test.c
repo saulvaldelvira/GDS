@@ -45,7 +45,7 @@ void brute(void){
 void config(void){
         hash_map_t *dic = hashmap_init(sizeof(int), sizeof(int), hash_int, compare_int);
 
-        assert(hashmap_configure(dic, DOUBLE_HASHING, 0.05, 0.15));
+        assert(hashmap_configure(dic, QUADRATIC_HASHING, 0.05, 0.15));
 
         hashmap_free(dic);
 

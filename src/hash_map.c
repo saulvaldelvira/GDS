@@ -31,7 +31,6 @@ struct hash_map {
         destructor_function_t destructor;       ///< Destructor function pointer
         comparator_function_t cmp;       ///< Comparator function pointer
         u32 n_elements;      ///< Number of elements in the hash_map_t
-        u32 prev_vec_size;   ///< Previous capacity of the vector
         u16 value_size;      ///< Size (in bytes) of the value data type
         u16 key_size;        ///< Size (in bytes) of the key data type
         float max_lf;   ///< Maximun load factor before redispersing
@@ -45,7 +44,6 @@ struct hash_map {
  * @param B capacity of the table
 */
 #define LF(x,B) ((x) * 1.0 / (B))
-#define DICT_INITIAL_SIZE 11
 
 #define VEC_SIZE(map) vector_size(map->vec_elements)
 
@@ -54,28 +52,49 @@ static inline int64_t abs_i64(int64_t n) { return n < 0 ? -n : n; }
 
 /// PRIME //////////////////////////////////////////////////////////////////////
 
+static const size_t PRIMES[] = {
+        5, 11, 23, 47, 97, 199, 409, 823, 1741, 3469,
+        6949, 14033, 28411, 57557, 116731, 236897,
+        480881, 976369, 1982627, 4026031, 8175383,
+        16601593, 33712729, 68460391, 139022417,
+        282312799, 573292817, 1164186217, 2147483647,
+};
+
+const size_t DICT_INITIAL_SIZE = PRIMES[0];
+
+static const size_t N_PRIMES = sizeof(PRIMES) / sizeof(PRIMES[0]);
+
 _const_fn
-static bool is_prime(int n){
-        for (int i = n-1; i > 1; --i){
-                if (n % i == 0)
-                        return false;
+static size_t get_prev_size(size_t n){
+        if (n <= PRIMES[0])
+                return PRIMES[0];
+
+        for (size_t i = N_PRIMES - 1; i > 0; i--) {
+                if (PRIMES[i] < n)
+                        return PRIMES[i];
         }
-        return true;
+
+        n /= 2;
+        if (n % 2 == 0)
+                n--;
+        return n > PRIMES[0] ? n : PRIMES[0];
 }
 
 _const_fn
-static int get_prev_prime(int n){
-        do{
-                --n;
-        }while(!is_prime(n));
-        return n;
-}
+static size_t get_next_size(size_t n){
+        for (size_t i = 0; i < N_PRIMES; i++) {
+                if (PRIMES[i] > n)
+                        return PRIMES[i];
+        }
 
-_const_fn
-static int get_next_prime(int n){
-        do{
-                ++n;
-        }while(!is_prime(n));
+        if (n > SIZE_MAX / 2)
+                return SIZE_MAX - 1;
+
+        n *= 2;
+        if (n % 2 == 0)
+                n++;
+        while (n % 3 == 0 || n % 5 == 0 || n % 7 == 0)
+                n += 2;
         return n;
 }
 
@@ -121,7 +140,6 @@ static int __init_map(hash_map_t *map, size_t key_size, size_t value_size, hash_
         map->n_elements = 0;
         map->hash = hash_func;
         map->redispersion = DICT_DEF_REDISPERSION;
-        map->prev_vec_size = get_prev_prime(capacity);
         return GDS_SUCCESS;
 }
 
@@ -232,16 +250,11 @@ static int hashmap_redisperse(hash_map_t *map, size_t new_size){
 static size_t hashmap_get_pos(const hash_map_t *map, void *key, size_t n_it){
         size_t pos = 0;
         switch (map->redispersion){
-        case LINEAR:
+        case LINEAR_HASHING:
                 pos = abs_i64(map->hash(key)) + n_it;
                 break;
-        case QUADRATIC:
+        case QUADRATIC_HASHING:
                 pos =  abs_i64(map->hash(key)) + n_it * n_it;
-                break;
-        case DOUBLE_HASHING: ;
-                int h1 = abs_i64(map->hash(key));
-                int h2 = map->prev_vec_size - h1 % map->prev_vec_size;
-                pos = h1 + n_it * h2;
                 break;
         }
         return pos % VEC_SIZE(map);
@@ -298,7 +311,7 @@ int hashmap_put(hash_map_t *map, void *key, void *value){
 
         // Resize if needed
         if (LF(map->n_elements, VEC_SIZE(map)) >= map->max_lf){
-                size_t new_size = get_next_prime(VEC_SIZE(map) * 2);
+                size_t new_size = get_next_size(VEC_SIZE(map));
                 int status = hashmap_redisperse(map, new_size);
                 if (status != GDS_SUCCESS)
                         return status;
@@ -388,7 +401,7 @@ static int __delete_node(hash_map_t *map, size_t pos, bool redispersion, bool de
         if (!redispersion)
                 return GDS_SUCCESS;
         if (map->min_lf > 0 && LF(map->n_elements, VEC_SIZE(map)) <= map->min_lf){
-                size_t new_size = get_prev_prime(VEC_SIZE(map) / 2);
+                size_t new_size = get_prev_size(VEC_SIZE(map));
                 int status = hashmap_redisperse(map, new_size);
                 if (status != GDS_SUCCESS)
                         return status;
@@ -444,5 +457,4 @@ void hashmap_clear(hash_map_t *map){
         vector_reset(map->vec_elements);
         vector_resize(map->vec_elements, DICT_INITIAL_SIZE, init_node);
         map->n_elements = 0;
-        map->prev_vec_size = get_prev_prime(DICT_INITIAL_SIZE);
 }
