@@ -81,8 +81,8 @@ bool queue_isempty(const queue_t *queue){
 }
 
 void queue_clear(queue_t *queue){
-        assert(queue);
-        deque_clear(queue);
+        if (queue)
+                deque_clear(queue);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

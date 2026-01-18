@@ -124,10 +124,8 @@ size_t hashmap_length(const hash_map_t *map);
 /**
  * Removes all elements from the hash_map
  */
-NONNULL()
 void hashmap_clear(hash_map_t *map);
 
-NONNULL()
 void hashmap_free(hash_map_t *d, ...);
 
 /**

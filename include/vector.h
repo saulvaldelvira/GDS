@@ -416,7 +416,6 @@ vector_t* vector_dup(vector_t *vector);
  * Removes all the elements in the vector, without freeing the
  * internal buffer (i.e. without shrinking it's capacity).
 */
-NONNULL()
 void vector_clear(vector_t *vector);
 
 /**

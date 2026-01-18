@@ -87,7 +87,6 @@ int heap_remove(heap_t *heap, void *element);
 /**
  * Removes all the elements from the heap.
 */
-NONNULL()
 void heap_clear(heap_t *heap);
 
 /**
@@ -114,7 +113,6 @@ size_t heap_size(const heap_t *heap);
 NONNULL()
 bool heap_isempty(const heap_t *heap);
 
-NONNULL()
 void heap_free(heap_t *h, ...);
 
 /**

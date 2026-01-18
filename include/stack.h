@@ -101,10 +101,8 @@ size_t stack_size(const stack_t *stack);
 /**
  * @return true if the stack is empty
 */
-NONNULL()
 bool stack_isempty(const stack_t *stack);
 
-NONNULL()
 void stack_free(stack_t *v, ...);
 
 /**

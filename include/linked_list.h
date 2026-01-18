@@ -146,7 +146,6 @@ bool list_isempty(const linked_list_t *list);
 /**
  * Removes all the elements from the list
 */
-NONNULL()
 void list_clear(linked_list_t *list);
 
 /**
@@ -229,7 +228,6 @@ void* list_pop_array(linked_list_t *list, void *array, size_t array_length, void
 NONNULL()
 linked_list_t* list_join(const linked_list_t *list_1, const linked_list_t *list_2);
 
-NONNULL()
 void list_free(linked_list_t *h, ...);
 
 /**

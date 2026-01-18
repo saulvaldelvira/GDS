@@ -300,10 +300,8 @@ graph_traversal_t graph_traverse_BF(const graph_t *graph, void *vertex);
 /**
  * Resets the graph to it's original state.
  */
-NONNULL()
 void graph_clear(graph_t *graph);
 
-NONNULL()
 void graph_free(graph_t *g, ...);
 
 /**

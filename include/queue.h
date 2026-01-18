@@ -94,10 +94,8 @@ size_t queue_size(const queue_t *queue);
 /**
  * @return true if the queue is empty
 */
-NONNULL()
 bool queue_isempty(const queue_t *queue);
 
-NONNULL()
 void queue_free(queue_t *v, ...);
 
 /**
