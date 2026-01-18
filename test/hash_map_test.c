@@ -1,4 +1,5 @@
 #include "../include/hash_map.h"
+#include "hash.h"
 #include "test.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -125,11 +126,9 @@ struct person{
         int age;
 };
 
-int64_t hash_structs(const void *e_1){
+uint64_t hash_structs(const void *e_1){
         struct key *k = (struct key*) e_1;
-        int64_t hash = (int64_t)k->i << sizeof(k->c);
-        hash += k->c;
-        return hash;
+        return hash_combine(hash_char(&k->c), hash_int(&k->i));
 }
 
 int compare_structs(const void *e_1, const void *e_2){

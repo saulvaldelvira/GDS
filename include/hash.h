@@ -12,19 +12,28 @@ extern "C" {
 
 #include <stdint.h>
 
-typedef int64_t (*hash_function_t) (const void*);
+#define HASH_COMBINE(h1, h2)
 
-int64_t hash_int(const void *arg);
+typedef uint64_t hashcode_t;
 
-int64_t hash_short(const void *arg);
+typedef hashcode_t (*hash_function_t) (const void*);
 
-int64_t hash_char(const void *arg);
+/**
+ * Merges the h1 and h2 into a single hash code
+ */
+hashcode_t hash_combine(hashcode_t h1, hashcode_t h2);
 
-int64_t hash_long(const void *arg);
+hashcode_t hash_int(const void *arg);
 
-int64_t hash_string(const void *arg);
+hashcode_t hash_short(const void *arg);
 
-int64_t hash_ptr(const void *arg);
+hashcode_t hash_char(const void *arg);
+
+hashcode_t hash_long(const void *arg);
+
+hashcode_t hash_string(const void *arg);
+
+hashcode_t hash_ptr(const void *arg);
 
 #ifdef __cplusplus
 }
